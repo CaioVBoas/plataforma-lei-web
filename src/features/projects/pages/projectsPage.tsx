@@ -1,14 +1,17 @@
-import { useProjects } from '../hooks/use-projects';
-import { ProjectCard } from '../components/project-card';
+import { Link } from 'react-router-dom';
+import { useAuth } from '@/hooks/useAuth';
+import { useProjects } from '../hooks/useProjects';
+import { ProjectCard } from '../components/projectCard';
 
 export const ProjectsPage = () => {
+  const { user, logout } = useAuth();
   const { data: projects, isLoading, isError, error } = useProjects();
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-50 transition-colors duration-300">
       {/* Header section */}
       <header className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex justify-between items-center">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 bg-indigo-600 rounded-lg flex items-center justify-center shadow-md shadow-indigo-500/20">
               <span className="text-white font-bold text-lg">M</span>
@@ -22,10 +25,40 @@ export const ProjectsPage = () => {
               </p>
             </div>
           </div>
-          <nav className="flex space-x-4">
-            <span className="text-sm font-semibold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/30 px-3 py-1.5 rounded-lg">
+          <nav className="flex items-center space-x-3">
+            <Link
+              to="/projects"
+              className="text-sm font-semibold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/30 px-3 py-1.5 rounded-lg"
+            >
               Projetos
-            </span>
+            </Link>
+
+            {user ? (
+              <div className="flex items-center space-x-3 pl-3 border-l border-slate-200 dark:border-slate-800">
+                <div className="text-right hidden sm:block">
+                  <p className="text-xs font-semibold text-slate-800 dark:text-slate-200 leading-none">
+                    {user.name || user.email}
+                  </p>
+                  <span className="text-[10px] uppercase font-bold text-indigo-600 dark:text-indigo-400">
+                    {user.role}
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={logout}
+                  className="text-xs font-medium text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 bg-red-50 hover:bg-red-100 dark:bg-red-950/40 dark:hover:bg-red-950/70 px-2.5 py-1.5 rounded-lg transition-colors cursor-pointer"
+                >
+                  Sair
+                </button>
+              </div>
+            ) : (
+              <Link
+                to="/login"
+                className="text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 px-3.5 py-1.5 rounded-lg shadow-sm transition-all"
+              >
+                Entrar
+              </Link>
+            )}
           </nav>
         </div>
       </header>
