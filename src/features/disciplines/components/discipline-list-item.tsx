@@ -8,7 +8,7 @@ import { Tag } from '@/components/ui/tag';
 import { paths } from '@/routes/paths';
 import { cn } from '@/utils/cn';
 import { pluralize } from '@/utils/format';
-import { useArchiveDiscipline, useDuplicateDiscipline, useUpdateDiscipline } from '../hooks/use-disciplines';
+import { useArchiveDiscipline, useUpdateDiscipline } from '../hooks/use-disciplines';
 import type { Discipline } from '../types';
 import { disciplineDataLine } from '../utils/discipline-presentation';
 
@@ -16,9 +16,8 @@ export const DisciplineListItem = ({ discipline }: { discipline: Discipline }) =
   const navigate = useNavigate();
   const toast = useToast();
   const update = useUpdateDiscipline();
-  const duplicate = useDuplicateDiscipline();
   const archive = useArchiveDiscipline();
-  const compatible = discipline.paused ? 0 : discipline.compatibleDemands;
+  const compatible = discipline.compatibleDemands;
   const practices = [
     ...discipline.practice.confirmed.map((name) => ({ name, inferred: false })),
     ...discipline.practice.inferred.map(({ name }) => ({ name, inferred: true })),
@@ -96,10 +95,6 @@ export const DisciplineListItem = ({ discipline }: { discipline: Discipline }) =
         label={`Ações de ${discipline.name}`}
         items={[
           { label: 'Editar', onSelect: () => navigate(paths.discipline(discipline.id)) },
-          {
-            label: 'Duplicar para o próximo semestre',
-            onSelect: () => duplicate.mutate(discipline.id, { onSuccess: () => toast.show(`${discipline.name} duplicada para 2027.1 com a mesma ementa.`) }),
-          },
           { label: discipline.paused ? 'Retomar recebimento de demandas' : 'Pausar recebimento de demandas', onSelect: togglePause },
           {
             label: 'Arquivar',

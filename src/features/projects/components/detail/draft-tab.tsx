@@ -10,7 +10,7 @@ export const DraftTab = ({ proposalId }: { proposalId?: string }) => {
   const proposalQuery = useProposal(proposalId);
 
   if (!proposalId) {
-    return <EmptyState align="start" title="Sem rascunho na plataforma" description="Este projeto foi registrado no SIGAA antes de a plataforma gerar propostas." />;
+    return <EmptyState align="start" title="Sem proposta na plataforma" description="Este projeto foi registrado no SIGAA antes de a plataforma gerar propostas." />;
   }
 
   return (
@@ -23,7 +23,7 @@ export const DraftTab = ({ proposalId }: { proposalId?: string }) => {
               <p className="mt-0.5 text-[13px] leading-normal">
                 {proposal.registeredOn
                   ? `Você declarou o registro no SIGAA em ${proposal.registeredOn}. Editar aqui não altera o que já foi registrado lá.`
-                  : 'O registro no SIGAA ainda não foi declarado. Edite no rascunho antes de transpor.'}
+                  : 'O registro no SIGAA ainda não foi declarado. Revise a proposta antes de levar ao SIGAA.'}
               </p>
             </div>
             <Link to={paths.proposal(proposal.id)} className={buttonClassName({ variant: 'secondary' })}>

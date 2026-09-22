@@ -8,6 +8,7 @@ import { NumberStepper } from '@/components/ui/number-stepper';
 import { SectionBlock } from '@/components/ui/section-card';
 import { SelectMenu } from '@/components/ui/select-menu';
 import { ToggleChip } from '@/components/ui/toggle-chip';
+import { useLogout } from '@/features/auth/hooks/use-auth';
 import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard';
 import { usePageHeader } from '@/layouts/portal/page-header-context';
 import { pluralize } from '@/utils/format';
@@ -21,6 +22,7 @@ const MAX_PROJECTS_PER_SEMESTER = 8;
 
 const AccountForm = ({ account }: { account: Account }) => {
   const toast = useToast();
+  const logout = useLogout();
   const update = useUpdateAccount();
   const { copiedKey, copy } = useCopyToClipboard();
   const [name, setName] = useState(account.name);
@@ -34,9 +36,6 @@ const AccountForm = ({ account }: { account: Account }) => {
       <SectionBlock title="Identificação">
         <div className="mt-2 mb-6 flex items-center gap-4">
           <Avatar name={account.name} size="xl" strong />
-          <Button variant="outline-accent" size="sm" onClick={() => toast.show('Escolha uma imagem quadrada de pelo menos 200 por 200 pixels.')}>
-            Trocar foto
-          </Button>
         </div>
         <div className="grid grid-cols-[repeat(auto-fit,minmax(240px,1fr))] gap-6">
           <Field label="Nome" htmlFor="conta-nome">
@@ -120,7 +119,6 @@ const AccountForm = ({ account }: { account: Account }) => {
       <PrivacySettings
         privacy={account.privacy}
         onToggle={(setting) => update.mutate({ privacy: { ...account.privacy, [setting]: !account.privacy[setting] } })}
-        onShowPolicy={() => toast.show('Política de dados: o que a plataforma guarda e por quanto tempo.')}
       />
 
       <SectionBlock title="Sessão">
@@ -134,13 +132,8 @@ const AccountForm = ({ account }: { account: Account }) => {
             <dd className="text-[15px] text-n-800 tabular-nums">{account.lastAccess}</dd>
           </div>
         </dl>
-        <Button
-          variant="outline-muted"
-          size="sm"
-          className="mt-4"
-          onClick={() => toast.show('Sessões encerradas em todos os dispositivos. Esta sessão continua aberta.')}
-        >
-          Sair de todos os dispositivos
+        <Button variant="outline-muted" size="sm" className="mt-4" onClick={logout}>
+          Sair desta conta
         </Button>
       </SectionBlock>
     </div>

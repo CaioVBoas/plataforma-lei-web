@@ -25,11 +25,20 @@ export const useSaveProposal = () => {
   });
 };
 
+export const useMarkProposalReady = () => {
+  const invalidate = useInvalidateQueries();
+  return useMutation({
+    mutationFn: (payload: SaveProposalPayload) => proposalsApi.markProposalReady(payload),
+    onSuccess: () => invalidate([proposalKeys.all]),
+  });
+};
+
+/** Registrar cria o projeto em execução, então a lista de projetos e as disciplinas também mudam. */
 export const useRegisterProposal = (proposalId: string) => {
   const invalidate = useInvalidateQueries();
   return useMutation({
     mutationFn: (isoDate: string) => proposalsApi.registerProposal(proposalId, isoDate),
-    onSuccess: () => invalidate([proposalKeys.all]),
+    onSuccess: () => invalidate([proposalKeys.all, ['projects'], ['disciplines']]),
   });
 };
 

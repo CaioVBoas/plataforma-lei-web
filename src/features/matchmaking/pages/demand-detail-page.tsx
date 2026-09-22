@@ -21,7 +21,7 @@ import { ViabilityPill } from '../components/viability-pill';
 import { useDemandActions } from '../hooks/use-demand-actions';
 import { useDemandDetail } from '../hooks/use-demands';
 import type { DemandDetail } from '../types';
-import { DEMAND_ACTION, organizationLine, rankDisciplines } from '../utils/demand-presentation';
+import { DEMAND_ACTION, DEMAND_ACTION_HINT, organizationLine, rankDisciplines } from '../utils/demand-presentation';
 
 /** Parâmetro que abre a explicação já na disciplina indicada (vindo da tela da disciplina). */
 const EXPLAIN_PARAM = 'explicar';
@@ -35,14 +35,18 @@ const DemandDetailView = ({ demand }: { demand: DemandDetail }) => {
   const matches = rankDisciplines(demand, disciplines);
   const best = matches[0];
   const explainedDisciplineId = searchParams.get(EXPLAIN_PARAM);
-  const canTalk = demand.status === 'reserved-by-me' || demand.status === 'accepted';
+  const canTalk = demand.status === 'reserved-by-me' || demand.status === 'linked';
 
   const explain = (disciplineId: string | null) =>
     setSearchParams(disciplineId ? { [EXPLAIN_PARAM]: disciplineId } : {}, { replace: true });
 
   return (
     <div>
-      <BackLink to={paths.menu}>Voltar ao cardápio</BackLink>
+      {demand.status === 'linked' ? (
+        <BackLink to={paths.proposals}>Voltar para propostas</BackLink>
+      ) : (
+        <BackLink to={paths.menu}>Voltar ao cardápio</BackLink>
+      )}
 
       <div className="mx-auto max-w-[760px]">
         <div className="mt-6 mb-4 flex items-center gap-3">
@@ -74,8 +78,9 @@ const DemandDetailView = ({ demand }: { demand: DemandDetail }) => {
 
       <div className="fixed right-0 bottom-0 left-[248px] z-30 flex flex-wrap items-center justify-between gap-x-6 gap-y-3 border-t border-n-200 bg-n-0 px-8 py-3.5">
         <div className="flex min-w-0 flex-col gap-[3px] text-[13px] text-n-500">
-          <p>A reserva vale por 5 dias úteis.</p>
-          <p>Você decide depois de conversar com a organização, se precisar.</p>
+          {DEMAND_ACTION_HINT[demand.status].map((line) => (
+            <p key={line}>{line}</p>
+          ))}
         </div>
         <Button variant="primary" size="lg" disabled={isBusy} onClick={() => runPrimaryAction(demand)}>
           {DEMAND_ACTION[demand.status].label}

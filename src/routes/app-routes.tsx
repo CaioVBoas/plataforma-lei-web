@@ -41,7 +41,7 @@ export const AppRoutes = () => (
           <Route path={paths.reservations} element={<ReservationsPage />} />
 
           <Route path={paths.proposals} element={<ProposalsPage />} />
-          <Route path="/rascunhos/:proposalId" element={<ProposalEditorPage />} />
+          <Route path="/propostas/:proposalId" element={<ProposalEditorPage />} />
 
           <Route path="/projetos" element={<Navigate to={paths.runningProjects} replace />} />
           <Route path={paths.runningProjects} element={<ProjectsPage stage="running" />} />

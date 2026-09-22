@@ -31,6 +31,8 @@ interface SigaaHandoffProps {
   copiedSections: number[];
   registrationDate: string;
   registered: boolean;
+  /** Só proposta pronta pode ser registrada: a etapa 2 garante que nenhum campo obrigatório ficou vazio. */
+  canRegister: boolean;
   registering: boolean;
   onCopySection: (index: number) => void;
   onCopyAll: () => void;
@@ -46,6 +48,7 @@ export const SigaaHandoff = ({
   copiedSections,
   registrationDate,
   registered,
+  canRegister,
   registering,
   onCopySection,
   onCopyAll,
@@ -114,14 +117,18 @@ export const SigaaHandoff = ({
         />
         <Button
           variant={registered ? 'secondary' : 'primary'}
-          disabled={registered || registering}
+          disabled={registered || !canRegister || registering}
           onClick={onRegister}
           className={cn('rounded-lg font-semibold', registered && 'border-sucesso-borda bg-sucesso-bg disabled:text-n-700')}
         >
           {registered ? 'Registro confirmado' : 'Confirmar registro'}
         </Button>
       </div>
-      <p className="mt-2.5 max-w-[62ch] text-[13px] leading-normal text-n-500">A plataforma não consegue verificar o registro. Esta confirmação é sua.</p>
+      <p className="mt-2.5 max-w-[62ch] text-[13px] leading-normal text-n-500">
+        {!registered && !canRegister
+          ? 'Marque a proposta como pronta antes de declarar o registro.'
+          : 'A plataforma não consegue verificar o registro. Esta confirmação é sua.'}
+      </p>
     </div>
   </section>
 );

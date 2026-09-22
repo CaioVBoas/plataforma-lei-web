@@ -10,11 +10,17 @@ import { SegmentedControl } from '@/components/ui/segmented-control';
 import { ToggleChip } from '@/components/ui/toggle-chip';
 import { onlyDigits, pluralize } from '@/utils/format';
 import { useCreateDiscipline, useDisciplineCatalog } from '../hooks/use-disciplines';
+import type { Discipline } from '../types';
 import { DISCIPLINE_LEVELS, NEW_DISCIPLINE_DEFAULTS, newDisciplineSchema, type NewDisciplineFormValues } from '../schemas/new-discipline-schema';
 
 const MIN_SEARCH_LENGTH = 2;
 
-export const NewDisciplineModal = ({ onClose }: { onClose: () => void }) => {
+interface NewDisciplineModalProps {
+  onClose: () => void;
+  onCreated: (discipline: Discipline) => void;
+}
+
+export const NewDisciplineModal = ({ onClose, onCreated }: NewDisciplineModalProps) => {
   const toast = useToast();
   const createDiscipline = useCreateDiscipline();
   const { data: catalog = [] } = useDisciplineCatalog();
@@ -41,8 +47,8 @@ export const NewDisciplineModal = ({ onClose }: { onClose: () => void }) => {
     createDiscipline.mutate(
       { ...values, students: Number(values.students) || 0 },
       {
-        onSuccess: () => {
-          onClose();
+        onSuccess: (discipline) => {
+          onCreated(discipline);
           toast.show(values.acceptsDemands ? 'Disciplina cadastrada. Ela já entra no cálculo do cardápio.' : 'Disciplina cadastrada sem receber demandas neste semestre.');
         },
       },

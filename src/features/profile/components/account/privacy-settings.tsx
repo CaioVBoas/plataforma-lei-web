@@ -12,10 +12,9 @@ const PRIVACY_COPY: Record<PrivacySetting, { title: string; description: string 
 interface PrivacySettingsProps {
   privacy: Record<PrivacySetting, boolean>;
   onToggle: (setting: PrivacySetting) => void;
-  onShowPolicy: () => void;
 }
 
-export const PrivacySettings = ({ privacy, onToggle, onShowPolicy }: PrivacySettingsProps) => (
+export const PrivacySettings = ({ privacy, onToggle }: PrivacySettingsProps) => (
   <SectionBlock title="Privacidade">
     <ul>
       {(Object.keys(PRIVACY_COPY) as PrivacySetting[]).map((setting) => (
@@ -30,8 +29,5 @@ export const PrivacySettings = ({ privacy, onToggle, onShowPolicy }: PrivacySett
         </li>
       ))}
     </ul>
-    <button type="button" onClick={onShowPolicy} className="mt-4 h-[34px] rounded-full border border-n-300 bg-n-0 px-[13px] text-[13px] font-medium text-azul-500 hover:bg-n-50">
-      Política de dados da plataforma
-    </button>
   </SectionBlock>
 );

@@ -1,26 +1,29 @@
+import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/components/feedback/toast-context';
+import { paths } from '@/routes/paths';
 import type { Project } from '../types';
 import { nextActionOf } from '../utils/project-health';
-import { useLogCurrentWeek, usePrepareReport, usePublishOnShowcase } from './use-projects';
+import { usePrepareReport, usePublishOnShowcase } from './use-projects';
 
-const SUCCESS_MESSAGE = {
-  'log-week': 'Andamento registrado nesta semana. O parceiro é notificado.',
-  'prepare-report': 'Relatório preparado. A certificação das horas segue a partir dele.',
-  publish: 'Caso publicado na vitrine de resultados.',
-} as const;
-
+/** Mesma ação, mesmo destino: "Registrar andamento" sempre abre o formulário na aba Andamento. */
 export const useProjectNextAction = () => {
+  const navigate = useNavigate();
   const toast = useToast();
-  const logWeek = useLogCurrentWeek();
   const prepareReport = usePrepareReport();
   const publish = usePublishOnShowcase();
 
   const run = (project: Project) => {
-    const action = nextActionOf(project);
-    if (!action) return;
-    const mutation = { 'log-week': logWeek, 'prepare-report': prepareReport, publish }[action];
-    mutation.mutate(project.id, { onSuccess: () => toast.show(SUCCESS_MESSAGE[action]) });
+    switch (nextActionOf(project)) {
+      case 'log-week':
+        navigate(paths.project(project.id, 'andamento'));
+        return;
+      case 'prepare-report':
+        prepareReport.mutate(project.id, { onSuccess: () => toast.show('Relatório preparado. A certificação das horas segue a partir dele.') });
+        return;
+      case 'publish':
+        publish.mutate(project.id, { onSuccess: () => toast.show('Caso publicado na vitrine de resultados.') });
+    }
   };
 
-  return { run, isBusy: logWeek.isPending || prepareReport.isPending || publish.isPending };
+  return { run, isBusy: prepareReport.isPending || publish.isPending };
 };

@@ -51,14 +51,16 @@ src/
 | --- | --- |
 | `auth` | Entrada: escolha de portal, login e escolha de área |
 | `matchmaking` | Cardápio de demandas, detalhe, explicação do casamento, leitura automática e vínculo à disciplina |
-| `applications` | Minhas propostas (reservas ativas, liberadas e expiradas) |
-| `proposals` | Rascunhos de projeto e editor da proposta para o SIGAA |
-| `projects` | Meus projetos (em execução e concluídos) e detalhe com equipes, andamento, horas e rascunho |
+| `applications` | Minhas reservas (ativas, liberadas e expiradas) |
+| `proposals` | Propostas e editor da proposta (revisar, marcar como pronta e registrar no SIGAA) |
+| `projects` | Meus projetos (em execução e concluídos) e detalhe com equipes, andamento, horas e proposta |
 | `disciplines` | Minhas disciplinas, cadastro e detalhe (visão, prática, projetos e demandas compatíveis) |
 | `organizations` | Organizações parceiras e detalhe |
 | `notifications` | Popover do cabeçalho e central de notificações com preferências |
 | `profile` | Onboarding de prática e Meu perfil (dados, prática e histórico) |
 | `semester` | Contexto do semestre usado pela faixa do portal |
+
+**Antes de mudar qualquer fluxo, leia [`docs/fluxos.md`](docs/fluxos.md).** Ele define o ciclo de vida de demanda, reserva, proposta e projeto, as invariantes entre as telas e as regras de design aplicadas.
 
 ### Regras que valem para o projeto todo
 

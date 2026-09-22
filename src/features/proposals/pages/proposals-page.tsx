@@ -18,10 +18,10 @@ import { isLateReady, listStatusOf } from '../utils/proposal-presentation';
 type StatusFilter = 'all' | ProposalStatus;
 
 const STATUS_FILTERS: { value: StatusFilter; label: string }[] = [
-  { value: 'all', label: 'Todos' },
+  { value: 'all', label: 'Todas' },
   { value: 'draft', label: 'Em edição' },
-  { value: 'ready', label: 'Prontos' },
-  { value: 'registered', label: 'Registrados' },
+  { value: 'ready', label: 'Prontas' },
+  { value: 'registered', label: 'Registradas' },
 ];
 
 const ALL_DISCIPLINES = 'all';
@@ -47,7 +47,7 @@ const ProposalsList = ({ proposals }: { proposals: Proposal[] }) => {
       <div className="mb-12 flex flex-wrap items-center justify-between gap-x-4 gap-y-3">
         <div className="flex flex-wrap items-center gap-3">
           <UnderlineTabs
-            label="Situação do rascunho"
+            label="Situação da proposta"
             value={status}
             onChange={setStatus}
             items={STATUS_FILTERS.map((filter) => ({ ...filter, count: byStatus(filter.value).length }))}
@@ -61,13 +61,13 @@ const ProposalsList = ({ proposals }: { proposals: Proposal[] }) => {
             options={[{ value: ALL_DISCIPLINES, label: 'Todas as disciplinas' }, ...disciplineNames.map((name) => ({ value: name, label: name }))]}
           />
         </div>
-        <span className="text-[13px] text-n-600 tabular-nums">{pluralize(visible.length, 'rascunho', 'rascunhos')}</span>
+        <span className="text-[13px] text-n-600 tabular-nums">{pluralize(visible.length, 'proposta', 'propostas')}</span>
       </div>
 
       {late.length > 0 && (
         <div className="mb-5 flex flex-wrap items-baseline gap-2">
           <span className="text-sm leading-normal font-medium text-n-800">
-            {late.length === 1 ? '1 rascunho pronto aguarda' : `${late.length} rascunhos prontos aguardam`} registro no SIGAA há mais de uma semana.
+            {late.length === 1 ? '1 proposta pronta aguarda' : `${late.length} propostas prontas aguardam`} registro no SIGAA há mais de uma semana.
           </span>
           <Button variant="outline-accent" size="sm" onClick={showLate}>
             ver quais
@@ -94,7 +94,7 @@ const ProposalsList = ({ proposals }: { proposals: Proposal[] }) => {
 };
 
 export const ProposalsPage = () => {
-  usePageHeader('Rascunhos de projeto', 'Textos prontos para você registrar no SIGAA');
+  usePageHeader('Propostas', 'Textos prontos para você revisar e registrar no SIGAA');
   const proposalsQuery = useProposals();
   return <QueryView query={proposalsQuery}>{(proposals) => <ProposalsList proposals={proposals} />}</QueryView>;
 };

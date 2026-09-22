@@ -1,22 +1,36 @@
-import type { Discipline, DisciplineUpdate, NewDisciplinePayload } from '@/features/disciplines/types';
+import type { Discipline, DisciplineRecord, DisciplineUpdate, NewDisciplinePayload } from '@/features/disciplines/types';
 import type { PracticeChange } from '@/types/practice';
 import { db, findOrThrow } from '../db';
 import { DISCIPLINE_CATALOG } from '../seed/disciplines';
 import { applyPracticeChange } from './practice-rules';
 
-const NEXT_SEMESTER = '2027.1';
+/** Abaixo disso a demanda não é recomendada (faixas do termômetro no Design System). */
+const MIN_RECOMMENDED_MATCH = 50;
 
-const findDiscipline = (id: string) => findOrThrow(db.disciplines, id, 'Disciplina');
+const findRecord = (id: string) => findOrThrow(db.disciplines, id, 'Disciplina');
 
-export const listDisciplines = (): Discipline[] => db.disciplines;
+/** Contadores derivados das demandas e projetos, para nunca divergirem das outras telas. */
+const withCounters = (discipline: DisciplineRecord): Discipline => ({
+  ...discipline,
+  linkedProjects: db.projects.filter((project) => project.stage === 'running' && project.disciplineName === discipline.name).length,
+  compatibleDemands: discipline.paused
+    ? 0
+    : db.demands.filter(
+        (demand) =>
+          (demand.status === 'available' || demand.status === 'reserved-by-me') &&
+          (demand.matchByDiscipline[discipline.id] ?? 0) >= MIN_RECOMMENDED_MATCH,
+      ).length,
+});
 
-export const getDiscipline = (id: string): Discipline => findDiscipline(id);
+export const listDisciplines = (): Discipline[] => db.disciplines.map(withCounters);
+
+export const getDiscipline = (id: string): Discipline => withCounters(findRecord(id));
 
 export const searchCatalog = () => DISCIPLINE_CATALOG;
 
 export const createDiscipline = (payload: NewDisciplinePayload): Discipline => {
   if (!payload.name.trim()) throw new Error('Escolha a disciplina no catálogo ou informe o nome.');
-  const discipline: Discipline = {
+  const discipline: DisciplineRecord = {
     id: `disc-${db.disciplines.length + 1}`,
     name: payload.name.trim(),
     code: payload.code.trim() || 'IF10__',
@@ -27,32 +41,25 @@ export const createDiscipline = (payload: NewDisciplinePayload): Discipline => {
     executionStart: payload.executionStart.slice(0, 5),
     executionEnd: payload.executionEnd.slice(0, 5),
     level: payload.level,
-    linkedProjects: 0,
     projectCapacity: payload.projectCapacity,
-    compatibleDemands: 0,
     syllabus: payload.syllabus,
     practice: { confirmed: [], inferred: [], excluded: [] },
     paused: !payload.acceptsDemands,
   };
   db.disciplines.push(discipline);
-  return discipline;
+  return withCounters(discipline);
 };
 
 export const updateDiscipline = (id: string, update: DisciplineUpdate) => {
-  Object.assign(findDiscipline(id), update);
+  Object.assign(findRecord(id), update);
 };
 
 export const changeDisciplinePractice = (id: string, change: PracticeChange) => {
-  const discipline = findDiscipline(id);
+  const discipline = findRecord(id);
   discipline.practice = applyPracticeChange(discipline.practice, change);
 };
 
-export const duplicateDiscipline = (id: string) => {
-  const source = findDiscipline(id);
-  db.disciplines.push({ ...structuredClone(source), id: `${id}-${NEXT_SEMESTER}`, semester: NEXT_SEMESTER, linkedProjects: 0 });
-};
-
 export const archiveDiscipline = (id: string) => {
-  findDiscipline(id);
+  findRecord(id);
   db.disciplines = db.disciplines.filter((discipline) => discipline.id !== id);
 };

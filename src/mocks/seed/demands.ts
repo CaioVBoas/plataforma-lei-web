@@ -100,6 +100,51 @@ export const DEMANDS: Demand[] = [
     competencies: competencies(['Visualização de dados', 'Ciência de dados', 'Interação humano computador']),
     matchByDiscipline: withSecondDiscipline(63),
   },
+  // Demandas já vinculadas pelo docente: saíram do cardápio e viraram os projetos em execução.
+  {
+    id: 'mesa',
+    organizationId: 'mesa-brasil-recife',
+    organizationName: 'Mesa Brasil Recife',
+    organizationType: 'Organização social',
+    problem: 'Instituições parceiras não sabem o que há no estoque de doações antes de ir buscar',
+    affectedPublic: '60 instituições atendidas e a equipe de logística',
+    description:
+      'O estoque de doações é anotado em caderno no centro de distribuição. As instituições só descobrem o que há disponível quando chegam para retirar, e parte dos alimentos perecíveis vence antes de ser distribuída.',
+    viability: 'fits',
+    viabilityNote: 'Escopo compatível com quatro meses. Continuidade do painel de doações entregue em 2024.1.',
+    followUpCadence: 'Quinzenal',
+    publishedDaysAgo: 40,
+    hasNoInterested: false,
+    status: 'linked',
+    competencies: [
+      { name: 'Banco de dados', confirmed: true },
+      { name: 'Desenvolvimento web', confirmed: true },
+      { name: 'Visualização de dados', confirmed: false },
+    ],
+    matchByDiscipline: withSecondDiscipline(81),
+  },
+  {
+    id: 'casa',
+    organizationId: 'casa-de-passagem',
+    organizationName: 'Casa de Passagem',
+    organizationType: 'Organização social',
+    problem: 'Histórico de atendimento das jovens fica em fichas de papel e se perde quando a equipe muda',
+    affectedPublic: 'meninas e jovens acompanhadas e a equipe pedagógica',
+    description:
+      'Cada jovem tem uma ficha de papel com o histórico de acompanhamento. Quando uma educadora sai, a próxima recomeça do zero. A equipe quer um registro contínuo, com sigilo, que qualquer pessoa autorizada consiga consultar.',
+    viability: 'fits',
+    viabilityNote: 'Escopo compatível com quatro meses, com o registro de novos atendimentos como primeira entrega.',
+    followUpCadence: 'Quinzenal',
+    publishedDaysAgo: 35,
+    hasNoInterested: false,
+    status: 'linked',
+    competencies: [
+      { name: 'Levantamento de requisitos', confirmed: true },
+      { name: 'Banco de dados', confirmed: true },
+      { name: 'LGPD', confirmed: false },
+    ],
+    matchByDiscipline: { ds: 58, es1: 72 },
+  },
 ];
 
 interface DemandContext {
@@ -121,6 +166,34 @@ const lei = (date: string, text: string): ConversationMessage => ({
 });
 
 export const DEMAND_CONTEXT: Record<string, DemandContext> = {
+  mesa: {
+    where: 'Centro de distribuição em Santo Amaro, Recife',
+    since: 'Estoque anotado em caderno desde a fundação da rede',
+    focalName: 'Cláudio Rangel',
+    focalRole: 'Coordenador de logística',
+    channel: 'E-mail e telefone',
+    references: [
+      { name: 'Sahana Eden', description: 'Gestão de estoque para organizações humanitárias.', url: 'https://sahanafoundation.org' },
+      { name: 'Metabase', description: 'Painéis sobre base existente, sem desenvolvimento pesado.', url: 'https://www.metabase.com' },
+    ],
+    conversation: [
+      { author: 'Cláudio Rangel', role: 'Mesa Brasil Recife', date: '28/07', mine: false, text: 'O painel de 2024 ainda é usado. Agora precisamos que as instituições vejam o estoque antes de vir.' },
+      { author: 'Você', role: '', date: '29/07', mine: true, text: 'Combinado. A turma começa em 03/08 e a primeira reunião pode ser no centro de distribuição.' },
+    ],
+  },
+  casa: {
+    where: 'Sede da Casa de Passagem, Boa Vista',
+    since: 'Fichas de papel desde 2019',
+    focalName: 'Sônia Maranhão',
+    focalRole: 'Coordenadora pedagógica',
+    channel: 'E-mail',
+    references: [
+      { name: 'OpenMRS', description: 'Registro de atendimento com controle de acesso por perfil.', url: 'https://openmrs.org' },
+    ],
+    conversation: [
+      { author: 'Sônia Maranhão', role: 'Casa de Passagem', date: '25/07', mine: false, text: 'Precisamos combinar antes as regras de sigilo com a turma. Nenhum nome pode sair daqui.' },
+    ],
+  },
   hc: {
     where: 'Central de regulação do HC e 42 municípios do interior',
     since: 'Relatado pela equipe desde 2023, sem solução até hoje',
@@ -190,6 +263,20 @@ export const DEMAND_CONTEXT: Record<string, DemandContext> = {
 
 /** Explicação do casamento com a disciplina principal (Desenvolvimento de Software). */
 export const MATCH_BASE: Record<string, { matches: MatchLine[]; gaps: GapLine[] }> = {
+  mesa: {
+    matches: [
+      { competency: 'Banco de dados', practice: 'Modelagem relacional', source: 'da ementa que você cadastrou' },
+      { competency: 'Desenvolvimento web', practice: 'Painel de doações entregue em 2024.1', source: 'de projeto que você registrou aqui' },
+    ],
+    gaps: [{ competency: 'Visualização de dados', reason: 'Sem par na ementa nem no seu perfil de prática.' }],
+  },
+  casa: {
+    matches: [
+      { competency: 'Levantamento de requisitos', practice: 'Requisitos com usuário real', source: 'da sua prática declarada' },
+      { competency: 'Banco de dados', practice: 'Modelagem relacional', source: 'da ementa que você cadastrou' },
+    ],
+    gaps: [{ competency: 'LGPD', reason: 'Dado sensível de menores exige apoio de quem conduz privacidade.' }],
+  },
   hc: {
     matches: [
       { competency: 'Engenharia de software', practice: 'Projetos em equipe com entrega ao fim do semestre', source: 'da sua prática declarada' },
@@ -232,6 +319,26 @@ export const MATCH_BASE: Record<string, { matches: MatchLine[]; gaps: GapLine[] 
 type ReadingSeed = Omit<CompetencyReading, 'manualAssociations'>;
 
 export const READINGS: Record<string, ReadingSeed> = {
+  mesa: {
+    segments: [
+      { text: 'O estoque de doações é ' },
+      { text: 'anotado em caderno no centro de distribuição', competency: 'Banco de dados', confidence: 'alta' },
+      { text: '. As instituições ' },
+      { text: 'só descobrem o que há disponível quando chegam', competency: 'Visualização de dados', confidence: 'média' },
+      { text: '.' },
+    ],
+    ignoredExcerpts: ['Parte dos alimentos perecíveis vence antes de ser distribuída.'],
+  },
+  casa: {
+    segments: [
+      { text: 'Cada jovem tem uma ' },
+      { text: 'ficha de papel com o histórico de acompanhamento', competency: 'Banco de dados', confidence: 'alta' },
+      { text: '. A equipe quer um registro contínuo, ' },
+      { text: 'com sigilo', competency: 'LGPD', confidence: 'média' },
+      { text: '.' },
+    ],
+    ignoredExcerpts: ['Quando uma educadora sai, a próxima recomeça do zero.'],
+  },
   hc: {
     segments: [
       { text: 'A regulação recebe pedidos de consulta de 42 municípios e distribui por ordem de chegada, ' },

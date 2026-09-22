@@ -17,6 +17,4 @@ export const updateDiscipline = (disciplineId: string, update: DisciplineUpdate)
 export const changeDisciplinePractice = (disciplineId: string, change: PracticeChange) =>
   mockRequest(() => server.changeDisciplinePractice(disciplineId, change));
 
-export const duplicateDiscipline = (disciplineId: string) => mockRequest(() => server.duplicateDiscipline(disciplineId));
-
 export const archiveDiscipline = (disciplineId: string) => mockRequest(() => server.archiveDiscipline(disciplineId));

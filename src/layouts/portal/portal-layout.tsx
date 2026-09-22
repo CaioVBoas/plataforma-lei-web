@@ -5,9 +5,8 @@ import { NotificationsPopover } from '@/features/notifications/components/notifi
 import { useSemesterContext } from '@/features/semester/hooks/use-semester-context';
 import { paths } from '@/routes/paths';
 import { AccountMenu } from './account-menu';
-import { ContextStrip, PastSemesterBanner } from './context-strip';
+import { ContextStrip } from './context-strip';
 import { PageHeaderContext, type PageHeader } from './page-header-context';
-import { SemesterMenu } from './semester-menu';
 import { Sidebar } from './sidebar';
 
 /** Casco comum a todas as telas do portal: sidebar, cabeçalho e faixa de contexto do semestre. */
@@ -15,10 +14,7 @@ export const PortalLayout = () => {
   const { pathname } = useLocation();
   const { data: semesterContext } = useSemesterContext();
   const [header, setHeader] = useState<PageHeader>({ title: '', subtitle: '' });
-  const [selectedSemester, setSelectedSemester] = useState<string | null>(null);
 
-  const currentSemester = semesterContext?.current ?? '';
-  const viewedSemester = selectedSemester ?? currentSemester;
   // Projeto concluído não tem prazo de vinculação a lembrar.
   const showContextStrip = pathname !== paths.completedProjects;
 
@@ -34,22 +30,11 @@ export const PortalLayout = () => {
               <p className="mt-0.5 text-[13px] leading-snug text-n-500">{header.subtitle}</p>
             </div>
             <div className="flex shrink-0 items-center gap-2">
-              {semesterContext && (
-                <SemesterMenu
-                  semesters={semesterContext.semesters}
-                  current={currentSemester}
-                  selected={viewedSemester}
-                  onSelect={setSelectedSemester}
-                />
-              )}
               <NotificationsPopover />
               <AccountMenu />
             </div>
           </header>
 
-          {viewedSemester !== currentSemester && (
-            <PastSemesterBanner semester={viewedSemester} current={currentSemester} onBack={() => setSelectedSemester(null)} />
-          )}
           {semesterContext && showContextStrip && <ContextStrip context={semesterContext} />}
 
           <main className="flex-1 bg-n-0 px-8 pt-10 pb-[72px]">

@@ -18,8 +18,17 @@ interface DemandAction {
 export const DEMAND_ACTION: Record<DemandStatus, DemandAction> = {
   available: { label: 'Tenho interesse', kind: 'reserve' },
   'reserved-by-me': { label: 'Continuar', kind: 'link' },
-  'reserved-by-other': { label: 'Tenho interesse', kind: 'join-queue' },
-  accepted: { label: 'Abrir proposta', kind: 'open-proposal' },
+  // Rótulo diferente de "Tenho interesse": aqui o docente entra na fila, não reserva.
+  'reserved-by-other': { label: 'Avise-me se liberar', kind: 'join-queue' },
+  linked: { label: 'Abrir proposta', kind: 'open-proposal' },
+};
+
+/** Texto de apoio ao lado da ação principal no detalhe da demanda. */
+export const DEMAND_ACTION_HINT: Record<DemandStatus, string[]> = {
+  available: ['A reserva vale por 5 dias úteis.', 'Você decide depois de conversar com a organização, se precisar.'],
+  'reserved-by-me': ['Reservada para você.', 'Vincular a uma disciplina gera a proposta e encerra a reserva.'],
+  'reserved-by-other': ['Outro docente está decidindo sobre esta demanda.', 'Se ele liberar, você é avisado primeiro.'],
+  linked: ['Vinculada a uma disciplina sua.', 'A proposta está em Propostas, pronta para revisar e registrar.'],
 };
 
 /** Faixas semânticas do termômetro; abaixo de 50% a demanda não é recomendada. */

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { QueryView } from '@/components/feedback/query-states';
 import { useToast } from '@/components/feedback/toast-context';
 import { Button } from '@/components/ui/button';
@@ -10,11 +10,12 @@ import { usePageHeader } from '@/layouts/portal/page-header-context';
 import { paths } from '@/routes/paths';
 import { cn } from '@/utils/cn';
 import { downloadFile } from '@/utils/download-file';
+import { JourneySteps } from '../components/journey-steps';
 import { SectionEditor } from '../components/section-editor';
 import { SigaaHandoff } from '../components/sigaa-handoff';
 import { WorkloadTable } from '../components/workload-table';
-import { useProposal, useRegisterProposal, useSaveProposal } from '../hooks/use-proposals';
-import type { Proposal } from '../types';
+import { useMarkProposalReady, useProposal, useRegisterProposal, useSaveProposal } from '../hooks/use-proposals';
+import type { Proposal, ProposalStatus } from '../types';
 import { STATUS_LABEL, STATUS_TEXT_CLASS, listStatusOf, sectionsAsText } from '../utils/proposal-presentation';
 
 const MetaItem = ({ label, value }: { label: string; value: string }) => (
@@ -24,13 +25,18 @@ const MetaItem = ({ label, value }: { label: string; value: string }) => (
   </div>
 );
 
+/** Em edição = etapa 2 (revisar); pronta = etapa 3 (registrar); registrada = jornada concluída. */
+const JOURNEY_STEP: Record<ProposalStatus, number> = { draft: 2, ready: 3, registered: 4 };
+
 const ProposalEditor = ({ proposal }: { proposal: Proposal }) => {
+  const navigate = useNavigate();
   const toast = useToast();
   const save = useSaveProposal();
+  const markReady = useMarkProposalReady();
   const register = useRegisterProposal(proposal.id);
   const { copiedKey, copy } = useCopyToClipboard<number | 'all'>();
 
-  // Edição local: o texto só vai ao servidor em "Salvar rascunho", como num editor de documento.
+  // Edição local: o texto só vai ao servidor ao salvar ou marcar como pronta, como num editor de documento.
   const [sections, setSections] = useState(proposal.sections);
   const [workload, setWorkload] = useState(proposal.workload);
   const [copiedSections, setCopiedSections] = useState<number[]>([]);
@@ -63,17 +69,31 @@ const ProposalEditor = ({ proposal }: { proposal: Proposal }) => {
   };
 
   const saveDraft = () =>
-    save.mutate({ id: proposal.id, sections, workload }, { onSuccess: () => toast.show('Rascunho salvo em Propostas.') });
+    save.mutate({ id: proposal.id, sections, workload }, { onSuccess: () => toast.show('Proposta salva.') });
+
+  const markAsReady = () =>
+    markReady.mutate(
+      { id: proposal.id, sections, workload },
+      {
+        onSuccess: () => toast.show('Proposta pronta. Agora copie as seções para o SIGAA e declare a data do registro.'),
+        onError: (error) => toast.show(error.message),
+      },
+    );
 
   const confirmRegistration = () =>
     register.mutate(registrationDate, {
-      onSuccess: () => toast.show('Situação alterada para Registrada. A Coordenação vê a data que você informou.'),
+      onSuccess: (projectId) =>
+        toast.show('Proposta registrada. O projeto já aparece em Meus projetos.', {
+          label: 'Ver projeto',
+          onClick: () => navigate(paths.project(projectId)),
+        }),
       onError: (error) => toast.show(error.message),
     });
 
   return (
     <div>
-      <div className="mb-12 flex flex-wrap items-center justify-between gap-x-5 gap-y-4 rounded-xl px-5 py-4">
+      <JourneySteps current={JOURNEY_STEP[proposal.status]} />
+      <div className="mt-6 mb-12 flex flex-wrap items-center justify-between gap-x-5 gap-y-4 rounded-xl py-4">
         <div className="grid min-w-0 flex-1 grid-cols-[repeat(auto-fit,minmax(160px,1fr))] gap-x-7 gap-y-5">
           <MetaItem label="Demanda de origem" value={proposal.partnerName} />
           <MetaItem label="Disciplina vinculada" value={proposal.disciplineName} />
@@ -110,6 +130,7 @@ const ProposalEditor = ({ proposal }: { proposal: Proposal }) => {
           copiedSections={copiedSections}
           registrationDate={registrationDate}
           registered={registered}
+          canRegister={proposal.status === 'ready'}
           registering={register.isPending}
           onCopySection={copySection}
           onCopyAll={copyAll}
@@ -121,11 +142,19 @@ const ProposalEditor = ({ proposal }: { proposal: Proposal }) => {
 
         <div className="flex flex-wrap items-center justify-between gap-4 border-t border-n-200 pt-8">
           <Button variant="outline-muted" size="sm" disabled={save.isPending} onClick={saveDraft}>
-            Salvar rascunho
+            {registered ? 'Salvar alterações' : 'Salvar rascunho'}
           </Button>
-          <Button variant="primary" size="lg" disabled={registered || register.isPending} onClick={confirmRegistration}>
-            Marcar como registrada no SIGAA
-          </Button>
+          {/* Uma ação principal por etapa: marcar como pronta, depois registrar (na seção acima), depois acompanhar. */}
+          {proposal.status === 'draft' && (
+            <Button variant="primary" size="lg" disabled={markReady.isPending} onClick={markAsReady}>
+              Marcar como pronta
+            </Button>
+          )}
+          {registered && proposal.projectId && (
+            <Link to={paths.project(proposal.projectId)} className={buttonClassName({ variant: 'primary', size: 'lg' })}>
+              Ver projeto em execução
+            </Link>
+          )}
         </div>
       </div>
     </div>
@@ -136,13 +165,10 @@ export const ProposalEditorPage = () => {
   const { proposalId = '' } = useParams();
   const proposalQuery = useProposal(proposalId);
   const proposal = proposalQuery.data;
-  usePageHeader(
-    'Rascunho da proposta',
-    proposal ? `Gerado a partir da demanda do ${proposal.partnerName} e da disciplina ${proposal.disciplineName}` : '',
-  );
+  usePageHeader('Proposta', proposal ? `${proposal.partnerName} · ${proposal.disciplineName}` : '');
 
   return (
-    <QueryView query={proposalQuery} loadingLabel="Carregando o rascunho">
+    <QueryView query={proposalQuery} loadingLabel="Carregando a proposta">
       {(loaded) => <ProposalEditor key={loaded.id} proposal={loaded} />}
     </QueryView>
   );

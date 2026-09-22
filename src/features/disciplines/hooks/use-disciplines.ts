@@ -42,6 +42,4 @@ export const useUpdateDiscipline = () =>
 export const useChangeDisciplinePractice = (disciplineId: string) =>
   useDisciplineMutation((change: PracticeChange) => disciplinesApi.changeDisciplinePractice(disciplineId, change));
 
-export const useDuplicateDiscipline = () => useDisciplineMutation(disciplinesApi.duplicateDiscipline);
-
 export const useArchiveDiscipline = () => useDisciplineMutation(disciplinesApi.archiveDiscipline);

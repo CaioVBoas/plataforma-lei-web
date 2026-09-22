@@ -44,5 +44,6 @@ export const completeOnboarding = (answers: OnboardingAnswers) => {
     if (!db.practice.confirmed.includes(name)) db.practice.confirmed.push(name);
   });
   db.practice.themes = { ...db.practice.themes, ...answers.themes };
+  db.account.onboardingCompleted = true;
   recordCorrection('Respondeu o onboarding de prática docente');
 };

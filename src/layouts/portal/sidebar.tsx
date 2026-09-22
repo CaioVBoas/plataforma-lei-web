@@ -13,6 +13,7 @@ import {
   MenuListIcon,
 } from '@/components/ui/icons';
 import { useDemands } from '@/features/matchmaking/hooks/use-demands';
+import { useProposals } from '@/features/proposals/hooks/use-proposals';
 import { paths } from '@/routes/paths';
 import { cn } from '@/utils/cn';
 import { BrandMark } from '@/components/ui/brand-mark';
@@ -64,8 +65,12 @@ export const Sidebar = () => {
   const [projectsGroupOverride, setProjectsGroupOverride] = useState<boolean | null>(null);
   const projectsGroupOpen = projectsGroupOverride ?? inProjects;
 
-  const menuCount = demands.filter((demand) => demand.status === 'available' || demand.status === 'reserved-by-other').length;
+  const { data: proposals = [] } = useProposals();
+
+  const menuCount = demands.filter((demand) => demand.status === 'available').length;
   const reservationCount = demands.filter((demand) => demand.status === 'reserved-by-me').length;
+  // Propostas que ainda pedem trabalho do docente: as registradas já viraram projeto.
+  const pendingProposals = proposals.filter((proposal) => !proposal.archived && proposal.status !== 'registered').length;
 
   const toggleProjectsGroup = () => {
     if (projectsGroupOpen) {
@@ -94,9 +99,16 @@ export const Sidebar = () => {
         <NavItem
           to={paths.reservations}
           icon={<BookmarkIcon size={18} />}
-          label="Minhas propostas"
+          label="Minhas reservas"
           count={reservationCount}
           active={pathname === paths.reservations || isVinculate(pathname)}
+        />
+        <NavItem
+          to={paths.proposals}
+          icon={<DocumentIcon size={18} />}
+          label="Propostas"
+          count={pendingProposals}
+          active={pathname.startsWith(paths.proposals)}
         />
 
         <button type="button" aria-expanded={projectsGroupOpen} onClick={toggleProjectsGroup} className={cn(ITEM_CLASSES, inProjects ? 'font-bold text-n-800' : 'text-n-700')}>
@@ -114,7 +126,6 @@ export const Sidebar = () => {
 
         <NavItem to={paths.disciplines} icon={<BookIcon size={18} />} label="Minhas disciplinas" active={pathname.startsWith(paths.disciplines)} />
         <NavItem to={paths.organizations} icon={<BuildingIcon size={18} />} label="Organizações" active={pathname.startsWith(paths.organizations)} />
-        <NavItem to={paths.proposals} icon={<DocumentIcon size={18} />} label="Rascunhos de projeto" active={pathname.startsWith(paths.proposals)} />
       </nav>
 
       <div className="mt-auto flex flex-col gap-1 pt-5">

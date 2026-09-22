@@ -8,6 +8,7 @@ import { SearchIcon } from '@/components/ui/icons';
 import { SelectMenu } from '@/components/ui/select-menu';
 import { ToggleChip } from '@/components/ui/toggle-chip';
 import { useCurrentDisciplines } from '@/features/disciplines/hooks/use-disciplines';
+import { OnboardingInvite } from '@/features/profile/components/onboarding-invite';
 import { usePageHeader } from '@/layouts/portal/page-header-context';
 import { pluralize } from '@/utils/format';
 import { DemandCard } from '../components/demand-card';
@@ -113,5 +114,13 @@ const DemandMenu = ({ demands }: { demands: Demand[] }) => {
 export const DemandMenuPage = () => {
   usePageHeader('Cardápio de demandas', 'Problemas reais de parceiros que combinam com o que você ensina');
   const demandsQuery = useDemands();
-  return <QueryView query={demandsQuery} loadingLabel="Carregando o cardápio">{(demands) => <DemandMenu demands={demands} />}</QueryView>;
+  return (
+    <>
+      <OnboardingInvite />
+      <QueryView query={demandsQuery} loadingLabel="Carregando o cardápio">
+        {/* Demanda vinculada já virou proposta: sai do cardápio. */}
+        {(demands) => <DemandMenu demands={demands.filter((demand) => demand.status !== 'linked')} />}
+      </QueryView>
+    </>
+  );
 };

@@ -18,8 +18,6 @@ const useProjectMutation = <Variables>(mutationFn: (variables: Variables) => Pro
   return useMutation({ mutationFn, onSuccess: () => invalidate([projectKeys.all]) });
 };
 
-export const useLogCurrentWeek = () => useProjectMutation(projectsApi.logCurrentWeek);
-
 export const useAddLogEntry = () => useProjectMutation((payload: NewLogEntryPayload) => projectsApi.addLogEntry(payload));
 
 export const usePrepareReport = () => useProjectMutation(projectsApi.prepareReport);

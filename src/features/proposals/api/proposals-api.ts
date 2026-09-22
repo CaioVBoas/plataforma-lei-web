@@ -8,6 +8,8 @@ export const getProposal = (proposalId: string) => mockRequest(() => server.getP
 
 export const saveProposal = (payload: SaveProposalPayload) => mockRequest(() => server.saveProposal(payload));
 
+export const markProposalReady = (payload: SaveProposalPayload) => mockRequest(() => server.markProposalReady(payload));
+
 export const registerProposal = (proposalId: string, isoDate: string) =>
   mockRequest(() => server.registerProposal(proposalId, isoDate));
 

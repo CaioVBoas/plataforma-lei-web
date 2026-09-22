@@ -12,7 +12,7 @@ export const demandKeys = {
 };
 
 /** Reservar ou liberar mexe no cardápio, nas reservas e na contagem de demandas das organizações. */
-const AFFECTED_BY_RESERVATION: QueryKey[] = [demandKeys.all, ['reservations'], ['organizations']];
+const AFFECTED_BY_RESERVATION: QueryKey[] = [demandKeys.all, ['reservations'], ['organizations'], ['disciplines']];
 
 export const useDemands = () => useQuery({ queryKey: demandKeys.all, queryFn: demandsApi.getDemands });
 
@@ -83,6 +83,7 @@ export const useLinkDiscipline = () => {
   const invalidate = useInvalidateQueries();
   return useMutation({
     mutationFn: (payload: LinkDisciplinePayload) => demandsApi.linkDiscipline(payload),
-    onSuccess: () => invalidate([['proposals']]),
+    // Vincular tira a demanda do cardápio e das reservas e cria a proposta.
+    onSuccess: () => invalidate([...AFFECTED_BY_RESERVATION, ['proposals'], ['disciplines']]),
   });
 };

@@ -1,15 +1,15 @@
 import { useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { QueryView } from '@/components/feedback/query-states';
 import { useToast } from '@/components/feedback/toast-context';
 import { Button } from '@/components/ui/button';
 import { buttonClassName } from '@/components/ui/button-styles';
 import { NumberStepper } from '@/components/ui/number-stepper';
-import { StepDots } from '@/components/ui/progress-indicators';
 import { RadioCard } from '@/components/ui/radio-card';
 import { SegmentedControl } from '@/components/ui/segmented-control';
 import { useCurrentDisciplines } from '@/features/disciplines/hooks/use-disciplines';
 import { freeSlots } from '@/features/disciplines/utils/discipline-presentation';
+import { JourneySteps } from '@/features/proposals/components/journey-steps';
 import { usePageHeader } from '@/layouts/portal/page-header-context';
 import { paths } from '@/routes/paths';
 import { pluralize } from '@/utils/format';
@@ -30,7 +30,9 @@ const LinkDisciplineForm = ({ demand }: { demand: DemandDetail }) => {
   const { data: disciplines = [] } = useCurrentDisciplines();
   const ranked = rankDisciplines(demand, disciplines);
 
-  const [chosenId, setChosenId] = useState<string | null>(null);
+  // Quem volta do cadastro de disciplina chega com ela já escolhida.
+  const [searchParams] = useSearchParams();
+  const [chosenId, setChosenId] = useState<string | null>(searchParams.get('disciplina'));
   const [teams, setTeams] = useState(2);
   const [teamSize, setTeamSize] = useState<TeamSize>('4 a 5');
   const [invited, setInvited] = useState<string[]>([]);
@@ -44,15 +46,16 @@ const LinkDisciplineForm = ({ demand }: { demand: DemandDetail }) => {
       { demandId: demand.id, disciplineId, teams, teamSize, invitedColleagues: invited },
       {
         onSuccess: (proposalId) => {
-          toast.show('Rascunho gerado da demanda e da sua ementa. Revise antes de transpor.');
+          toast.show('Demanda vinculada e proposta gerada da demanda e da sua ementa. Revise antes de levar ao SIGAA.');
           navigate(paths.proposal(proposalId));
         },
+        onError: (error) => toast.show(error.message),
       },
     );
 
   return (
     <div className="mx-auto max-w-[720px]">
-      <StepDots current={1} total={3} />
+      <JourneySteps current={1} />
       <h2 className="mt-3 mb-6 text-[22px] leading-[1.3] font-bold text-n-800">Em qual disciplina este projeto acontece?</h2>
 
       <div className="mb-12">
@@ -83,7 +86,7 @@ const LinkDisciplineForm = ({ demand }: { demand: DemandDetail }) => {
               </span>
             </RadioCard>
           ))}
-          <Link to={paths.newDiscipline} className="flex w-full items-center gap-3.5 rounded-lg border border-n-300 bg-n-0 px-[18px] py-4 text-[15px] font-medium text-n-800 hover:bg-n-50">
+          <Link to={paths.newDiscipline(paths.linkDemand(demand.id))} className="flex w-full items-center gap-3.5 rounded-lg border border-n-300 bg-n-0 px-[18px] py-4 text-[15px] font-medium text-n-800 hover:bg-n-50">
             <span aria-hidden="true" className="size-[18px] shrink-0 rounded-full border-2 border-n-300" />
             Nenhuma destas, quero cadastrar outra disciplina
           </Link>
@@ -137,7 +140,7 @@ const LinkDisciplineForm = ({ demand }: { demand: DemandDetail }) => {
         <div className="flex items-center gap-3">
           <span className="text-[13px] text-n-500">Leva cerca de 30 segundos.</span>
           <Button variant="primary" size="lg" disabled={!disciplineId || linkDiscipline.isPending} onClick={generateDraft}>
-            Gerar rascunho da proposta
+            Vincular e gerar proposta
           </Button>
         </div>
       </div>
@@ -146,7 +149,7 @@ const LinkDisciplineForm = ({ demand }: { demand: DemandDetail }) => {
 };
 
 export const LinkDisciplinePage = () => {
-  usePageHeader('Vincular à disciplina', 'Etapa curta entre o aceite e o esboço da proposta');
+  usePageHeader('Vincular à disciplina', 'Primeira etapa da demanda ao SIGAA: escolher onde o projeto acontece');
   const { demandId = '' } = useParams();
   const demandQuery = useDemandDetail(demandId);
   return <QueryView query={demandQuery}>{(demand) => <LinkDisciplineForm demand={demand} />}</QueryView>;

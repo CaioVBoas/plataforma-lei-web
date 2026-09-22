@@ -1,7 +1,9 @@
+import { Link } from 'react-router-dom';
 import { QueryView } from '@/components/feedback/query-states';
 import { ConfirmedPracticeList, ExcludedPracticeList, InferredPracticeList } from '@/components/practice/practice-lists';
 import { SectionBlock } from '@/components/ui/section-card';
 import { usePageHeader } from '@/layouts/portal/page-header-context';
+import { paths } from '@/routes/paths';
 import type { PracticeChange } from '@/types/practice';
 import { CompetencySearch } from '../components/practice/competency-search';
 import { PastProjects } from '../components/practice/past-projects';
@@ -18,6 +20,13 @@ const PracticeEditor = ({ practice }: { practice: PracticeProfile }) => {
 
   return (
     <div className="flex flex-col gap-12">
+      <p className="flex flex-wrap items-baseline gap-x-2 text-[13px] text-n-500">
+        Prefere responder em etapas guiadas?
+        <Link to={paths.onboarding} className="font-medium text-azul-500 hover:text-azul-600">
+          Refazer o onboarding de prática
+        </Link>
+      </p>
+
       <SectionBlock title="Confirmadas por você" description="Estas entram no cálculo de compatibilidade com peso cheio.">
         <ConfirmedPracticeList practice={practice} onChange={onChange} />
       </SectionBlock>

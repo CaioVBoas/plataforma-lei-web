@@ -17,6 +17,7 @@ export const ACCOUNT: Account = {
   publicProfileLink: 'aperta-o-plei.cin.ufpe.br/docente/paola-accioly',
   projectsPerSemester: 3,
   receivingPaused: false,
+  onboardingCompleted: false,
   privacy: {
     partnersSeeContact: true,
     partnersSeeProjects: true,

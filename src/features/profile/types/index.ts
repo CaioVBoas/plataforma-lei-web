@@ -32,12 +32,14 @@ export interface Account {
   publicProfileLink: string;
   projectsPerSemester: number;
   receivingPaused: boolean;
+  /** Enquanto for falso, o cardápio convida para o onboarding de prática. */
+  onboardingCompleted: boolean;
   privacy: Record<PrivacySetting, boolean>;
   currentDevice: string;
   lastAccess: string;
 }
 
-export type AccountUpdate = Partial<Omit<Account, 'email' | 'publicProfileLink' | 'currentDevice' | 'lastAccess'>>;
+export type AccountUpdate = Partial<Omit<Account, 'email' | 'publicProfileLink' | 'currentDevice' | 'lastAccess' | 'onboardingCompleted'>>;
 
 export interface OnboardingAnswers {
   practices: Record<string, string[]>;

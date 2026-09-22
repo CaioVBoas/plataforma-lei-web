@@ -22,11 +22,11 @@ const TABS: { value: ReservationKind; label: string }[] = [
 
 const EMPTY_COPY: Record<ReservationKind, { title: string; description: string }> = {
   active: {
-    title: 'Nenhuma proposta em análise',
+    title: 'Nenhuma reserva ativa',
     description: 'Quando você marcar interesse em uma demanda do cardápio, ela fica guardada aqui por 5 dias úteis para você decidir com calma.',
   },
-  released: { title: 'Nenhuma proposta liberada', description: 'Propostas que você devolveu ao cardápio aparecem aqui.' },
-  expired: { title: 'Nenhuma proposta expirada', description: 'Propostas que passam de 5 dias úteis sem decisão aparecem aqui.' },
+  released: { title: 'Nenhuma reserva liberada', description: 'Demandas que você devolveu ao cardápio aparecem aqui.' },
+  expired: { title: 'Nenhuma reserva expirada', description: 'Reservas que passam de 5 dias úteis sem decisão aparecem aqui.' },
 };
 
 const ReservationList = ({ reservations }: { reservations: ReservationsByKind }) => {
@@ -51,7 +51,7 @@ const ReservationList = ({ reservations }: { reservations: ReservationsByKind })
     <div>
       <div className="mb-12 flex flex-wrap items-end justify-between gap-4">
         <UnderlineTabs label="Situação da reserva" items={TABS} value={tab} onChange={setTab} />
-        <span className="text-[13px] text-n-500 tabular-nums">{pluralize(visible.length, 'proposta', 'propostas')}</span>
+        <span className="text-[13px] text-n-500 tabular-nums">{pluralize(visible.length, 'reserva', 'reservas')}</span>
       </div>
 
       {visible.length > 0 ? (
@@ -83,7 +83,7 @@ const ReservationList = ({ reservations }: { reservations: ReservationsByKind })
 };
 
 export const ReservationsPage = () => {
-  usePageHeader('Minhas propostas', 'Demandas que você segurou e o prazo de cada uma');
+  usePageHeader('Minhas reservas', 'Demandas que você segurou e o prazo de cada uma');
   const reservationsQuery = useReservations();
   return <QueryView query={reservationsQuery}>{(reservations) => <ReservationList reservations={reservations} />}</QueryView>;
 };

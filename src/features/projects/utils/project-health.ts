@@ -21,6 +21,7 @@ export const needsAttention = (project: Project) =>
 
 export const healthLabel = (project: Project) => {
   if (project.completion) return REPORT_LABEL[project.completion.report];
+  if (project.elapsedWeeks === 0) return 'Aguardando início';
   const silence = silentWeeks(project);
   if (silence >= SILENCE_ALERT_WEEKS) return `Sem registro há ${silence} semanas`;
   return silence >= 1 ? 'Irregular' : 'Em dia';

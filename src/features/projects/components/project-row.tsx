@@ -79,9 +79,11 @@ const ExpandedSummary = ({ project }: { project: Project }) => {
           <p className="mb-3 text-[13px] text-n-500">Próximo passo</p>
           <p className="text-sm leading-normal font-medium text-n-800">{nextDeadline.label}</p>
           <p className="mt-[3px] text-[13px] text-n-500 tabular-nums">Prazo {nextDeadline.date}</p>
-          <Link to={project.completion ? paths.proposals : paths.project(project.id)} className="mt-2.5 inline-block text-[13px] font-medium text-azul-500 hover:text-azul-600">
-            {project.completion ? 'Ver rascunhos de projeto' : 'Ver prazos no projeto'}
-          </Link>
+          {!project.completion && (
+            <Link to={paths.project(project.id)} className="mt-2.5 inline-block text-[13px] font-medium text-azul-500 hover:text-azul-600">
+              Ver prazos no projeto
+            </Link>
+          )}
         </div>
       </div>
 

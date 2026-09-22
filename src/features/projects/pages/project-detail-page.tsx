@@ -21,7 +21,7 @@ const TABS = [
   { value: 'equipes', label: 'Equipes' },
   { value: 'andamento', label: 'Andamento' },
   { value: 'horas', label: 'Horas' },
-  { value: 'rascunho', label: 'Rascunho' },
+  { value: 'proposta', label: 'Proposta' },
 ] as const;
 
 type Tab = (typeof TABS)[number]['value'];
@@ -71,7 +71,7 @@ const ProjectDetailView = ({ project }: { project: Project }) => {
       {tab === 'equipes' && <TeamsTab teams={project.detail.teams} onExportParticipants={exportParticipants} />}
       {tab === 'andamento' && <LogTab projectId={project.id} entries={project.detail.log} />}
       {tab === 'horas' && <HoursTab detail={project.detail} onExport={exportHours} />}
-      {tab === 'rascunho' && <DraftTab proposalId={project.proposalId} />}
+      {tab === 'proposta' && <DraftTab proposalId={project.proposalId} />}
     </div>
   );
 };

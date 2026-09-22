@@ -21,6 +21,9 @@ export interface Discipline {
   paused: boolean;
 }
 
+/** Como a disciplina é guardada; vínculos e demandas compatíveis são calculados na leitura. */
+export type DisciplineRecord = Omit<Discipline, 'linkedProjects' | 'compatibleDemands'>;
+
 export type DisciplineUpdate = Partial<Pick<Discipline, 'syllabus' | 'projectCapacity' | 'paused'>>;
 
 export interface CatalogEntry {

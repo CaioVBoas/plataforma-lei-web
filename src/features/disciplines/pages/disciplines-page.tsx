@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { QueryView } from '@/components/feedback/query-states';
 import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
@@ -17,6 +17,10 @@ type SemesterTab = 'current' | 'previous';
 
 /** "?cadastrar=1" abre o cadastro direto, vindo do vínculo de demanda. */
 const CREATE_PARAM = 'cadastrar';
+const RETURN_PARAM = 'voltar';
+
+/** Só aceita retorno para dentro do app, nunca para outro domínio. */
+const isInternalPath = (path: string | null): path is string => Boolean(path?.startsWith('/') && !path.startsWith('//'));
 
 const summaryLine = (semester: string, disciplines: Discipline[]) => {
   const active = disciplines.filter((discipline) => !discipline.paused);
@@ -33,8 +37,16 @@ const summaryLine = (semester: string, disciplines: Discipline[]) => {
 const DisciplineList = ({ disciplines }: { disciplines: Discipline[] }) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [tab, setTab] = useState<SemesterTab>('current');
+  const navigate = useNavigate();
   const creating = searchParams.has(CREATE_PARAM);
+  // Quem veio do vínculo de uma demanda volta para ele com a disciplina nova já escolhida.
+  const returnTo = searchParams.get(RETURN_PARAM);
   const setCreating = (open: boolean) => setSearchParams(open ? { [CREATE_PARAM]: '1' } : {}, { replace: true });
+
+  const handleCreated = (discipline: Discipline) => {
+    if (isInternalPath(returnTo)) navigate(`${returnTo}?disciplina=${discipline.id}`);
+    else setCreating(false);
+  };
 
   const visible = disciplines.filter((discipline) => (tab === 'current' ? discipline.semester === CURRENT_SEMESTER : discipline.semester < CURRENT_SEMESTER));
   const shownSemester = tab === 'current' ? CURRENT_SEMESTER : (visible[0]?.semester ?? '');
@@ -79,7 +91,7 @@ const DisciplineList = ({ disciplines }: { disciplines: Discipline[] }) => {
         />
       )}
 
-      {creating && <NewDisciplineModal onClose={() => setCreating(false)} />}
+      {creating && <NewDisciplineModal onClose={() => (isInternalPath(returnTo) ? navigate(returnTo) : setCreating(false))} onCreated={handleCreated} />}
     </div>
   );
 };

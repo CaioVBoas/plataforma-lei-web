@@ -1,7 +1,8 @@
 /** Viabilidade no semestre: três estados fechados, sem escala contínua. */
 export type Viability = 'fits' | 'tight' | 'does-not-fit';
 
-export type DemandStatus = 'available' | 'reserved-by-me' | 'reserved-by-other' | 'accepted';
+/** Ciclo de vida da demanda para o docente logado; ver docs/fluxos.md. */
+export type DemandStatus = 'available' | 'reserved-by-me' | 'reserved-by-other' | 'linked';
 
 export interface DemandCompetency {
   name: string;

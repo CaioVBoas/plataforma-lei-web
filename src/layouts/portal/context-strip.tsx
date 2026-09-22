@@ -1,5 +1,4 @@
-import { Button } from '@/components/ui/button';
-import { ClockIcon, InfoIcon } from '@/components/ui/icons';
+import { ClockIcon } from '@/components/ui/icons';
 import type { SemesterContext } from '@/features/semester/types';
 import { cn } from '@/utils/cn';
 import { pluralize } from '@/utils/format';
@@ -18,19 +17,3 @@ export const ContextStrip = ({ context }: { context: SemesterContext }) => {
     </div>
   );
 };
-
-interface PastSemesterBannerProps {
-  semester: string;
-  current: string;
-  onBack: () => void;
-}
-
-export const PastSemesterBanner = ({ semester, current, onBack }: PastSemesterBannerProps) => (
-  <div role="status" className="flex min-h-10 flex-wrap items-center gap-x-3.5 gap-y-2 border-b border-n-200 px-8 py-2">
-    <InfoIcon size={14} className="text-n-600" />
-    <span className="min-w-0 flex-1 text-[13px] text-n-700">Você está vendo {semester}, um semestre encerrado</span>
-    <Button variant="secondary" size="sm" className="h-8" onClick={onBack}>
-      Voltar para {current}
-    </Button>
-  </div>
-);

@@ -30,6 +30,11 @@ export interface Proposal {
   /** Dias parada como "pronta" sem registro no SIGAA. */
   waitingDays: number;
   registeredOn?: string;
+  /** Formato de trabalho escolhido no vínculo; vira o plano de equipes do projeto. */
+  plannedTeams: number;
+  teamSize: string;
+  /** Preenchido quando o registro cria o projeto em execução. */
+  projectId?: string;
   sections: ProposalSection[];
   workload: WorkloadRow[];
 }

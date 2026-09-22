@@ -1,8 +1,8 @@
-import type { CatalogEntry, Discipline } from '@/features/disciplines/types';
+import type { CatalogEntry, DisciplineRecord } from '@/features/disciplines/types';
 
 const CATALOG_ORIGIN = 'porque consta no catálogo de disciplinas do CIn para esta disciplina';
 
-export const DISCIPLINES: Discipline[] = [
+export const DISCIPLINES: DisciplineRecord[] = [
   {
     id: 'ds',
     name: 'Desenvolvimento de Software',
@@ -11,12 +11,10 @@ export const DISCIPLINES: Discipline[] = [
     course: 'Ciência da Computação e Engenharia da Computação',
     workload: '60 horas',
     students: 60,
-    executionStart: '02/09',
-    executionEnd: '12/12',
+    executionStart: '03/08',
+    executionEnd: '04/12',
     level: 'Intermediário',
-    linkedProjects: 2,
     projectCapacity: 3,
-    compatibleDemands: 4,
     syllabus:
       'Processos de desenvolvimento de software, levantamento de requisitos com usuário real, modelagem de dados relacional, versionamento e revisão de código. A turma trabalha em equipes de cinco e entrega um sistema funcional ao fim do semestre, com validação junto a quem vai usar.',
     practice: {
@@ -34,12 +32,10 @@ export const DISCIPLINES: Discipline[] = [
     course: 'Engenharia de Software',
     workload: '60 horas',
     students: 42,
-    executionStart: '02/09',
-    executionEnd: '12/12',
+    executionStart: '03/08',
+    executionEnd: '04/12',
     level: 'Iniciante',
-    linkedProjects: 1,
     projectCapacity: 2,
-    compatibleDemands: 2,
     syllabus: '',
     practice: {
       confirmed: ['Levantamento de requisitos'],
@@ -62,9 +58,7 @@ export const DISCIPLINES: Discipline[] = [
     executionStart: '04/03',
     executionEnd: '12/07',
     level: 'Intermediário',
-    linkedProjects: 3,
     projectCapacity: 3,
-    compatibleDemands: 0,
     syllabus: '',
     practice: { confirmed: [], inferred: [], excluded: [] },
     paused: false,

@@ -1,8 +1,6 @@
 import { Link, useParams } from 'react-router-dom';
 import { QueryView } from '@/components/feedback/query-states';
-import { useToast } from '@/components/feedback/toast-context';
 import { BackLink } from '@/components/ui/back-link';
-import { Button } from '@/components/ui/button';
 import { buttonClassName } from '@/components/ui/button-styles';
 import { SectionBlock } from '@/components/ui/section-card';
 import { Tag } from '@/components/ui/tag';
@@ -13,7 +11,6 @@ import { useOrganization } from '../hooks/use-organizations';
 import type { OrganizationWithDemands } from '../types';
 
 const OrganizationDetail = ({ organization }: { organization: OrganizationWithDemands }) => {
-  const toast = useToast();
   const facts = [
     { label: 'Área de atuação', value: organization.area },
     { label: 'Público atendido', value: organization.audience },
@@ -121,15 +118,11 @@ const OrganizationDetail = ({ organization }: { organization: OrganizationWithDe
           <p className="mt-4 max-w-[68ch] text-[15px] leading-relaxed text-n-700">Sabe que o resultado de um semestre pode ser protótipo, não sistema pronto.</p>
         </SectionBlock>
 
-        <div className="flex flex-wrap items-center gap-5 border-t border-n-200 pt-8">
-          <Button variant="primary" size="lg" onClick={() => toast.show('A proposta vai ao ponto focal com a sua disciplina e a janela do semestre.')}>
-            Propor um projeto a esta organização
-          </Button>
-          <Button variant="outline-muted" size="sm" onClick={() => toast.show('Mensagem enviada ao ponto focal desta organização.')}>
-            Enviar mensagem
-          </Button>
-          <p className="min-w-0 flex-[1_1_260px] text-[13px] leading-normal text-n-500">Use quando você já tem uma ideia e quer um parceiro para ela.</p>
-        </div>
+        {/* Propor projeto direto à organização ainda não existe na plataforma; o caminho honesto é o contato. */}
+        <p className="max-w-[68ch] border-t border-n-200 pt-8 text-[15px] leading-relaxed text-n-600">
+          Tem uma ideia para esta organização? Fale com {organization.focalName} pelo canal preferido ({organization.channel.toLowerCase()}). Quando
+          a ideia virar demanda, ela chega ao cardápio.
+        </p>
       </div>
     </div>
   );

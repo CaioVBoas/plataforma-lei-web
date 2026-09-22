@@ -11,7 +11,8 @@ import { db, findOrThrow } from '../db';
 import { COLLEAGUES, COMPETENCY_CATALOG, DEMAND_CONTEXT, MATCH_BASE, READINGS } from '../seed/demands';
 import { ORGANIZATIONS } from '../seed/organizations';
 import { DEMO_TODAY } from '../seed/semester';
-import { createProposalFromDemand } from './proposals';
+import { getDiscipline } from './disciplines';
+import { createProposalFromLink } from './proposals';
 
 /** Disciplina de referência do cenário: a explicação semeada foi escrita para ela. */
 const PRIMARY_DISCIPLINE_ID = 'ds';
@@ -104,6 +105,7 @@ export const listColleagues = () => COLLEAGUES;
 
 export const reserveDemand = (id: string) => {
   const demand = findDemand(id);
+  if (demand.status !== 'available') throw new Error('Esta demanda não está mais disponível para reserva.');
   demand.status = 'reserved-by-me';
   demand.reservationDaysLeft = RESERVATION_BUSINESS_DAYS;
   db.releasedReservations = db.releasedReservations.filter((demandId) => demandId !== id);
@@ -163,7 +165,13 @@ export const sendQuestion = (id: string, recipient: MessageRecipient, text: stri
 
 /** Vincular gera (ou reaproveita) o rascunho da proposta e devolve o id dele. */
 export const linkDiscipline = (payload: LinkDisciplinePayload) => {
-  findDemand(payload.demandId);
-  const discipline = findOrThrow(db.disciplines, payload.disciplineId, 'Disciplina');
-  return createProposalFromDemand(payload.demandId, discipline);
+  const demand = findDemand(payload.demandId);
+  if (demand.status !== 'reserved-by-me' && demand.status !== 'linked') {
+    throw new Error('Reserve a demanda antes de vincular a uma disciplina.');
+  }
+  const discipline = getDiscipline(payload.disciplineId);
+  // Vincular encerra a reserva: a demanda sai do cardápio e das reservas ativas.
+  demand.status = 'linked';
+  demand.reservationDaysLeft = undefined;
+  return createProposalFromLink(payload, discipline);
 };

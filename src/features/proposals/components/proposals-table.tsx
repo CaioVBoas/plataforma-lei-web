@@ -26,7 +26,7 @@ const ProposalRow = ({ proposal }: { proposal: Proposal }) => {
   const archive = () =>
     toggleArchive.mutate(proposal.id, {
       onSuccess: () =>
-        toast.show(proposal.archived ? `${proposal.title} reaberta como rascunho.` : `${proposal.title} arquivada. Ela sai da lista ativa.`),
+        toast.show(proposal.archived ? `${proposal.title} reaberta.` : `${proposal.title} arquivada. Ela sai da lista ativa.`),
     });
 
   return (
@@ -53,9 +53,12 @@ const ProposalRow = ({ proposal }: { proposal: Proposal }) => {
         <Button variant="outline-muted" size="sm" onClick={copySections}>
           Copiar seções
         </Button>
-        <Button variant="outline-muted" size="sm" disabled={toggleArchive.isPending} onClick={archive}>
-          {proposal.archived ? 'Reabrir' : 'Arquivar'}
-        </Button>
+        {/* Proposta registrada já é projeto em execução: não se arquiva. */}
+        {proposal.status !== 'registered' && (
+          <Button variant="outline-muted" size="sm" disabled={toggleArchive.isPending} onClick={archive}>
+            {proposal.archived ? 'Reabrir' : 'Arquivar'}
+          </Button>
+        )}
       </div>
     </li>
   );
@@ -71,7 +74,7 @@ export const ProposalsTable = ({ proposals }: { proposals: Proposal[] }) => (
       <span>Última edição</span>
       <span className="text-right">Ações</span>
     </div>
-    <ul aria-label="Rascunhos de projeto">
+    <ul aria-label="Propostas">
       {proposals.map((proposal) => (
         <ProposalRow key={proposal.id} proposal={proposal} />
       ))}

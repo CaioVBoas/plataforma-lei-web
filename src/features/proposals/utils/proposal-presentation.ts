@@ -1,6 +1,6 @@
 import type { Proposal, ProposalSection } from '../types';
 
-/** Rascunho "pronto" parado há mais de uma semana merece lembrete. */
+/** Proposta "pronta" parada há mais de uma semana merece lembrete. */
 export const LATE_READY_DAYS = 7;
 
 /** Carga horária de extensão prevista pelas disciplinas do CIn. */
@@ -12,9 +12,9 @@ export const listStatusOf = (proposal: Proposal): ProposalListStatus => (proposa
 
 export const STATUS_LABEL: Record<ProposalListStatus, string> = {
   draft: 'Em edição',
-  ready: 'Pronto para registro',
-  registered: 'Registrado',
-  archived: 'Arquivado',
+  ready: 'Pronta para registro',
+  registered: 'Registrada',
+  archived: 'Arquivada',
 };
 
 export const STATUS_TEXT_CLASS: Record<ProposalListStatus, string> = {

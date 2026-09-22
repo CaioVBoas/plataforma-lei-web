@@ -33,4 +33,11 @@ export const useSetThemeStance = () =>
 
 export const useAddPastProject = () => usePracticeMutation((project: PastProject) => profileApi.addPastProject(project));
 
-export const useCompleteOnboarding = () => usePracticeMutation((answers: OnboardingAnswers) => profileApi.completeOnboarding(answers));
+/** Concluir o onboarding muda a prática e também tira o convite do cardápio. */
+export const useCompleteOnboarding = () => {
+  const invalidate = useInvalidateQueries();
+  return useMutation({
+    mutationFn: (answers: OnboardingAnswers) => profileApi.completeOnboarding(answers),
+    onSuccess: () => invalidate([profileKeys.practice, profileKeys.account]),
+  });
+};
