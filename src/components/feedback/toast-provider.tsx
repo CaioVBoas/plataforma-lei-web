@@ -9,7 +9,7 @@ interface ToastState {
   action?: ToastAction;
 }
 
-/** Um toast por vez no canto inferior direito; o mais recente substitui o anterior. */
+/** Um aviso por vez, centralizado no topo, longe das barras fixas de ação; o mais recente substitui o anterior. */
 export const ToastProvider = ({ children }: { children: ReactNode }) => {
   const [toast, setToast] = useState<ToastState | null>(null);
   const timer = useRef<number | undefined>(undefined);
@@ -27,14 +27,14 @@ export const ToastProvider = ({ children }: { children: ReactNode }) => {
   return (
     <ToastContext.Provider value={api}>
       {children}
-      <div aria-live="polite" className="pointer-events-none fixed right-6 bottom-6 z-80">
+      <div aria-live="polite" className="pointer-events-none fixed inset-x-0 top-5 z-[60] flex justify-center px-4">
         {toast && (
           <div
             key={toast.id}
             role="status"
-            className="pointer-events-auto flex max-w-[420px] items-center gap-3.5 rounded-lg bg-n-800 px-4 py-3.5 shadow-popover animate-toast-entra"
+            className="pointer-events-auto flex max-w-[480px] items-center gap-4 rounded-lg bg-ink px-4 py-3 shadow-popover animate-rise-in"
           >
-            <p className="text-sm leading-snug text-n-0">{toast.message}</p>
+            <p className="text-sm leading-snug text-white">{toast.message}</p>
             {toast.action && (
               <button
                 type="button"
@@ -42,7 +42,7 @@ export const ToastProvider = ({ children }: { children: ReactNode }) => {
                   setToast(null);
                   toast.action?.onClick();
                 }}
-                className="h-[34px] shrink-0 rounded-full border border-n-300 bg-n-0 px-[13px] text-[13px] font-medium text-n-600 hover:bg-n-50"
+                className="shrink-0 text-sm font-semibold text-accent-on-dark hover:text-white"
               >
                 {toast.action.label}
               </button>

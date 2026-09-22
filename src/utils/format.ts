@@ -1,6 +1,5 @@
-/** "1 demanda", "3 demandas". O plural irregular é explícito para não inventar regra de português. */
-export const pluralize = (count: number, singular: string, plural: string) =>
-  `${count} ${count === 1 ? singular : plural}`;
+/** "1 equipe", "3 equipes". O plural é explícito para não inventar regra de português. */
+export const pluralize = (count: number, singular: string, plural: string) => `${count} ${count === 1 ? singular : plural}`;
 
 export const initialsOf = (name: string) =>
   name
@@ -11,15 +10,13 @@ export const initialsOf = (name: string) =>
     .join('')
     .toUpperCase();
 
-export const capitalize = (text: string) => text.charAt(0).toUpperCase() + text.slice(1);
+/** "a, b e c" */
+export const joinWithAnd = (items: string[]) =>
+  items.length <= 1 ? (items[0] ?? '') : `${items.slice(0, -1).join(', ')} e ${items[items.length - 1]}`;
 
-/** Converte "2026-09-02" (valor de input date) para "02/09/2026". */
-export const isoToBrDate = (iso: string) => {
-  const [year, month, day] = iso.split('-');
-  return year && month && day ? `${day}/${month}/${year}` : iso;
-};
-
-export const sumHours = (values: string[]) =>
-  values.reduce((total, value) => total + (Number.parseInt(value, 10) || 0), 0);
-
-export const onlyDigits = (value: string) => value.replace(/[^0-9]/g, '');
+/** Tira acentos e caixa para comparar texto digitado com o conteúdo: "gestao" encontra "Gestão". */
+export const normalizeText = (text: string) =>
+  text
+    .normalize('NFD')
+    .replace(/\p{Diacritic}/gu, '')
+    .toLowerCase();

@@ -1,84 +1,114 @@
-import type { NewLogEntryPayload, Project } from '@/features/projects/types';
-import type { Proposal } from '@/features/proposals/types';
-import { db, findOrThrow } from '../db';
-import { DEMAND_CONTEXT } from '../seed/demands';
-import { CURRENT_USER } from '../seed/profile';
-import { DEMO_TODAY } from '../seed/semester';
+import { daysBetween, isLinkWindowOpen } from '@/domain/calendar';
+import { freeSlots, maxTeams } from '@/domain/discipline-rules';
+import { buildMilestones, canWithdraw, emptyPlanSections, isPlanLocked, nextMilestone } from '@/domain/project-lifecycle';
+import type { Project } from '@/domain/types';
+import type { AdoptDemandInput, CompleteMilestoneInput, UpdatePlanSectionInput } from '@/features/projects/types';
+import { db, findOrThrow, RuleError } from '../db';
+import { generatePlan, generateWorkload } from '../seed/plans';
+import { withUsage } from './disciplines';
 
-const SCHEDULE_WEEKS = 12;
-const WEEKLY_HOURS_PER_TEAM = 20;
-
-const findProject = (id: string) => findOrThrow(db.projects, id, 'Projeto');
+const NOT_FOUND = 'Projeto não encontrado.';
 
 export const listProjects = (): Project[] => db.projects;
 
-export const getProject = (id: string): Project => findProject(id);
+export const getProject = (id: string) => findOrThrow(db.projects, id, NOT_FOUND);
 
-/** Registro de andamento conta a semana corrente como acompanhada; o parceiro é notificado. */
-export const addLogEntry = ({ projectId, kind, text }: NewLogEntryPayload) => {
-  if (!text.trim()) throw new Error('Escreva o que a equipe fez antes de registrar.');
-  const project = findProject(projectId);
-  project.detail.log.unshift({ author: CURRENT_USER.name, kind, date: DEMO_TODAY, text: text.trim(), attachments: [] });
-  const currentWeek = Math.max(0, project.elapsedWeeks - 1);
-  project.weeklyLog = project.weeklyLog.map((logged, week) => (week === currentWeek ? true : logged));
-  project.lastUpdate = `Última atualização por você, em ${DEMO_TODAY.slice(0, 5)}`;
-};
+/** Levar uma demanda para a disciplina: as regras 1, 2 e 3 do docs/fluxos.md são checadas aqui. */
+export const adoptDemand = ({ demandId, disciplineId, teams }: AdoptDemandInput): Project => {
+  const demand = findOrThrow(db.demands, demandId, 'Demanda não encontrada.');
+  const discipline = withUsage(findOrThrow(db.disciplines, disciplineId, 'Disciplina não encontrada.'));
 
-export const prepareReport = (id: string) => {
-  const { completion } = findProject(id);
-  if (completion) completion.report = 'sent';
-};
+  if (demand.status !== 'open') throw new RuleError('Esta demanda já foi levada para outra disciplina.');
+  if (!discipline.isCurrent) throw new RuleError(`Só disciplinas de ${db.calendar.id} recebem demandas.`);
+  if (freeSlots(discipline) === 0) {
+    throw new RuleError(`${discipline.name} não tem vaga. Aumente as vagas da disciplina ou escolha outra.`);
+  }
+  if (!isLinkWindowOpen(db.calendar)) throw new RuleError('O prazo para levar demandas para disciplinas deste semestre terminou.');
+  if (teams < 1 || teams > maxTeams(discipline)) {
+    throw new RuleError('O número de equipes precisa caber na turma.');
+  }
 
-export const publishOnShowcase = (id: string) => {
-  const { completion } = findProject(id);
-  if (completion) completion.publishedOnShowcase = true;
-};
-
-/** Projeto recém-registrado: ainda sem equipes nem registros, com a formação de equipes como primeiro prazo. */
-export const createProjectFromProposal = (proposal: Proposal): string => {
-  const demand = findOrThrow(db.demands, proposal.demandId, 'Demanda');
-  const context = DEMAND_CONTEXT[proposal.demandId];
+  const { contact } = findOrThrow(db.organizations, demand.organization.id, 'Organização não encontrada.');
+  const plan = generatePlan(demand.id);
   const project: Project = {
-    id: `p${db.projects.length + 1}`,
-    stage: 'running',
-    title: proposal.sections[0]?.text || proposal.title,
-    disciplineName: proposal.disciplineName,
-    partnerName: demand.organizationName,
+    id: `${demand.id}-${db.calendar.id.replace('.', '-')}`,
     demandId: demand.id,
-    proposalId: proposal.id,
-    teamsFormed: 0,
-    teamsPlanned: proposal.plannedTeams,
-    students: 0,
-    hours: 0,
-    plannedHours: proposal.plannedTeams * WEEKLY_HOURS_PER_TEAM * SCHEDULE_WEEKS,
-    weeksLeft: SCHEDULE_WEEKS,
-    weeklyLog: Array<boolean>(SCHEDULE_WEEKS).fill(false),
-    elapsedWeeks: 0,
-    lastUpdate: `Criado a partir da proposta registrada em ${proposal.registeredOn}`,
-    detail: {
-      problem: demand.description,
-      goals: [],
-      agreedDeliverable: proposal.sections[5]?.text ?? '',
-      milestones: [
-        { week: 'Semana 1', label: 'Início com o parceiro', done: false },
-        { week: 'Semana 4', label: 'Levantamento validado', done: false },
-        { week: 'Semana 8', label: 'Primeira entrega parcial', done: false },
-        { week: 'Semana 12', label: 'Entrega e apresentação ao parceiro', done: false },
-      ],
-      focalName: context?.focalName ?? 'A definir',
-      focalRole: context?.focalRole ?? '',
-      channel: context?.channel ?? 'A combinar',
-      healthLabel: 'Aguardando início',
-      healthNote: 'Forme as equipes para começar o acompanhamento semanal.',
-      healthTone: 'ok',
-      deadlines: [{ label: 'Formar as equipes', date: '12/09', note: `A proposta prevê ${proposal.plannedTeams} equipes de ${proposal.teamSize} estudantes.`, urgent: true }],
-      teams: [],
-      log: [],
-      hoursColumns: [],
-      hoursRows: [],
-      plannedHours: 0,
-    },
+    title: plan[0]?.text || demand.title,
+    organization: demand.organization,
+    contact: { ...contact },
+    disciplineId: discipline.id,
+    disciplineName: discipline.name,
+    semester: discipline.semester,
+    teams,
+    createdAt: db.calendar.today,
+    milestones: buildMilestones(db.calendar),
+    plan,
+    workload: generateWorkload(demand.id),
   };
-  db.projects.push(project);
-  return project.id;
+
+  demand.status = 'in-project';
+  db.projects.unshift(project);
+  return project;
+};
+
+/** Regra 5: desistir só antes do registro no SIGAA, e a demanda volta para o cardápio. */
+export const withdrawProject = (id: string) => {
+  const project = getProject(id);
+  if (!canWithdraw(project)) throw new RuleError('Depois do registro no SIGAA não é possível desistir pela plataforma.');
+  const demand = db.demands.find((candidate) => candidate.id === project.demandId);
+  if (demand) demand.status = 'open';
+  db.projects = db.projects.filter((candidate) => candidate.id !== id);
+};
+
+export const updatePlanSection = ({ projectId, sectionIndex, text }: UpdatePlanSectionInput): Project => {
+  const project = getProject(projectId);
+  if (isPlanLocked(project)) throw new RuleError('O plano já foi registrado no SIGAA e não muda mais por aqui.');
+  const section = project.plan[sectionIndex];
+  if (!section) throw new RuleError('Seção do plano não encontrada.');
+  if (text.length > section.limit) throw new RuleError(`${section.title} passa do limite de ${section.limit} caracteres do SIGAA.`);
+  section.text = text;
+  if (sectionIndex === 0 && text.trim()) project.title = text.trim();
+  return project;
+};
+
+export const updateTeams = (projectId: string, teams: number): Project => {
+  const project = getProject(projectId);
+  const discipline = findOrThrow(db.disciplines, project.disciplineId, 'Disciplina não encontrada.');
+  if (teams < 1 || teams > maxTeams(discipline)) throw new RuleError('O número de equipes precisa caber na turma.');
+  project.teams = teams;
+  return project;
+};
+
+/** As etapas seguem a ordem fixa; cada uma tem a sua exigência antes de ser marcada. */
+export const completeMilestone = ({ projectId, milestoneId, doneAt, note, sigaaCode, outcome }: CompleteMilestoneInput): Project => {
+  const project = getProject(projectId);
+  const next = nextMilestone(project.milestones);
+
+  if (!next || next.id !== milestoneId) throw new RuleError('Conclua as etapas na ordem.');
+  if (daysBetween(db.calendar.today, doneAt) > 0) throw new RuleError('A data não pode estar no futuro.');
+
+  if (milestoneId === 'plan') {
+    const empty = emptyPlanSections(project);
+    if (empty.length > 0) throw new RuleError(`Preencha ${empty.map((section) => section.title).join(', ')} antes de confirmar o plano.`);
+  }
+
+  if (milestoneId === 'closing') {
+    if (!outcome?.summary.trim()) throw new RuleError('Conte em poucas linhas o que ficou com a organização.');
+    project.outcome = { summary: outcome.summary.trim(), adoption: outcome.adoption };
+    // Regra 8: o resultado vai para o histórico da organização.
+    const organization = db.organizations.find((candidate) => candidate.id === project.organization.id);
+    organization?.history.unshift({
+      title: project.title,
+      semester: project.semester,
+      disciplineName: project.disciplineName,
+      teacherName: db.account.name,
+      result: project.outcome.summary,
+    });
+  }
+
+  if (milestoneId === 'sigaa' && sigaaCode?.trim()) project.sigaaCode = sigaaCode.trim();
+
+  next.doneAt = doneAt;
+  if (note?.trim()) next.note = note.trim();
+  return project;
 };

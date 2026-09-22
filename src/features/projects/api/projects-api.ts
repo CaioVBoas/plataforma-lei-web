@@ -1,13 +1,18 @@
-import { mockRequest } from '@/mocks/mock-request';
 import * as server from '@/mocks/handlers/projects';
-import type { NewLogEntryPayload } from '../types';
+import { mockRequest } from '@/mocks/mock-request';
+import type { AdoptDemandInput, CompleteMilestoneInput, UpdatePlanSectionInput } from '../types';
 
 export const getProjects = () => mockRequest(() => server.listProjects());
 
-export const getProject = (projectId: string) => mockRequest(() => server.getProject(projectId));
+export const getProject = (id: string) => mockRequest(() => server.getProject(id));
 
-export const addLogEntry = (payload: NewLogEntryPayload) => mockRequest(() => server.addLogEntry(payload));
+export const adoptDemand = (input: AdoptDemandInput) => mockRequest(() => server.adoptDemand(input));
 
-export const prepareReport = (projectId: string) => mockRequest(() => server.prepareReport(projectId));
+export const withdrawProject = (id: string) => mockRequest(() => server.withdrawProject(id));
 
-export const publishOnShowcase = (projectId: string) => mockRequest(() => server.publishOnShowcase(projectId));
+export const updatePlanSection = (input: UpdatePlanSectionInput) => mockRequest(() => server.updatePlanSection(input));
+
+export const updateTeams = ({ projectId, teams }: { projectId: string; teams: number }) =>
+  mockRequest(() => server.updateTeams(projectId, teams));
+
+export const completeMilestone = (input: CompleteMilestoneInput) => mockRequest(() => server.completeMilestone(input));

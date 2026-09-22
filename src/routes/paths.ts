@@ -1,27 +1,20 @@
-/**
- * Único lugar que conhece as URLs do app. As rotas seguem o português do kit de
- * prototipação (ex.: /entrar), já que são visíveis ao docente.
- */
+/** Toda URL do portal nasce aqui. Componentes nunca montam caminho à mão. */
+
+export type ProjectTab = 'etapas' | 'plano' | 'organizacao';
+
 export const paths = {
   login: '/entrar',
-  onboarding: '/primeiros-passos',
-  menu: '/cardapio',
-  demand: (demandId: string) => `/demandas/${demandId}`,
-  linkDemand: (demandId: string) => `/demandas/${demandId}/vincular`,
-  reservations: '/minhas-reservas',
-  proposals: '/propostas',
-  proposal: (proposalId: string) => `/propostas/${proposalId}`,
-  runningProjects: '/projetos/em-execucao',
-  completedProjects: '/projetos/concluidos',
-  project: (projectId: string, tab?: string) => `/projetos/${projectId}${tab ? `?aba=${tab}` : ''}`,
+  home: '/inicio',
+  guide: '/como-funciona',
+  demands: '/demandas',
+  demand: (id: string) => `/demandas/${id}`,
+  projects: '/projetos',
+  project: (id: string, tab?: ProjectTab) => (tab && tab !== 'etapas' ? `/projetos/${id}?aba=${tab}` : `/projetos/${id}`),
   disciplines: '/disciplinas',
-  /** Abre o cadastro de disciplina e, se houver `returnTo`, volta para lá com a disciplina criada. */
-  newDiscipline: (returnTo?: string) => `/disciplinas?cadastrar=1${returnTo ? `&voltar=${encodeURIComponent(returnTo)}` : ''}`,
-  discipline: (disciplineId: string, tab?: string) => `/disciplinas/${disciplineId}${tab ? `?aba=${tab}` : ''}`,
+  /** Abre o cadastro de disciplina direto, a partir do Início. */
+  newDiscipline: '/disciplinas?nova=1',
+  discipline: (id: string) => `/disciplinas/${id}`,
   organizations: '/organizacoes',
-  organization: (organizationId: string) => `/organizacoes/${organizationId}`,
-  notifications: '/notificacoes',
-  account: '/perfil',
-  practice: '/perfil/pratica',
-  corrections: '/perfil/historico',
+  organization: (id: string) => `/organizacoes/${id}`,
+  account: '/conta',
 } as const;

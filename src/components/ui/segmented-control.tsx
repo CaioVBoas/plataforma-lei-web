@@ -1,14 +1,21 @@
 import { cn } from '@/utils/cn';
 
-interface SegmentedControlProps<Value extends string> {
-  options: { value: Value; label: string }[];
+interface SegmentedOption<Value extends string> {
   value: Value;
-  onChange: (value: Value) => void;
   label: string;
+  count?: number;
 }
 
-export const SegmentedControl = <Value extends string>({ options, value, onChange, label }: SegmentedControlProps<Value>) => (
-  <div role="radiogroup" aria-label={label} className="flex gap-1.5">
+interface SegmentedControlProps<Value extends string> {
+  label: string;
+  value: Value;
+  options: SegmentedOption<Value>[];
+  onChange: (value: Value) => void;
+}
+
+/** Alternância entre visões da mesma lista, como o controle segmentado do sistema. */
+export const SegmentedControl = <Value extends string>({ label, value, options, onChange }: SegmentedControlProps<Value>) => (
+  <div role="radiogroup" aria-label={label} className="inline-flex rounded-md bg-fill p-0.5">
     {options.map((option) => {
       const selected = option.value === value;
       return (
@@ -19,11 +26,12 @@ export const SegmentedControl = <Value extends string>({ options, value, onChang
           aria-checked={selected}
           onClick={() => onChange(option.value)}
           className={cn(
-            'h-11 flex-1 rounded-lg border px-1.5 text-[13px] font-medium transition-colors',
-            selected ? 'border-azul-500 bg-azul-50 text-azul-800' : 'border-n-300 bg-n-0 text-n-700 hover:bg-n-50',
+            'flex h-7 items-center gap-1.5 rounded-[5px] px-3 text-[13px] transition-colors duration-150',
+            selected ? 'bg-surface font-medium text-ink shadow-[0_1px_2px_rgba(0,0,0,0.1),0_0_0_0.5px_rgba(0,0,0,0.06)]' : 'text-ink-2 hover:text-ink',
           )}
         >
           {option.label}
+          {option.count !== undefined && <span className="text-ink-3 tabular-nums">{option.count}</span>}
         </button>
       );
     })}

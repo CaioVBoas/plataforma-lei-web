@@ -1,103 +1,91 @@
-import { useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import { QueryView } from '@/components/feedback/query-states';
 import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
-import { BookIcon } from '@/components/ui/icons';
-import { ToggleChip } from '@/components/ui/toggle-chip';
-import { usePageHeader } from '@/layouts/portal/page-header-context';
-import { pluralize } from '@/utils/format';
-import { DisciplineListItem } from '../components/discipline-list-item';
+import { GroupedList, ListRow } from '@/components/ui/grouped-list';
+import { PlusIcon } from '@/components/ui/icons';
+import { Page, Section } from '@/components/ui/page';
+import { StatusLabel } from '@/components/ui/status-label';
+import { freeSlots } from '@/domain/discipline-rules';
+import { paths } from '@/routes/paths';
 import { NewDisciplineModal } from '../components/new-discipline-modal';
-import { CURRENT_SEMESTER, useDisciplines } from '../hooks/use-disciplines';
-import type { Discipline } from '../types';
-import { freeSlots } from '../utils/discipline-presentation';
+import { useDisciplines } from '../hooks/use-disciplines';
+import type { DisciplineWithUsage } from '../types';
+import { disciplineMeta, slotsLabel } from '../utils/discipline-presentation';
 
-type SemesterTab = 'current' | 'previous';
+const DisciplineRow = ({ discipline }: { discipline: DisciplineWithUsage }) => (
+  <ListRow
+    to={paths.discipline(discipline.id)}
+    trailing={
+      discipline.isCurrent && <StatusLabel tone={freeSlots(discipline) > 0 ? 'positive' : 'neutral'}>{slotsLabel(discipline)}</StatusLabel>
+    }
+  >
+    <p className="text-[15px] font-medium text-ink">{discipline.name}</p>
+    <p className="mt-0.5 text-[13px] text-ink-3">
+      {discipline.isCurrent ? disciplineMeta(discipline) : `${discipline.semester} · ${disciplineMeta(discipline)}`}
+    </p>
+    <p className="mt-1.5 line-clamp-1 text-[13px] text-ink-2">{discipline.skills.join(', ')}</p>
+  </ListRow>
+);
 
-/** "?cadastrar=1" abre o cadastro direto, vindo do vínculo de demanda. */
-const CREATE_PARAM = 'cadastrar';
-const RETURN_PARAM = 'voltar';
-
-/** Só aceita retorno para dentro do app, nunca para outro domínio. */
-const isInternalPath = (path: string | null): path is string => Boolean(path?.startsWith('/') && !path.startsWith('//'));
-
-const summaryLine = (semester: string, disciplines: Discipline[]) => {
-  const active = disciplines.filter((discipline) => !discipline.paused);
-  const slots = disciplines.reduce((total, discipline) => total + freeSlots(discipline), 0);
-  const compatible = active.reduce((total, discipline) => total + discipline.compatibleDemands, 0);
-  return [
-    semester,
-    pluralize(active.length, 'disciplina ativa', 'disciplinas ativas'),
-    pluralize(slots, 'vaga de projeto', 'vagas de projeto'),
-    `${compatible} demandas compatíveis`,
-  ].join(' · ');
-};
-
-const DisciplineList = ({ disciplines }: { disciplines: Discipline[] }) => {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const [tab, setTab] = useState<SemesterTab>('current');
-  const navigate = useNavigate();
-  const creating = searchParams.has(CREATE_PARAM);
-  // Quem veio do vínculo de uma demanda volta para ele com a disciplina nova já escolhida.
-  const returnTo = searchParams.get(RETURN_PARAM);
-  const setCreating = (open: boolean) => setSearchParams(open ? { [CREATE_PARAM]: '1' } : {}, { replace: true });
-
-  const handleCreated = (discipline: Discipline) => {
-    if (isInternalPath(returnTo)) navigate(`${returnTo}?disciplina=${discipline.id}`);
-    else setCreating(false);
-  };
-
-  const visible = disciplines.filter((discipline) => (tab === 'current' ? discipline.semester === CURRENT_SEMESTER : discipline.semester < CURRENT_SEMESTER));
-  const shownSemester = tab === 'current' ? CURRENT_SEMESTER : (visible[0]?.semester ?? '');
+const DisciplineGroups = ({ disciplines, onCreate }: { disciplines: DisciplineWithUsage[]; onCreate: () => void }) => {
+  const current = disciplines.filter((discipline) => discipline.isCurrent);
+  const previous = disciplines.filter((discipline) => !discipline.isCurrent);
 
   return (
-    <div>
-      <div className="mb-12 flex items-center justify-between gap-4">
-        <div className="flex gap-2">
-          <ToggleChip selected={tab === 'current'} onClick={() => setTab('current')}>
-            {CURRENT_SEMESTER}
-          </ToggleChip>
-          <ToggleChip selected={tab === 'previous'} onClick={() => setTab('previous')}>
-            Semestres anteriores
-          </ToggleChip>
-        </div>
-        <Button variant="primary" onClick={() => setCreating(true)}>
-          Cadastrar disciplina
-        </Button>
-      </div>
-
-      {visible.length > 0 ? (
-        <>
-          <p className="mb-12 text-[13px] text-n-500">{summaryLine(shownSemester, visible)}</p>
-          <div className="flex flex-col gap-8">
-            {visible.map((discipline) => (
-              <DisciplineListItem key={discipline.id} discipline={discipline} />
+    <>
+      <Section title={current[0]?.semester ? `Semestre ${current[0].semester}` : 'Este semestre'}>
+        {current.length > 0 ? (
+          <GroupedList>
+            {current.map((discipline) => (
+              <DisciplineRow key={discipline.id} discipline={discipline} />
             ))}
-          </div>
-        </>
-      ) : (
-        <EmptyState
-          icon={<BookIcon size={28} />}
-          title="Nenhuma disciplina cadastrada ainda"
-          description={
-            'Sem disciplina cadastrada a plataforma não sabe o que você ensina neste semestre, e por isso não consegue sugerir demandas compatíveis.\nO cadastro leva menos de um minuto e pode ser ajustado depois.'
-          }
-          action={
-            <Button variant="primary" size="lg" onClick={() => setCreating(true)}>
-              Cadastrar minha primeira disciplina
-            </Button>
-          }
-        />
-      )}
+          </GroupedList>
+        ) : (
+          <EmptyState
+            title="Nenhuma disciplina neste semestre"
+            description="Cadastre as turmas que você leciona agora. Sem elas, não dá para saber quais demandas combinam com você."
+            action={
+              <Button variant="primary" onClick={onCreate}>
+                Cadastrar disciplina
+              </Button>
+            }
+          />
+        )}
+      </Section>
 
-      {creating && <NewDisciplineModal onClose={() => (isInternalPath(returnTo) ? navigate(returnTo) : setCreating(false))} onCreated={handleCreated} />}
-    </div>
+      {previous.length > 0 && (
+        <Section title="Semestres anteriores" description="Guardam o histórico dos projetos concluídos.">
+          <GroupedList>
+            {previous.map((discipline) => (
+              <DisciplineRow key={discipline.id} discipline={discipline} />
+            ))}
+          </GroupedList>
+        </Section>
+      )}
+    </>
   );
 };
 
 export const DisciplinesPage = () => {
-  usePageHeader('Minhas disciplinas', 'Disciplinas do Centro de Informática que podem receber projetos de extensão');
   const disciplinesQuery = useDisciplines();
-  return <QueryView query={disciplinesQuery}>{(disciplines) => <DisciplineList disciplines={disciplines} />}</QueryView>;
+  const [searchParams, setSearchParams] = useSearchParams();
+  const creating = searchParams.get('nova') === '1';
+  const setCreating = (open: boolean) => setSearchParams(open ? { nova: '1' } : {}, { replace: true });
+
+  return (
+    <Page
+      title="Disciplinas"
+      subtitle="O que cada turma trabalha decide quais demandas combinam com ela."
+      actions={
+        <Button variant="primary" onClick={() => setCreating(true)}>
+          <PlusIcon size={15} />
+          Nova disciplina
+        </Button>
+      }
+    >
+      <QueryView query={disciplinesQuery}>{(disciplines) => <DisciplineGroups disciplines={disciplines} onCreate={() => setCreating(true)} />}</QueryView>
+      {creating && <NewDisciplineModal onClose={() => setCreating(false)} />}
+    </Page>
+  );
 };

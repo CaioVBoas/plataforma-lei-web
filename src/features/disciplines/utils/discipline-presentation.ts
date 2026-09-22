@@ -1,14 +1,13 @@
-import type { Discipline } from '../types';
+import { freeSlots } from '@/domain/discipline-rules';
+import { pluralize } from '@/utils/format';
+import type { DisciplineWithUsage } from '../types';
 
-/** Linha de dados da turma, na mesma ordem em que aparece no SIGAA. */
-export const disciplineDataLine = (discipline: Discipline) =>
-  [
-    `Oferta ${discipline.semester}`,
-    discipline.course,
-    discipline.workload,
-    `${discipline.students} estudantes matriculados`,
-    `execução de ${discipline.executionStart} a ${discipline.executionEnd}`,
-    `nível ${discipline.level.toLowerCase()}`,
-  ].join(' · ');
+/** "IF1006 · 60 estudantes · equipes de 5" */
+export const disciplineMeta = (discipline: DisciplineWithUsage) =>
+  [discipline.code, pluralize(discipline.students, 'estudante', 'estudantes'), `equipes de ${discipline.teamSize}`].filter(Boolean).join(' · ');
 
-export const freeSlots = (discipline: Discipline) => Math.max(0, discipline.projectCapacity - discipline.linkedProjects);
+/** "2 vagas livres", "1 vaga livre", "Sem vaga" */
+export const slotsLabel = (discipline: DisciplineWithUsage) => {
+  const free = freeSlots(discipline);
+  return free === 0 ? 'Sem vaga' : pluralize(free, 'vaga livre', 'vagas livres');
+};

@@ -1,20 +1,16 @@
-import { mockRequest } from '@/mocks/mock-request';
 import * as server from '@/mocks/handlers/disciplines';
-import type { PracticeChange } from '@/types/practice';
-import type { DisciplineUpdate, NewDisciplinePayload } from '../types';
+import { mockRequest } from '@/mocks/mock-request';
+import type { DisciplineInput } from '../types';
 
 export const getDisciplines = () => mockRequest(() => server.listDisciplines());
 
-export const getDiscipline = (disciplineId: string) => mockRequest(() => server.getDiscipline(disciplineId));
+export const getDiscipline = (id: string) => mockRequest(() => server.getDiscipline(id));
 
-export const getDisciplineCatalog = () => mockRequest(() => server.searchCatalog());
+export const createDiscipline = (input: DisciplineInput) => mockRequest(() => server.createDiscipline(input));
 
-export const createDiscipline = (payload: NewDisciplinePayload) => mockRequest(() => server.createDiscipline(payload));
+export const updateDiscipline = ({ id, input }: { id: string; input: DisciplineInput }) =>
+  mockRequest(() => server.updateDiscipline(id, input));
 
-export const updateDiscipline = (disciplineId: string, update: DisciplineUpdate) =>
-  mockRequest(() => server.updateDiscipline(disciplineId, update));
+export const removeDiscipline = (id: string) => mockRequest(() => server.removeDiscipline(id));
 
-export const changeDisciplinePractice = (disciplineId: string, change: PracticeChange) =>
-  mockRequest(() => server.changeDisciplinePractice(disciplineId, change));
-
-export const archiveDiscipline = (disciplineId: string) => mockRequest(() => server.archiveDiscipline(disciplineId));
+export const getSkillCatalog = () => mockRequest(() => server.listSkillCatalog());

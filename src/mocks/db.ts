@@ -1,42 +1,44 @@
-import { DEMANDS, EXPIRED_RESERVATIONS } from './seed/demands';
+import type { Organization, OrganizationContact } from '@/domain/types';
+import { ACCOUNT } from './seed/account';
+import { CALENDAR } from './seed/calendar';
+import { DEMANDS } from './seed/demands';
 import { DISCIPLINES } from './seed/disciplines';
-import { NOTIFICATION_PREFERENCES, NOTIFICATIONS } from './seed/notifications';
-import { ACCOUNT, PRACTICE_PROFILE } from './seed/profile';
+import { ORGANIZATIONS } from './seed/organizations';
 import { PROJECTS } from './seed/projects';
-import { PROPOSALS } from './seed/proposals';
-import type { ConversationMessage, ManualAssociation } from '@/features/matchmaking/types';
+
+/** O backend guarda o contato junto da organização, mas só o entrega a quem tem projeto com ela. */
+export type OrganizationRecord = Organization & { contact: OrganizationContact };
 
 /**
  * Estado mutável do backend simulado. Vive só na memória da aba: recarregar a
  * página volta tudo ao cenário de demonstração.
  */
 export const db = {
-  demands: structuredClone(DEMANDS),
-  sentMessages: {} as Record<string, ConversationMessage[]>,
-  unansweredQuestions: new Set<string>(['nase']),
-  manualAssociations: {} as Record<string, ManualAssociation[]>,
-  /** Competências que o docente descartou da leitura automática, por demanda. */
-  discardedReadings: {} as Record<string, string[]>,
-  releasedReservations: [] as string[],
-  expiredReservations: structuredClone(EXPIRED_RESERVATIONS),
-  disciplines: structuredClone(DISCIPLINES),
-  proposals: structuredClone(PROPOSALS),
-  projects: structuredClone(PROJECTS),
-  notifications: structuredClone(NOTIFICATIONS),
-  notificationPreferences: structuredClone(NOTIFICATION_PREFERENCES),
+  calendar: structuredClone(CALENDAR),
   account: structuredClone(ACCOUNT),
-  practice: structuredClone(PRACTICE_PROFILE),
+  organizations: structuredClone(ORGANIZATIONS),
+  demands: structuredClone(DEMANDS),
+  disciplines: structuredClone(DISCIPLINES),
+  projects: structuredClone(PROJECTS),
 };
 
 export class NotFoundError extends Error {
-  constructor(entity: string, id: string) {
-    super(`${entity} ${id} não encontrado.`);
+  constructor(message: string) {
+    super(message);
     this.name = 'NotFoundError';
   }
 }
 
-export const findOrThrow = <Item extends { id: string }>(items: Item[], id: string, entity: string) => {
+/** Violação de regra de negócio. A mensagem vai direto para a tela, então é escrita para o docente. */
+export class RuleError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'RuleError';
+  }
+}
+
+export const findOrThrow = <Item extends { id: string }>(items: Item[], id: string, notFoundMessage: string) => {
   const item = items.find((candidate) => candidate.id === id);
-  if (!item) throw new NotFoundError(entity, id);
+  if (!item) throw new NotFoundError(notFoundMessage);
   return item;
 };

@@ -1,12 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
-import { getOrganization, getOrganizations } from '../api/organizations-api';
+import { queryKeys } from '@/lib/query-keys';
+import * as organizationsApi from '../api/organizations-api';
 
-export const organizationKeys = {
-  all: ['organizations'] as const,
-  detail: (organizationId: string) => ['organizations', organizationId] as const,
-};
+export const useOrganizations = () => useQuery({ queryKey: queryKeys.organizations, queryFn: organizationsApi.getOrganizations });
 
-export const useOrganizations = () => useQuery({ queryKey: organizationKeys.all, queryFn: getOrganizations });
-
-export const useOrganization = (organizationId: string) =>
-  useQuery({ queryKey: organizationKeys.detail(organizationId), queryFn: () => getOrganization(organizationId) });
+export const useOrganization = (id: string) =>
+  useQuery({ queryKey: queryKeys.organization(id), queryFn: () => organizationsApi.getOrganization(id) });

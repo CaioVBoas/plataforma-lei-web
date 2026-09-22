@@ -1,123 +1,110 @@
 # Fluxos do Portal do Docente
 
-Documento de referência para decidir como cada tela deve se comportar. O protótipo mostra telas bonitas, mas os estados não conversam entre si. Este documento é o modelo que as telas obedecem.
+Este documento é a especificação do produto. Se uma tela contradiz o que está aqui, a tela está errada.
 
-## 1. Objetivo
+## 1. O que a plataforma faz
 
-Um docente do CIn precisa cumprir extensão curricular com as turmas dele. A plataforma encurta o caminho **"problema real de um parceiro → projeto registrado no SIGAA → projeto executado e certificado"**.
+Organizações de fora da UFPE (órgãos públicos, organizações sociais, coletivos) publicam **demandas**: problemas reais que precisam de solução. O L.E.I. faz a triagem e as demandas aprovadas entram no **cardápio**. Um docente do CIn escolhe uma demanda e a leva para uma **disciplina** que está lecionando. A turma resolve o problema com a organização **dentro do semestre da disciplina**.
 
-Três promessas guiam as decisões:
+Não é um projeto de extensão comum, com edital, bolsista e prazo próprio. O projeto vive no calendário da disciplina: começa quando a turma começa e termina quando a turma termina.
 
-1. **Sugestão confiável.** Todo percentual de compatibilidade abre a conta. Toda competência inferida pode ser corrigida.
-2. **Nenhum passo a mais que o processo atual.** A plataforma escreve a proposta. O docente revisa, copia e registra.
-3. **Honestidade sobre a fronteira institucional.** O registro acontece no SIGAA, e a plataforma só guarda a data que o docente declarou.
+Referências de mercado que usam o mesmo modelo: [Riipen](https://help.riipen.com/en/articles/7339520-matching-your-experience-with-projects), em que o parceiro publica o projeto e o docente o encaixa no curso, e [EPICS](https://engineering.purdue.edu/EPICS), em que o escopo é definido com o parceiro nas primeiras semanas e aceito por ele antes da execução.
 
-## 2. Entidades e ciclos de vida
+## 2. Três objetos, uma linha do tempo
 
-A demanda percorre um único caminho, e cada tela mostra uma fase dele.
+A versão anterior tinha cinco objetos com ciclos próprios: demanda, reserva, proposta, projeto e prática. O docente precisava entender como um virava o outro. Agora são três, e só um deles tem ciclo de vida.
 
-```
-            reservar                 vincular à disciplina
-Disponível ──────────▶ Reservada por mim ─────────────────────▶ Vinculada
-    ▲    ◀──────────── (liberar ou expirar)                        │
-    │                                                               │ gera
-    └── Reservada por outro (fila de interesse)                     ▼
-                                                     Proposta: Em edição ─▶ Pronta ─▶ Registrada
-                                                                                         │ cria
-                                                                                         ▼
-                                                     Projeto: Em execução ─▶ Concluído ─▶ Relatório
-                                                                                            enviado ─▶ Aprovado ─▶ Publicado
-```
-
-| Entidade | Estados | Onde aparece |
+| Objeto | O que é | Estados |
 | --- | --- | --- |
-| Demanda | disponível, reservada por mim, reservada por outro, vinculada | Cardápio (menos as vinculadas), detalhe da demanda |
-| Reserva | ativa (5 dias úteis), liberada, expirada | Minhas reservas |
-| Proposta | em edição, pronta, registrada (+ arquivada) | Propostas, editor da proposta |
-| Projeto | em execução, concluído (relatório pendente, enviado, aprovado, publicado) | Meus projetos, detalhe do projeto |
-| Disciplina | recebendo demandas, pausada | Minhas disciplinas, vínculo |
-| Prática | confirmada, inferida, não conduzo | Meu perfil › Prática, disciplina › Prática |
+| **Demanda** | Problema publicado por uma organização | Aberta (no cardápio) ou Em projeto (fora do cardápio) |
+| **Disciplina** | Turma que o docente leciona no semestre | Tem vagas ou Sem vagas |
+| **Projeto** | Uma demanda levada para uma disciplina | Planejamento, Em andamento, Concluído |
 
-**Invariantes.** Se uma tela contradiz uma destas regras, a tela está errada.
+A reserva deixou de existir. O docente não precisa "segurar" uma demanda antes de decidir: levar para a disciplina já é a decisão, e desistir continua possível durante o planejamento.
 
-- Uma demanda vinculada **sai do cardápio** e **sai das reservas ativas**.
-- Toda proposta nasce de um vínculo, então nunca existe proposta de demanda disponível.
-- Todo projeto em execução tem proposta **registrada**.
-- Registrar a proposta cria o projeto em execução.
-- O número de demandas compatíveis de uma disciplina é **calculado**, nunca digitado.
+A proposta deixou de ser uma tela separada. Ela virou o **plano do projeto**, que já nasce escrito e é revisado dentro do próprio projeto.
 
-## 3. Navegação (arquitetura de informação)
+## 3. As seis etapas do projeto
 
-A ordem da sidebar segue o ciclo de vida:
+Todo projeto tem as mesmas seis etapas, na mesma ordem. O estado do projeto é **calculado** a partir delas e nunca é guardado separadamente.
 
-1. **Cardápio de demandas**, para descobrir. O contador mostra as disponíveis.
-2. **Minhas reservas**, para decidir. O contador mostra as ativas.
-3. **Propostas**, para escrever e registrar. O contador mostra as que ainda não foram registradas.
-4. **Meus projetos**, para executar: Em execução e Concluídos.
-5. **Minhas disciplinas**, onde fica a base do cálculo.
-6. **Organizações**, com contexto sobre os parceiros.
-7. No rodapé, **Meu perfil** (Dados, Prática e Histórico) e **Ajuda**.
-
-Os nomes seguem o glossário do kit: demanda, cardápio, reserva, proposta, disciplina e parceiro. O protótipo usava "Minhas propostas" para as reservas e "Rascunhos de projeto" para as propostas. Os dois rótulos confundiam fases diferentes e foram corrigidos.
-
-## 4. Fluxos principais
-
-### F1. Da demanda ao SIGAA (o fluxo que vende o produto)
-
-| # | Tela | Ação | Resultado |
+| # | Etapa | O que o docente faz | Prazo padrão |
 | --- | --- | --- | --- |
-| 1 | Cardápio | "Tenho interesse" | Demanda reservada por 5 dias úteis. Toast oferece "Vincular agora" |
-| 2 | Detalhe da demanda | "Por que combina?", corrigir competências, conversar com o parceiro | Decisão informada |
-| 3 | Vincular à disciplina (**etapa 1 de 3**) | Escolher disciplina, equipes e coorientador | Demanda vinculada e proposta criada. Vai para o editor |
-| 4 | Editor da proposta (**etapa 2 de 3**) | Revisar as seções e a carga horária, então "Marcar como pronta" | Proposta pronta |
-| 5 | Editor da proposta (**etapa 3 de 3**) | Copiar as seções para o SIGAA e declarar a data do registro | Proposta registrada e projeto criado em Meus projetos |
+| 1 | Revisar o plano | Lê o plano gerado a partir da demanda, ajusta e confirma | 7 dias depois de levar a demanda |
+| 2 | Reunião de abertura | Encontra a organização, combina escopo, calendário e sigilo | 14 dias depois de levar a demanda |
+| 3 | Registro no SIGAA | Copia o plano para o SIGAA e informa a data do registro | Prazo de vinculação do semestre |
+| 4 | Entrega parcial | Registra a entrega parcial e como a organização recebeu | Meio do semestre |
+| 5 | Entrega final | Registra a entrega final | Última semana de aula |
+| 6 | Encerramento | Escreve em duas linhas o resultado e se a organização usa o que foi entregue | Fim do semestre |
 
-O indicador "Etapa X de 3" é o mesmo nas duas telas, com os nomes *Disciplina · Proposta · Registro*.
+- Registro no SIGAA ainda não feito: **Planejamento**.
+- Registro no SIGAA feito e encerramento pendente: **Em andamento**.
+- Encerramento feito: **Concluído**.
 
-### F2. Reserva que não vira projeto
+Só a próxima etapa pendente tem ação. As outras mostram a data prevista ou a data em que foram feitas. Uma etapa com prazo vencido aparece como **atrasada**, sem bloquear nada.
 
-As saídas são: liberar a reserva (a demanda volta ao cardápio), deixar expirar ou reservar de novo se a demanda ainda estiver livre. Liberar nunca pede justificativa.
+## 4. Regras de negócio
 
-### F3. Acompanhar o projeto
+1. **Uma demanda, um projeto.** Ao ser levada para uma disciplina, a demanda sai do cardápio de todo mundo.
+2. **Só disciplinas do semestre atual com vaga** recebem demandas. Cada disciplina define quantos projetos comporta.
+3. **Existe prazo de vinculação.** Depois do prazo do semestre, nenhuma demanda nova entra em disciplina deste semestre.
+4. **O contato da organização só aparece depois** que a demanda vira projeto. Antes disso, o docente vê quem é a organização e como ela trabalha, mas não o e-mail ou o telefone.
+5. **Desistir só no planejamento.** Enquanto o registro no SIGAA não foi feito, o docente pode desistir e a demanda volta para o cardápio. Depois do registro, o compromisso é institucional.
+6. **O plano fica travado depois do registro no SIGAA**, porque passa a ser o texto oficial.
+7. **A compatibilidade é contada, não estimada.** Uma demanda combina com uma disciplina quando a disciplina trabalha pelo menos metade das competências que a demanda pede. A tela mostra quais combinam e quais faltam, sem percentual inventado.
+8. **O resultado volta para a organização.** O texto do encerramento aparece no histórico da organização, para o próximo docente saber o que já foi feito.
+9. **A plataforma não acessa o SIGAA.** Ela entrega o texto pronto e guarda a data que o docente informou.
 
-- Pela lista ou pelo detalhe, "Registrar andamento" abre **o mesmo formulário**, na aba Andamento do projeto. Um rótulo igual precisa ter um comportamento igual.
-- Três semanas sem registro fazem o projeto "pedir atenção", e o filtro "Só o que pede atenção" o encontra.
-- Concluído com relatório pendente, a ação é "Preparar relatório". Com o relatório aprovado, "Publicar na vitrine".
+## 5. Navegação
 
-### F4. Calibrar a sugestão
+| Item | Para quê | Pergunta que responde |
+| --- | --- | --- |
+| **Início** | O que fazer agora | "O que eu preciso fazer hoje?" |
+| **Demandas** | Escolher uma demanda | "Que problema a minha turma pode resolver?" |
+| **Projetos** | Acompanhar as etapas | "Em que pé estão os meus projetos?" |
+| **Disciplinas** | Dizer o que cada turma sabe fazer | "Quais turmas podem receber projeto?" |
+| **Organizações** | Conhecer os parceiros | "Com quem eu vou trabalhar?" |
+| **Como funciona** | Tutorial | "Como isso funciona?" |
 
-Três entradas mexem no cálculo: o onboarding de prática (primeiro acesso), o perfil › Prática e a disciplina › Prática/Ementa. Toda correção vai para o Histórico. O painel de explicação sempre oferece o atalho para corrigir a prática.
+A conta fica no rodapé da barra lateral, com Minha conta e Sair.
 
-### F5. Primeiro acesso
+## 6. Fluxos
 
-Na entrada, o docente escolhe o portal, faz login e, se tiver dois papéis, escolhe a área. Enquanto o onboarding de prática não for feito, o cardápio mostra um aviso com "Responder em 2 minutos". O onboarding também fica acessível pelo perfil › Prática.
+### F1. Levar uma demanda para a disciplina
 
-## 5. Regras de design aplicadas
+1. **Demandas.** O filtro começa em "Para minhas disciplinas". Cada linha mostra a organização, o problema, com qual disciplina combina e se cabe num semestre.
+2. **Detalhe da demanda.** Aparecem o problema, o que a organização oferece (ponto focal, frequência de reunião, visita) e as competências pedidas, com a indicação de quais cada disciplina cobre. Existe uma única ação primária: **Levar para uma disciplina**.
+3. **Janela de confirmação.** O docente escolhe a disciplina (a que mais combina já vem marcada) e o número de equipes. A janela diz o que acontece em seguida. Se não houver disciplina cadastrada, o cadastro acontece ali mesmo.
+4. **Projeto criado.** O docente cai no projeto, na etapa 1, com o plano pronto para revisar.
 
-1. **Nenhum controle que não faz nada.** Se a ação não existe, o botão não aparece. Toast não é funcionalidade.
-2. **Um rótulo, um comportamento.** A mesma palavra leva sempre ao mesmo lugar e faz a mesma coisa.
-3. **Uma ação primária por tela.** Ações secundárias usam os estilos secundário e terciário.
-4. **Contexto no rodapé fixo.** O texto de apoio da ação principal muda com o estado (reservar, continuar, abrir proposta).
-5. **Estado derivado, não duplicado.** Contadores e compatibilidades são calculados a partir das entidades.
-6. **Fronteira institucional explícita.** Tudo que depende do SIGAA ou da PROExC diz isso na tela.
-7. **Voltar sempre possível.** Fluxos que saem para uma tela auxiliar (cadastrar disciplina no meio do vínculo) retornam ao ponto de origem.
+### F2. Planejar
 
-## 6. Incoerências do protótipo e decisão tomada
+Plano confirmado, reunião de abertura registrada e registro no SIGAA com a data. Cada etapa é um botão no card "Próximo passo" do projeto e também aparece no Início.
 
-| Problema no protótipo | Decisão |
+### F3. Executar e encerrar
+
+Entrega parcial, entrega final e encerramento. O encerramento pede o resultado e se a organização usa a entrega. O projeto vai para Concluídos e o resultado entra no histórico da organização.
+
+### F4. Primeiro acesso
+
+O docente entra com o e-mail institucional. O Início mostra um convite para o tutorial e, se não houver disciplina cadastrada, pede isso antes de qualquer outra coisa.
+
+## 7. Regras de design
+
+1. **Uma pergunta por tela, uma ação primária por tela.**
+2. **O próximo passo está sempre visível**, no Início e no topo do projeto.
+3. **Nada que não funcione.** Se a ação não existe, o controle não aparece.
+4. **Estado calculado, não guardado.** O estado do projeto, as vagas e a compatibilidade saem das regras em `src/domain`.
+5. **Linguagem da sala de aula**, não do sistema: "levar para a disciplina", e não "vincular demanda".
+6. **Visual sóbrio.** Tipografia do sistema, cantos de 6 a 10px, cinzas neutros, um único azul de ação e cores de estado dessaturadas. Nada de gradiente, emoji ou roxo.
+
+## 8. O que saiu e por quê
+
+| Saiu | Motivo |
 | --- | --- |
-| "Minhas propostas" listava reservas; "Rascunhos de projeto" listava propostas | Renomeados para **Minhas reservas** e **Propostas** |
-| Vincular gerava rascunho, mas a demanda continuava reservada, com contagem regressiva, e no cardápio | Vincular muda a demanda para **vinculada**, que sai do cardápio e das reservas |
-| Status "Pronto para registro" sem ação que levasse a ele | Botão **Marcar como pronta** no editor, habilitado quando nenhuma seção obrigatória está vazia |
-| Dois botões de registro no editor ("Confirmar registro" e "Marcar como registrada no SIGAA") | Um só registro, na etapa 3 |
-| Registrar não levava a lugar nenhum | Registrar **cria o projeto** e oferece "Ver projeto" |
-| Projetos em execução com proposta em rascunho, e demandas do cardápio que já eram projetos | Dados de demonstração reorganizados para respeitar as invariantes da seção 2 |
-| Projetos com 9 semanas corridas num semestre que ainda não começou | Semestre 2026.2 começa em 03/08. Em 24/08 é a semana 4 |
-| "Registrar andamento" na lista marcava a semana sem texto; no detalhe abria formulário | Os dois abrem o formulário na aba Andamento |
-| "Etapa 1 de 3" no vínculo sem etapas 2 e 3 | Indicador de jornada compartilhado entre vínculo e editor |
-| Seletor de semestre no cabeçalho só exibia uma faixa, sem mudar dado nenhum | Removido. Semestres anteriores estão em Concluídos e em Disciplinas › Semestres anteriores |
-| Rodapé do detalhe dizia "A reserva vale por 5 dias úteis" em qualquer estado | Texto contextual por estado |
-| "Cadastrar outra disciplina" no vínculo não voltava para o vínculo | Depois do cadastro, retorna ao vínculo com a disciplina nova |
-| Botões que só mostravam toast (Propor projeto, Enviar mensagem, Trocar foto, Duplicar, Sair de todos) | Removidos ou trocados por ação real (Sair) |
-| Onboarding de prática sem porta de entrada | Aviso no cardápio enquanto não respondido e atalho no perfil › Prática |
-| Contagem de demandas compatíveis digitada à mão por disciplina | Calculada a partir das demandas disponíveis (compatibilidade ≥ 50%) |
+| Reserva de demanda, com prazo e expiração | Criava um estado intermediário que não gerava nada. Levar para a disciplina já é a decisão, e desistir no planejamento cobre o arrependimento |
+| Propostas como seção própria | Separava o texto do projeto do próprio projeto. O plano agora é uma aba do projeto |
+| Perfil de prática, leitura automática e onboarding de prática | Três lugares para calibrar uma sugestão que era percentual inventado. A compatibilidade agora vem das competências da disciplina, que o docente edita em um só lugar |
+| Registro semanal de andamento e horas | Controle que a disciplina já faz. O projeto acompanha só os marcos que importam para a organização |
+| Central de notificações | O Início já responde "o que mudou e o que fazer" |
+| Escolha de portal e de área na entrada | O portal é do docente. Organizações têm um aviso na entrada |

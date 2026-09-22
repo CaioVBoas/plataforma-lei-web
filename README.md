@@ -1,8 +1,8 @@
 # Aperta o PLEI · Portal do Docente
 
-Front-end do portal docente do **Aperta o PLEI** (L.E.I. · CIn/UFPE): demandas reais de organizações externas chegam ligadas às disciplinas do docente, com a proposta de registro no SIGAA quase pronta.
+Organizações de fora da UFPE publicam problemas reais. O docente do CIn leva um deles para uma disciplina que está lecionando, e a turma resolve o problema com a organização dentro do semestre.
 
-A implementação segue o protótipo do Claude Design (`Entrada`, `Onboarding de Prática` e `Portal do Docente`) e o Design System Aperta o PLEI v1.0.
+**Antes de mudar qualquer tela, leia [`docs/fluxos.md`](docs/fluxos.md).** Ele é a especificação do produto: os três objetos, as seis etapas do projeto, as regras de negócio e as regras de design.
 
 ## Como rodar
 
@@ -18,7 +18,20 @@ npm run dev
 | `npm run build` | Typecheck (`tsc -b`) + build de produção |
 | `npm run lint` | Oxlint |
 
-Para entrar, escolha **Sou professor** e use qualquer e-mail `@ufpe.br` ou `@cin.ufpe.br` com qualquer senha. E-mails que começam com `paola` simulam a conta com dois papéis (docente e coordenação).
+Para entrar, use qualquer e-mail `@ufpe.br` ou `@cin.ufpe.br` com qualquer senha.
+
+## O produto em uma tela
+
+| Item | Pergunta que responde |
+| --- | --- |
+| Início | O que eu preciso fazer hoje? |
+| Demandas | Que problema a minha turma pode resolver? |
+| Projetos | Em que pé estão os meus projetos? |
+| Disciplinas | Quais turmas podem receber projeto? |
+| Organizações | Com quem eu vou trabalhar? |
+| Como funciona | Tutorial dentro do portal |
+
+Todo projeto passa pelas mesmas seis etapas: revisar o plano, reunião de abertura, registro no SIGAA, entrega parcial, entrega final e encerramento. O estado do projeto (planejamento, em andamento, concluído) é calculado a partir delas.
 
 ## Stack
 
@@ -28,64 +41,59 @@ React 19, TypeScript, Vite, Tailwind CSS v4, React Router, TanStack Query, React
 
 ```
 src/
+├── domain/          # Entidades e regras puras, sem React: calendário, compatibilidade, ciclo do projeto
 ├── components/
-│   ├── ui/          # Primitivos sem regra de negócio (Button, Tag, SelectMenu, SidePanel…)
-│   ├── feedback/    # Toast e estados de carregamento/erro de query
-│   └── practice/    # Listas de prática, compartilhadas por perfil e disciplina
-├── features/        # Uma pasta por domínio
+│   ├── ui/          # Primitivos visuais sem regra de negócio (Page, GroupedList, Modal, SegmentedControl…)
+│   └── feedback/    # Aviso (toast) e estados de carregamento e erro
+├── features/        # Uma pasta por área do portal
 │   └── <feature>/
 │       ├── api/         # Contrato com o backend (hoje responde pelo mock)
 │       ├── hooks/       # Queries e mutations do React Query
-│       ├── components/  # Componentes do domínio
+│       ├── components/
 │       ├── pages/       # Telas ligadas às rotas
-│       ├── utils/       # Regras puras (filtros, apresentação, cálculos)
-│       └── types/
-├── layouts/portal/  # Sidebar, cabeçalho, faixa do semestre
+│       └── utils/       # Apresentação: textos, rótulos e agrupamentos
+├── layouts/         # Barra lateral e casca do portal
 ├── mocks/           # Backend simulado: seed, banco em memória e handlers
 ├── routes/          # Rotas, caminhos (paths.ts) e guarda de autenticação
-├── hooks/ utils/ types/  # Compartilhados entre features
-└── index.css        # Tokens do Design System no @theme do Tailwind
+├── lib/             # Cliente HTTP e chaves do React Query
+└── index.css        # Tokens visuais no @theme do Tailwind
 ```
 
 | Feature | Telas |
 | --- | --- |
-| `auth` | Entrada: escolha de portal, login e escolha de área |
-| `matchmaking` | Cardápio de demandas, detalhe, explicação do casamento, leitura automática e vínculo à disciplina |
-| `applications` | Minhas reservas (ativas, liberadas e expiradas) |
-| `proposals` | Propostas e editor da proposta (revisar, marcar como pronta e registrar no SIGAA) |
-| `projects` | Meus projetos (em execução e concluídos) e detalhe com equipes, andamento, horas e proposta |
-| `disciplines` | Minhas disciplinas, cadastro e detalhe (visão, prática, projetos e demandas compatíveis) |
-| `organizations` | Organizações parceiras e detalhe |
-| `notifications` | Popover do cabeçalho e central de notificações com preferências |
-| `profile` | Onboarding de prática e Meu perfil (dados, prática e histórico) |
-| `semester` | Contexto do semestre usado pela faixa do portal |
-
-**Antes de mudar qualquer fluxo, leia [`docs/fluxos.md`](docs/fluxos.md).** Ele define o ciclo de vida de demanda, reserva, proposta e projeto, as invariantes entre as telas e as regras de design aplicadas.
+| `home` | Início: próximos passos e demandas sugeridas |
+| `demands` | Lista de demandas, detalhe e a janela "Levar para uma disciplina" |
+| `projects` | Lista de projetos e o projeto: próximo passo, etapas, plano e organização |
+| `disciplines` | Disciplinas, cadastro e detalhe com as demandas que combinam |
+| `organizations` | Organizações e detalhe com contato e histórico |
+| `guide` | Como funciona |
+| `account`, `auth`, `calendar` | Conta, entrada e calendário do semestre |
 
 ### Regras que valem para o projeto todo
 
+- **Regra de negócio mora em `src/domain`.** O backend simulado e as telas usam as mesmas funções, então a regra não se repete nem diverge.
 - **Páginas só falam com hooks.** Uma página nunca importa `mocks/` nem `lib/api-client` diretamente.
-- **Features podem usar hooks e componentes de outra feature**, mas nunca os handlers do mock nem o estado interno dela.
-- **Regra de negócio fica em funções puras** em `utils/`, como `filterDemands`, `silentWeeks` e `rankDisciplines`. Isso deixa os componentes finos e as regras testáveis.
-- **Cor, fonte e movimento vêm dos tokens** do `index.css`. Não use hex solto nos componentes.
-- **URLs só em `routes/paths.ts`.**
+- **Features podem usar hooks e componentes de outra feature**, mas nunca os handlers do mock.
+- **Cor, fonte, raio e movimento vêm dos tokens** do `index.css`. Não use hex solto nos componentes.
+- **URLs só em `routes/paths.ts`, chaves de cache só em `lib/query-keys.ts`.**
 - **Comentários explicam o porquê**, não o que o código já diz.
+- **Texto de interface sem travessão e sem emoji**, na linguagem da sala de aula ("levar para a disciplina", não "vincular demanda").
 
 ## Backend simulado e integração com a API
 
-Ainda não existe backend, então `src/mocks` faz esse papel. O `db.ts` guarda o estado em memória, semeado com as demandas reais do kit de prototipação. Os `handlers/` aplicam as regras e o `mockRequest` simula a latência de uma chamada HTTP. Recarregar a página volta ao cenário de demonstração.
+Ainda não existe backend, então `src/mocks` faz esse papel. O `db.ts` guarda o estado em memória, semeado com as demandas reais do L.E.I. Os `handlers/` aplicam as regras de negócio e o `mockRequest` simula a latência de uma chamada HTTP. Recarregar a página volta ao cenário de demonstração, com a data fixa em 24 de agosto de 2026.
 
 Para integrar a API real, basta trocar o corpo das funções em `features/*/api/*.ts`. Hooks, páginas e componentes não mudam:
 
 ```ts
 // antes
-export const getDemands = () => mockRequest(() => server.listDemands());
+export const getOpenDemands = () => mockRequest(() => server.listOpenDemands());
 // depois
-export const getDemands = () => api.get<Demand[]>('/demands').then((response) => response.data);
+export const getOpenDemands = () => api.get<Demand[]>('/demands?status=open').then((response) => response.data);
 ```
 
 ## O que ainda depende de decisão
 
-- O **portal da Coordenação** ainda não foi desenhado. Por enquanto, a escolha de área leva ao portal docente.
-- O **alternador de papel** na sidebar, sugerido no kit, está desligado no protótipo e ficou fora.
-- O **cálculo de compatibilidade** é de demonstração: os percentuais da segunda disciplina são derivados da primeira até o modelo real existir.
+- O **portal das organizações** (publicar demanda, acompanhar o projeto) ainda não foi desenhado.
+- O **plano gerado** vem pronto do seed. Na versão real ele sai de um modelo de linguagem alimentado pela demanda e pela disciplina.
+- O **prazo de vinculação** e o calendário do semestre precisam vir do calendário acadêmico oficial.

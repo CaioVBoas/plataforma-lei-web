@@ -1,45 +1,36 @@
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useInvalidateQueries } from '@/hooks/use-invalidate-queries';
-import type { PracticeChange } from '@/types/practice';
+import { queryKeys } from '@/lib/query-keys';
 import * as disciplinesApi from '../api/disciplines-api';
-import type { DisciplineUpdate, NewDisciplinePayload } from '../types';
 
-export const disciplineKeys = {
-  all: ['disciplines'] as const,
-  detail: (disciplineId: string) => ['disciplines', disciplineId] as const,
-  catalog: ['discipline-catalog'] as const,
+export const useDisciplines = () => useQuery({ queryKey: queryKeys.disciplines, queryFn: disciplinesApi.getDisciplines });
+
+/** Só as do semestre atual recebem demandas; as outras guardam o histórico. */
+export const useCurrentDisciplines = () => {
+  const query = useDisciplines();
+  return { ...query, data: query.data?.filter((discipline) => discipline.isCurrent) };
 };
 
-export const CURRENT_SEMESTER = '2026.2';
+export const useDiscipline = (id: string) =>
+  useQuery({ queryKey: queryKeys.discipline(id), queryFn: () => disciplinesApi.getDiscipline(id) });
 
-export const useDisciplines = () => useQuery({ queryKey: disciplineKeys.all, queryFn: disciplinesApi.getDisciplines });
-
-/** Disciplinas do semestre corrente: as únicas que podem receber demandas. */
-export const useCurrentDisciplines = () =>
-  useQuery({
-    queryKey: disciplineKeys.all,
-    queryFn: disciplinesApi.getDisciplines,
-    select: (disciplines) => disciplines.filter((discipline) => discipline.semester === CURRENT_SEMESTER),
-  });
-
-export const useDiscipline = (disciplineId: string) =>
-  useQuery({ queryKey: disciplineKeys.detail(disciplineId), queryFn: () => disciplinesApi.getDiscipline(disciplineId) });
-
-export const useDisciplineCatalog = () =>
-  useQuery({ queryKey: disciplineKeys.catalog, queryFn: disciplinesApi.getDisciplineCatalog, staleTime: Infinity });
-
-const useDisciplineMutation = <Variables, Result>(mutationFn: (variables: Variables) => Promise<Result>) => {
+export const useCreateDiscipline = () => {
   const invalidate = useInvalidateQueries();
-  return useMutation({ mutationFn, onSuccess: () => invalidate([disciplineKeys.all]) });
+  return useMutation({ mutationFn: disciplinesApi.createDiscipline, onSuccess: () => invalidate([queryKeys.disciplines]) });
 };
 
-export const useCreateDiscipline = () =>
-  useDisciplineMutation((payload: NewDisciplinePayload) => disciplinesApi.createDiscipline(payload));
+export const useUpdateDiscipline = () => {
+  const invalidate = useInvalidateQueries();
+  return useMutation({ mutationFn: disciplinesApi.updateDiscipline, onSuccess: () => invalidate([queryKeys.disciplines]) });
+};
 
-export const useUpdateDiscipline = () =>
-  useDisciplineMutation(({ id, update }: { id: string; update: DisciplineUpdate }) => disciplinesApi.updateDiscipline(id, update));
+/** Só a lista é recarregada: a disciplina removida não existe mais e não deve ser buscada de novo. */
+export const useRemoveDiscipline = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: disciplinesApi.removeDiscipline,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.disciplines, exact: true }),
+  });
+};
 
-export const useChangeDisciplinePractice = (disciplineId: string) =>
-  useDisciplineMutation((change: PracticeChange) => disciplinesApi.changeDisciplinePractice(disciplineId, change));
-
-export const useArchiveDiscipline = () => useDisciplineMutation(disciplinesApi.archiveDiscipline);
+export const useSkillCatalog = () => useQuery({ queryKey: queryKeys.skillCatalog, queryFn: disciplinesApi.getSkillCatalog, staleTime: Infinity });

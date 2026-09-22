@@ -1,102 +1,113 @@
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { SparkleIcon } from '@/components/ui/icons';
+import { useForm } from 'react-hook-form';
+import { Navigate, useLocation, useNavigate } from 'react-router-dom';
+import { z } from 'zod';
+import { Button } from '@/components/ui/button';
+import { BrandMark } from '@/components/ui/brand-mark';
+import { Field, Input } from '@/components/ui/form-controls';
 import { paths } from '@/routes/paths';
-import { EntryOptionCard } from '../components/entry-option-card';
-import { LoginForm } from '../components/login-form';
-import { PORTALS, WORK_AREAS, type PortalOption } from '../constants/portals';
+import { session } from '../api/session';
+import { useLogin } from '../hooks/use-auth';
 
-type Step = { name: 'portals' } | { name: 'login'; portal: PortalOption } | { name: 'areas' };
+const INSTITUTIONAL_EMAIL = /@(cin\.)?ufpe\.br$/i;
 
-const Hero = () => (
-  <div className="flex min-w-0 flex-1 basis-1/2 flex-col bg-linear-160 from-azul-900 to-azul-800 p-12">
-    <div className="flex items-center gap-2.5">
-      <span aria-hidden="true" className="flex size-[30px] items-center justify-center rounded-[10px] bg-n-0/15 text-n-0">
-        <SparkleIcon />
-      </span>
-      <span className="text-base font-bold tracking-[-.01em] text-n-0">Aperta o PLEI</span>
-    </div>
-    <div className="my-auto max-w-[520px]">
-      <h1 className="mb-[18px] font-display text-[32px] leading-tight font-semibold text-pretty text-n-0">
-        A extensão deixa de ser um peso e vira uma oportunidade.
-      </h1>
-      <p className="max-w-[46ch] text-base leading-relaxed text-azul-200">
-        Demandas reais de organizações externas chegam já ligadas às disciplinas que você leciona, com a proposta de registro quase pronta.
-      </p>
-    </div>
-    <p className="text-[13px] leading-normal text-azul-300">
-      Laboratório de Extensão e Inovação
-      <br />
-      Centro de Informática, UFPE
-    </p>
-  </div>
-);
+const loginSchema = z.object({
+  email: z
+    .string()
+    .trim()
+    .min(1, 'Informe seu e-mail.')
+    .regex(INSTITUTIONAL_EMAIL, 'Use seu e-mail @ufpe.br ou @cin.ufpe.br.'),
+  password: z.string().min(1, 'Informe sua senha.'),
+});
 
-/** Entrada: escolha de portal, autenticação e, para quem acumula papéis, a escolha da área. */
+type LoginValues = z.infer<typeof loginSchema>;
+
+const PROMISES = [
+  'Organizações de fora da universidade publicam problemas reais.',
+  'Você escolhe um e leva para uma disciplina que está lecionando.',
+  'A turma resolve com a organização, dentro do semestre.',
+];
+
 export const LoginPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [step, setStep] = useState<Step>({ name: 'portals' });
+  const login = useLogin();
+  const [resetNotice, setResetNotice] = useState(false);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginValues>({ resolver: zodResolver(loginSchema), defaultValues: { email: '', password: '' } });
 
   useEffect(() => {
     document.title = 'Entrar · Aperta o PLEI';
   }, []);
 
-  const redirectTo = (location.state as { from?: string } | null)?.from ?? paths.menu;
-  const enterPortal = () => navigate(redirectTo, { replace: true });
+  if (session.isAuthenticated()) return <Navigate to={paths.home} replace />;
+
+  const from = (location.state as { from?: string } | null)?.from ?? paths.home;
+  const onSubmit = (values: LoginValues) => login.mutate(values, { onSuccess: () => navigate(from, { replace: true }) });
 
   return (
-    <div className="flex min-h-screen w-full bg-n-0 font-body text-n-700">
-      <Hero />
-      <main className="flex min-w-0 flex-1 basis-1/2 items-center justify-center p-12">
-        <div className="w-full max-w-[400px]">
-          {step.name === 'portals' && (
-            <>
-              <h2 className="mb-1 text-[22px] leading-[1.3] font-bold text-n-800">Entrar na plataforma</h2>
-              <p className="mb-6 text-sm text-n-600">Escolha como você vai usar o Aperta o PLEI</p>
-              <div className="flex flex-col gap-2.5">
-                {PORTALS.map((portal) => (
-                  <EntryOptionCard
-                    key={portal.id}
-                    withAccentBar
-                    tone={portal.tone}
-                    icon={portal.icon}
-                    title={portal.title}
-                    description={portal.description}
-                    onSelect={() => setStep({ name: 'login', portal })}
-                  />
-                ))}
-              </div>
-              <div className="mt-6 mb-3.5 h-px bg-n-200" />
-              <p className="text-[13px] leading-normal text-n-500">Professores e coordenação entram com o e-mail institucional.</p>
-            </>
-          )}
-
-          {step.name === 'login' && (
-            <LoginForm
-              key={step.portal.id}
-              portal={step.portal}
-              onChangePortal={() => setStep({ name: 'portals' })}
-              onSignedIn={enterPortal}
-              onChooseArea={() => setStep({ name: 'areas' })}
-            />
-          )}
-
-          {step.name === 'areas' && (
-            <>
-              <h2 className="mb-1 text-[22px] leading-[1.3] font-bold text-n-800">Onde você quer trabalhar agora?</h2>
-              <p className="mb-6 text-sm text-n-600">Sua conta tem dois papéis no Centro de Informática.</p>
-              <div className="flex flex-col gap-2.5">
-                {/* O portal da coordenação ainda não existe; as duas áreas abrem o portal docente. */}
-                {WORK_AREAS.map((area) => (
-                  <EntryOptionCard key={area.id} tone="azul" icon={area.icon} title={area.title} description={area.description} onSelect={enterPortal} />
-                ))}
-              </div>
-              <p className="mt-4 text-[13px] leading-normal text-n-500">Você pode alternar a qualquer momento pelo topo da barra lateral.</p>
-            </>
-          )}
+    <div className="grid min-h-screen bg-surface lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+      <section className="hidden flex-col justify-between bg-canvas px-14 py-12 lg:flex">
+        <BrandMark />
+        <div className="max-w-[440px]">
+          <h1 className="text-[40px] leading-[1.1] font-bold tracking-[-0.025em] text-ink">Problemas reais para as suas turmas.</h1>
+          <ul className="mt-8 space-y-4">
+            {PROMISES.map((promise, index) => (
+              <li key={promise} className="flex gap-4 text-[17px] leading-snug text-ink-2">
+                <span className="w-4 shrink-0 text-ink-3 tabular-nums">{index + 1}</span>
+                {promise}
+              </li>
+            ))}
+          </ul>
         </div>
-      </main>
+        <p className="text-[13px] text-ink-3">L.E.I. · Centro de Informática da UFPE</p>
+      </section>
+
+      <section className="flex flex-col justify-center px-6 py-12 sm:px-14">
+        <div className="mx-auto w-full max-w-[360px]">
+          <div className="mb-10 lg:hidden">
+            <BrandMark />
+          </div>
+          <h2 className="text-large-title">Entrar</h2>
+          <p className="mt-2 text-[15px] text-ink-2">Use sua conta institucional da UFPE.</p>
+
+          <form onSubmit={handleSubmit(onSubmit)} noValidate className="mt-8 flex flex-col gap-5">
+            <Field label="E-mail" htmlFor="login-email" error={errors.email?.message}>
+              <Input id="login-email" type="email" autoComplete="username" placeholder="nome@cin.ufpe.br" autoFocus {...register('email')} />
+            </Field>
+            <Field label="Senha" htmlFor="login-senha" error={errors.password?.message}>
+              <Input id="login-senha" type="password" autoComplete="current-password" {...register('password')} />
+            </Field>
+
+            {login.isError && (
+              <p role="alert" className="text-sm text-critical">
+                {login.error.message}
+              </p>
+            )}
+
+            <Button variant="primary" size="lg" type="submit" fullWidth disabled={login.isPending}>
+              {login.isPending ? 'Entrando' : 'Entrar'}
+            </Button>
+          </form>
+
+          <button type="button" onClick={() => setResetNotice(true)} className="mt-4 text-sm text-accent hover:text-accent-hover">
+            Esqueci minha senha
+          </button>
+          {resetNotice && (
+            <p role="status" className="mt-2 text-[13px] leading-relaxed text-ink-2">
+              Nesta demonstração qualquer senha funciona com um e-mail institucional. A recuperação de senha chega com o login da UFPE.
+            </p>
+          )}
+
+          <p className="mt-12 border-t border-line pt-6 text-[13px] leading-relaxed text-ink-3">
+            Este é o portal dos docentes. Organizações publicam demandas por convite da coordenação de extensão do CIn.
+          </p>
+        </div>
+      </section>
     </div>
   );
 };

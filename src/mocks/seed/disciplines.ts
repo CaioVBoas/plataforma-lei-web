@@ -1,72 +1,72 @@
-import type { CatalogEntry, DisciplineRecord } from '@/features/disciplines/types';
+import type { Discipline } from '@/domain/types';
 
-const CATALOG_ORIGIN = 'porque consta no catálogo de disciplinas do CIn para esta disciplina';
+/** Vocabulário comum a demandas e disciplinas. Sem ele, a compatibilidade dependeria de grafia. */
+export const SKILL_CATALOG = [
+  'Banco de dados',
+  'Ciência de dados',
+  'Desenvolvimento móvel',
+  'Desenvolvimento web',
+  'Engenharia de software',
+  'Georreferenciamento',
+  'Interação humano computador',
+  'Levantamento de requisitos',
+  'LGPD e privacidade',
+  'Modelagem de processos',
+  'Sincronização offline',
+  'Testes de software',
+  'Visualização de dados',
+];
 
-export const DISCIPLINES: DisciplineRecord[] = [
+export const DISCIPLINES: Discipline[] = [
   {
     id: 'ds',
     name: 'Desenvolvimento de Software',
     code: 'IF1006',
     semester: '2026.2',
-    course: 'Ciência da Computação e Engenharia da Computação',
-    workload: '60 horas',
     students: 60,
-    executionStart: '03/08',
-    executionEnd: '04/12',
-    level: 'Intermediário',
-    projectCapacity: 3,
-    syllabus:
-      'Processos de desenvolvimento de software, levantamento de requisitos com usuário real, modelagem de dados relacional, versionamento e revisão de código. A turma trabalha em equipes de cinco e entrega um sistema funcional ao fim do semestre, com validação junto a quem vai usar.',
-    practice: {
-      confirmed: ['Engenharia de software', 'Banco de dados', 'Trabalho em equipe'],
-      inferred: [{ name: 'Integração de sistemas', origin: 'porque a ementa cita versionamento e entrega de sistema funcional' }],
-      excluded: ['Georreferenciamento'],
-    },
-    paused: false,
+    teamSize: 5,
+    projectSlots: 3,
+    skills: ['Engenharia de software', 'Banco de dados', 'Desenvolvimento web', 'Levantamento de requisitos', 'Visualização de dados'],
   },
   {
     id: 'es1',
     name: 'Engenharia de Software 1',
     code: 'IF1007',
     semester: '2026.2',
-    course: 'Engenharia de Software',
-    workload: '60 horas',
     students: 42,
-    executionStart: '03/08',
-    executionEnd: '04/12',
-    level: 'Iniciante',
-    projectCapacity: 2,
-    syllabus: '',
-    practice: {
-      confirmed: ['Levantamento de requisitos'],
-      inferred: [
-        { name: 'Modelagem de processos', origin: CATALOG_ORIGIN },
-        { name: 'Testes automatizados', origin: CATALOG_ORIGIN },
-      ],
-      excluded: [],
-    },
-    paused: false,
+    teamSize: 6,
+    projectSlots: 2,
+    skills: ['Levantamento de requisitos', 'Modelagem de processos', 'Testes de software', 'Interação humano computador'],
   },
+  // Semestres anteriores: guardam os projetos concluídos.
   {
-    id: 'ds-2026-1',
+    id: 'ds-2025-2',
     name: 'Desenvolvimento de Software',
     code: 'IF1006',
-    semester: '2026.1',
-    course: 'Ciência da Computação',
-    workload: '60 horas',
+    semester: '2025.2',
     students: 58,
-    executionStart: '04/03',
-    executionEnd: '12/07',
-    level: 'Intermediário',
-    projectCapacity: 3,
-    syllabus: '',
-    practice: { confirmed: [], inferred: [], excluded: [] },
-    paused: false,
+    teamSize: 5,
+    projectSlots: 3,
+    skills: ['Engenharia de software', 'Banco de dados', 'Desenvolvimento web'],
   },
-];
-
-export const DISCIPLINE_CATALOG: CatalogEntry[] = [
-  { name: 'Interação Humano-Computador', code: 'IF1010' },
-  { name: 'Infraestrutura de Software', code: 'IF1004' },
-  { name: 'Projetos de Software', code: 'IF1015' },
+  {
+    id: 'es1-2025-1',
+    name: 'Engenharia de Software 1',
+    code: 'IF1007',
+    semester: '2025.1',
+    students: 40,
+    teamSize: 5,
+    projectSlots: 2,
+    skills: ['Levantamento de requisitos', 'Modelagem de processos'],
+  },
+  {
+    id: 'ds-2024-2',
+    name: 'Desenvolvimento de Software',
+    code: 'IF1006',
+    semester: '2024.2',
+    students: 55,
+    teamSize: 5,
+    projectSlots: 2,
+    skills: ['Engenharia de software', 'Banco de dados', 'Visualização de dados'],
+  },
 ];

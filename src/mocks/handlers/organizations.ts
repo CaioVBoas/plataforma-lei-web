@@ -1,24 +1,20 @@
-import type { OrganizationWithDemands } from '@/features/organizations/types';
-import { db, NotFoundError } from '../db';
-import { ORGANIZATIONS } from '../seed/organizations';
+import type { OrganizationDetail, OrganizationSummary } from '@/features/organizations/types';
+import { db, findOrThrow } from '../db';
 
-/** Só conta como aberta a demanda disponível no cardápio, não a reservada. */
-const withOpenDemands = (organization: (typeof ORGANIZATIONS)[number]): OrganizationWithDemands => ({
-  ...organization,
-  openDemands: db.demands
-    .filter((demand) => demand.organizationId === organization.id && demand.status === 'available')
-    .map((demand) => ({
-      id: demand.id,
-      problem: demand.problem,
-      affectedPublic: demand.affectedPublic,
-      publishedDaysAgo: demand.publishedDaysAgo,
-    })),
-});
+const openDemandsOf = (organizationId: string) =>
+  db.demands.filter((demand) => demand.organization.id === organizationId && demand.status === 'open');
 
-export const listOrganizations = (): OrganizationWithDemands[] => ORGANIZATIONS.map(withOpenDemands);
+export const listOrganizations = (): OrganizationSummary[] =>
+  db.organizations.map(({ contact: _contact, ...organization }) => ({ ...organization, openDemands: openDemandsOf(organization.id).length }));
 
-export const getOrganization = (id: string): OrganizationWithDemands => {
-  const organization = ORGANIZATIONS.find((candidate) => candidate.id === id);
-  if (!organization) throw new NotFoundError('Organização', id);
-  return withOpenDemands(organization);
+export const getOrganization = (id: string): OrganizationDetail => {
+  const { contact, ...organization } = findOrThrow(db.organizations, id, 'Organização não encontrada.');
+  const myProjects = db.projects.filter((project) => project.organization.id === id);
+  return {
+    organization,
+    // Regra 4: o contato só aparece para quem já tem projeto com a organização.
+    contact: myProjects.length > 0 ? contact : undefined,
+    openDemands: openDemandsOf(id),
+    myProjects,
+  };
 };

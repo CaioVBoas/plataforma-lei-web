@@ -1,25 +1,56 @@
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient, type QueryKey } from '@tanstack/react-query';
+import type { Project } from '@/domain/types';
 import { useInvalidateQueries } from '@/hooks/use-invalidate-queries';
+import { queryKeys } from '@/lib/query-keys';
 import * as projectsApi from '../api/projects-api';
-import type { NewLogEntryPayload } from '../types';
 
-export const projectKeys = {
-  all: ['projects'] as const,
-  detail: (projectId: string) => ['projects', projectId] as const,
-};
+export const useProjects = () => useQuery({ queryKey: queryKeys.projects, queryFn: projectsApi.getProjects });
 
-export const useProjects = () => useQuery({ queryKey: projectKeys.all, queryFn: projectsApi.getProjects });
+export const useProject = (id: string) => useQuery({ queryKey: queryKeys.project(id), queryFn: () => projectsApi.getProject(id) });
 
-export const useProject = (projectId: string) =>
-  useQuery({ queryKey: projectKeys.detail(projectId), queryFn: () => projectsApi.getProject(projectId) });
-
-const useProjectMutation = <Variables>(mutationFn: (variables: Variables) => Promise<void>) => {
+/**
+ * Criar ou desfazer um projeto mexe no cardápio, nas vagas das disciplinas e
+ * no histórico das organizações, então tudo isso é recarregado. A lista de
+ * projetos é invalidada sozinha, sem o detalhe: o projeto desfeito não existe
+ * mais e não deve ser buscado de novo.
+ */
+const useInvalidateProjectLifecycle = () => {
+  const queryClient = useQueryClient();
   const invalidate = useInvalidateQueries();
-  return useMutation({ mutationFn, onSuccess: () => invalidate([projectKeys.all]) });
+  return () =>
+    Promise.all([
+      queryClient.invalidateQueries({ queryKey: queryKeys.projects, exact: true }),
+      invalidate([queryKeys.demands, queryKeys.disciplines, queryKeys.organizations]),
+    ]);
 };
 
-export const useAddLogEntry = () => useProjectMutation((payload: NewLogEntryPayload) => projectsApi.addLogEntry(payload));
+export const useAdoptDemand = () => {
+  const invalidateLifecycle = useInvalidateProjectLifecycle();
+  return useMutation({ mutationFn: projectsApi.adoptDemand, onSuccess: invalidateLifecycle });
+};
 
-export const usePrepareReport = () => useProjectMutation(projectsApi.prepareReport);
+export const useWithdrawProject = () => {
+  const invalidateLifecycle = useInvalidateProjectLifecycle();
+  return useMutation({ mutationFn: projectsApi.withdrawProject, onSuccess: invalidateLifecycle });
+};
 
-export const usePublishOnShowcase = () => useProjectMutation(projectsApi.publishOnShowcase);
+/** Mutations que só mudam o próprio projeto atualizam o cache dele sem ida ao servidor. */
+const useProjectMutation = <Input,>(mutationFn: (input: Input) => Promise<Project>, alsoInvalidate: QueryKey[] = []) => {
+  const queryClient = useQueryClient();
+  const invalidate = useInvalidateQueries();
+  return useMutation({
+    mutationFn,
+    onSuccess: (project) => {
+      queryClient.setQueryData(queryKeys.project(project.id), project);
+      return Promise.all([queryClient.invalidateQueries({ queryKey: queryKeys.projects, exact: true }), invalidate(alsoInvalidate)]);
+    },
+  });
+};
+
+export const useUpdatePlanSection = () => useProjectMutation(projectsApi.updatePlanSection);
+
+export const useUpdateTeams = () => useProjectMutation(projectsApi.updateTeams);
+
+/** Concluir o projeto libera vaga na disciplina e escreve no histórico da organização. */
+export const useCompleteMilestone = () =>
+  useProjectMutation(projectsApi.completeMilestone, [queryKeys.disciplines, queryKeys.organizations]);
