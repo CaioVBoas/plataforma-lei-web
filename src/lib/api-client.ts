@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { paths } from '@/routes/paths';
 
 export const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
@@ -20,8 +21,8 @@ api.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       localStorage.removeItem('auth_token');
-      if (!window.location.pathname.includes('/login')) {
-        window.location.href = '/login';
+      if (!window.location.pathname.startsWith(paths.login)) {
+        window.location.href = paths.login;
       }
     }
     const customMessage = error.response?.data?.message || 'Ocorreu um erro inesperado no servidor.';

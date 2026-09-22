@@ -1,89 +1,149 @@
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { QueryView } from '@/components/feedback/query-states';
+import { Button } from '@/components/ui/button';
+import { buttonClassName } from '@/components/ui/button-styles';
+import { EmptyState } from '@/components/ui/empty-state';
+import { SearchInput } from '@/components/ui/form-controls';
+import { FolderIcon } from '@/components/ui/icons';
+import { SelectMenu } from '@/components/ui/select-menu';
+import { ToggleChip } from '@/components/ui/toggle-chip';
+import { usePageHeader } from '@/layouts/portal/page-header-context';
+import { paths } from '@/routes/paths';
+import { pluralize } from '@/utils/format';
+import { ProjectRow } from '../components/project-row';
+import { useProjectNextAction } from '../hooks/use-project-next-action';
 import { useProjects } from '../hooks/use-projects';
-import { ProjectCard } from '../components/project-card';
+import type { Project, ProjectStage } from '../types';
+import { needsAttention } from '../utils/project-health';
 
-export const ProjectsPage = () => {
-  const { data: projects, isLoading, isError, error } = useProjects();
+const ALL = 'all';
+
+const HEADER: Record<ProjectStage, [string, string]> = {
+  running: ['Meus projetos', 'Projetos de extensão que você conduz neste semestre'],
+  completed: ['Meus projetos', 'Projetos que você já entregou aos parceiros'],
+};
+
+const EMPTY_COPY: Record<ProjectStage, { title: string; description: string }> = {
+  running: {
+    title: 'Nenhum projeto em execução',
+    description:
+      'Projetos aparecem aqui depois que você vincula uma demanda a uma disciplina e a proposta é registrada. O acompanhamento das equipes fica todo nesta tela.',
+  },
+  completed: {
+    title: 'Nenhum projeto concluído ainda',
+    description: 'Projetos entregues ao parceiro passam para esta aba ao fim do semestre.\nO histórico de registros e as horas certificadas ficam preservados aqui.',
+  },
+};
+
+const withCount = (projects: Project[], values: string[], allLabel: string, keyOf: (project: Project) => string | undefined) => [
+  { value: ALL, label: allLabel, count: projects.length },
+  ...values.map((value) => ({ value, label: value, count: projects.filter((project) => keyOf(project) === value).length })),
+];
+
+const ProjectList = ({ stage, projects }: { stage: ProjectStage; projects: Project[] }) => {
+  const [search, setSearch] = useState('');
+  const [discipline, setDiscipline] = useState(ALL);
+  const [semester, setSemester] = useState(ALL);
+  const [attentionOnly, setAttentionOnly] = useState(false);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const nextAction = useProjectNextAction();
+
+  const inStage = projects.filter((project) => project.stage === stage);
+  const query = search.trim().toLowerCase();
+  const visible = inStage.filter(
+    (project) =>
+      (!query || `${project.title} ${project.partnerName} ${project.disciplineName}`.toLowerCase().includes(query)) &&
+      (discipline === ALL || project.disciplineName === discipline) &&
+      (semester === ALL || project.completion?.semester === semester) &&
+      (!attentionOnly || needsAttention(project)),
+  );
+  const hasFilter = Boolean(query) || discipline !== ALL || semester !== ALL || attentionOnly;
+
+  const disciplineNames = [...new Set(projects.map((project) => project.disciplineName))];
+  const semesters = [...new Set(inStage.flatMap((project) => (project.completion ? [project.completion.semester] : [])))].sort().reverse();
+
+  const clearFilters = () => {
+    setSearch('');
+    setDiscipline(ALL);
+    setSemester(ALL);
+    setAttentionOnly(false);
+  };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-50 transition-colors duration-300">
-      {/* Header section */}
-      <header className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex justify-between items-center">
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-indigo-600 rounded-lg flex items-center justify-center shadow-md shadow-indigo-500/20">
-              <span className="text-white font-bold text-lg">M</span>
-            </div>
-            <div>
-              <h1 className="text-lg font-bold tracking-tight text-slate-800 dark:text-slate-100">
-                plataforma-lei
-              </h1>
-              <p className="text-xs text-slate-500 dark:text-slate-400">
-                Conectando academia e impacto social
-              </p>
-            </div>
-          </div>
-          <nav className="flex space-x-4">
-            <span className="text-sm font-semibold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/30 px-3 py-1.5 rounded-lg">
-              Projetos
-            </span>
-          </nav>
+    <div>
+      <div className="mb-12 flex flex-wrap items-center gap-2.5">
+        <SearchInput
+          aria-label="Buscar projetos"
+          placeholder="Buscar projeto, organização ou disciplina"
+          value={search}
+          onChange={(event) => setSearch(event.target.value)}
+          containerClassName="min-w-0 flex-[1_1_280px]"
+        />
+        {stage === 'completed' && (
+          <SelectMenu
+            label="Semestre"
+            shape="field"
+            value={semester}
+            neutralValue={ALL}
+            onChange={setSemester}
+            menuWidth={220}
+            options={withCount(inStage, semesters, 'Todos os semestres', (project) => project.completion?.semester)}
+          />
+        )}
+        <SelectMenu
+          label="Disciplina"
+          value={discipline}
+          neutralValue={ALL}
+          onChange={setDiscipline}
+          menuWidth={260}
+          options={withCount(inStage, disciplineNames, 'Todas as disciplinas', (project) => project.disciplineName)}
+        />
+        <ToggleChip selected={attentionOnly} onClick={() => setAttentionOnly((current) => !current)}>
+          Só o que pede atenção
+        </ToggleChip>
+        <span className="ml-auto shrink-0 text-[13px] text-n-600 tabular-nums">{pluralize(visible.length, 'projeto', 'projetos')}</span>
+      </div>
+
+      {visible.length > 0 ? (
+        <div>
+          {visible.map((project) => (
+            <ProjectRow
+              key={project.id}
+              project={project}
+              expanded={expandedId === project.id}
+              onToggle={() => setExpandedId((current) => (current === project.id ? null : project.id))}
+              onNextAction={nextAction.run}
+              busy={nextAction.isBusy}
+            />
+          ))}
         </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        <div className="mb-8">
-          <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-            Projetos de Extensão Disponíveis
-          </h2>
-          <p className="mt-2 text-slate-600 dark:text-slate-400">
-            Explore projetos submetidos por ONGs e organizações para colaboração com discentes e docentes.
-          </p>
-        </div>
-
-        {isLoading && (
-          <div className="flex flex-col items-center justify-center py-20 space-y-4">
-            <div className="w-12 h-12 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
-            <p className="text-slate-500 dark:text-slate-400 font-medium">
-              Carregando projetos acadêmicos...
-            </p>
-          </div>
-        )}
-
-        {isError && (
-          <div className="bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/50 rounded-xl p-6 text-center max-w-2xl mx-auto my-10">
-            <div className="w-12 h-12 bg-red-100 dark:bg-red-950 rounded-full flex items-center justify-center mx-auto mb-4 text-red-600 dark:text-red-400">
-              ⚠️
-            </div>
-            <h3 className="text-lg font-bold text-red-800 dark:text-red-400">
-              Erro ao carregar projetos
-            </h3>
-            <p className="text-sm text-red-600 dark:text-red-500 mt-2">
-              {(error as Error).message}
-            </p>
-          </div>
-        )}
-
-        {!isLoading && !isError && projects && projects.length === 0 && (
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-12 text-center max-w-xl mx-auto my-10 shadow-sm">
-            <div className="text-4xl mb-4">📂</div>
-            <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100">
-              Nenhum projeto encontrado
-            </h3>
-            <p className="text-slate-500 dark:text-slate-400 mt-2 text-sm">
-              Não existem projetos de extensão cadastrados no momento. Que tal cadastrar o primeiro?
-            </p>
-          </div>
-        )}
-
-        {!isLoading && !isError && projects && projects.length > 0 && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {projects.map((project) => (
-              <ProjectCard key={project.id} project={project} />
-            ))}
-          </div>
-        )}
-      </main>
+      ) : (
+        <EmptyState
+          icon={<FolderIcon size={28} />}
+          title={hasFilter ? 'Nenhum projeto com esses filtros' : EMPTY_COPY[stage].title}
+          description={hasFilter ? 'Nenhum projeto corresponde à busca e aos filtros ativos.' : EMPTY_COPY[stage].description}
+          action={
+            hasFilter ? (
+              <Button variant="secondary" onClick={clearFilters}>
+                Limpar filtros
+              </Button>
+            ) : (
+              stage === 'running' && (
+                <Link to={paths.menu} className={buttonClassName({ variant: 'primary' })}>
+                  Ver o cardápio de demandas
+                </Link>
+              )
+            )
+          }
+        />
+      )}
     </div>
   );
+};
+
+export const ProjectsPage = ({ stage }: { stage: ProjectStage }) => {
+  usePageHeader(...HEADER[stage]);
+  const projectsQuery = useProjects();
+  return <QueryView query={projectsQuery}>{(projects) => <ProjectList key={stage} stage={stage} projects={projects} />}</QueryView>;
 };

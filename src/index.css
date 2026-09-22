@@ -1,1 +1,140 @@
 @import "tailwindcss";
+
+/*
+ * Tokens do Design System Aperta o PLEI v1.0.
+ * Tudo que é cor, fonte ou movimento na interface sai daqui; componentes
+ * nunca usam hex solto.
+ */
+@theme {
+  --font-sans: "Geist", "Inter Tight", system-ui, sans-serif;
+  --font-body: "Inter", "SF Pro Text", system-ui, sans-serif;
+  --font-display: "Fredoka", "Baloo 2", system-ui, sans-serif;
+
+  /* Azul Tecnológico: rigor, dado e ação primária dos portais docente e coordenação. */
+  --color-azul-50: #eef3ff;
+  --color-azul-100: #d9e3ff;
+  --color-azul-200: #b5c8ff;
+  --color-azul-300: #86a4ff;
+  --color-azul-400: #517afa;
+  --color-azul-500: #2456e5;
+  --color-azul-600: #1a42c2;
+  --color-azul-700: #16349a;
+  --color-azul-800: #12297a;
+  --color-azul-900: #0e1f5c;
+
+  /* Laranja Social: nos portais fica restrito à extremidade quente do termômetro e ao parceiro. */
+  --color-laranja-50: #fff3ed;
+  --color-laranja-100: #ffe0d1;
+  --color-laranja-500: #ff6b2c;
+  --color-laranja-800: #93330c;
+
+  --color-n-0: #ffffff;
+  --color-n-25: #fafbfc;
+  --color-n-50: #f7f8fa;
+  --color-n-75: #f2f4f7;
+  --color-n-100: #eef0f4;
+  --color-n-150: #edeff3;
+  --color-n-200: #e1e5eb;
+  --color-n-300: #c9cfd9;
+  --color-n-400: #9aa3b2;
+  --color-n-500: #6b7484;
+  --color-n-600: #4b5362;
+  --color-n-700: #343b47;
+  --color-n-800: #21262f;
+  --color-n-900: #12151b;
+
+  --color-sucesso: #12a150;
+  --color-sucesso-bg: #e8f7ee;
+  --color-sucesso-borda: #bfe8cf;
+  --color-sucesso-texto: #0e7a3c;
+  --color-alerta-bg: #fff6e0;
+  --color-erro: #d93025;
+  --color-erro-bg: #fdf1ee;
+  --color-erro-borda: #f3d9d2;
+  --color-erro-texto: #a32b16;
+  --color-erro-forte: #c4321e;
+
+  --shadow-popover: 0 12px 28px rgba(18, 21, 27, 0.12);
+  --shadow-card-hover: 0 6px 20px rgba(18, 21, 27, 0.07);
+  --shadow-primary-hover: 0 4px 14px rgba(36, 86, 229, 0.28);
+  --shadow-focus: 0 0 0 3px rgba(36, 86, 229, 0.35);
+
+  --ease-suave: cubic-bezier(0.32, 0.72, 0, 1);
+  --ease-saida: cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  --animate-painel-entra: painel-entra 280ms var(--ease-saida);
+  --animate-veu-entra: veu-entra 200ms linear;
+  --animate-toast-entra: toast-entra 200ms var(--ease-saida);
+  --animate-card-entra: card-entra 380ms var(--ease-suave) both;
+  --animate-abre-linha: abre-linha 200ms var(--ease-suave) both;
+
+  @keyframes painel-entra {
+    from { transform: translateX(28px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+  @keyframes veu-entra {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes toast-entra {
+    from { transform: translateY(10px) scale(0.98); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  @keyframes card-entra {
+    from { transform: translateY(10px) scale(0.994); opacity: 0; }
+    to { transform: translateY(0) scale(1); opacity: 1; }
+  }
+  @keyframes abre-linha {
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+}
+
+/* Eyebrow de seção: único lugar da interface com maiúsculas. */
+@utility text-overline {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+@utility heading-section {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--color-n-800);
+}
+
+@layer base {
+  html,
+  body {
+    margin: 0;
+    background: var(--color-n-0);
+    color: var(--color-n-700);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  button {
+    cursor: pointer;
+  }
+
+  button:disabled {
+    cursor: not-allowed;
+  }
+
+  /* Foco visível em todo elemento interativo, sem depender do outline do navegador. */
+  :focus-visible {
+    outline: none;
+    box-shadow: var(--shadow-focus);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
