@@ -1,151 +1,127 @@
-# Plano de Reestruturação Arquitetural e Nomenclatura · Frontend (`plataforma-lei-web`)
+# Plano de Reestruturação Arquitetural · Frontend (`plataforma-lei-web`)
 
-Este documento consolida a revisão técnica da branch `feat/portal-docente`, detalha o novo padrão arquitetural para o diretório `src/features/`, define a migração de nomenclatura para `camelCase`, analisa a dissociação da feature `projects` e traça a matriz de compatibilidade com o schema do backend (`plataforma-lei-api`).
+Este documento consolida a revisão técnica da branch `feat/portal-docente`, detalha o padrão arquitetural atualizado para o diretório `src/features/`, apresenta a estrutura modular interna da feature `projects` (com submódulos, hooks dedicados e camada `shared/` interna), formaliza as justificativas técnicas e traça a matriz de compatibilidade com o schema do backend (`plataforma-lei-api`).
 
 ---
 
-## 1. Diagnóstico da Branch `feat/portal-docente`
+## 1. Diagnóstico e Status da Branch `feat/portal-docente`
 
-A branch introduz uma implementação mockada completa e rica do Portal do Docente do L.E.I., baseada no protótipo "Aperta o PLEI" e documentada em `docs/fluxos.md`.
+A branch implementa a interface mockada do Portal do Docente do L.E.I., baseada no protótipo "Aperta o PLEI" e documentada em `docs/fluxos.md`.
 
-* **Build & Typecheck:** `tsc -b && vite build` executa com **100% de sucesso** (0 erros de tipo em TypeScript 6).
+* **Build & Typecheck:** `tsc -b && vite build` executa com **100% de sucesso** (0 erros de tipo no TypeScript 6).
 * **Linter:** `oxlint` executado com **0 erros e 0 warnings** em 107 arquivos.
-* **Pontos Positivos:**
+* **Nomenclatura:** Padronização para `camelCase` nos arquivos de `src/` já aplicada e integrada (commit `3df1aab`).
+* **Pontos Fortes:**
   * **Regras de Negócio Puras (`src/domain/`):** Isolamento total das regras de ciclo de vida do projeto, compatibilidade de competências e regras de calendário, sem acoplamento ao React.
   * **Mock Realista (`src/mocks/`):** Banco em memória com persistência e simulação de latência de rede que consome as regras de domínio oficiais.
   * **Design System Primitivo (`src/components/ui/`):** Componentes visuais limpos e consistentes com tokens do Tailwind v4 (`src/index.css`).
-* **Oportunidades de Melhoria:**
-  * **Overhead de Pastas:** Features de página única (`home`, `guide`, `account`, `auth`) possuem estrutura profunda e desnecessária (`pages/`, `hooks/`, `api/`).
-  * **Nomenclatura Kebab-case:** 100% dos arquivos estão em `kebab-case`, divergindo da convenção `camelCase` estabelecida para o projeto.
-  * **Acoplamento em `projects`:** A feature de projetos acumula duas telas com propósitos e complexidades díspares: a listagem/dashboard e o workspace detalhado de execução.
+* **Oportunidade Central de Melhoria:**
+  * **Acoplamento Interno e Falta de Co-localização em `projects`:** A pasta `features/projects/` acumulava duas telas de complexidades muito distintas (`projectsPage.tsx` e `projectPage.tsx`), misturava 7 componentes pesados de workspace com componentes de listagem e centralizava todas as queries e mutações em um único hook monolítico (`useProjects.ts`).
 
 ---
 
-## 2. Nova Arquitetura de Features: Page e Hook na Raiz
+## 2. Padrão Arquitetural de Features: Co-localização e Raiz Limpa
 
-Para evitar navegação excessiva por subpastas com apenas 1 arquivo dentro, adotamos a regra: **a página principal e seu hook primário residem diretamente na raiz da pasta da feature**.
+Para evitar navegação excessiva por subpastas com apenas 1 arquivo dentro, adotamos o princípio de **co-localização estrita**:
 
-A pasta interna `hooks/` passa a ter papel nobre e exclusivo: abrigar hooks que fazem pontes com serviços externos, contextos globais ou integrações cross-feature.
+1. **Features Simples (1 tela):** A página principal (`*Page.tsx`) e seu hook primário (`use*.ts`) residem diretamente na raiz da pasta da feature.
+   ```text
+   features/account/
+   ├── accountPage.tsx         # Página na raiz
+   ├── useAccount.ts           # Hook primário na raiz
+   ├── accountApi.ts           # Contrato de comunicação com a API
+   └── types.ts                # Tipos específicos da conta
+   ```
 
-### Estrutura Comparativa
+2. **Features com múltiplos fluxos ou componentes auxiliares (ex: `demands`):**
+   ```text
+   features/demands/
+   ├── menuPage.tsx            # Tela do Cardápio de demandas
+   ├── demandPage.tsx          # Tela de Detalhe da demanda
+   ├── useDemands.ts           # Hook principal da feature (queries e mutações de demanda)
+   ├── demandsApi.ts           # Chamadas à API
+   ├── types.ts                # Tipos locais da feature
+   ├── components/             # Componentes visuais da feature (demandCard, decisionPanel, adoptDemandModal)
+   └── utils/                  # Helpers e formatação de apresentação (demandPresentation.ts)
+   ```
 
-#### Como está hoje (kebab-case e aninhamento redundante):
+---
+
+## 3. Arquitetura da Feature `projects`: Submódulos e Camada `shared/` Interna
+
+### 3.1. O Problema Identificado no Modelo Anterior
+A feature `projects` possui duas telas com papéis e pesos muito diferentes:
+* `projectsPage.tsx` (Lista de Projetos): Painel de consulta/leitura compacto (67 linhas) que só utiliza 1 componente (`projectRow.tsx`).
+* `projectPage.tsx` (Workspace do Projeto): Ambiente operacional complexo com 3 abas ativas, responsável por **7 dos 8 componentes** da pasta (`milestoneTimeline`, `milestoneTrack`, `nextStepCard`, `planTab`, `organizationTab`, `projectSettings`, `completeMilestoneModal`).
+
+Além disso, o arquivo [`useProjects.ts`](file:///Users/Caio/Documents/LEI/plataforma-lei-web/src/features/projects/hooks/useProjects.ts) funcionava como um **hook monolítico**, empacotando juntos:
+1. A query da listagem (`useProjects`).
+2. As mutações exclusivas do workspace (`useProject`, `useCompleteMilestone`, `useUpdatePlanSection`, `useUpdateTeams`, `useWithdrawProject`).
+3. A mutação de adoção acionada externamente pelo modal de demandas (`useAdoptDemand`).
+
+### 3.2. Estrutura Proposta
+
+Para manter `projects` como o **módulo proprietário** do seu domínio (sem quebrar importações de Home, Sidebar e Disciplinas nem criar dependências circulares), estruturamos a feature com submódulos focados e uma camada `shared/` interna:
+
 ```text
-features/account/
-├── api/
-│   └── account-api.ts
-├── hooks/
-│   └── use-account.ts
-└── pages/
-    └── account-page.tsx
-```
-
-#### Como fica na Nova Arquitetura (camelCase e raiz limpa):
-```text
-features/account/
-├── accountPage.tsx         # Página da feature na raiz
-├── useAccount.ts           # Hook primário da feature na raiz
-├── accountApi.ts           # Contrato de comunicação com a API
-└── types.ts                # Tipos específicos da conta
-```
-
-#### Para features com componentes e hooks auxiliares (ex: `demands`):
-```text
-features/demands/
-├── menuPage.tsx            # Página do Cardápio de demandas
-├── demandPage.tsx          # Página de Detalhe da demanda
-├── useDemands.ts           # Hook principal da feature (queries e mutações de demanda)
-├── demandsApi.ts           # Chamadas à API
-├── types.ts                # Tipos locais da feature
-├── hooks/                  # Apenas hooks auxiliares / integração externa
-│   └── useCalendarBridge.ts# Ex: conexão com o calendário acadêmico global
-├── components/             # Componentes visuais exclusivos da feature
-│   ├── adoptDemandModal.tsx
-│   ├── decisionPanel.tsx
-│   └── demandCard.tsx
-└── utils/                  # Helpers e formatação de apresentação
-    └── demandPresentation.ts
+src/features/projects/
+│
+├── list/                                # 📁 Sub-módulo: Listagem de Projetos
+│   ├── projectsPage.tsx                 # Tela de listagem
+│   └── useProjectsList.ts               # 🪝 Hook exclusivo da listagem (busca e filtros)
+│
+├── workspace/                           # 📁 Sub-módulo: Workspace do Projeto Individual
+│   ├── projectPage.tsx                  # Tela principal do workspace
+│   ├── useProjectWorkspace.ts           # 🪝 Hook exclusivo do workspace (query do projeto +
+│   │                                    #    mutações de etapas, plano, equipes e desistência)
+│   └── components/                      # Componentes visuais exclusivos do workspace:
+│       ├── completeMilestoneModal.tsx
+│       ├── milestoneTimeline.tsx
+│       ├── milestoneTrack.tsx
+│       ├── nextStepCard.tsx
+│       ├── organizationTab.tsx
+│       ├── planTab.tsx
+│       └── projectSettings.tsx
+│
+└── shared/                              # 📁 Recursos comuns internos e pontes externas
+    ├── api/
+    │   └── projectsApi.ts               # Funções de requisição HTTP / mocks
+    ├── components/
+    │   └── projectRow.tsx               # Linha de projeto (usado em list/ e disciplines/)
+    ├── hooks/
+    │   ├── useAgenda.ts                 # 🪝 Hook da agenda (consumido por home e sidebar)
+    │   └── useAdoptDemand.ts            # 🪝 Hook de adoção (consumido por demands/adoptDemandModal)
+    ├── types.ts                         # Tipos compartilhados de inputs e entidades
+    └── utils/
+        ├── agenda.ts                    # Cálculo de agenda e atenção
+        └── projectPresentation.ts       # Textos, badges e labels de etapas
 ```
 
 ---
 
-## 3. Revisão da Feature `projects`: Listagem vs. Workspace
+## 4. Justificativas Técnicas para as Atualizações
 
-### 3.1. O Problema Atual
-Atualmente, `src/features/projects/` agrupa duas páginas que possuem naturezas totalmente distintas:
-1. `projects-page.tsx` (Lista de Projetos):
-   - É um painel de leitura/listagem (67 linhas de código).
-   - Agrupa projetos por estágio (`Em planejamento`, `Em andamento`, `Concluídos`).
-   - Utiliza apenas **1 componente filho** (`project-row.tsx`).
-2. `project-page.tsx` (Workspace do Projeto):
-   - É uma aplicação operacional complexa (102 linhas de casca + centenas de linhas de componentes).
-   - Possui 3 abas ativas: Etapas, Plano e Organização.
-   - Contém **7 componentes dedicados e complexos**: `milestone-timeline.tsx`, `milestone-track.tsx`, `next-step-card.tsx`, `plan-tab.tsx`, `organization-tab.tsx`, `project-settings.tsx`, `complete-milestone-modal.tsx`.
-   - Gerencia transição das 6 etapas, modal de conclusão de marcos, confirmação de plano do SIGAA e desistência.
+### 1. Co-localização Real (Tela + Hook Lado a Lado)
+Cada submódulo possui seu próprio hook dedicado:
+* Em `list/`, quem mexe em `projectsPage.tsx` encontra `useProjectsList.ts` colado na tela, contendo apenas a lógica de listagem e filtros.
+* Em `workspace/`, quem mexe em `projectPage.tsx` ou em seus componentes de abas encontra `useProjectWorkspace.ts`, isolando a busca do projeto por ID e as mutações operacionais de marcos e plano.
 
-### 3.2. Decisão Arquitetural: Divisão em Duas Features Independentes
+### 2. Fim do Hook Monolítico
+O desmembramento do antigo `useProjects.ts` impede que a listagem de projetos carregue lógicas complexas de invalidação de etapas, travamento de plano no SIGAA ou histórico de organizações.
 
-A recomendação mais limpa e desacoplada é **dividir `projects` em duas features autônomas**:
+### 3. Preservação do Domínio & Eliminação de Ciclos
+Diferente de separar em duas top-level features (`projectList` vs `projectWorkspace`) — o que forçaria imports cruzados e dúvidas sobre quem é dono de `useProjects` ou `useAgenda` —, a camada `shared/` interna à feature `projects` preserva a coesão:
+* Outras telas (`home`, `sidebar`, `disciplines`, `demands`) continuam importando de `@/features/projects/shared/...`.
+* Não há vazamento de regras nem dependências circulares.
 
-#### 1. `features/projectList/` (ou `projectsList/`)
-Focada exclusivamente na visão agregada dos projetos do docente:
-```text
-features/projectList/
-├── projectsPage.tsx        # Página de listagem dos projetos
-├── useProjects.ts          # Hook de consulta da lista de projetos
-├── projectsApi.ts          # Endpoint GET /projects
-├── projectRow.tsx          # Componente de linha de projeto
-└── types.ts                # Tipos de listagem e agrupamento
-```
-
-#### 2. `features/projectWorkspace/` (ou `projectDetail/`)
-Focada exclusivamente na gestão do projeto individual:
-```text
-features/projectWorkspace/
-├── projectPage.tsx                 # Casca do workspace do projeto
-├── useProjectWorkspace.ts          # Hook do projeto (dados + mutações de etapas/plano)
-├── projectWorkspaceApi.ts          # Endpoints de detalhe, marcos e encerramento
-├── types.ts                        # Tipos das abas e formulários de etapas
-├── components/                     # Componentes exclusivos do workspace
-│   ├── completeMilestoneModal.tsx
-│   ├── milestoneTimeline.tsx
-│   ├── milestoneTrack.tsx
-│   ├── nextStepCard.tsx
-│   ├── organizationTab.tsx
-│   ├── planTab.tsx
-│   └── projectSettings.tsx
-└── utils/
-    ├── agenda.ts
-    └── projectPresentation.ts
-```
-
-> **Benefícios da Separação:**
-> * **Zero Ambiguidade:** Cada feature tem exatamente 1 página raiz e 1 hook raiz.
-> * **Manutenibilidade:** Quem estiver alterando o formulário de etapas ou a aba do SIGAA não toca nem corre risco de quebrar a listagem de projetos.
-> * **Carregamento Otimizado (Code Splitting):** O bundle da listagem fica levíssimo, pois os 7 componentes do workspace só são baixados quando o usuário realmente entra em um projeto.
-
----
-
-## 4. Padronização de Nomenclatura em `camelCase`
-
-Todos os arquivos de código (`.ts` e `.tsx`) devem adotar **`camelCase`**.
-
-### Regras de Conversão:
-
-| Categoria | Formato Anterior (`kebab-case`) | Novo Formato (`camelCase`) |
-| :--- | :--- | :--- |
-| **Páginas** | `projects-page.tsx`, `menu-page.tsx` | `projectsPage.tsx`, `menuPage.tsx` |
-| **Componentes** | `demand-card.tsx`, `adopt-demand-modal.tsx` | `demandCard.tsx`, `adoptDemandModal.tsx` |
-| **Hooks** | `use-demands.ts`, `use-projects.ts` | `useDemands.ts`, `useProjects.ts` |
-| **APIs** | `demands-api.ts`, `projects-api.ts` | `demandsApi.ts`, `projectsApi.ts` |
-| **Utilitários e Domínio** | `project-lifecycle.ts`, `button-styles.ts` | `projectLifecycle.ts`, `buttonStyles.ts` |
-| **Rotas e Layouts** | `app-routes.tsx`, `portal-layout.tsx` | `appRoutes.tsx`, `portalLayout.tsx` |
+### 4. Clareza de Escopo dos Componentes
+Os 7 componentes de alta densidade visual pertencentes às abas e modais do workspace ficam restritos a `workspace/components/`. A pasta `shared/components/` mantém apenas o que é verdadeiramente compartilhado (`projectRow.tsx`).
 
 ---
 
 ## 5. Matriz de Compatibilidade: Backend (`plataforma-lei-api`) vs Frontend (`plataforma-lei-web`)
 
-Cruzamento detalhado entre o schema Prisma atualizado da API e as interfaces de domínio do frontend:
+Cruzamento detalhado entre o schema Prisma da API e as interfaces de domínio do frontend:
 
 | Conceito | Backend (`schema.prisma`) | Frontend (`src/domain/types.ts`) | Análise & Plano de Ação |
 | :--- | :--- | :--- | :--- |
@@ -161,10 +137,15 @@ Cruzamento detalhado entre o schema Prisma atualizado da API e as interfaces de 
 
 ---
 
-## 6. Roteiro de Execução da Refatoração
+## 6. Roteiro de Implementação
 
-1. **Fase 1 · Criação da Documentação:** Registrar o plano em `docs/plano-reestruturacao-frontend.md` e atualizar o `README.md`.
-2. **Fase 2 · Separação de `projects`:** Desmembrar em `features/projectList/` e `features/projectWorkspace/`.
-3. **Fase 3 · Migração de Nomenclatura para `camelCase`:** Renomear arquivos em `src/domain/`, `src/components/`, `src/features/`, `src/layouts/`, `src/routes/` e `src/utils/`.
-4. **Fase 4 · Reorganização das Features:** Trazer a página e o hook principal para a raiz de cada pasta de feature.
-5. **Fase 5 · Validação Completa:** Executar `npm run build` e `npm run lint` para garantir zero erros de importação e integridade total.
+1. **Reestruturar `src/features/projects/`:**
+   * Criar os diretórios `list/`, `workspace/`, `workspace/components/` e `shared/`.
+   * Mover `projectsPage.tsx` para `list/` e extrair `useProjectsList.ts`.
+   * Mover `projectPage.tsx` para `workspace/`, extrair `useProjectWorkspace.ts` e mover os 7 componentes para `workspace/components/`.
+   * Mover `projectRow.tsx`, `projectsApi.ts`, `types.ts`, `agenda.ts`, `projectPresentation.ts`, `useAgenda.ts` e `useAdoptDemand.ts` para `shared/`.
+2. **Atualizar Imports:**
+   * Atualizar rotas (`src/routes/appRoutes.tsx`).
+   * Atualizar consumidores externos (`src/features/home/pages/homePage.tsx`, `src/layouts/sidebar.tsx`, `src/features/disciplines/pages/disciplinePage.tsx`, `src/features/demands/components/adoptDemandModal.tsx`).
+3. **Verificação de Integridade:**
+   * Executar `npm run build` e `npm run lint`.
