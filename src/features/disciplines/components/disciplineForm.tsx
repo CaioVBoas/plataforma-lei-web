@@ -3,8 +3,8 @@ import { Controller, useForm } from 'react-hook-form';
 import { Field, Input } from '@/components/ui/formControls';
 import { CheckIcon } from '@/components/ui/icons';
 import { cn } from '@/utils/cn';
-import { useSkillCatalog } from '../hooks/useDisciplines';
-import { disciplineSchema, type DisciplineFormValues } from '../schemas/disciplineSchema';
+import { useSkillCatalog } from '../useDisciplines';
+import { disciplineSchema, type DisciplineFormValues } from '../disciplineSchema';
 
 const EMPTY_DISCIPLINE: DisciplineFormValues = { name: '', code: '', students: 40, teamSize: 5, projectSlots: 2, skills: [] };
 

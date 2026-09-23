@@ -12,7 +12,7 @@ import type { SemesterCalendar } from '@/domain/types';
 import type { DisciplineWithUsage } from '@/features/disciplines/types';
 import { paths } from '@/routes/paths';
 import { cn } from '@/utils/cn';
-import { useReleaseReservation, useReserveDemand, useToggleWatch } from '../hooks/useDemands';
+import { useReleaseReservation, useReserveDemand, useToggleWatch } from '../useDemands';
 import type { DemandDetail } from '../types';
 import { daysLeftLabel } from '../utils/demandPresentation';
 

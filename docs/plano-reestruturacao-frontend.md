@@ -1,151 +1,165 @@
 # Plano de Reestruturação Arquitetural · Frontend (`plataforma-lei-web`)
 
-Este documento consolida a revisão técnica da branch `feat/portal-docente`, detalha o padrão arquitetural atualizado para o diretório `src/features/`, apresenta a estrutura modular interna da feature `projects` (com submódulos, hooks dedicados e camada `shared/` interna), formaliza as justificativas técnicas e traça a matriz de compatibilidade com o schema do backend (`plataforma-lei-api`).
+Este documento registra a revisão técnica da branch `feat/portal-docente`, o padrão de organização de `src/features/` adotado em todas as features, a estrutura interna da feature `projects` e a matriz de compatibilidade com o schema do backend (`plataforma-lei-api`).
+
+**Status:** implementado. A nomenclatura em camelCase, o padrão de pastas e a reestruturação de `projects` já estão na branch. O que falta é o alinhamento com o backend (seção 5).
 
 ---
 
-## 1. Diagnóstico e Status da Branch `feat/portal-docente`
+## 1. Diagnóstico
 
-A branch implementa a interface mockada do Portal do Docente do L.E.I., baseada no protótipo "Aperta o PLEI" e documentada em `docs/fluxos.md`.
+A branch implementa a interface mockada do Portal do Docente do L.E.I., baseada no protótipo "Aperta o PLEI" e especificada em `docs/fluxos.md`.
 
-* **Build & Typecheck:** `tsc -b && vite build` executa com **100% de sucesso** (0 erros de tipo no TypeScript 6).
-* **Linter:** `oxlint` executado com **0 erros e 0 warnings** em 107 arquivos.
-* **Nomenclatura:** Padronização para `camelCase` nos arquivos de `src/` já aplicada e integrada (commit `3df1aab`).
-* **Pontos Fortes:**
-  * **Regras de Negócio Puras (`src/domain/`):** Isolamento total das regras de ciclo de vida do projeto, compatibilidade de competências e regras de calendário, sem acoplamento ao React.
-  * **Mock Realista (`src/mocks/`):** Banco em memória com persistência e simulação de latência de rede que consome as regras de domínio oficiais.
-  * **Design System Primitivo (`src/components/ui/`):** Componentes visuais limpos e consistentes com tokens do Tailwind v4 (`src/index.css`).
-* **Oportunidade Central de Melhoria:**
-  * **Acoplamento Interno e Falta de Co-localização em `projects`:** A pasta `features/projects/` acumulava duas telas de complexidades muito distintas (`projectsPage.tsx` e `projectPage.tsx`), misturava 7 componentes pesados de workspace com componentes de listagem e centralizava todas as queries e mutações em um único hook monolítico (`useProjects.ts`).
-
----
-
-## 2. Padrão Arquitetural de Features: Co-localização e Raiz Limpa
-
-Para evitar navegação excessiva por subpastas com apenas 1 arquivo dentro, adotamos o princípio de **co-localização estrita**:
-
-1. **Features Simples (1 tela):** A página principal (`*Page.tsx`) e seu hook primário (`use*.ts`) residem diretamente na raiz da pasta da feature.
-   ```text
-   features/account/
-   ├── accountPage.tsx         # Página na raiz
-   ├── useAccount.ts           # Hook primário na raiz
-   ├── accountApi.ts           # Contrato de comunicação com a API
-   └── types.ts                # Tipos específicos da conta
-   ```
-
-2. **Features com múltiplos fluxos ou componentes auxiliares (ex: `demands`):**
-   ```text
-   features/demands/
-   ├── menuPage.tsx            # Tela do Cardápio de demandas
-   ├── demandPage.tsx          # Tela de Detalhe da demanda
-   ├── useDemands.ts           # Hook principal da feature (queries e mutações de demanda)
-   ├── demandsApi.ts           # Chamadas à API
-   ├── types.ts                # Tipos locais da feature
-   ├── components/             # Componentes visuais da feature (demandCard, decisionPanel, adoptDemandModal)
-   └── utils/                  # Helpers e formatação de apresentação (demandPresentation.ts)
-   ```
+* **Build e typecheck:** `tsc -b && vite build` sem erros.
+* **Linter:** `oxlint` sem erros nem avisos.
+* **Pontos fortes:**
+  * **Regras de negócio puras em `src/domain/`:** ciclo de vida do projeto, reserva, compatibilidade e calendário, sem dependência do React. O backend simulado e as telas usam as mesmas funções.
+  * **Backend simulado em `src/mocks/`:** banco em memória com latência simulada, aplicando as regras de domínio.
+  * **Componentes de interface em `src/components/ui/`:** primitivos visuais consistentes, com os tokens do Tailwind v4 em `src/index.css`.
+* **O que foi corrigido:**
+  * Arquivos em kebab-case passaram para camelCase.
+  * Features de uma tela tinham subpastas com um arquivo só (`pages/`, `hooks/`, `api/`).
+  * A feature `projects` misturava a listagem com a tela do projeto e concentrava todas as queries e mutations num único hook.
 
 ---
 
-## 3. Arquitetura da Feature `projects`: Submódulos e Camada `shared/` Interna
+## 2. Padrão de pastas das features
 
-### 3.1. O Problema Identificado no Modelo Anterior
-A feature `projects` possui duas telas com papéis e pesos muito diferentes:
-* `projectsPage.tsx` (Lista de Projetos): Painel de consulta/leitura compacto (67 linhas) que só utiliza 1 componente (`projectRow.tsx`).
-* `projectPage.tsx` (Workspace do Projeto): Ambiente operacional complexo com 3 abas ativas, responsável por **7 dos 8 componentes** da pasta (`milestoneTimeline`, `milestoneTrack`, `nextStepCard`, `planTab`, `organizationTab`, `projectSettings`, `completeMilestoneModal`).
+A regra vale para todas as features: **o que é principal fica na raiz, e subpasta só existe para agrupar coisas auxiliares.**
 
-Além disso, o arquivo [`useProjects.ts`](file:///Users/Caio/Documents/LEI/plataforma-lei-web/src/features/projects/hooks/useProjects.ts) funcionava como um **hook monolítico**, empacotando juntos:
-1. A query da listagem (`useProjects`).
-2. As mutações exclusivas do workspace (`useProject`, `useCompleteMilestone`, `useUpdatePlanSection`, `useUpdateTeams`, `useWithdrawProject`).
-3. A mutação de adoção acionada externamente pelo modal de demandas (`useAdoptDemand`).
+| Fica na raiz da feature | Vai para subpasta |
+| --- | --- |
+| Páginas (`*Page.tsx`) | `components/`: componentes visuais da feature |
+| Hook primário (`use*.ts`) | `utils/`: textos, rótulos e formatação de apresentação |
+| Contrato com a API (`*Api.ts`) | `hooks/`: só hooks auxiliares, que fazem ponte com outra feature ou serviço |
+| `types.ts` e schemas de formulário | |
 
-### 3.2. Estrutura Proposta
+Uma feature com duas telas de naturezas muito diferentes, e com partes usadas por outras features, se divide em **submódulos** mais uma pasta **`shared/`** interna. Hoje só `projects` precisa disso.
 
-Para manter `projects` como o **módulo proprietário** do seu domínio (sem quebrar importações de Home, Sidebar e Disciplinas nem criar dependências circulares), estruturamos a feature com submódulos focados e uma camada `shared/` interna:
+### Como ficaram as features
+
+```text
+src/features/
+├── account/        accountPage, useAccount, accountApi
+├── auth/           loginPage, useAuth, authApi, session, types
+├── calendar/       useCalendar, calendarApi                      (sem tela: calendário do semestre)
+├── demands/        menuPage, demandPage, useDemands, demandsApi, types
+│   ├── components/ adoptDemandModal, decisionPanel, demandCard
+│   └── utils/      demandPresentation
+├── disciplines/    disciplinesPage, disciplinePage, useDisciplines, disciplinesApi, disciplineSchema, types
+│   ├── components/ disciplineForm, newDisciplineModal
+│   └── utils/      disciplinePresentation
+├── guide/          guidePage
+├── home/           homePage
+├── organizations/  organizationsPage, organizationPage, useOrganizations, organizationsApi, types
+└── projects/       ver seção 3
+```
+
+---
+
+## 3. A feature `projects`
+
+### 3.1. O problema
+
+A feature tinha duas telas com papéis muito diferentes:
+
+* **`projectsPage.tsx`**, a lista de projetos: uma tela de consulta, que agrupa os projetos por estado e usa um componente só, a linha do projeto.
+* **`projectPage.tsx`**, a tela do projeto: ambiente de trabalho com três abas (Etapas, Plano e Organização), a janela de registro das etapas, o travamento do plano depois do SIGAA e a desistência.
+
+Além disso, um único `useProjects.ts` juntava a consulta da lista, a consulta de um projeto, as mutations da tela do projeto e a mutation de adoção, que é chamada pelo cardápio.
+
+### 3.2. A estrutura
+
+`projects` continua dona do próprio domínio. Separar em duas features de primeiro nível (`projectList` e `projectWorkspace`) deixaria sem dono o que as duas e outras telas usam, e criaria imports cruzados entre features. A solução foi dividir por dentro:
 
 ```text
 src/features/projects/
+├── list/                              A lista de projetos
+│   ├── projectsPage.tsx
+│   └── useProjectsList.ts             Agrupa os projetos por estado
 │
-├── list/                                # 📁 Sub-módulo: Listagem de Projetos
-│   ├── projectsPage.tsx                 # Tela de listagem
-│   └── useProjectsList.ts               # 🪝 Hook exclusivo da listagem (busca e filtros)
-│
-├── workspace/                           # 📁 Sub-módulo: Workspace do Projeto Individual
-│   ├── projectPage.tsx                  # Tela principal do workspace
-│   ├── useProjectWorkspace.ts           # 🪝 Hook exclusivo do workspace (query do projeto +
-│   │                                    #    mutações de etapas, plano, equipes e desistência)
-│   └── components/                      # Componentes visuais exclusivos do workspace:
+├── workspace/                         A tela de um projeto
+│   ├── projectPage.tsx
+│   ├── useProjectWorkspace.ts         Consulta do projeto e mutations de etapas, plano, equipes e desistência
+│   └── components/
 │       ├── completeMilestoneModal.tsx
 │       ├── milestoneTimeline.tsx
-│       ├── milestoneTrack.tsx
 │       ├── nextStepCard.tsx
 │       ├── organizationTab.tsx
 │       ├── planTab.tsx
 │       └── projectSettings.tsx
 │
-└── shared/                              # 📁 Recursos comuns internos e pontes externas
-    ├── api/
-    │   └── projectsApi.ts               # Funções de requisição HTTP / mocks
+└── shared/                            Usado pelos dois submódulos e por outras features
+    ├── api/projectsApi.ts
     ├── components/
-    │   └── projectRow.tsx               # Linha de projeto (usado em list/ e disciplines/)
+    │   ├── projectRow.tsx             Lista de projetos e página de disciplina
+    │   └── milestoneTrack.tsx         Linha do projeto e cabeçalho do workspace
     ├── hooks/
-    │   ├── useAgenda.ts                 # 🪝 Hook da agenda (consumido por home e sidebar)
-    │   └── useAdoptDemand.ts            # 🪝 Hook de adoção (consumido por demands/adoptDemandModal)
-    ├── types.ts                         # Tipos compartilhados de inputs e entidades
+    │   ├── useProjects.ts             Consulta de todos os projetos (lista, agenda, disciplina)
+    │   ├── useAgenda.ts               Próximos passos (Início e barra lateral)
+    │   ├── useAdoptDemand.ts          Levar demanda para a disciplina (janela do cardápio)
+    │   └── useInvalidateProjectLifecycle.ts   Recarga do que muda quando um projeto nasce ou é desfeito
+    ├── types.ts
     └── utils/
-        ├── agenda.ts                    # Cálculo de agenda e atenção
-        └── projectPresentation.ts       # Textos, badges e labels de etapas
+        ├── agenda.ts                  Cálculo dos próximos passos e do que pede atenção
+        └── projectPresentation.ts     Textos das etapas e dos estados
 ```
 
+### 3.3. Ajustes em relação à primeira proposta
+
+A proposta original foi mantida, com três correções que o código exigiu:
+
+1. **`milestoneTrack.tsx` foi para `shared/components/`**, e não para `workspace/`. A linha do projeto, que está em `shared`, usa esse componente. Se ele ficasse no workspace, `shared` passaria a importar de `workspace`, que é exatamente o acoplamento que a estrutura quer evitar.
+2. **A consulta de todos os projetos (`useProjects`) ficou em `shared/hooks/`.** Ela não é só da listagem: a agenda do Início, a barra lateral e a página de disciplina também leem. `list/useProjectsList.ts` é uma camada fina por cima, que agrupa os projetos por estado.
+3. **Nada de lógica que não existe.** A lista não tem busca nem filtro, então `useProjectsList` só agrupa. Quando busca e filtro existirem, é ali que entram.
+
+### 3.4. Regra de dependência
+
+* `list/` e `workspace/` importam de `shared/`, e nunca um do outro.
+* `shared/` não importa de `list/` nem de `workspace/`.
+* Outras features (`home`, `demands`, `disciplines`) e a barra lateral importam só de `@/features/projects/shared/...`.
+
+### 3.5. Por que assim
+
+* **Tela e hook lado a lado.** Quem mexe na lista encontra `useProjectsList.ts` ao lado da página. Quem mexe no workspace encontra `useProjectWorkspace.ts` ao lado da página e dos componentes das abas.
+* **Fim do hook único.** A lista não carrega mais as mutations de etapas, plano e desistência.
+* **Dono claro para o que é compartilhado.** `shared/` responde de quem é a consulta de projetos, a agenda e a adoção, sem dependência circular.
+
+A divisão do bundle por tela já existia antes, porque cada página é carregada sob demanda pelas rotas. A reestruturação não muda isso; o ganho é de organização.
+
 ---
 
-## 4. Justificativas Técnicas para as Atualizações
+## 4. Nomenclatura
 
-### 1. Co-localização Real (Tela + Hook Lado a Lado)
-Cada submódulo possui seu próprio hook dedicado:
-* Em `list/`, quem mexe em `projectsPage.tsx` encontra `useProjectsList.ts` colado na tela, contendo apenas a lógica de listagem e filtros.
-* Em `workspace/`, quem mexe em `projectPage.tsx` ou em seus componentes de abas encontra `useProjectWorkspace.ts`, isolando a busca do projeto por ID e as mutações operacionais de marcos e plano.
-
-### 2. Fim do Hook Monolítico
-O desmembramento do antigo `useProjects.ts` impede que a listagem de projetos carregue lógicas complexas de invalidação de etapas, travamento de plano no SIGAA ou histórico de organizações.
-
-### 3. Preservação do Domínio & Eliminação de Ciclos
-Diferente de separar em duas top-level features (`projectList` vs `projectWorkspace`) — o que forçaria imports cruzados e dúvidas sobre quem é dono de `useProjects` ou `useAgenda` —, a camada `shared/` interna à feature `projects` preserva a coesão:
-* Outras telas (`home`, `sidebar`, `disciplines`, `demands`) continuam importando de `@/features/projects/shared/...`.
-* Não há vazamento de regras nem dependências circulares.
-
-### 4. Clareza de Escopo dos Componentes
-Os 7 componentes de alta densidade visual pertencentes às abas e modais do workspace ficam restritos a `workspace/components/`. A pasta `shared/components/` mantém apenas o que é verdadeiramente compartilhado (`projectRow.tsx`).
+Todos os arquivos `.ts` e `.tsx` de `src/` usam camelCase: `menuPage.tsx`, `useDemands.ts`, `demandsApi.ts`, `projectLifecycle.ts`, `appRoutes.tsx`. Os componentes React exportados continuam em PascalCase dentro do arquivo (`export const MenuPage`).
 
 ---
 
-## 5. Matriz de Compatibilidade: Backend (`plataforma-lei-api`) vs Frontend (`plataforma-lei-web`)
+## 5. Compatibilidade com o backend (`plataforma-lei-api`)
 
-Cruzamento detalhado entre o schema Prisma da API e as interfaces de domínio do frontend:
+Cruzamento entre o schema Prisma da API e os tipos de domínio do frontend (`src/domain/types.ts`):
 
-| Conceito | Backend (`schema.prisma`) | Frontend (`src/domain/types.ts`) | Análise & Plano de Ação |
+| Conceito | Backend (`schema.prisma`) | Frontend | Ação |
 | :--- | :--- | :--- | :--- |
-| **Identificadores (IDs)** | `Int @id @default(autoincrement())` | `id: string` (`'dem-1'`, `'proj-1'`) | **Ação no Frontend:** Na camada de API e rotas, aceitar `number \| string` ou aplicar `Number(id)` para comunicação com o backend. |
-| **Demanda: Título e Ofertas** | Ausentes no modelo `Demand` | `title: string`, `offers: string[]` | **Ação no Backend:** Adicionar `title String` e `offers String[]` na entidade `Demand` do Prisma. |
-| **Demanda: Escopo e Viabilidade** | `Viabilidade { CABE_NO_SEMESTRE, APERTADO_EXIGE_RECORTE, NAO_CABE }` | `scopeFit: 'fits' \| 'needs-cut'` | **Ação de Alinhamento:** Adequar o frontend para mapear o enum oficial de viabilidade do backend. |
-| **Reserva de Demanda** | `reservedByProfessorId Int?`, `reservationDeadline DateTime?` | `Reservation { teacherName, mine, until }` (7 dias) | **100% Compatível:** O backend possui as colunas necessárias; a API calcula `mine` através do token JWT. |
-| **Notificação de Colega** | Inexistente no backend | `watching: boolean` ("Avise-me se liberar") | **Ação no Backend:** Criar relação `DemandWatcher` caso a funcionalidade de aviso seja mantida em produção. |
-| **Turmas / Disciplinas** | `model Course` (`enrolledStudents`, `projectCapacity`, `expectedLevel`) | `interface Discipline` (`students`, `teamSize`, `projectSlots`) | **Ação de Alinhamento:** Adotar `Course` ou manter `Discipline` no frontend mapeando na camada de API. |
-| **Organizações / Parceiros** | `model Partner` (`name`, `type`, `userId`) | `interface Organization` (contatos, histórico, endereço, sobre) | **Ação no Backend:** Enriquecer `Partner` com campos de contato institucional (`focalName`, `email`, `channel`) e histórico. |
-| **Etapas do Projeto (Ciclo)** | `model Project` com `status StatusProjeto` e `ProgressRecord` genérico | 6 etapas fixas (`Milestone`: `plan`, `kickoff`, `sigaa`, `midterm`, `final`, `closing`) | **Ação Arquitetural no Backend:** O backend precisa criar o modelo `ProjectMilestone` para registrar data prevista, data de realização e notas das 6 etapas. |
-| **Plano SIGAA e Carga Horária** | `ProposalSection` e `Workload` | `PlanSection` e `WorkloadRow` | **100% Compatível:** Mapeamento direto 1:1 de títulos, textos, atividades e horas. |
+| **Identificadores** | `Int @id @default(autoincrement())` | `id: string` (`'nase'`, `'mesa-2026-2'`) | **Frontend:** converter na camada `*Api.ts`, aceitando o número da API e usando texto nas rotas. |
+| **Demanda: título e ofertas** | Ausentes em `Demand` | `title: string`, `offers: string[]` | **Backend:** adicionar `title String` e `offers String[]` em `Demand`. |
+| **Demanda: viabilidade** | `Viabilidade { CABE_NO_SEMESTRE, APERTADO_EXIGE_RECORTE, NAO_CABE }` | `scopeFit: 'fits' \| 'needs-cut'` | **Alinhar:** o frontend precisa tratar `NAO_CABE`, ou o backend deixa de publicar demandas nesse estado no cardápio. |
+| **Reserva** | `reservedByProfessorId Int?`, `reservationDeadline DateTime?` | `Reservation { teacherName, mine, until }` | **Compatível:** a API calcula `mine` a partir do token. |
+| **Avise-me se liberar** | Não existe | `watching: boolean` | **Backend:** criar a relação `DemandWatcher` se o aviso for mantido. |
+| **Disciplinas** | `model Course` (`enrolledStudents`, `projectCapacity`, `expectedLevel`) | `Discipline` (`students`, `teamSize`, `projectSlots`, `skills`) | **Alinhar:** mapear `Course` para `Discipline` na camada de API. `teamSize` e `skills` precisam existir no backend. |
+| **Organizações** | `model Partner` (`name`, `type`, `userId`) | `Organization` (sobre, público, reuniões, contato, histórico) | **Backend:** enriquecer `Partner` com contato do ponto focal (`focalName`, `email`, `channel`) e histórico. |
+| **Etapas do projeto** | `Project` com `status StatusProjeto` e `ProgressRecord` genérico | Seis etapas fixas (`plan`, `kickoff`, `sigaa`, `midterm`, `final`, `closing`) | **Backend:** criar `ProjectMilestone` com data prevista, data de realização e nota de cada etapa. O estado do projeto passa a ser calculado a partir delas. |
+| **Plano SIGAA e carga horária** | `ProposalSection` e `Workload` | `PlanSection` e `WorkloadRow` | **Compatível:** mapeamento direto. |
 
 ---
 
-## 6. Roteiro de Implementação
+## 6. Roteiro
 
-1. **Reestruturar `src/features/projects/`:**
-   * Criar os diretórios `list/`, `workspace/`, `workspace/components/` e `shared/`.
-   * Mover `projectsPage.tsx` para `list/` e extrair `useProjectsList.ts`.
-   * Mover `projectPage.tsx` para `workspace/`, extrair `useProjectWorkspace.ts` e mover os 7 componentes para `workspace/components/`.
-   * Mover `projectRow.tsx`, `projectsApi.ts`, `types.ts`, `agenda.ts`, `projectPresentation.ts`, `useAgenda.ts` e `useAdoptDemand.ts` para `shared/`.
-2. **Atualizar Imports:**
-   * Atualizar rotas (`src/routes/appRoutes.tsx`).
-   * Atualizar consumidores externos (`src/features/home/pages/homePage.tsx`, `src/layouts/sidebar.tsx`, `src/features/disciplines/pages/disciplinePage.tsx`, `src/features/demands/components/adoptDemandModal.tsx`).
-3. **Verificação de Integridade:**
-   * Executar `npm run build` e `npm run lint`.
+| Fase | O que | Status |
+| --- | --- | --- |
+| 1 | Documentar o plano | Feito |
+| 2 | Renomear os arquivos de `src/` para camelCase | Feito |
+| 3 | Aplicar o padrão de pastas em todas as features | Feito |
+| 4 | Reestruturar `projects` em `list/`, `workspace/` e `shared/` | Feito |
+| 5 | Validar com `npm run build` e `npm run lint` | Feito |
+| 6 | Alinhar os tipos com o backend (seção 5) | A fazer, junto com o time da API |

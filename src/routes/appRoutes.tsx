@@ -7,18 +7,18 @@ import { paths } from './paths';
 import { RequireAuth } from './requireAuth';
 
 /* Cada tela vira um pedaço separado do bundle, carregado só quando o docente a abre. */
-const LoginPage = lazyPage(() => import('@/features/auth/pages/loginPage'), 'LoginPage');
-const HomePage = lazyPage(() => import('@/features/home/pages/homePage'), 'HomePage');
-const GuidePage = lazyPage(() => import('@/features/guide/pages/guidePage'), 'GuidePage');
-const MenuPage = lazyPage(() => import('@/features/demands/pages/menuPage'), 'MenuPage');
-const DemandPage = lazyPage(() => import('@/features/demands/pages/demandPage'), 'DemandPage');
-const ProjectsPage = lazyPage(() => import('@/features/projects/pages/projectsPage'), 'ProjectsPage');
-const ProjectPage = lazyPage(() => import('@/features/projects/pages/projectPage'), 'ProjectPage');
-const DisciplinesPage = lazyPage(() => import('@/features/disciplines/pages/disciplinesPage'), 'DisciplinesPage');
-const DisciplinePage = lazyPage(() => import('@/features/disciplines/pages/disciplinePage'), 'DisciplinePage');
-const OrganizationsPage = lazyPage(() => import('@/features/organizations/pages/organizationsPage'), 'OrganizationsPage');
-const OrganizationPage = lazyPage(() => import('@/features/organizations/pages/organizationPage'), 'OrganizationPage');
-const AccountPage = lazyPage(() => import('@/features/account/pages/accountPage'), 'AccountPage');
+const LoginPage = lazyPage(() => import('@/features/auth/loginPage'), 'LoginPage');
+const HomePage = lazyPage(() => import('@/features/home/homePage'), 'HomePage');
+const GuidePage = lazyPage(() => import('@/features/guide/guidePage'), 'GuidePage');
+const MenuPage = lazyPage(() => import('@/features/demands/menuPage'), 'MenuPage');
+const DemandPage = lazyPage(() => import('@/features/demands/demandPage'), 'DemandPage');
+const ProjectsPage = lazyPage(() => import('@/features/projects/list/projectsPage'), 'ProjectsPage');
+const ProjectPage = lazyPage(() => import('@/features/projects/workspace/projectPage'), 'ProjectPage');
+const DisciplinesPage = lazyPage(() => import('@/features/disciplines/disciplinesPage'), 'DisciplinesPage');
+const DisciplinePage = lazyPage(() => import('@/features/disciplines/disciplinePage'), 'DisciplinePage');
+const OrganizationsPage = lazyPage(() => import('@/features/organizations/organizationsPage'), 'OrganizationsPage');
+const OrganizationPage = lazyPage(() => import('@/features/organizations/organizationPage'), 'OrganizationPage');
+const AccountPage = lazyPage(() => import('@/features/account/accountPage'), 'AccountPage');
 
 export const AppRoutes = () => (
   <Suspense fallback={<LoadingState />}>

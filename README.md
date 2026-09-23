@@ -47,10 +47,11 @@ src/
 │   └── feedback/    # Aviso (toast) e estados de carregamento e erro
 ├── features/        # Uma pasta por área do portal
 │   └── <feature>/
-│       ├── api/         # Contrato com o backend (hoje responde pelo mock)
-│       ├── hooks/       # Queries e mutations do React Query
-│       ├── components/
-│       ├── pages/       # Telas ligadas às rotas
+│       ├── *Page.tsx    # Telas ligadas às rotas, na raiz
+│       ├── use*.ts      # Hook primário: queries e mutations do React Query
+│       ├── *Api.ts      # Contrato com o backend (hoje responde pelo mock)
+│       ├── types.ts
+│       ├── components/  # Componentes da feature
 │       └── utils/       # Apresentação: textos, rótulos e agrupamentos
 ├── layouts/         # Barra lateral e casca do portal
 ├── mocks/           # Backend simulado: seed, banco em memória e handlers
@@ -63,7 +64,7 @@ src/
 | --- | --- |
 | `home` | Início: próximos passos e demandas sugeridas |
 | `demands` | Cardápio, detalhe com a reserva e a janela "Levar para uma disciplina" |
-| `projects` | Lista de projetos e o projeto: próximo passo, etapas, plano e organização |
+| `projects` | `list/` (lista de projetos), `workspace/` (próximo passo, etapas, plano e organização) e `shared/` (o que outras telas usam) |
 | `disciplines` | Disciplinas, cadastro e detalhe com as demandas que combinam |
 | `organizations` | Organizações e detalhe com contato e histórico |
 | `guide` | Como funciona |
@@ -73,7 +74,8 @@ src/
 
 - **Regra de negócio mora em `src/domain`.** O backend simulado e as telas usam as mesmas funções, então a regra não se repete nem diverge.
 - **Páginas só falam com hooks.** Uma página nunca importa `mocks/` nem `lib/api-client` diretamente.
-- **Features podem usar hooks e componentes de outra feature**, mas nunca os handlers do mock.
+- **Features podem usar hooks e componentes de outra feature**, mas nunca os handlers do mock. Em `projects`, o que é usado de fora fica em `projects/shared/`.
+- **Padrão de pastas:** página, hook primário, API e tipos na raiz da feature; subpasta só para `components/`, `utils/` e hooks auxiliares. Detalhes em [`docs/plano-reestruturacao-frontend.md`](docs/plano-reestruturacao-frontend.md).
 - **Cor, fonte, raio e movimento vêm dos tokens** do `index.css`. Não use hex solto nos componentes.
 - **URLs só em `routes/paths.ts`, chaves de cache só em `lib/queryKeys.ts`.**
 - **Arquivos em camelCase** (`projectPage.tsx`, `useProjects.ts`, `demandPresentation.ts`).
@@ -84,7 +86,7 @@ src/
 
 Ainda não existe backend, então `src/mocks` faz esse papel. O `db.ts` guarda o estado em memória, semeado com as demandas reais do L.E.I. Os `handlers/` aplicam as regras de negócio e o `mockRequest` simula a latência de uma chamada HTTP. Recarregar a página volta ao cenário de demonstração, com a data fixa em 24 de agosto de 2026.
 
-Para integrar a API real, basta trocar o corpo das funções em `features/*/api/*.ts`. Hooks, páginas e componentes não mudam:
+Para integrar a API real, basta trocar o corpo das funções nos arquivos `*Api.ts` de cada feature. Hooks, páginas e componentes não mudam:
 
 ```ts
 // antes

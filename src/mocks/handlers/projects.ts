@@ -3,7 +3,7 @@ import { freeSlots, maxTeams } from '@/domain/disciplineRules';
 import { isMyReservation } from '@/domain/reservation';
 import { buildMilestones, canWithdraw, emptyPlanSections, isPlanLocked, nextMilestone } from '@/domain/projectLifecycle';
 import type { Project } from '@/domain/types';
-import type { AdoptDemandInput, CompleteMilestoneInput, UpdatePlanSectionInput } from '@/features/projects/types';
+import type { AdoptDemandInput, CompleteMilestoneInput, UpdatePlanSectionInput } from '@/features/projects/shared/types';
 import { db, findOrThrow, RuleError } from '../db';
 import { generatePlan, generateWorkload } from '../seed/plans';
 import { withUsage } from './disciplines';

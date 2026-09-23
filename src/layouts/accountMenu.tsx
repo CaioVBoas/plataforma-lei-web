@@ -1,8 +1,8 @@
 import { useNavigate } from 'react-router-dom';
 import { Avatar } from '@/components/ui/avatar';
 import { ChevronDownIcon } from '@/components/ui/icons';
-import { useAccount } from '@/features/account/hooks/useAccount';
-import { useLogout } from '@/features/auth/hooks/useAuth';
+import { useAccount } from '@/features/account/useAccount';
+import { useLogout } from '@/features/auth/useAuth';
 import { usePopover } from '@/hooks/usePopover';
 import { paths } from '@/routes/paths';
 import { cn } from '@/utils/cn';

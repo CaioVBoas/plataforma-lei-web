@@ -2,8 +2,8 @@ import { useId } from 'react';
 import { useToast } from '@/components/feedback/toastContext';
 import { Button } from '@/components/ui/button';
 import { Modal } from '@/components/ui/modal';
-import { useCalendar } from '@/features/calendar/hooks/useCalendar';
-import { useCreateDiscipline } from '../hooks/useDisciplines';
+import { useCalendar } from '@/features/calendar/useCalendar';
+import { useCreateDiscipline } from '../useDisciplines';
 import type { DisciplineWithUsage } from '../types';
 import { DisciplineForm } from './disciplineForm';
 
