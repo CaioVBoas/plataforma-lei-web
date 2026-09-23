@@ -1,1 +1,140 @@
 @import "tailwindcss";
+
+/*
+ * Tokens visuais do portal. Toda cor, fonte, raio e movimento sai daqui;
+ * componentes nunca usam hex solto.
+ *
+ * A estrutura é sóbria, no espírito das interfaces da Apple: tipografia do
+ * sistema, cinzas neutros e cantos discretos. A identidade vem do Design
+ * System Aperta o PLEI: o Azul Tecnológico nas ações e o Laranja Social na
+ * reserva, o momento em que o docente segura um problema real para a turma.
+ */
+@theme {
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+
+  /* Texto: três níveis de hierarquia. */
+  --color-ink: #1d1d1f;
+  --color-ink-2: #515154;
+  --color-ink-3: #86868b;
+
+  /* Superfícies. "canvas" é o fundo da barra lateral e de áreas agrupadas. */
+  --color-surface: #ffffff;
+  --color-canvas: #f5f5f7;
+  --color-fill: #ececf0;
+  --color-fill-strong: #e2e2e7;
+  --color-line: #e3e3e8;
+  --color-line-strong: #d2d2d7;
+
+  /* Ação: Azul Tecnológico do Design System, no tom 600 para não gritar. */
+  --color-accent: #1a42c2;
+  --color-accent-hover: #16349a;
+  --color-accent-soft: #eef3ff;
+  /* Azul legível sobre o fundo escuro do aviso. */
+  --color-accent-on-dark: #86a4ff;
+
+  /* Reserva: Laranja Social do Design System, só onde há reserva. */
+  --color-reserve: #a63d10;
+  --color-reserve-dot: #e8622a;
+  --color-reserve-soft: #fff3ed;
+
+  /* Estados, dessaturados para não competir com o conteúdo. */
+  --color-positive: #2b7a3d;
+  --color-positive-soft: #ebf5ed;
+  --color-caution: #9a5b00;
+  --color-caution-soft: #fcf3e4;
+  --color-critical: #c0392b;
+  --color-critical-soft: #fbeeec;
+
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 10px;
+
+  --shadow-popover: 0 8px 24px rgba(0, 0, 0, 0.12), 0 0 0 0.5px rgba(0, 0, 0, 0.08);
+  --shadow-sheet: 0 20px 60px rgba(0, 0, 0, 0.18), 0 0 0 0.5px rgba(0, 0, 0, 0.08);
+  --shadow-focus: 0 0 0 3px rgba(26, 66, 194, 0.3);
+
+  --ease-standard: cubic-bezier(0.25, 0.1, 0.25, 1);
+
+  --animate-fade-in: fade-in 180ms var(--ease-standard);
+  --animate-sheet-in: sheet-in 220ms var(--ease-standard);
+  --animate-rise-in: rise-in 220ms var(--ease-standard);
+
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes sheet-in {
+    from { opacity: 0; transform: translateY(8px) scale(0.99); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  @keyframes rise-in {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+}
+
+/* Títulos com a escala tipográfica do sistema. */
+@utility text-large-title {
+  font-size: 32px;
+  line-height: 1.15;
+  font-weight: 700;
+  letter-spacing: -0.021em;
+  color: var(--color-ink);
+}
+
+@utility text-title {
+  font-size: 22px;
+  line-height: 1.25;
+  font-weight: 600;
+  letter-spacing: -0.017em;
+  color: var(--color-ink);
+}
+
+@utility text-headline {
+  font-size: 17px;
+  line-height: 1.35;
+  font-weight: 600;
+  letter-spacing: -0.012em;
+  color: var(--color-ink);
+}
+
+@layer base {
+  html,
+  body {
+    margin: 0;
+    background: var(--color-surface);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: 15px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  button {
+    cursor: pointer;
+  }
+
+  button:disabled {
+    cursor: not-allowed;
+  }
+
+  /* Foco visível em todo elemento interativo, sem depender do outline do navegador. */
+  :focus-visible {
+    outline: none;
+    box-shadow: var(--shadow-focus);
+  }
+
+  ::selection {
+    background: var(--color-accent-soft);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
