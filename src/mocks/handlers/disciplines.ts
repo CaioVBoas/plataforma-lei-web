@@ -1,4 +1,4 @@
-import { occupiesSlot } from '@/domain/project-lifecycle';
+import { occupiesSlot } from '@/domain/projectLifecycle';
 import type { Discipline } from '@/domain/types';
 import type { DisciplineInput, DisciplineWithUsage } from '@/features/disciplines/types';
 import { normalizeText } from '@/utils/format';

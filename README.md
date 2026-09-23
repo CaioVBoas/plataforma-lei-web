@@ -75,7 +75,8 @@ src/
 - **Páginas só falam com hooks.** Uma página nunca importa `mocks/` nem `lib/api-client` diretamente.
 - **Features podem usar hooks e componentes de outra feature**, mas nunca os handlers do mock.
 - **Cor, fonte, raio e movimento vêm dos tokens** do `index.css`. Não use hex solto nos componentes.
-- **URLs só em `routes/paths.ts`, chaves de cache só em `lib/query-keys.ts`.**
+- **URLs só em `routes/paths.ts`, chaves de cache só em `lib/queryKeys.ts`.**
+- **Arquivos em camelCase** (`projectPage.tsx`, `useProjects.ts`, `demandPresentation.ts`).
 - **Comentários explicam o porquê**, não o que o código já diz.
 - **Texto de interface sem travessão e sem emoji**, na linguagem da sala de aula ("levar para a disciplina", não "vincular demanda").
 

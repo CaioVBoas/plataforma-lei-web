@@ -1,4 +1,4 @@
-import { MILESTONE_ORDER } from '@/domain/project-lifecycle';
+import { MILESTONE_ORDER } from '@/domain/projectLifecycle';
 import type { IsoDate, Milestone, MilestoneId, PlanSection, Project } from '@/domain/types';
 import { ORGANIZATIONS } from './organizations';
 import { generatePlan, generateWorkload } from './plans';

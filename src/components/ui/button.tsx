@@ -1,6 +1,6 @@
 import type { ButtonHTMLAttributes } from 'react';
 import { cn } from '@/utils/cn';
-import { buttonClassName, type ButtonStyleOptions } from './button-styles';
+import { buttonClassName, type ButtonStyleOptions } from './buttonStyles';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement>, ButtonStyleOptions {}
 

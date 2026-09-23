@@ -1,5 +1,5 @@
 import { daysBetween } from '@/domain/calendar';
-import { isOverdue, nextMilestone } from '@/domain/project-lifecycle';
+import { isOverdue, nextMilestone } from '@/domain/projectLifecycle';
 import type { IsoDate, Milestone, Project } from '@/domain/types';
 
 export interface AgendaItem {

@@ -1,14 +1,14 @@
 import type { ReactNode } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { BrandMark } from '@/components/ui/brand-mark';
+import { BrandMark } from '@/components/ui/brandMark';
 import { BookIcon, BuildingIcon, FolderIcon, HomeIcon, QuestionIcon, TrayIcon } from '@/components/ui/icons';
 import { isMyReservation } from '@/domain/reservation';
-import { useMenu } from '@/features/demands/hooks/use-demands';
-import { useAgenda } from '@/features/projects/hooks/use-agenda';
+import { useMenu } from '@/features/demands/hooks/useDemands';
+import { useAgenda } from '@/features/projects/hooks/useAgenda';
 import { needsAttention } from '@/features/projects/utils/agenda';
 import { paths } from '@/routes/paths';
 import { cn } from '@/utils/cn';
-import { AccountMenu } from './account-menu';
+import { AccountMenu } from './accountMenu';
 
 interface NavItemProps {
   to: string;
