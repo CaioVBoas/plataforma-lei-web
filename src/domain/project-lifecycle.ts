@@ -37,10 +37,10 @@ export const completedCount = (milestones: Milestone[]) => milestones.filter((mi
 
 export const isOverdue = (milestone: Milestone, today: IsoDate) => !milestone.doneAt && daysBetween(today, milestone.dueAt) < 0;
 
-/** Regra 5: depois do registro no SIGAA, o compromisso é institucional. */
+/** Regra 7: depois do registro no SIGAA, o compromisso é institucional. */
 export const canWithdraw = (project: Pick<Project, 'milestones'>) => projectStage(project.milestones) === 'planning';
 
-/** Regra 6: o plano registrado é o texto oficial. */
+/** Regra 8: o plano registrado é o texto oficial. */
 export const isPlanLocked = (project: Pick<Project, 'milestones'>) => isDone(project.milestones, 'sigaa');
 
 export const emptyPlanSections = (project: Pick<Project, 'plan'>) => project.plan.filter((section) => !section.text.trim());

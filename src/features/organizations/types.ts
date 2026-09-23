@@ -6,7 +6,7 @@ export interface OrganizationSummary extends Organization {
 
 export interface OrganizationDetail {
   organization: Organization;
-  /** Só vem para quem já tem projeto com a organização (regra 4). */
+  /** Só vem para quem já tem projeto com a organização (regra 6). */
   contact?: OrganizationContact;
   openDemands: Demand[];
   myProjects: Project[];

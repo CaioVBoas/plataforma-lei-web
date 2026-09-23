@@ -20,7 +20,7 @@ const WithdrawModal = ({ project, onClose }: { project: Project; onClose: () => 
   const confirm = () =>
     withdraw.mutate(project.id, {
       onSuccess: () => {
-        toast.show('Você desistiu do projeto. A demanda voltou para a lista de demandas.');
+        toast.show('Você desistiu do projeto. A demanda voltou para o cardápio.');
         navigate(paths.projects, { replace: true });
       },
     });
@@ -28,7 +28,7 @@ const WithdrawModal = ({ project, onClose }: { project: Project; onClose: () => 
   return (
     <Modal
       title="Desistir deste projeto?"
-      description={`A demanda volta para a lista e ${project.organization.name} recebe o aviso. O plano e as anotações deste projeto são apagados.`}
+      description={`A demanda volta para o cardápio e ${project.organization.name} recebe o aviso. O plano e as anotações deste projeto são apagados.`}
       onClose={onClose}
       footer={
         <>
@@ -44,7 +44,7 @@ const WithdrawModal = ({ project, onClose }: { project: Project; onClose: () => 
   );
 };
 
-/** Ajustes que não são etapa: número de equipes e desistência, esta só no planejamento (regra 5). */
+/** Ajustes que não são etapa: número de equipes e desistência, esta só no planejamento (regra 7). */
 export const ProjectSettings = ({ project }: { project: Project }) => {
   const { data: discipline } = useDiscipline(project.disciplineId);
   const updateTeams = useUpdateTeams();
@@ -76,7 +76,7 @@ export const ProjectSettings = ({ project }: { project: Project }) => {
 
       {canWithdraw(project) && (
         <div className="mt-8 flex flex-wrap items-center justify-between gap-4">
-          <p className="max-w-[56ch] text-[13px] text-ink-3">Até o registro no SIGAA você pode desistir, e a demanda volta para a lista de demandas.</p>
+          <p className="max-w-[56ch] text-[13px] text-ink-3">Até o registro no SIGAA você pode desistir, e a demanda volta para o cardápio.</p>
           <Button variant="destructive" size="sm" onClick={() => setWithdrawing(true)}>
             Desistir do projeto
           </Button>

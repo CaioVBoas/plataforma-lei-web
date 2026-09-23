@@ -4,9 +4,10 @@
  * Tokens visuais do portal. Toda cor, fonte, raio e movimento sai daqui;
  * componentes nunca usam hex solto.
  *
- * A linguagem segue as interfaces da Apple: tipografia do sistema, cinzas
- * neutros, um único azul de ação, cores de estado dessaturadas e cantos
- * discretos. Sem gradiente e sem sombra pesada.
+ * A estrutura é sóbria, no espírito das interfaces da Apple: tipografia do
+ * sistema, cinzas neutros e cantos discretos. A identidade vem do Design
+ * System Aperta o PLEI: o Azul Tecnológico nas ações e o Laranja Social na
+ * reserva, o momento em que o docente segura um problema real para a turma.
  */
 @theme {
   --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
@@ -24,12 +25,17 @@
   --color-line: #e3e3e8;
   --color-line-strong: #d2d2d7;
 
-  /* Ação. */
-  --color-accent: #0066cc;
-  --color-accent-hover: #0058b0;
-  --color-accent-soft: #eaf2fc;
+  /* Ação: Azul Tecnológico do Design System, no tom 600 para não gritar. */
+  --color-accent: #1a42c2;
+  --color-accent-hover: #16349a;
+  --color-accent-soft: #eef3ff;
   /* Azul legível sobre o fundo escuro do aviso. */
-  --color-accent-on-dark: #6cb4ff;
+  --color-accent-on-dark: #86a4ff;
+
+  /* Reserva: Laranja Social do Design System, só onde há reserva. */
+  --color-reserve: #a63d10;
+  --color-reserve-dot: #e8622a;
+  --color-reserve-soft: #fff3ed;
 
   /* Estados, dessaturados para não competir com o conteúdo. */
   --color-positive: #2b7a3d;
@@ -45,7 +51,7 @@
 
   --shadow-popover: 0 8px 24px rgba(0, 0, 0, 0.12), 0 0 0 0.5px rgba(0, 0, 0, 0.08);
   --shadow-sheet: 0 20px 60px rgba(0, 0, 0, 0.18), 0 0 0 0.5px rgba(0, 0, 0, 0.08);
-  --shadow-focus: 0 0 0 3px rgba(0, 102, 204, 0.3);
+  --shadow-focus: 0 0 0 3px rgba(26, 66, 194, 0.3);
 
   --ease-standard: cubic-bezier(0.25, 0.1, 0.25, 1);
 

@@ -25,13 +25,13 @@ Para entrar, use qualquer e-mail `@ufpe.br` ou `@cin.ufpe.br` com qualquer senha
 | Item | Pergunta que responde |
 | --- | --- |
 | Início | O que eu preciso fazer hoje? |
-| Demandas | Que problema a minha turma pode resolver? |
+| Cardápio | Que problema a minha turma pode resolver? |
 | Projetos | Em que pé estão os meus projetos? |
 | Disciplinas | Quais turmas podem receber projeto? |
 | Organizações | Com quem eu vou trabalhar? |
 | Como funciona | Tutorial dentro do portal |
 
-Todo projeto passa pelas mesmas seis etapas: revisar o plano, reunião de abertura, registro no SIGAA, entrega parcial, entrega final e encerramento. O estado do projeto (planejamento, em andamento, concluído) é calculado a partir delas.
+No cardápio, o docente reserva uma demanda por 7 dias enquanto decide e depois a leva para uma disciplina. Todo projeto passa pelas mesmas seis etapas: revisar o plano, reunião de abertura, registro no SIGAA, entrega parcial, entrega final e encerramento. O estado do projeto (planejamento, em andamento, concluído) é calculado a partir delas.
 
 ## Stack
 
@@ -41,7 +41,7 @@ React 19, TypeScript, Vite, Tailwind CSS v4, React Router, TanStack Query, React
 
 ```
 src/
-├── domain/          # Entidades e regras puras, sem React: calendário, compatibilidade, ciclo do projeto
+├── domain/          # Entidades e regras puras, sem React: calendário, reserva, compatibilidade, ciclo do projeto
 ├── components/
 │   ├── ui/          # Primitivos visuais sem regra de negócio (Page, GroupedList, Modal, SegmentedControl…)
 │   └── feedback/    # Aviso (toast) e estados de carregamento e erro
@@ -62,7 +62,7 @@ src/
 | Feature | Telas |
 | --- | --- |
 | `home` | Início: próximos passos e demandas sugeridas |
-| `demands` | Lista de demandas, detalhe e a janela "Levar para uma disciplina" |
+| `demands` | Cardápio, detalhe com a reserva e a janela "Levar para uma disciplina" |
 | `projects` | Lista de projetos e o projeto: próximo passo, etapas, plano e organização |
 | `disciplines` | Disciplinas, cadastro e detalhe com as demandas que combinam |
 | `organizations` | Organizações e detalhe com contato e histórico |
@@ -87,9 +87,9 @@ Para integrar a API real, basta trocar o corpo das funções em `features/*/api/
 
 ```ts
 // antes
-export const getOpenDemands = () => mockRequest(() => server.listOpenDemands());
+export const getMenu = () => mockRequest(() => server.listMenu());
 // depois
-export const getOpenDemands = () => api.get<Demand[]>('/demands?status=open').then((response) => response.data);
+export const getMenu = () => api.get<Demand[]>('/menu').then((response) => response.data);
 ```
 
 ## O que ainda depende de decisão

@@ -99,7 +99,7 @@ const WorkloadTable = ({ project }: { project: Project }) => {
   );
 };
 
-/** O plano é o texto do SIGAA. Editável até o registro, travado depois (regra 6). */
+/** O plano é o texto do SIGAA. Editável até o registro, travado depois (regra 8). */
 export const PlanTab = ({ project, today }: { project: Project; today: IsoDate }) => {
   const toast = useToast();
   const complete = useCompleteMilestone();

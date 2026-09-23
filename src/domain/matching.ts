@@ -1,7 +1,7 @@
 import type { Demand, Discipline } from './types';
 
 /**
- * A compatibilidade é contada, não estimada (regra 7 do docs/fluxos.md):
+ * A compatibilidade é contada, não estimada (regra 9 do docs/fluxos.md):
  * a disciplina combina com a demanda quando trabalha pelo menos metade das
  * competências que a demanda pede.
  */

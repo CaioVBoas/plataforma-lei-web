@@ -1,8 +1,9 @@
 import type { Demand } from '@/domain/types';
 
 /**
- * Demandas reais já triadas pelo L.E.I. As duas últimas já viraram projetos
- * da docente de demonstração, por isso estão fora do cardápio.
+ * Demandas reais já triadas pelo L.E.I. Na demonstração, a do HC está
+ * reservada pela docente, a da Várzea por um colega, e as duas últimas já
+ * viraram projetos dela, por isso estão fora do cardápio.
  */
 export const DEMANDS: Demand[] = [
   {
@@ -20,6 +21,12 @@ export const DEMANDS: Demand[] = [
     offers: ['As três planilhas anonimizadas na primeira reunião', 'Acesso da turma ao núcleo, no mesmo campus'],
     publishedAt: '2026-08-22',
     status: 'open',
+    watching: false,
+    references: [
+      { name: 'Baserow', description: 'Base colaborativa que substitui planilha dispersa.', url: 'https://baserow.io' },
+      { name: 'Metabase', description: 'Painéis sobre uma base que já existe, sem desenvolvimento pesado.', url: 'https://www.metabase.com' },
+      { name: 'OpenMRS', description: 'Prontuário de código aberto com registro de atendimento.', url: 'https://openmrs.org' },
+    ],
   },
   {
     id: 'hc',
@@ -35,7 +42,14 @@ export const DEMANDS: Demand[] = [
     meetingCadence: 'Reunião quinzenal de 1 hora, por vídeo',
     offers: ['Dados de 2024 e 2025 já anonimizados', 'Recorte de três meses da fila para a turma trabalhar', 'Visita à central de regulação'],
     publishedAt: '2026-08-18',
-    status: 'open',
+    status: 'reserved',
+    reservation: { teacherName: 'Paola Accioly', mine: true, until: '2026-08-26' },
+    watching: false,
+    references: [
+      { name: 'SISREG', description: 'Sistema nacional de regulação já usado por parte da rede pública.', url: 'https://sisregiii.saude.gov.br' },
+      { name: 'Cal.com', description: 'Agendamento de código aberto com regras de disponibilidade por perfil.', url: 'https://cal.com' },
+      { name: 'OpenMRS', description: 'Prontuário eletrônico de código aberto com módulo de agendamento.', url: 'https://openmrs.org' },
+    ],
   },
   {
     id: 'varzea',
@@ -51,7 +65,14 @@ export const DEMANDS: Demand[] = [
     meetingCadence: 'Reunião quinzenal na comunidade, à noite ou no fim de semana',
     offers: ['Caderno de registros desde 2023', 'Encontro com moradores na sede do coletivo'],
     publishedAt: '2026-08-21',
-    status: 'open',
+    status: 'reserved',
+    reservation: { teacherName: 'Prof. Luiz Morais', mine: false, until: '2026-08-28' },
+    watching: false,
+    references: [
+      { name: 'uMap', description: 'Mapas colaborativos sobre o OpenStreetMap, sem servidor próprio.', url: 'https://umap.openstreetmap.fr' },
+      { name: 'Ushahidi', description: 'Registro comunitário de ocorrências no mapa.', url: 'https://www.ushahidi.com' },
+      { name: 'QGIS', description: 'Análise espacial livre, útil para consolidar a série histórica.', url: 'https://qgis.org' },
+    ],
   },
   {
     id: 'recife',
@@ -68,6 +89,11 @@ export const DEMANDS: Demand[] = [
     offers: ['Acompanhamento de uma equipe em campo', 'Formulário atual, com 22 campos'],
     publishedAt: '2026-08-12',
     status: 'open',
+    watching: false,
+    references: [
+      { name: 'KoboToolbox', description: 'Coleta de dados em campo que funciona sem conexão.', url: 'https://www.kobotoolbox.org' },
+      { name: 'ODK', description: 'Formulários offline usados em pesquisa de campo.', url: 'https://getodk.org' },
+    ],
   },
   {
     id: 'mesa',
@@ -84,6 +110,11 @@ export const DEMANDS: Demand[] = [
     offers: ['Caderno de entrada e saída de doações', 'Visita ao centro de distribuição'],
     publishedAt: '2026-07-10',
     status: 'in-project',
+    watching: false,
+    references: [
+      { name: 'Sahana Eden', description: 'Gestão de estoque para organizações humanitárias.', url: 'https://sahanafoundation.org' },
+      { name: 'Metabase', description: 'Painéis sobre uma base que já existe, sem desenvolvimento pesado.', url: 'https://www.metabase.com' },
+    ],
   },
   {
     id: 'casa',
@@ -100,5 +131,7 @@ export const DEMANDS: Demand[] = [
     offers: ['Modelo de ficha atual, sem dados reais', 'Orientação da equipe sobre sigilo antes da primeira visita'],
     publishedAt: '2026-08-05',
     status: 'in-project',
+    watching: false,
+    references: [{ name: 'OpenMRS', description: 'Registro de atendimento com controle de acesso por perfil.', url: 'https://openmrs.org' }],
   },
 ];

@@ -10,6 +10,8 @@ export const initialsOf = (name: string) =>
     .join('')
     .toUpperCase();
 
+export const capitalize = (text: string) => text.charAt(0).toUpperCase() + text.slice(1);
+
 /** "a, b e c" */
 export const joinWithAnd = (items: string[]) =>
   items.length <= 1 ? (items[0] ?? '') : `${items.slice(0, -1).join(', ')} e ${items[items.length - 1]}`;

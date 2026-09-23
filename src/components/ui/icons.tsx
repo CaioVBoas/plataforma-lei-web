@@ -110,3 +110,8 @@ export const MenuIcon = (props: IconProps) => (
     <path d="M4 7h16M4 12h16M4 17h16" />
   </IconBase>
 );
+export const ArrowUpRightIcon = (props: IconProps) => (
+  <IconBase {...props}>
+    <path d="M7.5 16.5l9-9M9 7.5h7.5V15" />
+  </IconBase>
+);

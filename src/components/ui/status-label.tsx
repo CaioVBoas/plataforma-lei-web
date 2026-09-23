@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import { cn } from '@/utils/cn';
 
-export type StatusTone = 'neutral' | 'accent' | 'positive' | 'caution' | 'critical';
+export type StatusTone = 'neutral' | 'accent' | 'positive' | 'caution' | 'critical' | 'reserve';
 
 const DOT_CLASSES: Record<StatusTone, string> = {
   neutral: 'bg-ink-3',
@@ -9,6 +9,7 @@ const DOT_CLASSES: Record<StatusTone, string> = {
   positive: 'bg-positive',
   caution: 'bg-caution',
   critical: 'bg-critical',
+  reserve: 'bg-reserve-dot',
 };
 
 const TEXT_CLASSES: Record<StatusTone, string> = {
@@ -17,6 +18,7 @@ const TEXT_CLASSES: Record<StatusTone, string> = {
   positive: 'text-positive',
   caution: 'text-caution',
   critical: 'text-critical',
+  reserve: 'text-reserve',
 };
 
 /** Estado com ponto colorido e texto. A cor nunca é a única pista: o texto sempre diz o estado. */

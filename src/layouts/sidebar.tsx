@@ -2,6 +2,8 @@ import type { ReactNode } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { BrandMark } from '@/components/ui/brand-mark';
 import { BookIcon, BuildingIcon, FolderIcon, HomeIcon, QuestionIcon, TrayIcon } from '@/components/ui/icons';
+import { isMyReservation } from '@/domain/reservation';
+import { useMenu } from '@/features/demands/hooks/use-demands';
 import { useAgenda } from '@/features/projects/hooks/use-agenda';
 import { needsAttention } from '@/features/projects/utils/agenda';
 import { paths } from '@/routes/paths';
@@ -38,7 +40,7 @@ const NavItem = ({ to, icon, label, active, badge, onNavigate }: NavItemProps) =
 /** A ordem da navegação segue o caminho do docente: o que fazer, escolher, acompanhar e a base. */
 const NAVIGATION = [
   { to: paths.home, label: 'Início', icon: <HomeIcon /> },
-  { to: paths.demands, label: 'Demandas', icon: <TrayIcon /> },
+  { to: paths.menu, label: 'Cardápio', icon: <TrayIcon /> },
   { to: paths.projects, label: 'Projetos', icon: <FolderIcon /> },
   { to: paths.disciplines, label: 'Disciplinas', icon: <BookIcon /> },
   { to: paths.organizations, label: 'Organizações', icon: <BuildingIcon /> },
@@ -47,8 +49,10 @@ const NAVIGATION = [
 export const Sidebar = ({ onNavigate }: { onNavigate?: () => void }) => {
   const { pathname } = useLocation();
   const { agenda = [] } = useAgenda();
-  // O único contador da navegação responde "quanta coisa pede ação minha agora".
-  const pendingSteps = agenda.filter(needsAttention).length;
+  const { data: menu = [] } = useMenu();
+  // O único contador da navegação responde "quanta coisa pede decisão minha agora":
+  // etapas com prazo perto e reservas abertas.
+  const pendingSteps = agenda.filter(needsAttention).length + menu.filter(isMyReservation).length;
 
   return (
     <div className="flex h-full flex-col px-3 pt-5 pb-3">

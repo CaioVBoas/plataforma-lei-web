@@ -52,7 +52,7 @@ const OrganizationView = ({ detail }: { detail: OrganizationDetail }) => {
       </Section>
 
       {openDemands.length > 0 && (
-        <Section title="Demandas abertas">
+        <Section title="No cardápio">
           <GroupedList>
             {openDemands.map((demand) => (
               <ListRow key={demand.id} to={paths.demand(demand.id)}>

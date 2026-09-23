@@ -6,8 +6,9 @@ export const paths = {
   login: '/entrar',
   home: '/inicio',
   guide: '/como-funciona',
-  demands: '/demandas',
-  demand: (id: string) => `/demandas/${id}`,
+  /** O cardápio de demandas: o que as organizações pediram e ainda não virou projeto. */
+  menu: '/cardapio',
+  demand: (id: string) => `/cardapio/${id}`,
   projects: '/projetos',
   project: (id: string, tab?: ProjectTab) => (tab && tab !== 'etapas' ? `/projetos/${id}?aba=${tab}` : `/projetos/${id}`),
   disciplines: '/disciplinas',

@@ -5,38 +5,43 @@ import { Button } from '@/components/ui/button';
 import { buttonClassName } from '@/components/ui/button-styles';
 import { EmptyState } from '@/components/ui/empty-state';
 import { SearchInput } from '@/components/ui/form-controls';
-import { GroupedList } from '@/components/ui/grouped-list';
 import { Page } from '@/components/ui/page';
 import { SegmentedControl } from '@/components/ui/segmented-control';
 import { formatShortDate, isLinkWindowOpen } from '@/domain/calendar';
 import { rankDisciplines } from '@/domain/matching';
+import { isMyReservation, MAX_ACTIVE_RESERVATIONS, RESERVATION_DAYS } from '@/domain/reservation';
+import type { Demand } from '@/domain/types';
 import { useCalendar } from '@/features/calendar/hooks/use-calendar';
 import { useCurrentDisciplines } from '@/features/disciplines/hooks/use-disciplines';
 import { paths } from '@/routes/paths';
 import { normalizeText } from '@/utils/format';
-import { DemandRow } from '../components/demand-row';
-import { useOpenDemands } from '../hooks/use-demands';
+import { DemandCard } from '../components/demand-card';
+import { useMenu } from '../hooks/use-demands';
 
-type Scope = 'minhas' | 'todas';
+type Scope = 'turmas' | 'reservas' | 'todas';
 
-const TITLE = 'Demandas';
+const TITLE = 'Cardápio';
 const SUBTITLE = 'Problemas reais de organizações parceiras, prontos para virar o projeto de uma turma sua.';
 
-export const DemandsPage = () => {
+/** Livres primeiro, depois as suas reservas, e por último as reservadas por colegas. */
+const availabilityRank = (demand: Demand) => (demand.status === 'open' ? 0 : isMyReservation(demand) ? 1 : 2);
+
+export const MenuPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const scope: Scope = searchParams.get('ver') === 'todas' ? 'todas' : 'minhas';
+  const requested = searchParams.get('ver');
+  const scope: Scope = requested === 'reservas' || requested === 'todas' ? requested : 'turmas';
   const search = searchParams.get('busca') ?? '';
 
-  const { data: demands } = useOpenDemands();
+  const { data: demands } = useMenu();
   const { data: disciplines } = useCurrentDisciplines();
   const { data: calendar } = useCalendar();
 
-  // Filtro e busca moram na URL para que voltar do detalhe devolva a mesma lista.
+  // Filtro e busca moram na URL para que voltar do detalhe devolva o mesmo cardápio.
   const updateParams = (next: { ver?: Scope; busca?: string }) => {
     const params = new URLSearchParams(searchParams);
     if (next.ver !== undefined) params.set('ver', next.ver);
     if (next.busca !== undefined) params.set('busca', next.busca);
-    if (params.get('ver') === 'minhas') params.delete('ver');
+    if (params.get('ver') === 'turmas') params.delete('ver');
     if (!params.get('busca')) params.delete('busca');
     setSearchParams(params, { replace: true });
   };
@@ -45,7 +50,7 @@ export const DemandsPage = () => {
     () =>
       (demands ?? [])
         .map((demand) => ({ demand, best: rankDisciplines(demand, disciplines ?? [])[0] }))
-        .sort((a, b) => Number(b.best?.fits ?? false) - Number(a.best?.fits ?? false)),
+        .sort((a, b) => availabilityRank(a.demand) - availabilityRank(b.demand) || Number(b.best?.fits ?? false) - Number(a.best?.fits ?? false)),
     [demands, disciplines],
   );
 
@@ -57,20 +62,31 @@ export const DemandsPage = () => {
     );
   }
 
-  const fitting = ranked.filter(({ best }) => best?.fits);
-  const inScope = scope === 'minhas' ? fitting : ranked;
+  const byScope = {
+    turmas: ranked.filter(({ best }) => best?.fits),
+    reservas: ranked.filter(({ demand }) => isMyReservation(demand)),
+    todas: ranked,
+  };
   const term = normalizeText(search.trim());
-  const visible = term
-    ? inScope.filter(({ demand }) => normalizeText(`${demand.title} ${demand.problem} ${demand.organization.name} ${demand.skills.join(' ')}`).includes(term))
-    : inScope;
+  const visible = byScope[scope].filter(
+    ({ demand }) => !term || normalizeText(`${demand.title} ${demand.problem} ${demand.organization.name} ${demand.skills.join(' ')}`).includes(term),
+  );
 
   const renderEmpty = () => {
     if (term) return <EmptyState title="Nada encontrado" description={`Nenhuma demanda com "${search}".`} />;
+    if (scope === 'reservas') {
+      return (
+        <EmptyState
+          title="Nenhuma reserva"
+          description={`Reservar guarda uma demanda por ${RESERVATION_DAYS} dias enquanto você decide. Ninguém mais consegue levá-la nesse tempo.`}
+        />
+      );
+    }
     if (disciplines.length === 0) {
       return (
         <EmptyState
           title="Cadastre suas disciplinas primeiro"
-          description="A lista mostra as demandas que combinam com o que suas turmas trabalham."
+          description="O cardápio mostra as demandas que combinam com o que suas turmas trabalham."
           action={
             <Link to={paths.newDiscipline} className={buttonClassName({ variant: 'primary' })}>
               Cadastrar disciplina
@@ -82,10 +98,10 @@ export const DemandsPage = () => {
     return (
       <EmptyState
         title="Nenhuma demanda combina agora"
-        description="Novas demandas chegam toda semana. Você também pode ver todas e revisar as competências das suas disciplinas."
+        description="Novas demandas chegam toda semana. Você também pode ver o cardápio inteiro e revisar as competências das suas disciplinas."
         action={
           <Button variant="secondary" onClick={() => updateParams({ ver: 'todas' })}>
-            Ver todas as demandas
+            Ver o cardápio inteiro
           </Button>
         }
       />
@@ -96,35 +112,41 @@ export const DemandsPage = () => {
     <Page title={TITLE} subtitle={SUBTITLE}>
       {!isLinkWindowOpen(calendar) && (
         <p className="mb-6 rounded-lg bg-caution-soft px-4 py-3 text-sm text-caution">
-          O prazo para levar demandas para as turmas de {calendar.id} terminou em {formatShortDate(calendar.linkDeadline)}. Você ainda pode explorar.
+          O prazo para levar demandas para as turmas de {calendar.id} terminou em {formatShortDate(calendar.linkDeadline)}. Você ainda pode explorar e reservar.
         </p>
       )}
 
-      <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
         <SegmentedControl
           label="Quais demandas mostrar"
           value={scope}
           onChange={(ver) => updateParams({ ver })}
           options={[
-            { value: 'minhas', label: 'Para minhas disciplinas', count: fitting.length },
-            { value: 'todas', label: 'Todas', count: ranked.length },
+            { value: 'turmas', label: 'Para minhas turmas', count: byScope.turmas.length },
+            { value: 'reservas', label: 'Minhas reservas', count: byScope.reservas.length },
+            { value: 'todas', label: 'Todas', count: byScope.todas.length },
           ]}
         />
         <SearchInput
-          aria-label="Buscar demandas"
-          placeholder="Buscar demandas"
+          aria-label="Buscar no cardápio"
+          placeholder="Buscar no cardápio"
           value={search}
           onChange={(event) => updateParams({ busca: event.target.value })}
-          containerClassName="w-full sm:w-[320px]"
+          containerClassName="w-full sm:w-[280px]"
         />
       </div>
+      <p className="mb-6 text-[13px] text-ink-3">
+        Você tem {byScope.reservas.length} de {MAX_ACTIVE_RESERVATIONS} reservas. Cada uma guarda a demanda por {RESERVATION_DAYS} dias enquanto você decide.
+      </p>
 
       {visible.length > 0 ? (
-        <GroupedList>
+        <ul className="grid gap-4 md:grid-cols-2">
           {visible.map(({ demand, best }) => (
-            <DemandRow key={demand.id} demand={demand} best={best} today={calendar.today} />
+            <li key={demand.id}>
+              <DemandCard demand={demand} best={best} today={calendar.today} />
+            </li>
           ))}
-        </GroupedList>
+        </ul>
       ) : (
         renderEmpty()
       )}

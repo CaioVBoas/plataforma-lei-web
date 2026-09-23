@@ -8,7 +8,7 @@ import { Page, Section } from '@/components/ui/page';
 import { StatusLabel } from '@/components/ui/status-label';
 import { matchDiscipline } from '@/domain/matching';
 import { useCalendar } from '@/features/calendar/hooks/use-calendar';
-import { useOpenDemands } from '@/features/demands/hooks/use-demands';
+import { useMenu } from '@/features/demands/hooks/use-demands';
 import { ProjectRow } from '@/features/projects/components/project-row';
 import { useProjects } from '@/features/projects/hooks/use-projects';
 import { paths } from '@/routes/paths';
@@ -34,14 +34,16 @@ const DisciplineProjects = ({ discipline }: { discipline: DisciplineWithUsage })
   );
 };
 
-/** Só faz sentido para a turma atual: as antigas não recebem demandas (regra 2). */
+/** Só faz sentido para a turma atual: as antigas não recebem demandas (regra 4). */
 const MatchingDemands = ({ discipline }: { discipline: DisciplineWithUsage }) => {
-  const { data: demands = [] } = useOpenDemands();
+  const { data: menu = [] } = useMenu();
+  // Reservada por colega não está disponível para esta turma.
+  const demands = menu.filter((demand) => demand.status === 'open' || demand.reservation?.mine);
   if (!discipline.isCurrent) return null;
   const matches = demands.map((demand) => ({ demand, match: matchDiscipline(demand, discipline) })).filter(({ match }) => match.fits);
 
   return (
-    <Section title="Demandas que combinam" description="Demandas abertas em que a turma cobre pelo menos metade das competências pedidas.">
+    <Section title="Demandas que combinam" description="Demandas livres no cardápio em que a turma cobre pelo menos metade das competências pedidas.">
       {matches.length > 0 ? (
         <GroupedList>
           {matches.map(({ demand, match }) => (
@@ -55,7 +57,7 @@ const MatchingDemands = ({ discipline }: { discipline: DisciplineWithUsage }) =>
           ))}
         </GroupedList>
       ) : (
-        <p className="text-sm text-ink-2">Nenhuma demanda aberta combina agora. Revise as competências acima se a turma trabalha mais coisas.</p>
+        <p className="text-sm text-ink-2">Nenhuma demanda livre no cardápio combina agora. Revise as competências acima se a turma trabalha mais coisas.</p>
       )}
     </Section>
   );

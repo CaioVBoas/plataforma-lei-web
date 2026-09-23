@@ -25,8 +25,8 @@ const ProjectGroups = ({ projects, today }: { projects: Project[]; today: IsoDat
         title="Nenhum projeto ainda"
         description="Um projeto nasce quando você leva uma demanda para uma das suas disciplinas."
         action={
-          <Link to={paths.demands} className={buttonClassName({ variant: 'primary' })}>
-            Ver demandas
+          <Link to={paths.menu} className={buttonClassName({ variant: 'primary' })}>
+            Abrir o cardápio
           </Link>
         }
       />

@@ -5,6 +5,7 @@ import { ChevronDownIcon } from '@/components/ui/icons';
 import { Page, Section } from '@/components/ui/page';
 import { formatShortDate } from '@/domain/calendar';
 import { MILESTONE_ORDER } from '@/domain/project-lifecycle';
+import { MAX_ACTIVE_RESERVATIONS, RESERVATION_DAYS } from '@/domain/reservation';
 import { useAccount, useUpdateAccount } from '@/features/account/hooks/use-account';
 import { useCalendar } from '@/features/calendar/hooks/use-calendar';
 import { MILESTONE_COPY } from '@/features/projects/utils/project-presentation';
@@ -23,13 +24,13 @@ const JOURNEY: JourneyStep[] = [
     link: { to: paths.disciplines, label: 'Disciplinas' },
   },
   {
-    title: 'Escolha uma demanda',
-    text: 'Demandas são problemas reais de organizações parceiras, já triados pelo L.E.I. A lista começa pelas que combinam com as suas turmas.',
-    link: { to: paths.demands, label: 'Demandas' },
+    title: 'Reserve no cardápio',
+    text: `O cardápio reúne problemas reais de organizações parceiras, já triados pelo L.E.I. Achou um que serve? Reserve: ele fica guardado para você por ${RESERVATION_DAYS} dias enquanto você conversa com a turma e com colegas.`,
+    link: { to: paths.menu, label: 'o cardápio' },
   },
   {
     title: 'Leve para a disciplina',
-    text: 'Escolha a turma e o número de equipes. O projeto nasce com o plano já escrito e o contato da organização liberado.',
+    text: 'Decidiu? Escolha a turma e o número de equipes. O projeto nasce com o plano já escrito e o contato da organização liberado.',
   },
   {
     title: 'Planeje com a organização',
@@ -52,15 +53,22 @@ const MILESTONE_TIMING: Record<(typeof MILESTONE_ORDER)[number], string> = {
 };
 
 const RULES = [
-  'Cada demanda vai para uma única turma. Quando você a leva, ela sai da lista de todo mundo.',
+  `A reserva vale ${RESERVATION_DAYS} dias e cada docente tem até ${MAX_ACTIVE_RESERVATIONS} ao mesmo tempo. Se não virar projeto, a demanda volta sozinha para o cardápio.`,
+  'Demanda reservada por um colega aparece no cardápio com o nome de quem reservou. Você pode pedir aviso para quando ela voltar.',
+  'Cada demanda vai para uma única turma. Quando vira projeto, ela sai do cardápio de todo mundo.',
   'Só disciplinas do semestre atual e com vaga recebem demandas. Você decide quantos projetos cada turma comporta.',
   'Uma demanda combina com a turma quando a turma trabalha pelo menos metade das competências pedidas. A plataforma mostra quais cobre e quais faltam.',
   'O contato da organização aparece quando a demanda vira projeto seu.',
-  'Até o registro no SIGAA dá para desistir e a demanda volta para a lista. Depois, o compromisso é institucional e o plano fica travado.',
+  'Até o registro no SIGAA dá para desistir e a demanda volta para o cardápio. Depois, o compromisso é institucional e o plano fica travado.',
   'O resultado que você escreve no encerramento entra no histórico da organização, para o próximo docente saber o que já foi feito.',
 ];
 
 const FAQ: { question: string; answer: ReactNode }[] = [
+  {
+    question: 'Para que serve reservar?',
+    answer:
+      'Para pensar sem pressa e sem perder a demanda. Enquanto a reserva vale, ninguém mais consegue levá-la. Se desistir, libere a reserva: outra turma pode aproveitar.',
+  },
   {
     question: 'Isso é um projeto de extensão?',
     answer:
@@ -113,7 +121,7 @@ export const GuidePage = () => {
     <Page
       title="Como funciona"
       width="narrow"
-      subtitle="Organizações de fora da universidade publicam problemas reais. Você leva um deles para uma disciplina, e a turma resolve com a organização durante o semestre."
+      subtitle="Organizações de fora da universidade publicam problemas reais no cardápio. Você reserva um, leva para uma disciplina, e a turma resolve com a organização durante o semestre."
     >
       <Section title="Em cinco passos">
         <ol className="flex flex-col gap-3">
@@ -177,9 +185,9 @@ export const GuidePage = () => {
       </Section>
 
       <div className="mt-14 flex flex-wrap items-center justify-between gap-4 rounded-lg bg-canvas px-5 py-5">
-        <p className="text-[15px] font-medium text-ink">Pronto para escolher a primeira demanda?</p>
-        <Link to={paths.demands} className={buttonClassName({ variant: 'primary' })}>
-          Ver demandas
+        <p className="text-[15px] font-medium text-ink">Pronto para reservar a primeira demanda?</p>
+        <Link to={paths.menu} className={buttonClassName({ variant: 'primary' })}>
+          Abrir o cardápio
         </Link>
       </div>
     </Page>

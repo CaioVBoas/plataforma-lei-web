@@ -1,5 +1,6 @@
 import { daysBetween, isLinkWindowOpen } from '@/domain/calendar';
 import { freeSlots, maxTeams } from '@/domain/discipline-rules';
+import { isMyReservation } from '@/domain/reservation';
 import { buildMilestones, canWithdraw, emptyPlanSections, isPlanLocked, nextMilestone } from '@/domain/project-lifecycle';
 import type { Project } from '@/domain/types';
 import type { AdoptDemandInput, CompleteMilestoneInput, UpdatePlanSectionInput } from '@/features/projects/types';
@@ -13,12 +14,12 @@ export const listProjects = (): Project[] => db.projects;
 
 export const getProject = (id: string) => findOrThrow(db.projects, id, NOT_FOUND);
 
-/** Levar uma demanda para a disciplina: as regras 1, 2 e 3 do docs/fluxos.md são checadas aqui. */
+/** Levar uma demanda reservada para a disciplina: as regras 1, 3, 4 e 5 do docs/fluxos.md são checadas aqui. */
 export const adoptDemand = ({ demandId, disciplineId, teams }: AdoptDemandInput): Project => {
   const demand = findOrThrow(db.demands, demandId, 'Demanda não encontrada.');
   const discipline = withUsage(findOrThrow(db.disciplines, disciplineId, 'Disciplina não encontrada.'));
 
-  if (demand.status !== 'open') throw new RuleError('Esta demanda já foi levada para outra disciplina.');
+  if (!isMyReservation(demand)) throw new RuleError('Reserve a demanda antes de levar para uma disciplina.');
   if (!discipline.isCurrent) throw new RuleError(`Só disciplinas de ${db.calendar.id} recebem demandas.`);
   if (freeSlots(discipline) === 0) {
     throw new RuleError(`${discipline.name} não tem vaga. Aumente as vagas da disciplina ou escolha outra.`);
@@ -47,16 +48,20 @@ export const adoptDemand = ({ demandId, disciplineId, teams }: AdoptDemandInput)
   };
 
   demand.status = 'in-project';
+  demand.reservation = undefined;
   db.projects.unshift(project);
   return project;
 };
 
-/** Regra 5: desistir só antes do registro no SIGAA, e a demanda volta para o cardápio. */
+/** Regra 7: desistir só antes do registro no SIGAA, e a demanda volta para o cardápio. */
 export const withdrawProject = (id: string) => {
   const project = getProject(id);
   if (!canWithdraw(project)) throw new RuleError('Depois do registro no SIGAA não é possível desistir pela plataforma.');
   const demand = db.demands.find((candidate) => candidate.id === project.demandId);
-  if (demand) demand.status = 'open';
+  if (demand) {
+    demand.status = 'open';
+    demand.reservation = undefined;
+  }
   db.projects = db.projects.filter((candidate) => candidate.id !== id);
 };
 
@@ -95,7 +100,7 @@ export const completeMilestone = ({ projectId, milestoneId, doneAt, note, sigaaC
   if (milestoneId === 'closing') {
     if (!outcome?.summary.trim()) throw new RuleError('Conte em poucas linhas o que ficou com a organização.');
     project.outcome = { summary: outcome.summary.trim(), adoption: outcome.adoption };
-    // Regra 8: o resultado vai para o histórico da organização.
+    // Regra 10: o resultado vai para o histórico da organização.
     const organization = db.organizations.find((candidate) => candidate.id === project.organization.id);
     organization?.history.unshift({
       title: project.title,

@@ -10,7 +10,7 @@ import { RequireAuth } from './require-auth';
 const LoginPage = lazyPage(() => import('@/features/auth/pages/login-page'), 'LoginPage');
 const HomePage = lazyPage(() => import('@/features/home/pages/home-page'), 'HomePage');
 const GuidePage = lazyPage(() => import('@/features/guide/pages/guide-page'), 'GuidePage');
-const DemandsPage = lazyPage(() => import('@/features/demands/pages/demands-page'), 'DemandsPage');
+const MenuPage = lazyPage(() => import('@/features/demands/pages/menu-page'), 'MenuPage');
 const DemandPage = lazyPage(() => import('@/features/demands/pages/demand-page'), 'DemandPage');
 const ProjectsPage = lazyPage(() => import('@/features/projects/pages/projects-page'), 'ProjectsPage');
 const ProjectPage = lazyPage(() => import('@/features/projects/pages/project-page'), 'ProjectPage');
@@ -29,8 +29,8 @@ export const AppRoutes = () => (
         <Route element={<PortalLayout />}>
           <Route path={paths.home} element={<HomePage />} />
           <Route path={paths.guide} element={<GuidePage />} />
-          <Route path={paths.demands} element={<DemandsPage />} />
-          <Route path="/demandas/:demandId" element={<DemandPage />} />
+          <Route path={paths.menu} element={<MenuPage />} />
+          <Route path="/cardapio/:demandId" element={<DemandPage />} />
           <Route path={paths.projects} element={<ProjectsPage />} />
           <Route path="/projetos/:projectId" element={<ProjectPage />} />
           <Route path={paths.disciplines} element={<DisciplinesPage />} />

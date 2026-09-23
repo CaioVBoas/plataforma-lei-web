@@ -1,22 +1,19 @@
 import { useState, type ReactNode } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { QueryView } from '@/components/feedback/query-states';
-import { Button } from '@/components/ui/button';
-import { buttonClassName } from '@/components/ui/button-styles';
 import { Page } from '@/components/ui/page';
 import { StatusLabel } from '@/components/ui/status-label';
 import { Tag } from '@/components/ui/tag';
-import { formatShortDate, isLinkWindowOpen } from '@/domain/calendar';
-import { freeSlots } from '@/domain/discipline-rules';
+import { ArrowUpRightIcon } from '@/components/ui/icons';
 import { rankDisciplines, type DisciplineMatch } from '@/domain/matching';
 import type { SemesterCalendar } from '@/domain/types';
 import { useCalendar } from '@/features/calendar/hooks/use-calendar';
 import { useCurrentDisciplines } from '@/features/disciplines/hooks/use-disciplines';
 import type { DisciplineWithUsage } from '@/features/disciplines/types';
 import { paths } from '@/routes/paths';
-import { cn } from '@/utils/cn';
 import { joinWithAnd, pluralize } from '@/utils/format';
 import { AdoptDemandModal } from '../components/adopt-demand-modal';
+import { DecisionPanel } from '../components/decision-panel';
 import { useDemand } from '../hooks/use-demands';
 import type { DemandDetail } from '../types';
 import { SCOPE_COPY } from '../utils/demand-presentation';
@@ -41,54 +38,6 @@ const CoverageList = ({ matches }: { matches: DisciplineMatch<DisciplineWithUsag
   </ul>
 );
 
-interface DecisionPanelProps {
-  detail: DemandDetail;
-  best: DisciplineMatch<DisciplineWithUsage> | undefined;
-  calendar: SemesterCalendar;
-  hasDisciplines: boolean;
-  onAdopt: () => void;
-}
-
-/** A coluna da decisão: uma ação primária e o que ela implica. */
-const DecisionPanel = ({ detail, best, calendar, hasDisciplines, onAdopt }: DecisionPanelProps) => {
-  if (detail.projectId) {
-    return (
-      <div className="rounded-lg border border-line p-5">
-        <p className="text-headline">Esta demanda é um projeto seu</p>
-        <p className="mt-1 text-sm text-ink-2">Acompanhe as etapas e o plano no projeto.</p>
-        <Link to={paths.project(detail.projectId)} className={cn(buttonClassName({ variant: 'primary', fullWidth: true }), 'mt-4')}>
-          Abrir projeto
-        </Link>
-      </div>
-    );
-  }
-
-  const windowOpen = isLinkWindowOpen(calendar);
-  const anySlot = best ? freeSlots(best.discipline) > 0 : false;
-
-  return (
-    <div className="rounded-lg border border-line p-5">
-      <p className="text-[13px] font-medium text-ink-3">Sua decisão</p>
-      <p className="mt-1 text-headline">
-        {!hasDisciplines ? 'Cadastre a turma que vai receber' : best?.fits ? `Combina com ${best.discipline.name}` : 'Não combina com suas turmas'}
-      </p>
-      {best && hasDisciplines && (
-        <p className="mt-1 text-sm text-ink-2">
-          Cobre {best.covered.length} de {detail.demand.skills.length} competências pedidas{anySlot ? '.' : ', mas está sem vaga.'}
-        </p>
-      )}
-      <Button variant="primary" size="lg" fullWidth className="mt-5" disabled={!windowOpen} onClick={onAdopt}>
-        Levar para uma disciplina
-      </Button>
-      <p className="mt-3 text-[13px] leading-relaxed text-ink-3">
-        {windowOpen
-          ? `Você escolhe a turma a seguir. Dá para desistir até o registro no SIGAA, com prazo em ${formatShortDate(calendar.linkDeadline)}.`
-          : `O prazo de ${calendar.id} terminou em ${formatShortDate(calendar.linkDeadline)}.`}
-      </p>
-    </div>
-  );
-};
-
 const DemandView = ({ detail, disciplines, calendar }: { detail: DemandDetail; disciplines: DisciplineWithUsage[]; calendar: SemesterCalendar }) => {
   const [adopting, setAdopting] = useState(false);
   const { demand, organization } = detail;
@@ -100,7 +49,7 @@ const DemandView = ({ detail, disciplines, calendar }: { detail: DemandDetail; d
   return (
     <Page
       title={demand.title}
-      back={detail.projectId ? { to: paths.project(detail.projectId), label: 'Projeto' } : { to: paths.demands, label: 'Demandas' }}
+      back={detail.projectId ? { to: paths.project(detail.projectId), label: 'Projeto' } : { to: paths.menu, label: 'Cardápio' }}
       subtitle={demand.problem}
     >
       <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_300px]">
@@ -143,6 +92,30 @@ const DemandView = ({ detail, disciplines, calendar }: { detail: DemandDetail; d
             <p className="mt-2 max-w-[68ch] text-[15px] leading-relaxed text-ink-2">{demand.scopeNote}</p>
           </Block>
 
+          {demand.references.length > 0 && (
+            <Block title="Para se inspirar">
+              <p className="mb-3 text-sm text-ink-2">Soluções parecidas que já existem. A turma não precisa começar do zero.</p>
+              <ul className="divide-y divide-line overflow-hidden rounded-lg border border-line">
+                {demand.references.map((reference) => (
+                  <li key={reference.name}>
+                    <a
+                      href={reference.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="flex items-center justify-between gap-4 px-4 py-3 transition-colors duration-100 hover:bg-canvas"
+                    >
+                      <span className="min-w-0">
+                        <span className="block text-[15px] font-medium text-ink">{reference.name}</span>
+                        <span className="block text-[13px] text-ink-2">{reference.description}</span>
+                      </span>
+                      <ArrowUpRightIcon size={16} className="shrink-0 text-ink-3" />
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </Block>
+          )}
+
           <Block title={`Sobre ${organization.name}`}>
             <p className="max-w-[68ch] text-[15px] leading-relaxed text-ink-2">{organization.about}</p>
             <p className="mt-3 text-sm text-ink-3">
@@ -155,7 +128,7 @@ const DemandView = ({ detail, disciplines, calendar }: { detail: DemandDetail; d
           </Block>
         </div>
 
-        <aside className="lg:sticky lg:top-8 lg:self-start">
+        <aside className="-order-1 lg:sticky lg:top-8 lg:order-none lg:self-start">
           <DecisionPanel detail={detail} best={best} calendar={calendar} hasDisciplines={disciplines.length > 0} onAdopt={() => setAdopting(true)} />
         </aside>
       </div>

@@ -8,11 +8,13 @@ import { Page, Section } from '@/components/ui/page';
 import { formatShortDate, isLinkWindowOpen, semesterWeek } from '@/domain/calendar';
 import { freeSlots } from '@/domain/discipline-rules';
 import { rankDisciplines } from '@/domain/matching';
+import { isMyReservation } from '@/domain/reservation';
 import type { Account, Demand, SemesterCalendar } from '@/domain/types';
 import { useAccount, useUpdateAccount } from '@/features/account/hooks/use-account';
 import { useCalendar } from '@/features/calendar/hooks/use-calendar';
-import { DemandRow } from '@/features/demands/components/demand-row';
-import { useOpenDemands } from '@/features/demands/hooks/use-demands';
+import { DemandCard } from '@/features/demands/components/demand-card';
+import { useMenu } from '@/features/demands/hooks/use-demands';
+import { daysLeftLabel } from '@/features/demands/utils/demand-presentation';
 import { useCurrentDisciplines } from '@/features/disciplines/hooks/use-disciplines';
 import type { DisciplineWithUsage } from '@/features/disciplines/types';
 import { useAgenda } from '@/features/projects/hooks/use-agenda';
@@ -20,7 +22,7 @@ import type { AgendaItem } from '@/features/projects/utils/agenda';
 import { MILESTONE_COPY, milestoneDateLine } from '@/features/projects/utils/project-presentation';
 import { paths } from '@/routes/paths';
 import { cn } from '@/utils/cn';
-import { pluralize } from '@/utils/format';
+import { capitalize, pluralize } from '@/utils/format';
 
 const SUGGESTIONS_ON_HOME = 3;
 
@@ -49,15 +51,32 @@ const TutorialInvite = () => {
   );
 };
 
-const NextSteps = ({ agenda, today }: { agenda: AgendaItem[]; today: string }) => {
-  if (agenda.length === 0) {
+/** Reserva ativa também é um próximo passo: decidir antes que ela expire. */
+const ReservationStep = ({ demand, today }: { demand: Demand; today: string }) => {
+  const until = demand.reservation?.until ?? today;
+  return (
+    <ListRow
+      to={paths.demand(demand.id)}
+      leading={<span className="block size-2.5 rounded-full bg-reserve-dot" />}
+      trailing={<span className="text-[13px] font-medium text-reserve">{capitalize(daysLeftLabel(until, today))}</span>}
+    >
+      <p className="text-[15px] font-medium text-ink">Decidir a reserva</p>
+      <p className="mt-0.5 truncate text-[13px] text-ink-3">
+        {demand.title} · {demand.organization.name}
+      </p>
+    </ListRow>
+  );
+};
+
+const NextSteps = ({ agenda, reservations, today }: { agenda: AgendaItem[]; reservations: Demand[]; today: string }) => {
+  if (agenda.length === 0 && reservations.length === 0) {
     return (
       <EmptyState
         title="Nada pendente"
-        description="Nenhum projeto em curso agora. Escolha uma demanda para uma das suas turmas."
+        description="Nenhum projeto em curso nem reserva aberta. Que tal escolher uma demanda no cardápio?"
         action={
-          <Link to={paths.demands} className={buttonClassName({ variant: 'primary' })}>
-            Ver demandas
+          <Link to={paths.menu} className={buttonClassName({ variant: 'primary' })}>
+            Abrir o cardápio
           </Link>
         }
       />
@@ -66,6 +85,9 @@ const NextSteps = ({ agenda, today }: { agenda: AgendaItem[]; today: string }) =
 
   return (
     <GroupedList>
+      {reservations.map((demand) => (
+        <ReservationStep key={demand.id} demand={demand} today={today} />
+      ))}
       {agenda.map(({ project, milestone, overdue }) => (
         <ListRow
           key={project.id}
@@ -85,6 +107,7 @@ const NextSteps = ({ agenda, today }: { agenda: AgendaItem[]; today: string }) =
 
 const Suggestions = ({ demands, disciplines, today }: { demands: Demand[]; disciplines: DisciplineWithUsage[]; today: string }) => {
   const fitting = demands
+    .filter((demand) => demand.status === 'open')
     .map((demand) => ({ demand, best: rankDisciplines(demand, disciplines)[0] }))
     .filter(({ best }) => best?.fits && freeSlots(best.discipline) > 0)
     .slice(0, SUGGESTIONS_ON_HOME);
@@ -94,11 +117,13 @@ const Suggestions = ({ demands, disciplines, today }: { demands: Demand[]; disci
   }
 
   return (
-    <GroupedList>
+    <ul className="grid gap-4 md:grid-cols-2">
       {fitting.map(({ demand, best }) => (
-        <DemandRow key={demand.id} demand={demand} best={best} today={today} />
+        <li key={demand.id}>
+          <DemandCard demand={demand} best={best} today={today} />
+        </li>
       ))}
-    </GroupedList>
+    </ul>
   );
 };
 
@@ -114,7 +139,7 @@ const semesterLine = (calendar: SemesterCalendar, disciplines: DisciplineWithUsa
 const HomeContent = ({ account, calendar }: { account: Account; calendar: SemesterCalendar }) => {
   const { agenda } = useAgenda();
   const { data: disciplines } = useCurrentDisciplines();
-  const { data: demands } = useOpenDemands();
+  const { data: demands } = useMenu();
   const firstName = account.name.split(' ')[0];
 
   if (!agenda || !disciplines || !demands) {
@@ -143,16 +168,16 @@ const HomeContent = ({ account, calendar }: { account: Account; calendar: Semest
         </Section>
       ) : (
         <>
-          <Section title="Próximos passos" description="A próxima etapa de cada projeto em curso, do prazo mais curto ao mais longo.">
-            <NextSteps agenda={agenda} today={calendar.today} />
+          <Section title="Próximos passos" description="Suas reservas e a próxima etapa de cada projeto em curso.">
+            <NextSteps agenda={agenda} reservations={demands.filter(isMyReservation)} today={calendar.today} />
           </Section>
 
           {isLinkWindowOpen(calendar) && (
             <Section
-              title="Demandas para suas turmas"
+              title="No cardápio para suas turmas"
               aside={
-                <Link to={paths.demands} className={buttonClassName({ variant: 'plain', size: 'sm' })}>
-                  Ver todas
+                <Link to={paths.menu} className={buttonClassName({ variant: 'plain', size: 'sm' })}>
+                  Abrir o cardápio
                 </Link>
               }
             >
