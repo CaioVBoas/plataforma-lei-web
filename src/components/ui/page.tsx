@@ -36,7 +36,7 @@ export const Page = ({ title, subtitle, meta, leading, back, actions, width = 'd
           {leading}
           <div className="min-w-0 flex-1">
             <h1 className={cn('text-balance', leading ? 'text-[26px] leading-tight font-bold tracking-[-0.019em] text-ink' : 'text-large-title')}>{title}</h1>
-            {subtitle && <div className={cn('max-w-[62ch] leading-snug text-ink-2', leading ? 'mt-1 text-[15px]' : 'mt-2 text-[17px]')}>{subtitle}</div>}
+            {subtitle && <div className={cn('leading-snug text-ink-2', leading ? 'mt-1 text-[15px]' : 'mt-2 text-[17px]')}>{subtitle}</div>}
             {meta && <div className="mt-2 text-[13px] text-ink-2">{meta}</div>}
           </div>
         </div>
@@ -63,7 +63,7 @@ export const Section = ({ title, id, description, aside, compact, className, chi
     <div className="mb-5 flex flex-wrap items-end justify-between gap-x-4 gap-y-2">
       <div className="min-w-0">
         <h2 className="text-title">{title}</h2>
-        {description && <p className="mt-1 max-w-[68ch] text-sm leading-relaxed text-ink-2">{description}</p>}
+        {description && <p className="mt-1 text-sm leading-relaxed text-ink-2">{description}</p>}
       </div>
       {aside}
     </div>

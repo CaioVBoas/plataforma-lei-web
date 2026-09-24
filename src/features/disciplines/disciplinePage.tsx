@@ -5,7 +5,7 @@ import { useToast } from '@/components/feedback/toastContext';
 import { Button } from '@/components/ui/button';
 import { GroupedList, ListRow } from '@/components/ui/groupedList';
 import { Page, Section } from '@/components/ui/page';
-import { StatusLabel } from '@/components/ui/statusLabel';
+import { Tag } from '@/components/ui/tag';
 import { useCalendar } from '@/features/calendar/useCalendar';
 import { useMenu } from '@/features/demands/useDemands';
 import { ProjectRow } from '@/features/projects/shared/components/projectRow';
@@ -49,9 +49,9 @@ const MatchingDemands = ({ discipline }: { discipline: DisciplineWithUsage }) =>
             <ListRow key={demand.id} to={paths.demand(demand.id)}>
               <p className="text-[13px] text-ink-3">{demand.organization.name}</p>
               <p className="mt-0.5 text-[15px] font-medium text-ink">{demand.title}</p>
-              <p className="mt-1 text-[13px] text-ink-2">
+              <Tag tone="positive" className="mt-2">
                 Cobre {match.covered.length} de {demand.skills.length} competências
-              </p>
+              </Tag>
             </ListRow>
           ))}
         </GroupedList>
@@ -86,7 +86,7 @@ const DisciplineView = ({ discipline }: { discipline: DisciplineWithUsage }) => 
       back={{ to: paths.disciplines, label: 'Disciplinas' }}
       subtitle={
         <span className="flex flex-wrap items-center gap-x-3 gap-y-1">
-          {discipline.isCurrent ? <StatusLabel tone="positive">Recebendo demandas</StatusLabel> : <StatusLabel tone="neutral">Semestre encerrado</StatusLabel>}
+          <Tag tone={discipline.isCurrent ? 'positive' : 'neutral'}>{discipline.isCurrent ? 'Recebendo demandas' : 'Semestre encerrado'}</Tag>
           <span>
             {discipline.semester} · {disciplineMeta(discipline)}
           </span>

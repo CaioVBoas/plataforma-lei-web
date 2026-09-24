@@ -36,7 +36,7 @@ export const MilestoneTimeline = ({ milestones, today }: { milestones: Milestone
               <p className={cn('mt-0.5 text-[13px]', current && milestone.dueAt < today ? 'text-caution' : 'text-ink-3')}>
                 {milestoneDateLine(milestone, today, current)}
               </p>
-              {milestone.note && <p className="mt-2 max-w-[64ch] text-sm leading-relaxed text-ink-2">{milestone.note}</p>}
+              {milestone.note && <p className="mt-2 text-sm leading-relaxed text-ink-2">{milestone.note}</p>}
             </div>
           </li>
         );

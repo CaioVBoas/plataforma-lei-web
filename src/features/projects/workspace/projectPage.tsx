@@ -3,7 +3,7 @@ import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { QueryView } from '@/components/feedback/queryStates';
 import { Page } from '@/components/ui/page';
 import { SegmentedControl } from '@/components/ui/segmentedControl';
-import { StatusLabel } from '@/components/ui/statusLabel';
+import { Tag } from '@/components/ui/tag';
 import { projectStage } from '@/domain/projectLifecycle';
 import type { Milestone, Project, SemesterCalendar } from '@/domain/types';
 import { useCalendar } from '@/features/calendar/useCalendar';
@@ -53,7 +53,7 @@ const ProjectView = ({ project, calendar }: { project: Project; calendar: Semest
       back={{ to: paths.projects, label: 'Projetos' }}
       subtitle={
         <span className="flex flex-wrap items-center gap-x-3 gap-y-1">
-          <StatusLabel tone={stage.tone}>{stage.label}</StatusLabel>
+          <Tag tone={stage.tone}>{stage.label}</Tag>
           <span>
             <Link to={paths.organization(project.organization.id)} className="hover:text-ink">
               {project.organization.name}

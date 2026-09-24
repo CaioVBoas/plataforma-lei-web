@@ -20,6 +20,7 @@ import type { DisciplineWithUsage } from '@/features/disciplines/types';
 import { useAgenda } from '@/features/projects/shared/hooks/useAgenda';
 import type { AgendaItem } from '@/features/projects/shared/utils/agenda';
 import { MILESTONE_COPY, milestoneDateLine } from '@/features/projects/shared/utils/projectPresentation';
+import { Tag } from '@/components/ui/tag';
 import { paths } from '@/routes/paths';
 import { cn } from '@/utils/cn';
 import { capitalize, pluralize } from '@/utils/format';
@@ -58,7 +59,7 @@ const ReservationStep = ({ demand, today }: { demand: Demand; today: string }) =
     <ListRow
       to={paths.demand(demand.id)}
       leading={<span className="block size-2.5 rounded-full bg-reserve-dot" />}
-      trailing={<span className="text-[13px] font-medium text-reserve">{capitalize(daysLeftLabel(until, today))}</span>}
+      trailing={<Tag tone="reserve">{capitalize(daysLeftLabel(until, today))}</Tag>}
     >
       <p className="text-[15px] font-medium text-ink">Decidir a reserva</p>
       <p className="mt-0.5 truncate text-[13px] text-ink-3">

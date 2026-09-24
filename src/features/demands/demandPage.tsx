@@ -2,7 +2,6 @@ import { useState, type ReactNode } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { QueryView } from '@/components/feedback/queryStates';
 import { Page } from '@/components/ui/page';
-import { StatusLabel } from '@/components/ui/statusLabel';
 import { Tag } from '@/components/ui/tag';
 import { ArrowUpRightIcon } from '@/components/ui/icons';
 import { rankDisciplines, type DisciplineMatch } from '@/domain/matching';
@@ -55,7 +54,7 @@ const DemandView = ({ detail, disciplines, calendar }: { detail: DemandDetail; d
       <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_300px]">
         <div className="min-w-0">
           <Block title="O problema">
-            <p className="max-w-[68ch] text-[15px] leading-relaxed text-ink-2">{demand.description}</p>
+            <p className="text-[15px] leading-relaxed text-ink-2">{demand.description}</p>
             <p className="mt-3 text-sm text-ink-2">
               <span className="text-ink-3">Quem sente:</span> {demand.affectedPublic}
             </p>
@@ -88,8 +87,8 @@ const DemandView = ({ detail, disciplines, calendar }: { detail: DemandDetail; d
           </Block>
 
           <Block title="Cabe num semestre?">
-            <StatusLabel tone={scope.tone}>{scope.label}</StatusLabel>
-            <p className="mt-2 max-w-[68ch] text-[15px] leading-relaxed text-ink-2">{demand.scopeNote}</p>
+            <Tag tone={scope.tone}>{scope.label}</Tag>
+            <p className="mt-2 text-[15px] leading-relaxed text-ink-2">{demand.scopeNote}</p>
           </Block>
 
           {demand.references.length > 0 && (
@@ -117,7 +116,7 @@ const DemandView = ({ detail, disciplines, calendar }: { detail: DemandDetail; d
           )}
 
           <Block title={`Sobre ${organization.name}`}>
-            <p className="max-w-[68ch] text-[15px] leading-relaxed text-ink-2">{organization.about}</p>
+            <p className="text-[15px] leading-relaxed text-ink-2">{organization.about}</p>
             <p className="mt-3 text-sm text-ink-3">
               {organization.type} · {organization.location}
               {organization.history.length > 0 && ` · ${pluralize(organization.history.length, 'projeto', 'projetos')} com o CIn`}

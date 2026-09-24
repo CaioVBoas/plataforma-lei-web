@@ -45,7 +45,7 @@ const OrganizationView = ({ detail }: { detail: OrganizationDetail }) => {
       }
     >
       <Section title="Sobre" compact>
-        <p className="mb-5 max-w-[68ch] text-[15px] leading-relaxed text-ink-2">{organization.about}</p>
+        <p className="mb-5 text-[15px] leading-relaxed text-ink-2">{organization.about}</p>
         <FactGrid
           items={[
             { label: 'Público atendido', value: organization.audience },
@@ -76,7 +76,11 @@ const OrganizationView = ({ detail }: { detail: OrganizationDetail }) => {
                 >
                   <p className="truncate text-[15px] font-semibold text-ink">{demand.title}</p>
                   <p className="mt-1 truncate text-sm text-ink-2">{demand.problem}</p>
-                  {reservation && <p className="mt-1.5 truncate text-[13px] text-reserve">{reservation}</p>}
+                  {reservation && (
+                    <Tag tone="reserve" className="mt-2">
+                      {reservation}
+                    </Tag>
+                  )}
                 </Item>
               );
             })}

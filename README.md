@@ -76,7 +76,7 @@ src/
 - **Páginas só falam com hooks.** Uma página nunca importa `mocks/` nem `lib/api-client` diretamente.
 - **Features podem usar hooks e componentes de outra feature**, mas nunca os handlers do mock. Em `projects`, o que é usado de fora fica em `projects/shared/`.
 - **Padrão de pastas:** página, hook primário, API e tipos na raiz da feature; subpasta só para `components/`, `utils/` e hooks auxiliares. Detalhes em [`docs/plano-reestruturacao-frontend.md`](docs/plano-reestruturacao-frontend.md).
-- **Taxonomia de elementos:** rótulo estático é `Tag`, link de texto usa `textLinkClassName`, ação é `Button` (ou `buttonClassName` num `Link`) e menu de ações é `ActionMenu`. Contagem é texto puro, nunca pílula. Detalhes na seção 7 do [`docs/fluxos.md`](docs/fluxos.md).
+- **Taxonomia de elementos:** rótulo estático e estado (livre, reservada, combina, cabe no semestre) são `Tag`, com `tone` suave dos tokens, link de texto usa `textLinkClassName`, ação é `Button` (ou `buttonClassName` num `Link`) e menu de ações é `ActionMenu`. Contagem é texto puro, nunca pílula. Detalhes na seção 7 do [`docs/fluxos.md`](docs/fluxos.md).
 - **Listas usam `ItemList` e `Item`:** âncora de 40px, até três linhas e linha inteira clicável. Link ou botão dentro do item leva `aboveRowLink`.
 - **Datas só com `formatShortDate`** ("21 ago 2026").
 - **Cor, fonte, raio e movimento vêm dos tokens** do `index.css`. Não use hex solto nos componentes.

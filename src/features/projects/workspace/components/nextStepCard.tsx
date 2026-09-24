@@ -34,7 +34,7 @@ export const NextStepCard = ({ project, today, onAct }: NextStepCardProps) => {
           Próximo passo · {milestoneDateLine(milestone, today, true)}
         </p>
         <p className="mt-1.5 text-headline">{copy.title}</p>
-        <p className="mt-1 max-w-[60ch] text-sm leading-relaxed text-ink-2">{copy.description}</p>
+        <p className="mt-1 text-sm leading-relaxed text-ink-2">{copy.description}</p>
       </div>
       <Button variant="primary" size="lg" onClick={() => onAct(milestone)}>
         {copy.action}

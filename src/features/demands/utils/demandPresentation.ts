@@ -14,10 +14,10 @@ export const SCOPE_COPY: Record<ScopeFit, { label: string; tone: StatusTone }> =
   'needs-cut': { label: 'Precisa de recorte', tone: 'caution' },
 };
 
-/** "Combina com Desenvolvimento de Software, 3 de 4 competências", sem percentual inventado. */
-export const matchLine = (best: DisciplineMatch | undefined, demand: Demand) => {
-  if (!best) return 'Cadastre suas disciplinas para ver se combina';
-  return best.fits ? `Combina com ${best.discipline.name}, ${best.covered.length} de ${demand.skills.length} competências` : 'Não combina com suas disciplinas';
+/** Versão curta para tag: a disciplina que mais combina, ou por que nenhuma combina. */
+export const matchTag = (best: DisciplineMatch | undefined): { label: string; tone: StatusTone } => {
+  if (!best) return { label: 'Sem disciplina cadastrada', tone: 'neutral' };
+  return best.fits ? { label: best.discipline.name, tone: 'accent' } : { label: 'Não combina com suas turmas', tone: 'neutral' };
 };
 
 /** "último dia", "2 dias restantes" */

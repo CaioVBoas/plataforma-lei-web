@@ -76,7 +76,7 @@ export const ProjectSettings = ({ project }: { project: Project }) => {
 
       {canWithdraw(project) && (
         <div className="mt-8 flex flex-wrap items-center justify-between gap-4">
-          <p className="max-w-[56ch] text-[13px] text-ink-3">Até o registro no SIGAA você pode desistir, e a demanda volta para o cardápio.</p>
+          <p className="text-[13px] text-ink-3">Até o registro no SIGAA você pode desistir, e a demanda volta para o cardápio.</p>
           <Button variant="destructive" size="sm" onClick={() => setWithdrawing(true)}>
             Desistir do projeto
           </Button>

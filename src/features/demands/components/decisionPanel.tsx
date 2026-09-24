@@ -11,6 +11,8 @@ import { RESERVATION_DAYS } from '@/domain/reservation';
 import type { SemesterCalendar } from '@/domain/types';
 import type { DisciplineWithUsage } from '@/features/disciplines/types';
 import { paths } from '@/routes/paths';
+import type { StatusTone } from '@/components/ui/statusLabel';
+import { Tag } from '@/components/ui/tag';
 import { cn } from '@/utils/cn';
 import { useReleaseReservation, useReserveDemand, useToggleWatch } from '../useDemands';
 import type { DemandDetail } from '../types';
@@ -20,9 +22,8 @@ const Panel = ({ tone = 'default', children }: { tone?: 'default' | 'reserve'; c
   <div className={cn('rounded-lg border p-5', tone === 'reserve' ? 'border-reserve-dot/40 bg-reserve-soft' : 'border-line')}>{children}</div>
 );
 
-const Eyebrow = ({ children, className }: { children: ReactNode; className?: string }) => (
-  <p className={cn('text-[13px] font-medium text-ink-3', className)}>{children}</p>
-);
+/** O estado da demanda no topo do painel, como tag: livre, reservada, em projeto. */
+const Eyebrow = ({ children, tone = 'neutral' }: { children: ReactNode; tone?: StatusTone }) => <Tag tone={tone}>{children}</Tag>;
 
 const Fine = ({ children }: { children: ReactNode }) => <p className="mt-3 text-[13px] leading-relaxed text-ink-3">{children}</p>;
 
@@ -68,8 +69,8 @@ export const DecisionPanel = ({ detail, best, calendar, hasDisciplines, onAdopt 
     const windowOpen = isLinkWindowOpen(calendar);
     return (
       <Panel tone="reserve">
-        <Eyebrow className="text-reserve">Sua reserva, {daysLeftLabel(demand.reservation.until, calendar.today)}</Eyebrow>
-        <p className="mt-1 text-headline">Guardada para você até {formatShortDate(demand.reservation.until)}</p>
+        <Eyebrow tone="reserve">Sua reserva, {daysLeftLabel(demand.reservation.until, calendar.today)}</Eyebrow>
+        <p className="mt-2.5 text-headline">Guardada para você até {formatShortDate(demand.reservation.until)}</p>
         <p className="mt-1 text-sm text-ink-2">Ninguém mais consegue levar esta demanda enquanto a reserva valer.</p>
         <Button variant="primary" size="lg" fullWidth className="mt-5" disabled={!windowOpen} onClick={onAdopt}>
           Levar para uma disciplina
@@ -94,7 +95,7 @@ export const DecisionPanel = ({ detail, best, calendar, hasDisciplines, onAdopt 
     return (
       <Panel>
         <Eyebrow>Reservada</Eyebrow>
-        <p className="mt-1 text-headline">{demand.reservation.teacherName} está avaliando esta demanda</p>
+        <p className="mt-2.5 text-headline">{demand.reservation.teacherName} está avaliando esta demanda</p>
         <p className="mt-1 text-sm text-ink-2">
           A reserva vale até {formatShortDate(demand.reservation.until)}. Se não virar projeto, a demanda volta para o cardápio.
         </p>
@@ -122,8 +123,8 @@ export const DecisionPanel = ({ detail, best, calendar, hasDisciplines, onAdopt 
 
   return (
     <Panel>
-      <Eyebrow>Livre no cardápio</Eyebrow>
-      <p className="mt-1 text-headline">
+      <Eyebrow tone="positive">Livre no cardápio</Eyebrow>
+      <p className="mt-2.5 text-headline">
         {!hasDisciplines ? 'Nenhuma turma cadastrada ainda' : best?.fits ? `Combina com ${best.discipline.name}` : 'Não combina com suas turmas'}
       </p>
       {best && hasDisciplines && (
