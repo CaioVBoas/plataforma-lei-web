@@ -2,7 +2,11 @@ import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { cn } from '@/utils/cn';
 
-/** Lista sem moldura: só divisórias finas entre os itens, para não pôr cartão dentro de cartão. */
+/**
+ * Lista sem moldura: só divisórias finas entre os itens, para não pôr cartão dentro de cartão.
+ * O conteúdo começa na mesma margem do título da seção; o hover se estende
+ * 12px para os lados com sombra, sem mexer no alinhamento nem nas divisórias.
+ */
 export const ItemList = ({ children, flush }: { children: ReactNode; /** Logo abaixo de abas, que já traçam a linha de cima. */ flush?: boolean }) => (
   <ul className={cn('divide-y divide-line border-b border-line', !flush && 'border-t')}>{children}</ul>
 );
@@ -34,11 +38,12 @@ interface ItemProps {
 export const Item = ({ to, label, anchor, action, menu, children }: ItemProps) => (
   <li
     className={cn(
-      'relative grid grid-cols-[40px_minmax(0,1fr)_auto] items-center gap-x-4 px-3 py-5',
-      to && 'transition-colors duration-150 hover:bg-canvas',
+      'relative grid grid-cols-[40px_minmax(0,1fr)_auto] items-center gap-x-4 py-5',
+      to &&
+        'transition-[background-color,box-shadow] duration-150 hover:bg-canvas hover:shadow-[-12px_0_0_var(--color-canvas),12px_0_0_var(--color-canvas)]',
     )}
   >
-    {to && <Link to={to} aria-label={label} className="absolute inset-0 rounded-md" />}
+    {to && <Link to={to} aria-label={label} className="absolute inset-y-0 -inset-x-3 rounded-md" />}
     <div className="flex w-10 self-start">{anchor}</div>
     <div className="min-w-0">{children}</div>
     {(action || menu) && (

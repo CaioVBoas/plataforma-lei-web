@@ -45,7 +45,7 @@ const OrganizationView = ({ detail }: { detail: OrganizationDetail }) => {
       }
     >
       <Section title="Sobre" compact>
-        <p className="mb-6 max-w-[68ch] text-[15px] leading-relaxed text-ink-2">{organization.about}</p>
+        <p className="mb-5 max-w-[68ch] text-[15px] leading-relaxed text-ink-2">{organization.about}</p>
         <FactGrid
           items={[
             { label: 'Público atendido', value: organization.audience },

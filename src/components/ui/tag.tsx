@@ -17,7 +17,7 @@ export const Tag = ({ children, covered, className }: TagProps) => (
   <span
     className={cn(
       'inline-flex items-center gap-1 rounded-sm px-2.5 py-1 text-[13px] leading-tight',
-      covered ? 'bg-positive-soft text-positive' : 'bg-canvas text-ink-2',
+      covered ? 'bg-positive-soft text-positive' : 'bg-fill text-ink-2',
       className,
     )}
   >

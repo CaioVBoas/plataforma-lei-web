@@ -59,8 +59,8 @@ interface SectionProps {
 }
 
 export const Section = ({ title, id, description, aside, compact, className, children }: SectionProps) => (
-  <section id={id} className={cn(compact ? 'mt-9' : 'mt-12', 'scroll-mt-6 first:mt-0', className)}>
-    <div className="mb-4 flex flex-wrap items-end justify-between gap-x-4 gap-y-2">
+  <section id={id} className={cn(compact ? 'mt-10' : 'mt-12', 'scroll-mt-6 first:mt-0', className)}>
+    <div className="mb-5 flex flex-wrap items-end justify-between gap-x-4 gap-y-2">
       <div className="min-w-0">
         <h2 className="text-title">{title}</h2>
         {description && <p className="mt-1 max-w-[68ch] text-sm leading-relaxed text-ink-2">{description}</p>}
@@ -71,13 +71,16 @@ export const Section = ({ title, id, description, aside, compact, className, chi
   </section>
 );
 
-/** Pares de rótulo e valor lado a lado, numa grade de até quatro colunas. */
+/**
+ * Pares de rótulo e valor em mini cards, até quatro por linha. O fundo cinza
+ * claro sem borda separa um fato do outro sem parecer botão.
+ */
 export const FactGrid = ({ items }: { items: { label: string; value: ReactNode }[] }) => (
-  <dl className="grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-2 lg:grid-cols-4">
+  <dl className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
     {items.map((item) => (
-      <div key={item.label} className="min-w-0">
+      <div key={item.label} className="min-w-0 rounded-lg bg-canvas px-4 py-3.5">
         <dt className="text-[13px] text-ink-3">{item.label}</dt>
-        <dd className="mt-1 text-sm leading-snug break-words text-ink">{item.value}</dd>
+        <dd className="mt-1.5 text-sm leading-snug break-words text-ink">{item.value}</dd>
       </div>
     ))}
   </dl>
