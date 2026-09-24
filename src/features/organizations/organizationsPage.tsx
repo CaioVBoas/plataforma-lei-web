@@ -1,17 +1,45 @@
 import { useState } from 'react';
 import { QueryView } from '@/components/feedback/queryStates';
+import { buttonClassName } from '@/components/ui/buttonStyles';
 import { EmptyState } from '@/components/ui/emptyState';
 import { SearchInput } from '@/components/ui/formControls';
-import { GroupedList, ListRow } from '@/components/ui/groupedList';
+import { Item, ItemList } from '@/components/ui/itemList';
+import { Monogram } from '@/components/ui/monogram';
 import { Page } from '@/components/ui/page';
-import { StatusLabel } from '@/components/ui/statusLabel';
+import { Tag } from '@/components/ui/tag';
 import { paths } from '@/routes/paths';
-import { normalizeText, pluralize } from '@/utils/format';
+import { cn } from '@/utils/cn';
+import { normalizeText } from '@/utils/format';
+import { OrganizationMeta } from './components/organizationMeta';
 import { useOrganizations } from './useOrganizations';
 import type { OrganizationSummary } from './types';
 
+const OrganizationItem = ({ organization }: { organization: OrganizationSummary }) => (
+  <Item
+    to={paths.organization(organization.id)}
+    label={organization.name}
+    anchor={<Monogram name={organization.name} />}
+    action={
+      // Só afordância: quem recebe o clique é a linha inteira.
+      <span aria-hidden="true" className={cn(buttonClassName({ variant: 'secondary' }), 'w-full px-3')}>
+        Ver organização
+      </span>
+    }
+  >
+    <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 sm:flex-nowrap">
+      <p className="min-w-0 text-headline sm:truncate">{organization.name}</p>
+      <Tag className="shrink-0">{organization.type}</Tag>
+    </div>
+    <p className="mt-1 truncate text-sm text-ink-2">{organization.about}</p>
+    <div className="mt-1.5">
+      <OrganizationMeta organization={organization} openDemands={organization.openDemands} />
+    </div>
+  </Item>
+);
+
 const OrganizationList = ({ organizations, search }: { organizations: OrganizationSummary[]; search: string }) => {
   const term = normalizeText(search.trim());
+  // Quem tem demanda aberta vem primeiro: é com essas que dá para começar um projeto agora.
   const visible = organizations
     .filter((organization) => !term || normalizeText(`${organization.name} ${organization.type} ${organization.location}`).includes(term))
     .sort((a, b) => b.openDemands - a.openDemands);
@@ -19,25 +47,11 @@ const OrganizationList = ({ organizations, search }: { organizations: Organizati
   if (visible.length === 0) return <EmptyState title="Nada encontrado" description={`Nenhuma organização com "${search}".`} />;
 
   return (
-    <GroupedList>
+    <ItemList>
       {visible.map((organization) => (
-        <ListRow
-          key={organization.id}
-          to={paths.organization(organization.id)}
-          trailing={
-            organization.openDemands > 0 && (
-              <StatusLabel tone="accent">{pluralize(organization.openDemands, 'demanda aberta', 'demandas abertas')}</StatusLabel>
-            )
-          }
-        >
-          <p className="text-[15px] font-medium text-ink">{organization.name}</p>
-          <p className="mt-0.5 text-[13px] text-ink-3">
-            {organization.type} · {organization.location}
-            {organization.history.length > 0 && ` · ${pluralize(organization.history.length, 'projeto', 'projetos')} com o CIn`}
-          </p>
-        </ListRow>
+        <OrganizationItem key={organization.id} organization={organization} />
       ))}
-    </GroupedList>
+    </ItemList>
   );
 };
 

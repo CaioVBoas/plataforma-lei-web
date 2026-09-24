@@ -15,7 +15,11 @@ export const paths = {
   /** Abre o cadastro de disciplina direto, a partir do Início. */
   newDiscipline: '/disciplinas?nova=1',
   discipline: (id: string) => `/disciplinas/${id}`,
+  /** Direto no formulário da turma, dentro do detalhe. */
+  disciplineEdit: (id: string) => `/disciplinas/${id}#turma`,
+  disciplineMatches: (id: string) => `/disciplinas/${id}#demandas`,
   organizations: '/organizacoes',
   organization: (id: string) => `/organizacoes/${id}`,
+  organizationDemands: (id: string) => `/organizacoes/${id}#demandas`,
   account: '/conta',
 } as const;

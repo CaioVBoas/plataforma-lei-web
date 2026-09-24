@@ -9,11 +9,15 @@ interface TagProps {
   className?: string;
 }
 
+/**
+ * Rótulo estático (tema, tipo, competência): sem borda e sem hover, nunca clicável.
+ * Assim ele não se confunde com botão secundário, que é o único elemento com borda.
+ */
 export const Tag = ({ children, covered, className }: TagProps) => (
   <span
     className={cn(
-      'inline-flex h-7 items-center gap-1 rounded-md px-2.5 text-[13px]',
-      covered ? 'bg-positive-soft text-positive' : 'bg-fill text-ink-2',
+      'inline-flex items-center gap-1 rounded-sm px-2.5 py-1 text-[13px] leading-tight',
+      covered ? 'bg-positive-soft text-positive' : 'bg-canvas text-ink-2',
       className,
     )}
   >

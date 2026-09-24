@@ -115,3 +115,11 @@ export const ArrowUpRightIcon = (props: IconProps) => (
     <path d="M7.5 16.5l9-9M9 7.5h7.5V15" />
   </IconBase>
 );
+/** Três pontos na vertical: o menu de ações de um item. */
+export const MoreIcon = (props: IconProps) => (
+  <IconBase {...props}>
+    <circle cx="12" cy="5.5" r="1.1" fill="currentColor" />
+    <circle cx="12" cy="12" r="1.1" fill="currentColor" />
+    <circle cx="12" cy="18.5" r="1.1" fill="currentColor" />
+  </IconBase>
+);

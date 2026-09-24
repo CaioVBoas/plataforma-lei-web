@@ -112,7 +112,10 @@ Toda reserva ativa aparece nos Próximos passos do Início como "Decidir a reser
 3. **Nada que não funcione.** Se a ação não existe, o controle não aparece.
 4. **Estado calculado, não guardado.** O estado do projeto, as vagas e a compatibilidade saem das regras em `src/domain`.
 5. **Linguagem da sala de aula**, não do sistema: "levar para a disciplina", e não "vincular demanda".
-6. **Visual sóbrio com identidade própria.** Tipografia do sistema, cantos de 6 a 10px e cinzas neutros. A identidade vem do Design System Aperta o PLEI: o Azul Tecnológico nas ações e o Laranja Social usado só na reserva. Nada de gradiente, emoji ou roxo.
+6. **Cada elemento tem uma aparência só.** Rótulo estático (tipo, competência) é texto sobre fundo cinza claro, sem borda. Contagem é texto puro, apagada quando é zero. Link é texto azul, sublinhado só no hover. Só botão tem borda (secundário) ou preenchimento (primário), e um menu de ações é sempre o kebab de 32px. Nenhuma ação aparece só no hover.
+7. **Listas com âncora e item inteiro clicável.** Todo item de lista tem uma âncora de 40px à esquerda (monograma, código ou ícone), no máximo três linhas de conteúdo e a linha inteira como área de clique.
+8. **Uma data só: "21 ago 2026".** Tempo relativo ("em 7 dias", "há 9 dias") entra só como complemento, nunca no lugar da data.
+9. **Visual sóbrio com identidade própria.** Tipografia do sistema, cantos de 6 a 10px e cinzas neutros. A identidade vem do Design System Aperta o PLEI: o Azul Tecnológico nas ações e o Laranja Social usado só na reserva. Nada de gradiente, emoji ou roxo.
 
 ## 8. O que nos faz únicos
 

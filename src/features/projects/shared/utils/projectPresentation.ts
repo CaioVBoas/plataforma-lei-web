@@ -63,7 +63,7 @@ export const ADOPTION_COPY: Record<OutcomeAdoption, string> = {
   'not-used': 'A organização não usa o que foi entregue',
 };
 
-/** "Feito em 6 de ago.", "Até 31 de ago., em 7 dias", "Atrasada desde 28 de ago." */
+/** "Feito em 6 ago 2026", "Até 31 ago 2026, em 7 dias", "Atrasada desde 28 ago 2026" */
 export const milestoneDateLine = (milestone: Milestone, today: IsoDate, isNext: boolean) => {
   if (milestone.doneAt) return `Feito em ${formatShortDate(milestone.doneAt)}`;
   if (isNext && milestone.dueAt < today) return `Atrasada desde ${formatShortDate(milestone.dueAt)}`;

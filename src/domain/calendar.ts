@@ -13,11 +13,14 @@ export const daysBetween = (from: IsoDate, to: IsoDate) => Math.round((toTime(to
 
 export const earliest = (...dates: IsoDate[]): IsoDate => [...dates].sort()[0];
 
-// Mês por extenso: a abreviação do pt-BR termina em ponto e colide com a pontuação da frase.
-const SHORT_DATE = new Intl.DateTimeFormat('pt-BR', { day: 'numeric', month: 'long', timeZone: 'UTC' });
+// Abreviação própria: a do Intl em pt-BR termina em ponto ("ago.") e colide com a pontuação da frase.
+const MONTHS = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
 
-/** "12 de setembro" */
-export const formatShortDate = (date: IsoDate) => SHORT_DATE.format(toTime(date));
+/** "21 ago 2026". O único formato de data do portal; tempo relativo só entra como complemento. */
+export const formatShortDate = (date: IsoDate) => {
+  const [year, month, day] = date.split('-').map(Number);
+  return `${day} ${MONTHS[month - 1]} ${year}`;
+};
 
 /** "hoje", "amanhã", "em 5 dias", "há 3 dias". */
 export const formatRelativeDays = (from: IsoDate, to: IsoDate) => {

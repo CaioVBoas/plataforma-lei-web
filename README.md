@@ -43,7 +43,7 @@ React 19, TypeScript, Vite, Tailwind CSS v4, React Router, TanStack Query, React
 src/
 ├── domain/          # Entidades e regras puras, sem React: calendário, reserva, compatibilidade, ciclo do projeto
 ├── components/
-│   ├── ui/          # Primitivos visuais sem regra de negócio (Page, GroupedList, Modal, SegmentedControl…)
+│   ├── ui/          # Primitivos visuais sem regra de negócio (Page, ItemList, ActionMenu, UnderlineTabs, Modal…)
 │   └── feedback/    # Aviso (toast) e estados de carregamento e erro
 ├── features/        # Uma pasta por área do portal
 │   └── <feature>/
@@ -76,6 +76,9 @@ src/
 - **Páginas só falam com hooks.** Uma página nunca importa `mocks/` nem `lib/api-client` diretamente.
 - **Features podem usar hooks e componentes de outra feature**, mas nunca os handlers do mock. Em `projects`, o que é usado de fora fica em `projects/shared/`.
 - **Padrão de pastas:** página, hook primário, API e tipos na raiz da feature; subpasta só para `components/`, `utils/` e hooks auxiliares. Detalhes em [`docs/plano-reestruturacao-frontend.md`](docs/plano-reestruturacao-frontend.md).
+- **Taxonomia de elementos:** rótulo estático é `Tag`, link de texto usa `textLinkClassName`, ação é `Button` (ou `buttonClassName` num `Link`) e menu de ações é `ActionMenu`. Contagem é texto puro, nunca pílula. Detalhes na seção 7 do [`docs/fluxos.md`](docs/fluxos.md).
+- **Listas usam `ItemList` e `Item`:** âncora de 40px, até três linhas e linha inteira clicável. Link ou botão dentro do item leva `aboveRowLink`.
+- **Datas só com `formatShortDate`** ("21 ago 2026").
 - **Cor, fonte, raio e movimento vêm dos tokens** do `index.css`. Não use hex solto nos componentes.
 - **URLs só em `routes/paths.ts`, chaves de cache só em `lib/queryKeys.ts`.**
 - **Arquivos em camelCase** (`projectPage.tsx`, `useProjects.ts`, `demandPresentation.ts`).
@@ -97,6 +100,8 @@ export const getMenu = () => api.get<Demand[]>('/menu').then((response) => respo
 
 ## O que ainda depende de decisão
 
+- **Propor um projeto a uma organização**, sem partir de uma demanda do cardápio, ainda não tem fluxo. Por isso a página da organização não tem esse botão.
+- **Ementa, carga horária e nível da disciplina**, e as ações de duplicar, pausar e arquivar disciplina, dependem do modelo `Course` da API (seção 5 do plano de reestruturação).
 - O **portal das organizações** (publicar demanda, acompanhar o projeto) ainda não foi desenhado.
 - O **plano gerado** vem pronto do seed. Na versão real ele sai de um modelo de linguagem alimentado pela demanda e pela disciplina.
 - O **prazo de vinculação** e o calendário do semestre precisam vir do calendário acadêmico oficial.

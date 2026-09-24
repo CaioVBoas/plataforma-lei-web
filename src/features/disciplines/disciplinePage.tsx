@@ -6,16 +6,17 @@ import { Button } from '@/components/ui/button';
 import { GroupedList, ListRow } from '@/components/ui/groupedList';
 import { Page, Section } from '@/components/ui/page';
 import { StatusLabel } from '@/components/ui/statusLabel';
-import { matchDiscipline } from '@/domain/matching';
 import { useCalendar } from '@/features/calendar/useCalendar';
 import { useMenu } from '@/features/demands/useDemands';
 import { ProjectRow } from '@/features/projects/shared/components/projectRow';
 import { useProjects } from '@/features/projects/shared/hooks/useProjects';
+import { useScrollToHash } from '@/hooks/useScrollToHash';
 import { paths } from '@/routes/paths';
 import { DisciplineForm } from './components/disciplineForm';
 import { useDiscipline, useRemoveDiscipline, useUpdateDiscipline } from './useDisciplines';
 import type { DisciplineWithUsage } from './types';
 import { disciplineMeta, slotsLabel } from './utils/disciplinePresentation';
+import { matchingDemands } from './utils/matchingDemands';
 
 const DisciplineProjects = ({ discipline }: { discipline: DisciplineWithUsage }) => {
   const { data: projects = [] } = useProjects();
@@ -37,13 +38,11 @@ const DisciplineProjects = ({ discipline }: { discipline: DisciplineWithUsage })
 /** Só faz sentido para a turma atual: as antigas não recebem demandas (regra 4). */
 const MatchingDemands = ({ discipline }: { discipline: DisciplineWithUsage }) => {
   const { data: menu = [] } = useMenu();
-  // Reservada por colega não está disponível para esta turma.
-  const demands = menu.filter((demand) => demand.status === 'open' || demand.reservation?.mine);
   if (!discipline.isCurrent) return null;
-  const matches = demands.map((demand) => ({ demand, match: matchDiscipline(demand, discipline) })).filter(({ match }) => match.fits);
+  const matches = matchingDemands(menu, discipline);
 
   return (
-    <Section title="Demandas que combinam" description="Demandas livres no cardápio em que a turma cobre pelo menos metade das competências pedidas.">
+    <Section id="demandas" title="Demandas que combinam" description="Demandas livres no cardápio em que a turma cobre pelo menos metade das competências pedidas.">
       {matches.length > 0 ? (
         <GroupedList>
           {matches.map(({ demand, match }) => (
@@ -70,6 +69,7 @@ const DisciplineView = ({ discipline }: { discipline: DisciplineWithUsage }) => 
   const update = useUpdateDiscipline();
   const remove = useRemoveDiscipline();
   const hasProjects = discipline.activeProjects > 0;
+  useScrollToHash();
 
   const removeDiscipline = () =>
     remove.mutate(discipline.id, {
@@ -97,7 +97,7 @@ const DisciplineView = ({ discipline }: { discipline: DisciplineWithUsage }) => 
       <MatchingDemands discipline={discipline} />
 
       {discipline.isCurrent && (
-        <Section title="Turma" description="Mudar as competências muda na hora quais demandas combinam com esta disciplina.">
+        <Section id="turma" title="Turma" description="Mudar as competências muda na hora quais demandas combinam com esta disciplina.">
           <div className="rounded-lg border border-line p-5 sm:p-6">
             <DisciplineForm
               key={discipline.id}

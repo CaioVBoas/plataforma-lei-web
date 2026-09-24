@@ -48,10 +48,12 @@ src/features/
 │   └── utils/      demandPresentation
 ├── disciplines/    disciplinesPage, disciplinePage, useDisciplines, disciplinesApi, disciplineSchema, types
 │   ├── components/ disciplineForm, newDisciplineModal
-│   └── utils/      disciplinePresentation
+│   └── utils/      disciplinePresentation, matchingDemands
 ├── guide/          guidePage
 ├── home/           homePage
 ├── organizations/  organizationsPage, organizationPage, useOrganizations, organizationsApi, types
+│   ├── components/ organizationMeta
+│   └── utils/      organizationPresentation
 └── projects/       ver seção 3
 ```
 
@@ -75,8 +77,8 @@ Além disso, um único `useProjects.ts` juntava a consulta da lista, a consulta 
 ```text
 src/features/projects/
 ├── list/                              A lista de projetos
-│   ├── projectsPage.tsx
-│   └── useProjectsList.ts             Agrupa os projetos por estado
+│   ├── projectsPage.tsx               Tabela com abas por estado
+│   └── useProjectsList.ts             Estado, próxima etapa e atraso de cada projeto
 │
 ├── workspace/                         A tela de um projeto
 │   ├── projectPage.tsx
@@ -110,8 +112,8 @@ src/features/projects/
 A proposta original foi mantida, com três correções que o código exigiu:
 
 1. **`milestoneTrack.tsx` foi para `shared/components/`**, e não para `workspace/`. A linha do projeto, que está em `shared`, usa esse componente. Se ele ficasse no workspace, `shared` passaria a importar de `workspace`, que é exatamente o acoplamento que a estrutura quer evitar.
-2. **A consulta de todos os projetos (`useProjects`) ficou em `shared/hooks/`.** Ela não é só da listagem: a agenda do Início, a barra lateral e a página de disciplina também leem. `list/useProjectsList.ts` é uma camada fina por cima, que agrupa os projetos por estado.
-3. **Nada de lógica que não existe.** A lista não tem busca nem filtro, então `useProjectsList` só agrupa. Quando busca e filtro existirem, é ali que entram.
+2. **A consulta de todos os projetos (`useProjects`) ficou em `shared/hooks/`.** Ela não é só da listagem: a agenda do Início, a barra lateral e a página de disciplina também leem. `list/useProjectsList.ts` é uma camada fina por cima, que calcula o estado e a próxima etapa de cada projeto.
+3. **Nada de lógica que não existe.** `useProjectsList` calcula só o que a tabela mostra: estado, próxima etapa, atraso e a data da linha. O recorte por aba fica na página.
 
 ### 3.4. Regra de dependência
 
