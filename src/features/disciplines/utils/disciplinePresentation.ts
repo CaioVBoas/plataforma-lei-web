@@ -12,10 +12,6 @@ export const slotsLabel = (discipline: DisciplineWithUsage) => {
   return free === 0 ? 'Sem vaga' : pluralize(free, 'vaga livre', 'vagas livres');
 };
 
-/** "60 estudantes · equipes de 5 · 5 competências". O código fica de fora porque é a âncora da lista. */
+/** "60 estudantes em equipes de 5". O código fica de fora porque é a âncora da lista. */
 export const disciplineFacts = (discipline: DisciplineWithUsage) =>
-  [
-    pluralize(discipline.students, 'estudante', 'estudantes'),
-    `equipes de ${discipline.teamSize}`,
-    pluralize(discipline.skills.length, 'competência', 'competências'),
-  ].join(' · ');
+  `${pluralize(discipline.students, 'estudante', 'estudantes')} em equipes de ${discipline.teamSize}`;

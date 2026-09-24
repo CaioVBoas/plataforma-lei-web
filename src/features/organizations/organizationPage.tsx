@@ -11,7 +11,6 @@ import type { Demand } from '@/domain/types';
 import { useScrollToHash } from '@/hooks/useScrollToHash';
 import { paths } from '@/routes/paths';
 import { cn } from '@/utils/cn';
-import { OrganizationMeta } from './components/organizationMeta';
 import { useOrganization } from './useOrganizations';
 import type { OrganizationDetail } from './types';
 
@@ -22,11 +21,11 @@ const RowAction = ({ children }: { children: string }) => (
   </span>
 );
 
-const demandStatusLine = (demand: Demand) => {
-  const published = `Publicada em ${formatShortDate(demand.publishedAt)}`;
-  if (!demand.reservation) return published;
+/** Só aparece quando há reserva: é o que muda a decisão de quem olha. */
+const reservationLine = (demand: Demand) => {
+  if (!demand.reservation) return undefined;
   const until = formatShortDate(demand.reservation.until);
-  return `${published} · ${demand.reservation.mine ? 'sua reserva' : `reservada por ${demand.reservation.teacherName}`} até ${until}`;
+  return demand.reservation.mine ? `Reservada por você até ${until}` : `Reservada por ${demand.reservation.teacherName} até ${until}`;
 };
 
 const OrganizationView = ({ detail }: { detail: OrganizationDetail }) => {
@@ -38,13 +37,10 @@ const OrganizationView = ({ detail }: { detail: OrganizationDetail }) => {
       title={organization.name}
       back={{ to: paths.organizations, label: 'Organizações' }}
       leading={<Monogram name={organization.name} size="lg" />}
-      subtitle="Histórico da parceria com o Centro de Informática"
       meta={
         <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1.5">
           <Tag className="shrink-0">{organization.type}</Tag>
-          <div className="min-w-0">
-            <OrganizationMeta organization={organization} openDemands={openDemands.length} linkDemands={false} />
-          </div>
+          <span>{organization.location}</span>
         </div>
       }
     >
@@ -60,55 +56,38 @@ const OrganizationView = ({ detail }: { detail: OrganizationDetail }) => {
         />
       </Section>
 
-      <Section title="Contato" compact>
-        {contact ? (
-          <FactGrid
-            items={[
-              { label: 'Ponto focal', value: `${contact.focalName}, ${contact.focalRole}` },
-              {
-                label: 'E-mail',
-                value: (
-                  <a href={`mailto:${contact.email}`} className={textLinkClassName}>
-                    {contact.email}
-                  </a>
-                ),
-              },
-              { label: 'Canal preferido', value: contact.channel },
-            ]}
-          />
+      {/* Primeiro o que dá para levar para a turma agora. */}
+      <Section title="Demandas abertas" id="demandas" compact>
+        {openDemands.length > 0 ? (
+          <ItemList>
+            {openDemands.map((demand) => {
+              const reservation = reservationLine(demand);
+              return (
+                <Item
+                  key={demand.id}
+                  to={paths.demand(demand.id)}
+                  label={demand.title}
+                  anchor={
+                    <AnchorIcon>
+                      <TrayIcon size={18} />
+                    </AnchorIcon>
+                  }
+                  action={<RowAction>Ver demanda</RowAction>}
+                >
+                  <p className="truncate text-[15px] font-semibold text-ink">{demand.title}</p>
+                  <p className="mt-1 truncate text-sm text-ink-2">{demand.problem}</p>
+                  {reservation && <p className="mt-1.5 truncate text-[13px] text-reserve">{reservation}</p>}
+                </Item>
+              );
+            })}
+          </ItemList>
         ) : (
-          <p className="max-w-[68ch] text-sm leading-relaxed text-ink-2">
-            O contato aparece quando uma demanda desta organização vira projeto seu. Assim a organização só é procurada por quem já assumiu o compromisso.
-          </p>
+          <p className="text-sm text-ink-3">Nenhuma demanda no cardápio agora.</p>
         )}
       </Section>
 
-      {openDemands.length > 0 && (
-        <Section title="Demandas abertas" id="demandas" compact>
-          <ItemList>
-            {openDemands.map((demand) => (
-              <Item
-                key={demand.id}
-                to={paths.demand(demand.id)}
-                label={demand.title}
-                anchor={
-                  <AnchorIcon>
-                    <TrayIcon size={18} />
-                  </AnchorIcon>
-                }
-                action={<RowAction>Ver demanda</RowAction>}
-              >
-                <p className="truncate text-[15px] font-semibold text-ink">{demand.title}</p>
-                <p className="mt-1 truncate text-sm text-ink-2">{demand.problem}</p>
-                <p className="mt-1.5 truncate text-[13px] text-ink-2">{demandStatusLine(demand)}</p>
-              </Item>
-            ))}
-          </ItemList>
-        </Section>
-      )}
-
       {myProjects.length > 0 && (
-        <Section title="Seus projetos com esta organização" compact>
+        <Section title="Seus projetos" compact>
           <ItemList>
             {myProjects.map((project) => (
               <Item
@@ -132,21 +111,42 @@ const OrganizationView = ({ detail }: { detail: OrganizationDetail }) => {
         </Section>
       )}
 
-      <Section title="Histórico com o CIn" description="O que cada projeto deixou com a organização, escrito por quem conduziu." compact>
+      <Section title="Contato" compact>
+        {contact ? (
+          <FactGrid
+            items={[
+              { label: 'Ponto focal', value: `${contact.focalName}, ${contact.focalRole}` },
+              {
+                label: 'E-mail',
+                value: (
+                  <a href={`mailto:${contact.email}`} className={textLinkClassName}>
+                    {contact.email}
+                  </a>
+                ),
+              },
+              { label: 'Canal preferido', value: contact.channel },
+            ]}
+          />
+        ) : (
+          <p className="text-sm text-ink-3">Aparece quando uma demanda desta organização virar projeto seu.</p>
+        )}
+      </Section>
+
+      <Section title="O que já foi feito com o CIn" compact>
         {organization.history.length > 0 ? (
           <ItemList>
             {organization.history.map((entry) => (
               <Item key={`${entry.title}-${entry.semester}`} anchor={<span className="pt-0.5 text-[13px] text-ink-2 tabular-nums">{entry.semester}</span>}>
                 <p className="text-[15px] font-semibold text-ink">{entry.title}</p>
-                <p className="mt-1 truncate text-[13px] text-ink-2">
+                <p className="mt-1 text-sm leading-relaxed text-ink-2">{entry.result}</p>
+                <p className="mt-1 truncate text-[13px] text-ink-3">
                   {entry.disciplineName} · {entry.teacherName}
                 </p>
-                <p className="mt-1.5 text-sm leading-relaxed text-ink-2">{entry.result}</p>
               </Item>
             ))}
           </ItemList>
         ) : (
-          <p className="text-sm text-ink-3">Nenhum projeto concluído ainda. Seria a primeira parceria desta organização com o Centro de Informática.</p>
+          <p className="text-sm text-ink-3">Nenhum projeto ainda. O seu seria o primeiro.</p>
         )}
       </Section>
     </Page>

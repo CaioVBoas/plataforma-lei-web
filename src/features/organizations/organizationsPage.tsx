@@ -60,10 +60,10 @@ export const OrganizationsPage = () => {
   const [search, setSearch] = useState('');
 
   return (
-    <Page title="Organizações" subtitle="Quem publica as demandas e o que já foi feito com cada uma.">
+    <Page title="Organizações" subtitle="Quem publica as demandas do cardápio.">
       <SearchInput
         aria-label="Buscar organizações"
-        placeholder="Buscar por nome ou lugar"
+        placeholder="Buscar organização"
         value={search}
         onChange={(event) => setSearch(event.target.value)}
         containerClassName="mb-5 w-full sm:w-[320px]"

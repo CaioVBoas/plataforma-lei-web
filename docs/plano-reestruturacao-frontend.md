@@ -52,8 +52,7 @@ src/features/
 ├── guide/          guidePage
 ├── home/           homePage
 ├── organizations/  organizationsPage, organizationPage, useOrganizations, organizationsApi, types
-│   ├── components/ organizationMeta
-│   └── utils/      organizationPresentation
+│   └── components/ organizationMeta
 └── projects/       ver seção 3
 ```
 

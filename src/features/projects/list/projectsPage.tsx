@@ -32,11 +32,9 @@ const matchesFilter = (item: ProjectListItem, filter: Filter) => {
 /** O plano inteiro, seção por seção, no formato em que é colado no SIGAA. */
 const planText = (project: Project) => project.plan.map((section) => `${section.title}\n\n${section.text}`).join('\n\n');
 
-/** "Reunião de abertura, em 7 dias", "Registro no SIGAA, atrasada há 3 dias", "encerrado há 90 dias" */
-const situationDetail = ({ next, overdue, date }: ProjectListItem, today: IsoDate) => {
-  if (!next) return date ? `encerrado ${formatRelativeDays(today, date)}` : undefined;
-  return `${MILESTONE_COPY[next.id].title}, ${overdue ? 'atrasada ' : ''}${formatRelativeDays(today, next.dueAt)}`;
-};
+/** A próxima etapa em poucas palavras: "em 7 dias", "atrasada há 3 dias". */
+const nextStep = ({ next, overdue }: ProjectListItem, today: IsoDate) =>
+  next && { title: MILESTONE_COPY[next.id].title, when: `${overdue ? 'atrasada ' : ''}${formatRelativeDays(today, next.dueAt)}` };
 
 const HEADER_CELL = 'px-3 pb-2.5 text-[11px] font-semibold tracking-[0.04em] text-ink-2 uppercase';
 
@@ -45,7 +43,7 @@ const ProjectTableRow = ({ item, today }: { item: ProjectListItem; today: IsoDat
   const toast = useToast();
   const { copy } = useCopyToClipboard();
   const { project } = item;
-  const detail = situationDetail(item, today);
+  const step = nextStep(item, today);
 
   // A linha inteira abre o projeto; links e botões dentro dela cuidam do próprio clique.
   const openFromRow = (event: MouseEvent<HTMLTableRowElement>) => {
@@ -59,18 +57,20 @@ const ProjectTableRow = ({ item, today }: { item: ProjectListItem; today: IsoDat
     <tr onClick={openFromRow} className="h-16 cursor-pointer transition-colors duration-150 hover:bg-canvas">
       <td className="px-3 py-3">
         <p className="line-clamp-2 text-sm font-medium text-ink">{project.title}</p>
-      </td>
-      <td className="px-3 py-3">
-        <p className="truncate text-sm text-ink">{project.organization.name}</p>
-        <p className="mt-0.5 truncate text-xs text-ink-3">{project.organization.type}</p>
+        <p className="mt-0.5 truncate text-xs text-ink-3">{project.organization.name}</p>
       </td>
       <td className="px-3 py-3">
         <p className="line-clamp-2 text-sm text-ink">{project.disciplineName}</p>
-        <p className="mt-0.5 text-xs text-ink-3 tabular-nums">{project.semester}</p>
       </td>
       <td className="px-3 py-3">
-        <p className="text-sm font-medium text-ink">{STAGE_COPY[item.stage].label}</p>
-        {detail && <p className={cn('mt-0.5 line-clamp-2 text-xs', item.overdue ? 'text-caution' : 'text-ink-3')}>{detail}</p>}
+        {step ? (
+          <>
+            <p className="text-sm font-medium text-ink">{step.title}</p>
+            <p className={cn('mt-0.5 text-xs', item.overdue ? 'text-caution' : 'text-ink-3')}>{step.when}</p>
+          </>
+        ) : (
+          <p className="text-sm font-medium text-ink">{STAGE_COPY.done.label}</p>
+        )}
       </td>
       <td className="px-3 py-3 text-right text-sm whitespace-nowrap text-ink-2 tabular-nums">{item.date && formatShortDate(item.date)}</td>
       <td className="py-3 pr-1 pl-3">
@@ -93,12 +93,11 @@ const ProjectTableRow = ({ item, today }: { item: ProjectListItem; today: IsoDat
 
 const ProjectTable = ({ items, today }: { items: ProjectListItem[]; today: IsoDate }) => (
   <div className="overflow-x-auto">
-    <table className="w-full min-w-[920px] table-fixed border-collapse text-left">
+    <table className="w-full min-w-[760px] table-fixed border-collapse text-left">
       <colgroup>
-        <col className="w-[28%]" />
+        <col className="w-[38%]" />
         <col className="w-[20%]" />
-        <col className="w-[16%]" />
-        <col className="w-[15%]" />
+        <col className="w-[19%]" />
         <col className="w-[11%]" />
         <col className="w-[128px]" />
       </colgroup>
@@ -108,13 +107,10 @@ const ProjectTable = ({ items, today }: { items: ProjectListItem[]; today: IsoDa
             Projeto
           </th>
           <th scope="col" className={HEADER_CELL}>
-            Organização
-          </th>
-          <th scope="col" className={HEADER_CELL}>
             Disciplina
           </th>
           <th scope="col" className={HEADER_CELL}>
-            Situação
+            Próxima etapa
           </th>
           <th scope="col" className={cn(HEADER_CELL, 'text-right')}>
             Data
@@ -179,7 +175,7 @@ const ProjectsView = () => {
 
       {overdueCount > 0 && filter !== 'atrasados' && (
         <p className="mt-4 text-sm text-ink-2">
-          {overdueCount === 1 ? '1 projeto está com uma etapa atrasada, ' : `${pluralize(overdueCount, 'projeto', 'projetos')} estão com etapa atrasada, `}
+          {overdueCount === 1 ? '1 projeto atrasado, ' : `${pluralize(overdueCount, 'projeto atrasado', 'projetos atrasados')}, `}
           <button type="button" onClick={() => setFilter('atrasados')} className={textLinkClassName}>
             {overdueCount === 1 ? 'ver qual' : 'ver quais'}
           </button>
@@ -195,7 +191,7 @@ const ProjectsView = () => {
 };
 
 export const ProjectsPage = () => (
-  <Page title="Projetos" subtitle="Cada projeto é uma demanda levada para uma disciplina. Todos passam pelas mesmas seis etapas.">
+  <Page title="Projetos" subtitle="Todos passam pelas mesmas seis etapas, do plano ao encerramento.">
     <ProjectsView />
   </Page>
 );

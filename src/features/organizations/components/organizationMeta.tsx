@@ -5,47 +5,34 @@ import type { Organization } from '@/domain/types';
 import { paths } from '@/routes/paths';
 import { cn } from '@/utils/cn';
 import { pluralize } from '@/utils/format';
-import { partnershipSince } from '../utils/organizationPresentation';
 
 interface OrganizationMetaProps {
   organization: Organization;
   openDemands: number;
-  /** Na própria página da organização a contagem não precisa levar a lugar nenhum. */
-  linkDemands?: boolean;
 }
 
-const Dot = () => <span aria-hidden="true"> · </span>;
-
 /**
- * Lugar, tempo de parceria e as contagens, em texto corrido. Contagem nunca é
- * pílula: com demanda aberta o número vira link, com zero fica apagado e inerte.
+ * Só o que ajuda a decidir: se há demanda para levar agora e se já houve
+ * projeto com o CIn. Contagem é texto; com demanda aberta vira link.
  */
-export const OrganizationMeta = ({ organization, openDemands, linkDemands = true }: OrganizationMetaProps) => {
-  const since = partnershipSince(organization.history);
-  const demandsText = pluralize(openDemands, 'demanda aberta', 'demandas abertas');
+export const OrganizationMeta = ({ organization, openDemands }: OrganizationMetaProps) => {
   const done = organization.history.length;
 
   return (
-    <p className={cn('text-[13px] text-ink-2', linkDemands && 'sm:truncate')}>
-      {organization.location}
-      {since && (
+    <p className="text-[13px] text-ink-2 sm:truncate">
+      {openDemands === 0 ? (
+        <span className="text-ink-3">Nenhuma demanda aberta</span>
+      ) : (
+        <Link to={paths.organizationDemands(organization.id)} className={cn(textLinkClassName, aboveRowLink)}>
+          {pluralize(openDemands, 'demanda aberta', 'demandas abertas')}
+        </Link>
+      )}
+      {done > 0 && (
         <>
-          <Dot />
-          {since}
+          <span aria-hidden="true"> · </span>
+          {pluralize(done, 'projeto com o CIn', 'projetos com o CIn')}
         </>
       )}
-      <Dot />
-      {openDemands === 0 ? (
-        <span className="text-ink-3">{demandsText}</span>
-      ) : linkDemands ? (
-        <Link to={paths.organizationDemands(organization.id)} className={cn(textLinkClassName, aboveRowLink)}>
-          {demandsText}
-        </Link>
-      ) : (
-        demandsText
-      )}
-      <Dot />
-      <span className={done === 0 ? 'text-ink-3' : undefined}>{pluralize(done, 'projeto concluído', 'projetos concluídos')}</span>
     </p>
   );
 };

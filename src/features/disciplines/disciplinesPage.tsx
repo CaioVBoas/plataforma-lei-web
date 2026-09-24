@@ -19,7 +19,7 @@ import { pluralize } from '@/utils/format';
 import { NewDisciplineModal } from './components/newDisciplineModal';
 import { useDisciplines, useRemoveDiscipline } from './useDisciplines';
 import type { DisciplineWithUsage } from './types';
-import { disciplineFacts } from './utils/disciplinePresentation';
+import { disciplineFacts, slotsLabel } from './utils/disciplinePresentation';
 import { matchingDemands } from './utils/matchingDemands';
 
 type SemesterTab = 'atual' | 'anteriores';
@@ -67,7 +67,7 @@ const DisciplineItem = ({ discipline, matches, projects }: DisciplineItemProps) 
       <p className="mt-1 truncate text-[13px] text-ink-2">
         {discipline.isCurrent ? (
           <>
-            {discipline.activeProjects} de {pluralize(discipline.projectSlots, 'vaga de projeto', 'vagas de projeto')} em uso
+            <span className={freeSlots(discipline) === 0 ? 'text-ink-3' : undefined}>{slotsLabel(discipline)}</span>
             <span aria-hidden="true"> · </span>
             {matches === 0 ? (
               <span className="text-ink-3">{matchesText}</span>
@@ -78,7 +78,7 @@ const DisciplineItem = ({ discipline, matches, projects }: DisciplineItemProps) 
             )}
           </>
         ) : (
-          <span className={projects === 0 ? 'text-ink-3' : undefined}>{pluralize(projects, 'projeto', 'projetos')}</span>
+          <span className={projects === 0 ? 'text-ink-3' : undefined}>{projects === 0 ? 'Nenhum projeto' : pluralize(projects, 'projeto', 'projetos')}</span>
         )}
       </p>
     </Item>
@@ -126,7 +126,7 @@ const DisciplineList = ({ disciplines, menu, projects, tab, onCreate }: GroupsPr
   );
 };
 
-/** "2026.2 · 2 disciplinas ativas · 2 vagas de projeto · 6 demandas compatíveis" */
+/** "3 vagas livres · 2 demandas compatíveis": o que as turmas do semestre ainda podem receber. */
 const SemesterSummary = ({ disciplines, menu }: { disciplines: DisciplineWithUsage[]; menu: Demand[] }) => {
   const current = disciplines.filter((discipline) => discipline.isCurrent);
   if (current.length === 0) return null;
@@ -136,12 +136,7 @@ const SemesterSummary = ({ disciplines, menu }: { disciplines: DisciplineWithUsa
 
   return (
     <span className="tabular-nums">
-      {[
-        current[0].semester,
-        pluralize(current.length, 'disciplina ativa', 'disciplinas ativas'),
-        pluralize(slots, 'vaga de projeto livre', 'vagas de projeto livres'),
-        pluralize(demands.size, 'demanda compatível', 'demandas compatíveis'),
-      ].join(' · ')}
+      {pluralize(slots, 'vaga livre', 'vagas livres')} · {pluralize(demands.size, 'demanda compatível', 'demandas compatíveis')}
     </span>
   );
 };
@@ -174,7 +169,7 @@ export const DisciplinesPage = () => {
   return (
     <Page
       title="Disciplinas"
-      subtitle="O que cada turma trabalha decide quais demandas combinam com ela."
+      subtitle="Suas turmas e as demandas que combinam com cada uma."
       meta={<SemesterSummary disciplines={disciplines} menu={menu} />}
       actions={
         <Button variant="primary" onClick={() => setCreating(true)}>
