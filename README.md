@@ -2,7 +2,7 @@
 
 Organizações de fora da UFPE publicam problemas reais. O docente do CIn leva um deles para uma disciplina que está lecionando, e a turma resolve o problema com a organização dentro do semestre.
 
-**Antes de mudar qualquer tela, leia [`docs/fluxos.md`](docs/fluxos.md).** Ele é a especificação do produto: os três objetos, as seis etapas do projeto, as regras de negócio e as regras de design.
+**Antes de mudar qualquer tela, leia [`docs/fluxos.md`](docs/fluxos.md).** O inventário do que está pronto e do que falta está em [`docs/requisitos.md`](docs/requisitos.md). Ele é a especificação do produto: os três objetos, as seis etapas do projeto, as regras de negócio e as regras de design.
 
 ## Como rodar
 

@@ -167,6 +167,9 @@ export const AdoptDemandModal = ({ demand, disciplines, calendar, onClose }: Ado
             />
           ))}
         </div>
+        {!firstAvailable && (
+          <p className="mt-2.5 text-[13px] text-caution">Nenhuma turma tem vaga. Aumente as vagas de uma disciplina ou cadastre outra.</p>
+        )}
         <button type="button" onClick={() => setCreating(true)} className="mt-2.5 text-[13px] text-accent hover:text-accent-hover">
           Cadastrar outra disciplina
         </button>
