@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { useToast } from '@/components/feedback/toastContext';
 import { Button } from '@/components/ui/button';
-import { buttonClassName } from '@/components/ui/buttonStyles';
+import { buttonClassName, textLinkClassName } from '@/components/ui/buttonStyles';
 import { CheckIcon } from '@/components/ui/icons';
 import { formatShortDate, isLinkWindowOpen } from '@/domain/calendar';
 import { freeSlots } from '@/domain/disciplineRules';
@@ -26,6 +26,13 @@ const Panel = ({ tone = 'default', children }: { tone?: 'default' | 'reserve'; c
 const Eyebrow = ({ children, tone = 'neutral' }: { children: ReactNode; tone?: StatusTone }) => <Tag tone={tone}>{children}</Tag>;
 
 const Fine = ({ children }: { children: ReactNode }) => <p className="mt-3 text-[13px] leading-relaxed text-ink-3">{children}</p>;
+
+/** Dúvida não é motivo para desistir da demanda: a pergunta vai para a organização sem sair da tela. */
+const AskLink = () => (
+  <a href="#perguntas" className={cn(textLinkClassName, 'mt-3 inline-block text-[13px]')}>
+    Tem uma dúvida? Pergunte à organização
+  </a>
+);
 
 interface DecisionPanelProps {
   detail: DemandDetail;
@@ -86,6 +93,7 @@ export const DecisionPanel = ({ detail, best, calendar, hasDisciplines, onAdopt 
           Liberar reserva
         </Button>
         {!windowOpen && <Fine>O prazo de {calendar.id} para levar demandas terminou em {formatShortDate(calendar.linkDeadline)}.</Fine>}
+        <AskLink />
         {error}
       </Panel>
     );
@@ -125,11 +133,19 @@ export const DecisionPanel = ({ detail, best, calendar, hasDisciplines, onAdopt 
     <Panel>
       <Eyebrow tone="positive">Livre no cardápio</Eyebrow>
       <p className="mt-2.5 text-headline">
-        {!hasDisciplines ? 'Nenhuma turma cadastrada ainda' : best?.fits ? `Combina com ${best.discipline.name}` : 'Não combina com suas turmas'}
+        {!hasDisciplines
+          ? 'Nenhuma turma cadastrada ainda'
+          : best?.fits
+            ? `Combina com ${best.discipline.name}`
+            : best?.aboveLevel
+              ? 'Acima do nível das suas turmas'
+              : 'Não combina com suas turmas'}
       </p>
       {best && hasDisciplines && (
         <p className="mt-1 text-sm text-ink-2">
-          Cobre {best.covered.length} de {demand.skills.length} competências pedidas{anySlot ? '.' : ', mas a turma está sem vaga.'}
+          {best.aboveLevel && !best.fits
+            ? `A turma cobre ${best.covered.length} de ${demand.skills.length} competências, mas a demanda pede mais do que a altura do curso dela.`
+            : `Cobre ${best.covered.length} de ${demand.skills.length} competências pedidas${anySlot ? '.' : ', mas a turma está sem vaga.'}`}
         </p>
       )}
       <Button
@@ -143,6 +159,7 @@ export const DecisionPanel = ({ detail, best, calendar, hasDisciplines, onAdopt 
         Reservar por {RESERVATION_DAYS} dias
       </Button>
       <Fine>A reserva guarda a demanda só para você enquanto decide. Dá para liberar a qualquer momento.</Fine>
+      <AskLink />
       {error}
     </Panel>
   );

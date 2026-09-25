@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
-import { DetailList } from '@/components/ui/groupedList';
+import { textLinkClassName } from '@/components/ui/buttonStyles';
+import { FactGrid } from '@/components/ui/page';
 import type { Project } from '@/domain/types';
 import { useOrganization } from '@/features/organizations/useOrganizations';
 import { paths } from '@/routes/paths';
@@ -10,12 +11,11 @@ export const OrganizationTab = ({ project }: { project: Project }) => {
   const { contact } = project;
 
   const items = [
-    { label: 'Ponto focal', value: contact.focalName },
-    { label: 'Função', value: contact.focalRole },
+    { label: 'Ponto focal', value: `${contact.focalName}, ${contact.focalRole}` },
     {
       label: 'E-mail',
       value: (
-        <a href={`mailto:${contact.email}`} className="text-accent hover:text-accent-hover">
+        <a href={`mailto:${contact.email}`} className={textLinkClassName}>
           {contact.email}
         </a>
       ),
@@ -31,12 +31,12 @@ export const OrganizationTab = ({ project }: { project: Project }) => {
 
   return (
     <div>
-      <DetailList items={items} />
+      <FactGrid items={items} />
       <div className="mt-5 flex flex-wrap gap-x-6 gap-y-2 text-sm">
-        <Link to={paths.organization(project.organization.id)} className="text-accent hover:text-accent-hover">
+        <Link to={paths.organization(project.organization.id)} className={textLinkClassName}>
           Sobre {project.organization.name}
         </Link>
-        <Link to={paths.demand(project.demandId)} className="text-accent hover:text-accent-hover">
+        <Link to={paths.demand(project.demandId)} className={textLinkClassName}>
           Demanda original
         </Link>
       </div>

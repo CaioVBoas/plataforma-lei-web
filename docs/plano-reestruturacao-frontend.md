@@ -44,10 +44,10 @@ src/features/
 ├── auth/           loginPage, useAuth, authApi, session, types
 ├── calendar/       useCalendar, calendarApi                      (sem tela: calendário do semestre)
 ├── demands/        menuPage, demandPage, useDemands, demandsApi, types
-│   ├── components/ adoptDemandModal, decisionPanel, demandCard
+│   ├── components/ adoptDemandModal, decisionPanel, demandCard, demandQuestions, invitationNote
 │   └── utils/      demandPresentation
 ├── disciplines/    disciplinesPage, disciplinePage, useDisciplines, disciplinesApi, disciplineSchema, types
-│   ├── components/ disciplineForm, newDisciplineModal
+│   ├── components/ coTeachers, disciplineForm, newDisciplineModal
 │   └── utils/      disciplinePresentation, matchingDemands
 ├── guide/          guidePage
 ├── home/           homePage
@@ -93,8 +93,8 @@ src/features/projects/
 └── shared/                            Usado pelos dois submódulos e por outras features
     ├── api/projectsApi.ts
     ├── components/
-    │   ├── projectRow.tsx             Lista de projetos e página de disciplina
-    │   └── milestoneTrack.tsx         Linha do projeto e cabeçalho do workspace
+    │   ├── projectRow.tsx             Projetos na página de disciplina
+    │   └── milestoneTrack.tsx         Cabeçalho do workspace
     ├── hooks/
     │   ├── useProjects.ts             Consulta de todos os projetos (lista, agenda, disciplina)
     │   ├── useAgenda.ts               Próximos passos (Início e barra lateral)
@@ -110,7 +110,7 @@ src/features/projects/
 
 A proposta original foi mantida, com três correções que o código exigiu:
 
-1. **`milestoneTrack.tsx` foi para `shared/components/`**, e não para `workspace/`. A linha do projeto, que está em `shared`, usa esse componente. Se ele ficasse no workspace, `shared` passaria a importar de `workspace`, que é exatamente o acoplamento que a estrutura quer evitar.
+1. **`milestoneTrack.tsx` foi para `shared/components/`**, e não para `workspace/`. Hoje só o cabeçalho do workspace o usa; ele fica em `shared` porque é leitura do ciclo do projeto, reaproveitável por qualquer tela que precise mostrar as seis etapas.
 2. **A consulta de todos os projetos (`useProjects`) ficou em `shared/hooks/`.** Ela não é só da listagem: a agenda do Início, a barra lateral e a página de disciplina também leem. `list/useProjectsList.ts` é uma camada fina por cima, que calcula o estado e a próxima etapa de cada projeto.
 3. **Nada de lógica que não existe.** `useProjectsList` calcula só o que a tabela mostra: estado, próxima etapa, atraso e a data da linha. O recorte por aba fica na página.
 

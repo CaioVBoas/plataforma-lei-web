@@ -14,3 +14,7 @@ export const updateDiscipline = ({ id, input }: { id: string; input: DisciplineI
 export const removeDiscipline = (id: string) => mockRequest(() => server.removeDiscipline(id));
 
 export const getSkillCatalog = () => mockRequest(() => server.listSkillCatalog());
+
+export const inviteCoTeacher = ({ id, email }: { id: string; email: string }) => mockRequest(() => server.inviteCoTeacher(id, email));
+
+export const removeCoTeacher = ({ id, email }: { id: string; email: string }) => mockRequest(() => server.removeCoTeacher(id, email));

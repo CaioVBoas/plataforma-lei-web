@@ -21,7 +21,8 @@ export const MILESTONE_COPY: Record<MilestoneId, MilestoneCopy> = {
   },
   kickoff: {
     title: 'Reunião de abertura',
-    description: 'Encontre a organização para combinar escopo, calendário de reuniões e regras de sigilo.',
+    description:
+      'Encontre a organização para combinar escopo, calendário de reuniões, regras de sigilo e o que a turma entrega no fim: protótipo ou prova de conceito, não um sistema pronto.',
     action: 'Registrar reunião',
     doneMessage: 'Reunião de abertura registrada.',
   },
@@ -45,9 +46,10 @@ export const MILESTONE_COPY: Record<MilestoneId, MilestoneCopy> = {
   },
   closing: {
     title: 'Encerramento',
-    description: 'Conte em poucas linhas o que ficou com a organização. O texto entra no histórico dela.',
+    description:
+      'Conte em poucas linhas o que ficou com a organização. O texto entra no histórico dela e serve de base para o relatório final no SIGAA, que libera as horas dos estudantes.',
     action: 'Encerrar projeto',
-    doneMessage: 'Projeto concluído. O resultado entrou no histórico da organização.',
+    doneMessage: 'Projeto concluído. Falta enviar o relatório final no SIGAA para liberar as horas.',
   },
 };
 

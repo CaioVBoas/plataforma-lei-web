@@ -53,6 +53,36 @@ export interface Organization extends OrganizationRef {
 
 export type ScopeFit = 'fits' | 'needs-cut';
 
+/**
+ * Em que altura do curso a turma está. A demanda não pode pedir mais do que a
+ * turma dá conta (RN-03 do levantamento de requisitos).
+ */
+export type CourseLevel = 'intro' | 'intermediate' | 'advanced';
+
+/** O que pesa na rotina da disciplina antes de aceitar. */
+export type DemandConstraint = 'on-site' | 'sensitive-data' | 'confidential';
+
+/**
+ * Pergunta do docente à organização antes de decidir. Nesta versão o L.E.I.
+ * repassa; pergunta e resposta ficam na demanda para quem vier depois.
+ */
+export interface DemandQuestion {
+  id: string;
+  teacherName: string;
+  /** Calculado pelo backend a partir de quem pergunta. */
+  mine: boolean;
+  askedAt: IsoDate;
+  text: string;
+  answer?: { text: string; answeredAt: IsoDate; by: string };
+}
+
+/** Indicação pessoal do L.E.I.: o docente chega pelo e-mail direto na demanda. */
+export interface DemandInvitation {
+  from: string;
+  message: string;
+  sentAt: IsoDate;
+}
+
 /** Aberta no cardápio, guardada por um docente enquanto ele decide, ou já em projeto. */
 export type DemandStatus = 'open' | 'reserved' | 'in-project';
 
@@ -81,6 +111,8 @@ export interface Demand {
   description: string;
   affectedPublic: string;
   skills: string[];
+  level: CourseLevel;
+  constraints: DemandConstraint[];
   scopeFit: ScopeFit;
   scopeNote: string;
   meetingCadence: string;
@@ -92,6 +124,16 @@ export interface Demand {
   /** O docente pediu aviso caso a reserva de outra pessoa acabe. */
   watching: boolean;
   references: Reference[];
+  questions: DemandQuestion[];
+  /** Só vem para o docente indicado. */
+  invitation?: DemandInvitation;
+}
+
+/** Docente que divide a disciplina e os projetos dela. */
+export interface CoTeacher {
+  email: string;
+  /** Vazio enquanto o convite não foi aceito. */
+  name?: string;
 }
 
 export interface Discipline {
@@ -99,8 +141,11 @@ export interface Discipline {
   name: string;
   code: string;
   semester: string;
+  level: CourseLevel;
   students: number;
   teamSize: number;
+  /** Quem divide a disciplina com o docente. Todos veem e editam os projetos dela. */
+  coTeachers: CoTeacher[];
   /** Quantos projetos a turma comporta ao mesmo tempo. */
   projectSlots: number;
   /** O que a disciplina trabalha. É a base da compatibilidade com as demandas. */

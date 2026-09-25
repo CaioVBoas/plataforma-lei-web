@@ -15,10 +15,13 @@ import { AdoptDemandModal } from './components/adoptDemandModal';
 import { DecisionPanel } from './components/decisionPanel';
 import { useDemand } from './useDemands';
 import type { DemandDetail } from './types';
-import { SCOPE_COPY } from './utils/demandPresentation';
+import { DemandQuestions } from './components/demandQuestions';
+import { InvitationNote } from './components/invitationNote';
+import { LEVEL_COPY } from '@/features/disciplines/utils/disciplinePresentation';
+import { CONSTRAINT_COPY, SCOPE_COPY, SEMESTER_DELIVERY } from './utils/demandPresentation';
 
-const Block = ({ title, children }: { title: string; children: ReactNode }) => (
-  <section className="border-t border-line py-7 first:border-t-0 first:pt-0">
+const Block = ({ title, id, children }: { title: string; id?: string; children: ReactNode }) => (
+  <section id={id} className="scroll-mt-6 border-t border-line py-7 first:border-t-0 first:pt-0">
     <h2 className="mb-3 text-headline">{title}</h2>
     {children}
   </section>
@@ -31,7 +34,8 @@ const CoverageList = ({ matches }: { matches: DisciplineMatch<DisciplineWithUsag
       <li key={match.discipline.id} className="text-sm leading-relaxed text-ink-2">
         <span className="font-medium text-ink">{match.discipline.name}</span> cobre {match.covered.length} de{' '}
         {match.covered.length + match.missing.length}
-        {match.missing.length > 0 && `. Falta ${joinWithAnd(match.missing)}`}.
+        {match.missing.length > 0 && `. Falta ${joinWithAnd(match.missing)}`}
+        {match.aboveLevel && `. A demanda pede mais do que a turma, que está no ${LEVEL_COPY[match.discipline.level].label.toLowerCase()}`}.
       </li>
     ))}
   </ul>
@@ -51,6 +55,8 @@ const DemandView = ({ detail, disciplines, calendar }: { detail: DemandDetail; d
       back={detail.projectId ? { to: paths.project(detail.projectId), label: 'Projeto' } : { to: paths.menu, label: 'Cardápio' }}
       subtitle={demand.problem}
     >
+      {demand.invitation && !detail.projectId && <InvitationNote invitation={demand.invitation} />}
+
       <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_300px]">
         <div className="min-w-0">
           <Block title="O problema">
@@ -86,10 +92,31 @@ const DemandView = ({ detail, disciplines, calendar }: { detail: DemandDetail; d
             {matches.length > 0 && <CoverageList matches={matches} />}
           </Block>
 
-          <Block title="Cabe num semestre?">
-            <Tag tone={scope.tone}>{scope.label}</Tag>
-            <p className="mt-2 text-[15px] leading-relaxed text-ink-2">{demand.scopeNote}</p>
+          <Block title="Cabe na turma?">
+            <div className="flex flex-wrap gap-1.5">
+              <Tag tone={scope.tone}>{scope.label}</Tag>
+              <Tag>
+                {LEVEL_COPY[demand.level].label}, {LEVEL_COPY[demand.level].periods}
+              </Tag>
+            </div>
+            <p className="mt-3 text-[15px] leading-relaxed text-ink-2">{demand.scopeNote}</p>
+            <p className="mt-3 text-sm leading-relaxed text-ink-2">
+              <span className="font-medium text-ink">O que um semestre entrega:</span> {SEMESTER_DELIVERY}
+            </p>
           </Block>
+
+          {demand.constraints.length > 0 && (
+            <Block title="Antes de aceitar">
+              <ul className="space-y-2.5">
+                {demand.constraints.map((constraint) => (
+                  <li key={constraint} className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                    <Tag className="shrink-0">{CONSTRAINT_COPY[constraint].label}</Tag>
+                    <span className="text-sm text-ink-2">{CONSTRAINT_COPY[constraint].detail}</span>
+                  </li>
+                ))}
+              </ul>
+            </Block>
+          )}
 
           {demand.references.length > 0 && (
             <Block title="Para se inspirar">
@@ -114,6 +141,10 @@ const DemandView = ({ detail, disciplines, calendar }: { detail: DemandDetail; d
               </ul>
             </Block>
           )}
+
+          <Block title="Perguntas à organização" id="perguntas">
+            <DemandQuestions demand={demand} canAsk={!detail.projectId} />
+          </Block>
 
           <Block title={`Sobre ${organization.name}`}>
             <p className="text-[15px] leading-relaxed text-ink-2">{organization.about}</p>

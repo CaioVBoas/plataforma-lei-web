@@ -5,7 +5,7 @@ import type { DisciplineMatch } from '@/domain/matching';
 import type { Demand, IsoDate } from '@/domain/types';
 import { paths } from '@/routes/paths';
 import { cn } from '@/utils/cn';
-import { isNew, matchTag, reservationBadge, SCOPE_COPY } from '../utils/demandPresentation';
+import { CONSTRAINT_COPY, isNew, matchTag, reservationBadge, SCOPE_COPY } from '../utils/demandPresentation';
 
 interface DemandCardProps {
   demand: Demand;
@@ -15,7 +15,7 @@ interface DemandCardProps {
 
 /**
  * Um prato do cardápio: quem pede, o problema, o que pede da turma e as duas
- * perguntas que decidem (combina? cabe?), respondidas em tags no rodapé.
+ * perguntas que decidem (combina? cabe?) e o que pesa na rotina, em tags no rodapé.
  * A reserva aparece no topo, em laranja.
  */
 export const DemandCard = ({ demand, best, today }: DemandCardProps) => {
@@ -37,6 +37,8 @@ export const DemandCard = ({ demand, best, today }: DemandCardProps) => {
         <p className="text-[13px] text-ink-3">{demand.organization.name}</p>
         {reservation ? (
           <Tag tone={takenByOther ? 'neutral' : 'reserve'}>{reservation}</Tag>
+        ) : demand.invitation ? (
+          <Tag tone="accent">Indicada para você</Tag>
         ) : (
           isNew(demand, today) && <Tag tone="accent">Nova</Tag>
         )}
@@ -67,6 +69,9 @@ export const DemandCard = ({ demand, best, today }: DemandCardProps) => {
           {match.label}
         </Tag>
         <Tag tone={scope.tone === 'caution' ? 'caution' : 'neutral'}>{scope.label}</Tag>
+        {demand.constraints.map((constraint) => (
+          <Tag key={constraint}>{CONSTRAINT_COPY[constraint].label}</Tag>
+        ))}
       </div>
     </Link>
   );

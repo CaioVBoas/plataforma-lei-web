@@ -2,11 +2,40 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm } from 'react-hook-form';
 import { Field, Input } from '@/components/ui/formControls';
 import { CheckIcon } from '@/components/ui/icons';
+import type { CourseLevel } from '@/domain/types';
 import { cn } from '@/utils/cn';
 import { useSkillCatalog } from '../useDisciplines';
 import { disciplineSchema, type DisciplineFormValues } from '../disciplineSchema';
+import { LEVEL_COPY } from '../utils/disciplinePresentation';
 
-const EMPTY_DISCIPLINE: DisciplineFormValues = { name: '', code: '', students: 40, teamSize: 5, projectSlots: 2, skills: [] };
+const EMPTY_DISCIPLINE: DisciplineFormValues = { name: '', code: '', level: 'intermediate', students: 40, teamSize: 5, projectSlots: 2, skills: [] };
+
+const LEVELS: CourseLevel[] = ['intro', 'intermediate', 'advanced'];
+
+/** Escolha única, com o mesmo desenho das competências para o formulário não ter dois idiomas. */
+const LevelPicker = ({ value, onChange }: { value: CourseLevel; onChange: (level: CourseLevel) => void }) => (
+  <div role="radiogroup" aria-label="Em que altura do curso a turma está" className="grid gap-1.5 sm:grid-cols-3">
+    {LEVELS.map((level) => {
+      const selected = value === level;
+      return (
+        <button
+          key={level}
+          type="button"
+          role="radio"
+          aria-checked={selected}
+          onClick={() => onChange(level)}
+          className={cn(
+            'flex flex-col items-start rounded-md border px-3 py-2 text-left transition-colors duration-100',
+            selected ? 'border-accent bg-accent-soft' : 'border-line-strong bg-surface hover:border-ink-3',
+          )}
+        >
+          <span className={cn('text-sm font-medium', selected ? 'text-accent' : 'text-ink')}>{LEVEL_COPY[level].label}</span>
+          <span className="text-[13px] text-ink-3">{LEVEL_COPY[level].periods}</span>
+        </button>
+      );
+    })}
+  </div>
+);
 
 interface SkillPickerProps {
   catalog: string[];
@@ -80,6 +109,12 @@ export const DisciplineForm = ({ formId, defaultValues = EMPTY_DISCIPLINE, onSub
         <Field label="Projetos que comporta" htmlFor={`${formId}-slots`} error={errors.projectSlots?.message}>
           <Input id={`${formId}-slots`} type="number" min={1} inputMode="numeric" {...register('projectSlots', { valueAsNumber: true })} />
         </Field>
+      </div>
+
+      <div>
+        <p className="text-[13px] font-medium text-ink-2">Altura do curso</p>
+        <p className="mt-0.5 mb-2.5 text-[13px] text-ink-3">Demandas que pedem mais do que a turma dá conta não aparecem como compatíveis.</p>
+        <Controller control={control} name="level" render={({ field }) => <LevelPicker value={field.value} onChange={field.onChange} />} />
       </div>
 
       <div>

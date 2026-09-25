@@ -12,11 +12,13 @@ interface UnderlineTabsProps<Value extends string> {
   options: TabOption<Value>[];
   onChange: (value: Value) => void;
   className?: string;
+  /** Falso quando quem envolve já traça a linha de baixo, como no cardápio com a busca ao lado. */
+  bordered?: boolean;
 }
 
 /** Abas sublinhadas: o mesmo controle para trocar de recorte em Projetos e Disciplinas. */
-export const UnderlineTabs = <Value extends string>({ label, value, options, onChange, className }: UnderlineTabsProps<Value>) => (
-  <div role="tablist" aria-label={label} className={cn('flex gap-6 border-b border-line', className)}>
+export const UnderlineTabs = <Value extends string>({ label, value, options, onChange, className, bordered = true }: UnderlineTabsProps<Value>) => (
+  <div role="tablist" aria-label={label} className={cn('flex flex-wrap gap-x-6', bordered && 'border-b border-line', className)}>
     {options.map((option) => {
       const selected = option.value === value;
       return (

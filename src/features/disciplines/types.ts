@@ -7,4 +7,5 @@ export interface DisciplineWithUsage extends Discipline {
   isCurrent: boolean;
 }
 
-export type DisciplineInput = Omit<Discipline, 'id' | 'semester'>;
+/** Os docentes da disciplina têm ações próprias; o formulário cuida só da turma. */
+export type DisciplineInput = Omit<Discipline, 'id' | 'semester' | 'coTeachers'>;

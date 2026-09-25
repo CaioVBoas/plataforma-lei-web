@@ -1,5 +1,6 @@
 import { daysBetween, isLinkWindowOpen } from '@/domain/calendar';
 import { freeSlots, maxTeams } from '@/domain/disciplineRules';
+import { isAboveLevel } from '@/domain/matching';
 import { isMyReservation } from '@/domain/reservation';
 import { buildMilestones, canWithdraw, emptyPlanSections, isPlanLocked, nextMilestone } from '@/domain/projectLifecycle';
 import type { Project } from '@/domain/types';
@@ -21,6 +22,9 @@ export const adoptDemand = ({ demandId, disciplineId, teams }: AdoptDemandInput)
 
   if (!isMyReservation(demand)) throw new RuleError('Reserve a demanda antes de levar para uma disciplina.');
   if (!discipline.isCurrent) throw new RuleError(`Só disciplinas de ${db.calendar.id} recebem demandas.`);
+  if (isAboveLevel(demand, discipline)) {
+    throw new RuleError(`Esta demanda pede mais do que a altura do curso de ${discipline.name}. Se a turma dá conta, ajuste a disciplina.`);
+  }
   if (freeSlots(discipline) === 0) {
     throw new RuleError(`${discipline.name} não tem vaga. Aumente as vagas da disciplina ou escolha outra.`);
   }

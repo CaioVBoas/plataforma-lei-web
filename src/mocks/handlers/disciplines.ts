@@ -31,7 +31,7 @@ const slugOf = (name: string) =>
 
 export const createDiscipline = (input: DisciplineInput): DisciplineWithUsage => {
   validate(input);
-  const discipline: Discipline = { ...input, id: `${slugOf(input.name)}-${Date.now()}`, semester: db.calendar.id };
+  const discipline: Discipline = { ...input, id: `${slugOf(input.name)}-${Date.now()}`, semester: db.calendar.id, coTeachers: [] };
   db.disciplines.unshift(discipline);
   return withUsage(discipline);
 };
@@ -53,6 +53,25 @@ export const removeDiscipline = (id: string) => {
     throw new RuleError('Esta disciplina tem projetos. Ela fica guardada com o histórico deles.');
   }
   db.disciplines = db.disciplines.filter((discipline) => discipline.id !== id);
+};
+
+const INSTITUTIONAL_EMAIL = /@(cin\.)?ufpe\.br$/i;
+
+/** Quem divide a disciplina entra pelo e-mail institucional e passa a ver os projetos dela. */
+export const inviteCoTeacher = (id: string, email: string): DisciplineWithUsage => {
+  const discipline = findOrThrow(db.disciplines, id, NOT_FOUND);
+  const normalized = email.trim().toLowerCase();
+  if (!INSTITUTIONAL_EMAIL.test(normalized)) throw new RuleError('Use o e-mail @ufpe.br ou @cin.ufpe.br do colega.');
+  if (normalized === db.account.email) throw new RuleError('Você já é docente desta disciplina.');
+  if (discipline.coTeachers.some((teacher) => teacher.email === normalized)) throw new RuleError('Este colega já está na disciplina.');
+  discipline.coTeachers.push({ email: normalized });
+  return withUsage(discipline);
+};
+
+export const removeCoTeacher = (id: string, email: string): DisciplineWithUsage => {
+  const discipline = findOrThrow(db.disciplines, id, NOT_FOUND);
+  discipline.coTeachers = discipline.coTeachers.filter((teacher) => teacher.email !== email);
+  return withUsage(discipline);
 };
 
 export const listSkillCatalog = () => SKILL_CATALOG;

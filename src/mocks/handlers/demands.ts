@@ -65,3 +65,25 @@ export const toggleWatch = (id: string): Demand => {
   demand.watching = !demand.watching;
   return demand;
 };
+
+const QUESTION_LIMIT = 500;
+
+/**
+ * Pergunta à organização antes de decidir. Nesta versão o L.E.I. repassa
+ * e registra a resposta; a pergunta fica na demanda para os próximos docentes.
+ */
+export const askQuestion = (id: string, text: string): Demand => {
+  const demand = findDemand(id);
+  const question = text.trim();
+  if (!question) throw new RuleError('Escreva a pergunta.');
+  if (question.length > QUESTION_LIMIT) throw new RuleError(`A pergunta passa de ${QUESTION_LIMIT} caracteres. Tente ser mais direto.`);
+  if (demand.status === 'in-project') throw new RuleError('Esta demanda já virou projeto. Fale com a organização pelo contato do projeto.');
+  demand.questions.push({
+    id: `${id}-q${demand.questions.length + 1}`,
+    teacherName: db.account.name,
+    mine: true,
+    askedAt: db.calendar.today,
+    text: question,
+  });
+  return demand;
+};

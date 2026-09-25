@@ -42,7 +42,7 @@ Levantamento do que a plataforma faz hoje, do que foi verificado e do que ainda 
 | --- | --- | --- |
 | RF06 | Convite para o tutorial no primeiro acesso, dispensável | Pronto |
 | RF07 | Sem disciplina cadastrada, pedir o cadastro antes de tudo (F4) | Pronto |
-| RF08 | Próximos passos: reservas a decidir (F5) e a próxima etapa de cada projeto, com atraso em destaque | Pronto |
+| RF08 | Próximos passos: indicações do L.E.I., reservas a decidir (F5) e a próxima etapa de cada projeto, com atraso em destaque | Pronto |
 | RF09 | Sugestões do cardápio que combinam com turma com vaga | Pronto |
 | RF10 | Contador único na navegação: reservas abertas e etapas nos próximos 14 dias | Pronto |
 
@@ -57,6 +57,10 @@ Levantamento do que a plataforma faz hoje, do que foi verificado e do que ainda 
 | RF15 | Reservar por 7 dias, até 3 reservas ativas, liberar com um clique, expirar sozinha | Pronto |
 | RF16 | Reserva de colega visível com nome e data de fim | Pronto |
 | RF17 | "Avise-me se liberar" liga e desliga o aviso | Parcial: o pedido é guardado, mas nenhum aviso é enviado |
+| RF17a | Perguntar à organização na demanda, com o histórico de perguntas e respostas visível para todos os docentes | Parcial: a pergunta é registrada; a resposta depende do L.E.I. repassar (sem portal da organização) |
+| RF17b | Nível da demanda contra a altura do curso da turma: acima do nível não combina e não pode ser levada | Pronto |
+| RF17c | Condições da demanda (presencial, dados sensíveis, sigilo) e o que um semestre entrega, no cartão e no detalhe | Pronto |
+| RF17d | Chegar por indicação do L.E.I.: o link abre a demanda com quem indicou e o que é extensão na disciplina (F6) | Parcial: a indicação vem do seed; o envio é da coordenação |
 
 ### 2.4. Levar para a disciplina e projeto
 
@@ -69,7 +73,7 @@ Levantamento do que a plataforma faz hoje, do que foi verificado e do que ainda 
 | RF22 | Card "Próximo passo" com uma única ação e a data | Pronto |
 | RF23 | Registrar cada etapa em ordem, com data (nunca no futuro), anotação e código do SIGAA | Pronto |
 | RF24 | Plano editável com limite de caracteres do SIGAA, salvo ao sair do campo, copiável por seção ou inteiro | Pronto |
-| RF25 | Encerramento pede o resultado e se a organização usa a entrega | Pronto |
+| RF25 | Encerramento pede o resultado e se a organização usa a entrega, e lembra do relatório final no SIGAA com o resultado pronto para copiar | Pronto |
 | RF26 | Ajustar equipes e desistir (só no planejamento) | Pronto |
 | RF27 | Aba Organização com o contato do ponto focal | Pronto |
 | RF28 | Lista de projetos em tabela, com abas por estado, "Com atraso", ações sempre visíveis e linha clicável | Pronto |
@@ -81,7 +85,8 @@ Levantamento do que a plataforma faz hoje, do que foi verificado e do que ainda 
 | RF29 | Cadastrar, editar e remover disciplina (remover só sem projeto) | Pronto |
 | RF30 | Lista com vagas livres e demandas compatíveis; abas do semestre atual e anteriores | Pronto |
 | RF31 | Detalhe com projetos da turma, demandas que combinam e formulário de competências | Pronto |
-| RF32 | Ementa, carga horária, nível; duplicar para o próximo semestre, pausar recebimento, arquivar | A fazer: depende do modelo `Course` da API |
+| RF31a | Disciplina com mais de um docente, convidado pelo e-mail institucional; projeto mostra a coordenação compartilhada (F7) | Parcial: o convite é registrado, sem e-mail enviado |
+| RF32 | Ementa, carga horária; duplicar para o próximo semestre, pausar recebimento, arquivar | A fazer: depende do modelo `Course` da API |
 | RF33 | Lista de organizações com demanda aberta primeiro e contagens em texto | Pronto |
 | RF34 | Detalhe com sobre, demandas abertas, seus projetos, contato (só com projeto) e histórico com o CIn | Pronto |
 | RF35 | Propor um projeto a uma organização sem partir de demanda | A fazer: fluxo não desenhado |
@@ -106,8 +111,11 @@ Cada regra do `fluxos.md` foi testada direto no backend simulado, incluindo os c
 | 10. Resultado volta para a organização | O encerramento entra no histórico; encerrar sem resultado é recusado | Pronto |
 | 11. A plataforma não acessa o SIGAA | Só guarda a data e o código informados | Pronto |
 | Etapas em ordem, sem data futura | Pular etapa e data futura recusadas | Pronto |
+| 9. Nível da turma (RN-03) | Demanda acima do nível não combina e levar para turma abaixo do nível é recusado | Pronto |
+| 12. Dúvida pela demanda | Pergunta vazia recusada; registrada como do docente, sem resposta; demanda em projeto não recebe pergunta | Pronto |
+| 13. Mais de um docente | Só e-mail institucional, sem repetir nem convidar a si mesmo; editar a disciplina mantém os colegas | Pronto |
 
-**Fluxos verificados no navegador (31 passos, sem erro no console):** entrada e redirecionamento, Início (F4, F5, contador), cardápio (filtros e busca), F1 completo (reservar, levar, projeto criado na aba Plano, demanda fora do cardápio), F2 e F3 completos (plano, abertura, SIGAA com código, entregas, encerramento e histórico), desistência, liberar reserva, aviso, disciplinas (cadastrar, editar pelo kebab, remover, abas, link de compatíveis), organizações (linha e link da contagem), projetos (abas, linha, copiar plano), menu no celular, conta e saída.
+**Fluxos verificados no navegador (37 passos, sem erro no console), além das 30 verificações de regra no backend simulado:** indicação do L.E.I. no Início e na demanda (F6), pergunta à organização, condições e nível na demanda, turma abaixo do nível bloqueada, convite de colega na disciplina e coordenação compartilhada no projeto (F7), entrada e redirecionamento, Início (F4, F5, contador), cardápio (filtros e busca), F1 completo (reservar, levar, projeto criado na aba Plano, demanda fora do cardápio), F2 e F3 completos (plano, abertura, SIGAA com código, entregas, encerramento e histórico), desistência, liberar reserva, aviso, disciplinas (cadastrar, editar pelo kebab, remover, abas, link de compatíveis), organizações (linha e link da contagem), projetos (abas, linha, copiar plano), menu no celular, conta e saída.
 
 ---
 
@@ -138,9 +146,10 @@ Em ordem de prioridade para um piloto com docentes e organizações reais.
 | 1 | **Calendário acadêmico oficial** | Prazo de vinculação, meio e fim do semestre vêm dele |
 | 2 | **Portal das organizações**: publicar demanda, ver quem reservou, acompanhar etapas, confirmar a entrega | O outro lado do produto; hoje as demandas vêm do seed |
 | 2 | **Triagem do L.E.I.**: aprovar, pedir ajuste ou recusar demanda antes do cardápio | O cardápio promete demandas já triadas |
-| 2 | **Avisos por e-mail**: reserva perto de vencer, demanda liberada ("Avise-me"), etapa atrasada, projeto criado para a organização | O "Avise-me" hoje não avisa; prazos dependem de o docente abrir o portal |
+| 2 | **Avisos por e-mail**: reserva perto de vencer, demanda liberada ("Avise-me"), resposta da organização, convite de colega, etapa atrasada | Hoje esses avisos só aparecem quando o docente abre o portal |
 | 3 | **Plano gerado por modelo de linguagem** a partir da demanda e da disciplina | Hoje o texto vem pronto do seed |
-| 3 | **Dados completos da disciplina** (ementa, carga horária, nível) e ações de semestre (duplicar, pausar, arquivar) | Pedido nas telas, depende do modelo `Course` |
+| 3 | **Dados completos da disciplina** (ementa, carga horária) e ações de semestre (duplicar, pausar, arquivar) | Pedido nas telas, depende do modelo `Course` |
+| 3 | **Participantes e horas por estudante**: lista da turma, equipes e planilha para o SIGAA | A maior dor de registro relatada (Gusto, Kiev); fica para quando os estudantes escolherem projeto |
 | 3 | **Propor projeto a uma organização** | Docente com ideia própria procurando parceiro |
 | 4 | **Painel da coordenação**: projetos por semestre, organizações atendidas, taxa de uso das entregas | Mostrar o impacto da extensão |
 | 4 | **Testes automatizados** (Playwright para os fluxos, Vitest para `src/domain`) | Manter as regras acima verificadas a cada mudança |

@@ -59,9 +59,12 @@ Só a próxima etapa pendente tem ação. As outras mostram a data prevista ou a
 6. **O contato da organização só aparece depois** que a demanda vira projeto. Antes disso, o docente vê quem é a organização e como ela trabalha, mas não o e-mail ou o telefone.
 7. **Desistir só no planejamento.** Enquanto o registro no SIGAA não foi feito, o docente pode desistir e a demanda volta a ficar livre no cardápio. Depois do registro, o compromisso é institucional.
 8. **O plano fica travado depois do registro no SIGAA**, porque passa a ser o texto oficial.
-9. **A compatibilidade é contada, não estimada.** Uma demanda combina com uma disciplina quando a disciplina trabalha pelo menos metade das competências que a demanda pede. A tela mostra quais combinam e quais faltam, sem percentual inventado.
+9. **A compatibilidade é contada, não estimada.** Uma demanda combina com uma disciplina quando a disciplina trabalha pelo menos metade das competências que a demanda pede **e** a demanda não pede mais do que a altura do curso em que a turma está (início, meio ou fim do curso). A tela mostra quais competências combinam, quais faltam e se a demanda está acima do nível, sem percentual inventado. Turma abaixo do nível pedido não recebe a demanda.
 10. **O resultado volta para a organização.** O texto do encerramento aparece no histórico da organização, para o próximo docente saber o que já foi feito.
-11. **A plataforma não acessa o SIGAA.** Ela entrega o texto pronto e guarda a data que o docente informou.
+11. **A plataforma não acessa o SIGAA.** Ela entrega o texto pronto e guarda a data que o docente informou. O certificado de horas dos estudantes sai da aprovação do relatório final pela PROExC; o encerramento lembra disso e entrega o resultado pronto para copiar.
+12. **Dúvida vai pela demanda.** Antes de decidir, o docente pergunta à organização na própria demanda. Nesta versão o L.E.I. repassa; pergunta e resposta ficam registradas para os próximos docentes.
+13. **Disciplina pode ter mais de um docente.** O colega entra pelo e-mail institucional e vê e edita os mesmos projetos. Só a disciplina do semestre atual aceita convite.
+14. **A expectativa é dita no começo.** A demanda mostra o que um semestre entrega (pesquisa com usuários, protótipo ou prova de conceito) e o que pesa na rotina da turma (presencial, dados sensíveis, sigilo). A reunião de abertura lembra de combinar isso com a organização.
 
 ## 5. Navegação
 
@@ -81,7 +84,7 @@ A conta fica no rodapé da barra lateral, com Minha conta e Sair. O único conta
 ### F1. Do cardápio à disciplina
 
 1. **Cardápio.** O filtro começa em "Para minhas turmas", e há também "Minhas reservas" e "Todas". Cada cartão mostra a organização, o problema, as competências (as que a turma cobre vêm marcadas), com qual disciplina combina, se cabe num semestre e, em laranja, a reserva.
-2. **Detalhe da demanda.** Aparecem o problema, o que a organização oferece, as competências com a cobertura de cada disciplina, se cabe no semestre e **Para se inspirar**, com soluções parecidas que já existem. A coluna da decisão tem uma única ação primária, que muda com o estado:
+2. **Detalhe da demanda.** Aparecem o problema, o que a organização oferece, as competências com a cobertura de cada disciplina, se cabe na turma (semestre e altura do curso) e o que um semestre entrega, as condições que pesam na rotina, **Para se inspirar**, com soluções parecidas que já existem, e as **perguntas à organização**, com as respostas já dadas. A coluna da decisão tem uma única ação primária, que muda com o estado:
    - Livre: **Reservar por 7 dias**.
    - Reservada por você: **Levar para uma disciplina**, com "Liberar reserva" como ação secundária.
    - Reservada por colega: **Avise-me se liberar**.
@@ -104,6 +107,14 @@ O docente entra com o e-mail institucional. O Início mostra um convite para o t
 ### F5. Reserva a decidir
 
 Toda reserva ativa aparece nos Próximos passos do Início como "Decidir a reserva", com os dias restantes em laranja. Dali o docente volta ao detalhe da demanda e leva para a disciplina ou libera.
+
+### F6. Chegar por indicação do L.E.I.
+
+O L.E.I. escreve para o docente que tem perfil para uma demanda, com um link direto para ela. Sem sessão, o docente entra e volta para a demanda. O topo da demanda diz quem indicou, a mensagem e, em três linhas, o que é extensão na disciplina. A indicação também aparece no Início como "Avaliar a indicação do L.E.I." e no cartão do cardápio, até o docente reservar.
+
+### F7. Dividir a disciplina
+
+Na página da disciplina, a seção Docentes mostra quem divide a turma. O docente convida o colega pelo e-mail institucional; os dois veem e editam os mesmos projetos, e o projeto mostra "Coordenação compartilhada com".
 
 ## 7. Regras de design
 
@@ -136,3 +147,5 @@ Plataformas parecidas conectam empresa e curso. O Aperta o PLEI tem quatro coisa
 | Registro semanal de andamento e horas | Controle que a disciplina já faz. O projeto acompanha só os marcos que importam para a organização |
 | Central de notificações | O Início já responde "o que mudou e o que fazer" |
 | Escolha de portal e de área na entrada | O portal é do docente. Organizações têm um aviso na entrada |
+| Participantes e horas por estudante no projeto | A primeira versão vai até a proposta do projeto (orientação do Prof. Cristiano). Horas por pessoa dependem de os estudantes escolherem o projeto, que é o fluxo do estudante |
+| Recusar demanda ("Não tenho interesse") | Decisão da equipe: a demanda simplesmente não é reservada |

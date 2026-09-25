@@ -11,13 +11,15 @@ import type { Demand, SemesterCalendar } from '@/domain/types';
 import { DisciplineForm } from '@/features/disciplines/components/disciplineForm';
 import { useCreateDiscipline } from '@/features/disciplines/useDisciplines';
 import type { DisciplineWithUsage } from '@/features/disciplines/types';
-import { slotsLabel } from '@/features/disciplines/utils/disciplinePresentation';
+import { LEVEL_COPY, slotsLabel } from '@/features/disciplines/utils/disciplinePresentation';
 import { useAdoptDemand } from '@/features/projects/shared/hooks/useAdoptDemand';
 import { paths } from '@/routes/paths';
 import { cn } from '@/utils/cn';
 import { pluralize } from '@/utils/format';
 
 const DEFAULT_TEAMS = 2;
+
+const canReceive = (match: DisciplineMatch<DisciplineWithUsage>) => freeSlots(match.discipline) > 0 && !match.aboveLevel;
 
 interface DisciplineOptionProps {
   match: DisciplineMatch<DisciplineWithUsage>;
@@ -29,7 +31,8 @@ interface DisciplineOptionProps {
 
 const DisciplineOption = ({ match, demand, selected, name, onSelect }: DisciplineOptionProps) => {
   const { discipline } = match;
-  const full = freeSlots(discipline) === 0;
+  // Turma sem vaga ou abaixo do nível pedido não pode receber (regra 4 e RN-03).
+  const full = !canReceive(match);
   return (
     <label
       className={cn(
@@ -42,7 +45,8 @@ const DisciplineOption = ({ match, demand, selected, name, onSelect }: Disciplin
       <span className="min-w-0 flex-1">
         <span className="block text-[15px] font-medium text-ink">{discipline.name}</span>
         <span className="mt-0.5 block text-[13px] text-ink-2">
-          Cobre {match.covered.length} de {demand.skills.length} competências · {slotsLabel(discipline)}
+          Cobre {match.covered.length} de {demand.skills.length} competências ·{' '}
+          {match.aboveLevel ? `Acima do ${LEVEL_COPY[discipline.level].label.toLowerCase()}` : slotsLabel(discipline)}
         </span>
       </span>
     </label>
@@ -77,7 +81,7 @@ export const AdoptDemandModal = ({ demand, disciplines, calendar, onClose }: Ado
   const createDiscipline = useCreateDiscipline();
 
   const ranked = rankDisciplines(demand, disciplines);
-  const firstAvailable = ranked.find((match) => freeSlots(match.discipline) > 0);
+  const firstAvailable = ranked.find(canReceive);
   const [selectedId, setSelectedId] = useState(firstAvailable?.discipline.id);
   const [creating, setCreating] = useState(disciplines.length === 0);
   const selected = ranked.find((match) => match.discipline.id === selectedId)?.discipline;
@@ -118,7 +122,7 @@ export const AdoptDemandModal = ({ demand, disciplines, calendar, onClose }: Ado
       >
         <DisciplineForm
           formId={formId}
-          defaultValues={{ name: '', code: '', students: 40, teamSize: 5, projectSlots: 2, skills: demand.skills }}
+          defaultValues={{ name: '', code: '', level: demand.level, students: 40, teamSize: 5, projectSlots: 2, skills: demand.skills }}
           onSubmit={(values) =>
             createDiscipline.mutate(values, {
               onSuccess: (discipline) => {
@@ -168,7 +172,7 @@ export const AdoptDemandModal = ({ demand, disciplines, calendar, onClose }: Ado
           ))}
         </div>
         {!firstAvailable && (
-          <p className="mt-2.5 text-[13px] text-caution">Nenhuma turma tem vaga. Aumente as vagas de uma disciplina ou cadastre outra.</p>
+          <p className="mt-2.5 text-[13px] text-caution">Nenhuma turma pode receber esta demanda: estão sem vaga ou abaixo do nível pedido. Ajuste uma disciplina ou cadastre outra.</p>
         )}
         <button type="button" onClick={() => setCreating(true)} className="mt-2.5 text-[13px] text-accent hover:text-accent-hover">
           Cadastrar outra disciplina

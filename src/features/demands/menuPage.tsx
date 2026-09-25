@@ -6,7 +6,7 @@ import { buttonClassName } from '@/components/ui/buttonStyles';
 import { EmptyState } from '@/components/ui/emptyState';
 import { SearchInput } from '@/components/ui/formControls';
 import { Page } from '@/components/ui/page';
-import { SegmentedControl } from '@/components/ui/segmentedControl';
+import { UnderlineTabs } from '@/components/ui/underlineTabs';
 import { formatShortDate, isLinkWindowOpen } from '@/domain/calendar';
 import { rankDisciplines } from '@/domain/matching';
 import { isMyReservation, MAX_ACTIVE_RESERVATIONS, RESERVATION_DAYS } from '@/domain/reservation';
@@ -116,8 +116,9 @@ export const MenuPage = () => {
         </p>
       )}
 
-      <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
-        <SegmentedControl
+      <div className="mb-3 flex flex-wrap items-end justify-between gap-x-6 gap-y-3 border-b border-line">
+        <UnderlineTabs
+          bordered={false}
           label="Quais demandas mostrar"
           value={scope}
           onChange={(ver) => updateParams({ ver })}
@@ -132,10 +133,10 @@ export const MenuPage = () => {
           placeholder="Buscar no cardápio"
           value={search}
           onChange={(event) => updateParams({ busca: event.target.value })}
-          containerClassName="w-full sm:w-[280px]"
+          containerClassName="mb-2 w-full sm:w-[280px]"
         />
       </div>
-      <p className="mb-6 text-[13px] text-ink-3">
+      <p className="mb-6 text-[13px] text-ink-2">
         Você tem {byScope.reservas.length} de {MAX_ACTIVE_RESERVATIONS} reservas. Cada uma guarda a demanda por {RESERVATION_DAYS} dias enquanto você decide.
       </p>
 

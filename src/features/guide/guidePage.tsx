@@ -57,10 +57,11 @@ const RULES = [
   'Demanda reservada por um colega aparece no cardápio com o nome de quem reservou. Você pode pedir aviso para quando ela voltar.',
   'Cada demanda vai para uma única turma. Quando vira projeto, ela sai do cardápio de todo mundo.',
   'Só disciplinas do semestre atual e com vaga recebem demandas. Você decide quantos projetos cada turma comporta.',
-  'Uma demanda combina com a turma quando a turma trabalha pelo menos metade das competências pedidas. A plataforma mostra quais cobre e quais faltam.',
+  'Uma demanda combina com a turma quando a turma trabalha pelo menos metade das competências pedidas e a demanda não pede mais do que a altura do curso em que a turma está. A plataforma mostra quais cobre e quais faltam.',
+  'Dúvida antes de decidir vai pela própria demanda: o L.E.I. repassa para a organização e a resposta fica ali, para você e para os próximos docentes.',
   'O contato da organização aparece quando a demanda vira projeto seu.',
   'Até o registro no SIGAA dá para desistir e a demanda volta para o cardápio. Depois, o compromisso é institucional e o plano fica travado.',
-  'O resultado que você escreve no encerramento entra no histórico da organização, para o próximo docente saber o que já foi feito.',
+  'O resultado que você escreve no encerramento entra no histórico da organização e serve de base para o relatório final no SIGAA, que libera as horas dos estudantes.',
 ];
 
 const FAQ: { question: string; answer: ReactNode }[] = [
@@ -72,7 +73,21 @@ const FAQ: { question: string; answer: ReactNode }[] = [
   {
     question: 'Isso é um projeto de extensão?',
     answer:
-      'É extensão dentro da disciplina. O projeto começa e termina com a turma, sem edital nem bolsa. O registro no SIGAA continua necessário para a carga horária de extensão contar.',
+      'É extensão dentro da disciplina: a turma resolve um problema real de uma organização de fora da universidade, com ela, durante o semestre. O projeto começa e termina com a turma, sem edital nem bolsa. O registro no SIGAA continua necessário para a carga horária de extensão contar.',
+  },
+  {
+    question: 'Como os estudantes recebem as horas?',
+    answer:
+      'Pelo SIGAA. Depois do encerramento, você envia o relatório final com o resultado que escreveu aqui. Quando a PROExC aprova, o certificado de horas sai para os estudantes.',
+  },
+  {
+    question: 'O que a organização recebe no fim?',
+    answer:
+      'O que cabe num semestre: pesquisa com usuários, protótipo ou prova de conceito. Um sistema pronto para uso costuma ficar fora. Combine isso na reunião de abertura para ninguém se frustrar.',
+  },
+  {
+    question: 'Divido a disciplina com outro professor. Como fica?',
+    answer: 'Convide o colega pelo e-mail institucional na página da disciplina. Vocês dois veem e editam os mesmos projetos.',
   },
   {
     question: 'A plataforma registra no SIGAA por mim?',

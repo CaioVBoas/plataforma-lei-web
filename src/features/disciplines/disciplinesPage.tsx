@@ -15,7 +15,7 @@ import { useMenu } from '@/features/demands/useDemands';
 import { useProjects } from '@/features/projects/shared/hooks/useProjects';
 import { paths } from '@/routes/paths';
 import { cn } from '@/utils/cn';
-import { pluralize } from '@/utils/format';
+import { joinWithAnd, pluralize } from '@/utils/format';
 import { NewDisciplineModal } from './components/newDisciplineModal';
 import { useDisciplines, useRemoveDiscipline } from './useDisciplines';
 import type { DisciplineWithUsage } from './types';
@@ -63,6 +63,7 @@ const DisciplineItem = ({ discipline, matches, projects }: DisciplineItemProps) 
       <p className="truncate text-headline">{discipline.name}</p>
       <p className="mt-1 truncate text-[13px] text-ink-2">
         {discipline.isCurrent ? disciplineFacts(discipline) : `${discipline.semester} · ${disciplineFacts(discipline)}`}
+        {discipline.coTeachers.length > 0 && ` · com ${joinWithAnd(discipline.coTeachers.map((teacher) => teacher.name ?? teacher.email))}`}
       </p>
       <p className="mt-1 truncate text-[13px] text-ink-2">
         {discipline.isCurrent ? (

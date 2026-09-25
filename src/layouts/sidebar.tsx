@@ -51,8 +51,11 @@ export const Sidebar = ({ onNavigate }: { onNavigate?: () => void }) => {
   const { agenda = [] } = useAgenda();
   const { data: menu = [] } = useMenu();
   // O único contador da navegação responde "quanta coisa pede decisão minha agora":
-  // etapas com prazo perto e reservas abertas.
-  const pendingSteps = agenda.filter(needsAttention).length + menu.filter(isMyReservation).length;
+  // etapas com prazo perto, reservas abertas e indicações do L.E.I. ainda não decididas.
+  const pendingSteps =
+    agenda.filter(needsAttention).length +
+    menu.filter(isMyReservation).length +
+    menu.filter((demand) => demand.invitation && demand.status === 'open').length;
 
   return (
     <div className="flex h-full flex-col px-3 pt-5 pb-3">

@@ -3,7 +3,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { QueryView } from '@/components/feedback/queryStates';
 import { useToast } from '@/components/feedback/toastContext';
 import { Button } from '@/components/ui/button';
-import { GroupedList, ListRow } from '@/components/ui/groupedList';
+import { TrayIcon } from '@/components/ui/icons';
+import { AnchorIcon, Item, ItemList } from '@/components/ui/itemList';
 import { Page, Section } from '@/components/ui/page';
 import { Tag } from '@/components/ui/tag';
 import { useCalendar } from '@/features/calendar/useCalendar';
@@ -12,10 +13,11 @@ import { ProjectRow } from '@/features/projects/shared/components/projectRow';
 import { useProjects } from '@/features/projects/shared/hooks/useProjects';
 import { useScrollToHash } from '@/hooks/useScrollToHash';
 import { paths } from '@/routes/paths';
+import { CoTeachers } from './components/coTeachers';
 import { DisciplineForm } from './components/disciplineForm';
 import { useDiscipline, useRemoveDiscipline, useUpdateDiscipline } from './useDisciplines';
 import type { DisciplineWithUsage } from './types';
-import { disciplineMeta, slotsLabel } from './utils/disciplinePresentation';
+import { disciplineMeta, LEVEL_COPY, slotsLabel } from './utils/disciplinePresentation';
 import { matchingDemands } from './utils/matchingDemands';
 
 const DisciplineProjects = ({ discipline }: { discipline: DisciplineWithUsage }) => {
@@ -26,11 +28,11 @@ const DisciplineProjects = ({ discipline }: { discipline: DisciplineWithUsage })
 
   return (
     <Section title="Projetos" description={discipline.isCurrent ? slotsLabel(discipline) : undefined}>
-      <GroupedList>
+      <ItemList>
         {own.map((project) => (
           <ProjectRow key={project.id} project={project} today={calendar.today} />
         ))}
-      </GroupedList>
+      </ItemList>
     </Section>
   );
 };
@@ -44,17 +46,26 @@ const MatchingDemands = ({ discipline }: { discipline: DisciplineWithUsage }) =>
   return (
     <Section id="demandas" title="Demandas que combinam" description="Demandas livres no cardápio em que a turma cobre pelo menos metade das competências pedidas.">
       {matches.length > 0 ? (
-        <GroupedList>
+        <ItemList>
           {matches.map(({ demand, match }) => (
-            <ListRow key={demand.id} to={paths.demand(demand.id)}>
-              <p className="text-[13px] text-ink-3">{demand.organization.name}</p>
-              <p className="mt-0.5 text-[15px] font-medium text-ink">{demand.title}</p>
+            <Item
+              key={demand.id}
+              to={paths.demand(demand.id)}
+              label={demand.title}
+              anchor={
+                <AnchorIcon>
+                  <TrayIcon size={18} />
+                </AnchorIcon>
+              }
+            >
+              <p className="truncate text-[15px] font-semibold text-ink">{demand.title}</p>
+              <p className="mt-1 truncate text-[13px] text-ink-2">{demand.organization.name}</p>
               <Tag tone="positive" className="mt-2">
                 Cobre {match.covered.length} de {demand.skills.length} competências
               </Tag>
-            </ListRow>
+            </Item>
           ))}
-        </GroupedList>
+        </ItemList>
       ) : (
         <p className="text-sm text-ink-2">Nenhuma demanda livre no cardápio combina agora. Revise as competências acima se a turma trabalha mais coisas.</p>
       )}
@@ -88,12 +99,15 @@ const DisciplineView = ({ discipline }: { discipline: DisciplineWithUsage }) => 
         <span className="flex flex-wrap items-center gap-x-3 gap-y-1">
           <Tag tone={discipline.isCurrent ? 'positive' : 'neutral'}>{discipline.isCurrent ? 'Recebendo demandas' : 'Semestre encerrado'}</Tag>
           <span>
-            {discipline.semester} · {disciplineMeta(discipline)}
+            {discipline.semester} · {disciplineMeta(discipline)} · {LEVEL_COPY[discipline.level].label.toLowerCase()}
           </span>
         </span>
       }
     >
       <DisciplineProjects discipline={discipline} />
+      <Section title="Docentes" description="Quem divide a disciplina vê e edita os mesmos projetos.">
+        <CoTeachers discipline={discipline} />
+      </Section>
       <MatchingDemands discipline={discipline} />
 
       {discipline.isCurrent && (

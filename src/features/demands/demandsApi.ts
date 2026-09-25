@@ -10,3 +10,5 @@ export const reserveDemand = (id: string) => mockRequest(() => server.reserveDem
 export const releaseReservation = (id: string) => mockRequest(() => server.releaseReservation(id));
 
 export const toggleWatch = (id: string) => mockRequest(() => server.toggleWatch(id));
+
+export const askQuestion = ({ id, text }: { id: string; text: string }) => mockRequest(() => server.askQuestion(id, text));

@@ -2,8 +2,8 @@ import { Link } from 'react-router-dom';
 import { LoadingState } from '@/components/feedback/queryStates';
 import { buttonClassName } from '@/components/ui/buttonStyles';
 import { EmptyState } from '@/components/ui/emptyState';
-import { GroupedList, ListRow } from '@/components/ui/groupedList';
-import { CloseIcon } from '@/components/ui/icons';
+import { CloseIcon, FolderIcon, TrayIcon } from '@/components/ui/icons';
+import { AnchorIcon, Item, ItemList } from '@/components/ui/itemList';
 import { Page, Section } from '@/components/ui/page';
 import { formatShortDate, isLinkWindowOpen, semesterWeek } from '@/domain/calendar';
 import { freeSlots } from '@/domain/disciplineRules';
@@ -52,25 +52,60 @@ const TutorialInvite = () => {
   );
 };
 
+/** Indicação do L.E.I. ainda não decidida: o convite vira o primeiro passo, não um e-mail perdido. */
+const InvitationStep = ({ demand }: { demand: Demand }) => (
+  <Item
+    to={paths.demand(demand.id)}
+    label={`Avaliar a indicação: ${demand.title}`}
+    anchor={
+      <AnchorIcon>
+        <TrayIcon size={18} />
+      </AnchorIcon>
+    }
+  >
+    <p className="truncate text-[15px] font-semibold text-ink">Avaliar a indicação do L.E.I.</p>
+    <p className="mt-1 truncate text-[13px] text-ink-2">
+      {demand.title} · {demand.organization.name}
+    </p>
+    <Tag tone="accent" className="mt-2">
+      Indicada por {demand.invitation?.from.split(',')[0]}
+    </Tag>
+  </Item>
+);
+
 /** Reserva ativa também é um próximo passo: decidir antes que ela expire. */
 const ReservationStep = ({ demand, today }: { demand: Demand; today: string }) => {
   const until = demand.reservation?.until ?? today;
   return (
-    <ListRow
+    <Item
       to={paths.demand(demand.id)}
-      leading={<span className="block size-2.5 rounded-full bg-reserve-dot" />}
-      trailing={<Tag tone="reserve">{capitalize(daysLeftLabel(until, today))}</Tag>}
+      label={`Decidir a reserva: ${demand.title}`}
+      anchor={
+        <AnchorIcon>
+          <TrayIcon size={18} />
+        </AnchorIcon>
+      }
     >
-      <p className="text-[15px] font-medium text-ink">Decidir a reserva</p>
-      <p className="mt-0.5 truncate text-[13px] text-ink-3">
+      <p className="truncate text-[15px] font-semibold text-ink">Decidir a reserva</p>
+      <p className="mt-1 truncate text-[13px] text-ink-2">
         {demand.title} · {demand.organization.name}
       </p>
-    </ListRow>
+      <Tag tone="reserve" className="mt-2">
+        {capitalize(daysLeftLabel(until, today))}
+      </Tag>
+    </Item>
   );
 };
 
-const NextSteps = ({ agenda, reservations, today }: { agenda: AgendaItem[]; reservations: Demand[]; today: string }) => {
-  if (agenda.length === 0 && reservations.length === 0) {
+interface NextStepsProps {
+  agenda: AgendaItem[];
+  reservations: Demand[];
+  invitations: Demand[];
+  today: string;
+}
+
+const NextSteps = ({ agenda, reservations, invitations, today }: NextStepsProps) => {
+  if (agenda.length === 0 && reservations.length === 0 && invitations.length === 0) {
     return (
       <EmptyState
         title="Nada pendente"
@@ -85,24 +120,32 @@ const NextSteps = ({ agenda, reservations, today }: { agenda: AgendaItem[]; rese
   }
 
   return (
-    <GroupedList>
+    <ItemList>
+      {invitations.map((demand) => (
+        <InvitationStep key={demand.id} demand={demand} />
+      ))}
       {reservations.map((demand) => (
         <ReservationStep key={demand.id} demand={demand} today={today} />
       ))}
       {agenda.map(({ project, milestone, overdue }) => (
-        <ListRow
+        <Item
           key={project.id}
           to={paths.project(project.id, milestone.id === 'plan' ? 'plano' : undefined)}
-          leading={<span className={cn('block size-2.5 rounded-full', overdue ? 'bg-caution' : 'bg-accent')} />}
-          trailing={<span className={cn('text-[13px]', overdue ? 'font-medium text-caution' : 'text-ink-2')}>{milestoneDateLine(milestone, today, true)}</span>}
+          label={`${MILESTONE_COPY[milestone.id].title}: ${project.title}`}
+          anchor={
+            <AnchorIcon>
+              <FolderIcon size={18} />
+            </AnchorIcon>
+          }
         >
-          <p className="text-[15px] font-medium text-ink">{MILESTONE_COPY[milestone.id].title}</p>
-          <p className="mt-0.5 truncate text-[13px] text-ink-3">
+          <p className="truncate text-[15px] font-semibold text-ink">{MILESTONE_COPY[milestone.id].title}</p>
+          <p className="mt-1 truncate text-[13px] text-ink-2">
             {project.title} · {project.organization.name}
           </p>
-        </ListRow>
+          <p className={cn('mt-1 text-[13px]', overdue ? 'font-medium text-caution' : 'text-ink-3')}>{milestoneDateLine(milestone, today, true)}</p>
+        </Item>
       ))}
-    </GroupedList>
+    </ItemList>
   );
 };
 
@@ -169,8 +212,13 @@ const HomeContent = ({ account, calendar }: { account: Account; calendar: Semest
         </Section>
       ) : (
         <>
-          <Section title="Próximos passos" description="Suas reservas e a próxima etapa de cada projeto em curso.">
-            <NextSteps agenda={agenda} reservations={demands.filter(isMyReservation)} today={calendar.today} />
+          <Section title="Próximos passos" description="Indicações, reservas e a próxima etapa de cada projeto em curso.">
+            <NextSteps
+              agenda={agenda}
+              reservations={demands.filter(isMyReservation)}
+              invitations={demands.filter((demand) => demand.invitation && demand.status === 'open')}
+              today={calendar.today}
+            />
           </Section>
 
           {isLinkWindowOpen(calendar) && (

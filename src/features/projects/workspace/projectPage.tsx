@@ -2,11 +2,13 @@ import { useRef, useState } from 'react';
 import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { QueryView } from '@/components/feedback/queryStates';
 import { Page } from '@/components/ui/page';
-import { SegmentedControl } from '@/components/ui/segmentedControl';
+import { UnderlineTabs } from '@/components/ui/underlineTabs';
 import { Tag } from '@/components/ui/tag';
 import { projectStage } from '@/domain/projectLifecycle';
 import type { Milestone, Project, SemesterCalendar } from '@/domain/types';
 import { useCalendar } from '@/features/calendar/useCalendar';
+import { useDiscipline } from '@/features/disciplines/useDisciplines';
+import { joinWithAnd } from '@/utils/format';
 import { paths, type ProjectTab } from '@/routes/paths';
 import { CompleteMilestoneModal } from './components/completeMilestoneModal';
 import { MilestoneTimeline } from './components/milestoneTimeline';
@@ -32,6 +34,8 @@ const ProjectView = ({ project, calendar }: { project: Project; calendar: Semest
   const tab: ProjectTab = isProjectTab(requestedTab) ? requestedTab : 'etapas';
   const [completing, setCompleting] = useState<Milestone | null>(null);
   const stage = STAGE_COPY[projectStage(project.milestones)];
+  const { data: discipline } = useDiscipline(project.disciplineId);
+  const coTeachers = (discipline?.coTeachers ?? []).map((teacher) => teacher.name ?? teacher.email);
 
   const tabContentRef = useRef<HTMLDivElement>(null);
 
@@ -66,12 +70,13 @@ const ProjectView = ({ project, calendar }: { project: Project; calendar: Semest
           </span>
         </span>
       }
+      meta={coTeachers.length > 0 ? `Coordenação compartilhada com ${joinWithAnd(coTeachers)}` : undefined}
     >
       <MilestoneTrack milestones={project.milestones} className="mb-5" />
       <NextStepCard project={project} today={calendar.today} onAct={act} />
 
       <div ref={tabContentRef} className="mt-10 mb-8 scroll-mt-16">
-        <SegmentedControl label="Seções do projeto" value={tab} options={TABS} onChange={changeTab} />
+        <UnderlineTabs label="Seções do projeto" value={tab} options={TABS} onChange={changeTab} />
       </div>
 
       {tab === 'etapas' && (
