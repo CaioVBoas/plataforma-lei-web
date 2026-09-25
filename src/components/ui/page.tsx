@@ -75,8 +75,8 @@ export const Section = ({ title, id, description, aside, compact, className, chi
  * Pares de rótulo e valor em mini cards, até quatro por linha. O fundo cinza
  * claro sem borda separa um fato do outro sem parecer botão.
  */
-export const FactGrid = ({ items }: { items: { label: string; value: ReactNode }[] }) => (
-  <dl className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+export const FactGrid = ({ items, columns = 4 }: { items: { label: string; value: ReactNode }[]; columns?: 2 | 4 }) => (
+  <dl className={cn('grid grid-cols-1 gap-3 sm:grid-cols-2', columns === 4 && 'lg:grid-cols-4')}>
     {items.map((item) => (
       <div key={item.label} className="min-w-0 rounded-lg bg-canvas px-4 py-3.5">
         <dt className="text-[13px] text-ink-3">{item.label}</dt>

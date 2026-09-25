@@ -83,8 +83,8 @@ A conta fica no rodapé da barra lateral, com Minha conta e Sair. O único conta
 
 ### F1. Do cardápio à disciplina
 
-1. **Cardápio.** O filtro começa em "Para minhas turmas", e há também "Minhas reservas" e "Todas". Cada cartão mostra a organização, o problema, as competências (as que a turma cobre vêm marcadas), com qual disciplina combina, se cabe num semestre e, em laranja, a reserva.
-2. **Detalhe da demanda.** Aparecem o problema, o que a organização oferece, as competências com a cobertura de cada disciplina, se cabe na turma (semestre e altura do curso) e o que um semestre entrega, as condições que pesam na rotina, **Para se inspirar**, com soluções parecidas que já existem, e as **perguntas à organização**, com as respostas já dadas. A coluna da decisão tem uma única ação primária, que muda com o estado:
+1. **Cardápio.** O filtro começa em "Para minhas turmas", e há também "Minhas reservas" e "Todas". Cada cartão mostra a organização, o problema, a disciplina que mais combina com um medidor de quantas competências ela cobre, uma linha com semestre e condições (presencial, dados sensíveis, sigilo) e, no topo, o estado: reserva em laranja, indicação ou novidade em azul. As competências uma a uma ficam no detalhe.
+2. **Detalhe da demanda.** No topo, mini cards com quem sente, reuniões, semestre e altura do curso. Abaixo, abas (Problema, Competências, Perguntas, Para se inspirar, Organização) com o problema, o que a organização oferece, as competências com a cobertura de cada disciplina, se cabe na turma (semestre e altura do curso) e o que um semestre entrega, as condições que pesam na rotina, **Para se inspirar**, com soluções parecidas que já existem, e as **perguntas à organização**, com as respostas já dadas. A coluna da decisão tem uma única ação primária, que muda com o estado:
    - Livre: **Reservar por 7 dias**.
    - Reservada por você: **Levar para uma disciplina**, com "Liberar reserva" como ação secundária.
    - Reservada por colega: **Avise-me se liberar**.
@@ -125,8 +125,10 @@ Na página da disciplina, a seção Docentes mostra quem divide a turma. O docen
 5. **Linguagem da sala de aula**, não do sistema: "levar para a disciplina", e não "vincular demanda".
 6. **Cada elemento tem uma aparência só.** Rótulo estático (tipo, competência) é texto sobre fundo cinza claro, sem borda. Contagem é texto puro, apagada quando é zero. Link é texto azul, sublinhado só no hover. Só botão tem borda (secundário) ou preenchimento (primário), e um menu de ações é sempre o kebab de 32px. Nenhuma ação aparece só no hover.
 7. **Listas com âncora e item inteiro clicável.** Todo item de lista tem uma âncora de 40px à esquerda (monograma, código ou ícone), no máximo três linhas de conteúdo e a linha inteira como área de clique.
-8. **Uma data só: "21 ago 2026".** Tempo relativo ("em 7 dias", "há 9 dias") entra só como complemento, nunca no lugar da data.
-9. **Visual sóbrio com identidade própria.** Tipografia do sistema, cantos de 6 a 10px e cinzas neutros. A identidade vem do Design System Aperta o PLEI: o Azul Tecnológico nas ações e o Laranja Social usado só na reserva. Nada de gradiente, emoji ou roxo.
+8. **Resumo em mini cards, detalhe em abas.** Telas de detalhe (demanda, organização, disciplina, projeto) abrem com os fatos principais em mini cards cinza claro e organizam o resto em abas sublinhadas, guardadas na URL (`?aba=`). Nada de rolagem longa com seções empilhadas.
+9. **Tag só para estado.** No cartão, tag é reservada ao estado da demanda. Cobertura vira medidor e o resto vira texto.
+10. **Uma data só: "21 ago 2026".** Tempo relativo ("em 7 dias", "há 9 dias") entra só como complemento, nunca no lugar da data.
+11. **Visual sóbrio com identidade própria.** Tipografia do sistema, cantos de 6 a 10px e cinzas neutros. A identidade vem do Design System Aperta o PLEI: o Azul Tecnológico nas ações e o Laranja Social usado só na reserva. Nada de gradiente, emoji ou roxo.
 
 ## 8. O que nos faz únicos
 

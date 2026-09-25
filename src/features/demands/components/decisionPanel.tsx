@@ -28,10 +28,10 @@ const Eyebrow = ({ children, tone = 'neutral' }: { children: ReactNode; tone?: S
 const Fine = ({ children }: { children: ReactNode }) => <p className="mt-3 text-[13px] leading-relaxed text-ink-3">{children}</p>;
 
 /** Dúvida não é motivo para desistir da demanda: a pergunta vai para a organização sem sair da tela. */
-const AskLink = () => (
-  <a href="#perguntas" className={cn(textLinkClassName, 'mt-3 inline-block text-[13px]')}>
+const AskLink = ({ demandId }: { demandId: string }) => (
+  <Link to={paths.demandQuestions(demandId)} replace className={cn(textLinkClassName, 'mt-3 inline-block text-[13px]')}>
     Tem uma dúvida? Pergunte à organização
-  </a>
+  </Link>
 );
 
 interface DecisionPanelProps {
@@ -93,7 +93,7 @@ export const DecisionPanel = ({ detail, best, calendar, hasDisciplines, onAdopt 
           Liberar reserva
         </Button>
         {!windowOpen && <Fine>O prazo de {calendar.id} para levar demandas terminou em {formatShortDate(calendar.linkDeadline)}.</Fine>}
-        <AskLink />
+        <AskLink demandId={demand.id} />
         {error}
       </Panel>
     );
@@ -159,7 +159,7 @@ export const DecisionPanel = ({ detail, best, calendar, hasDisciplines, onAdopt 
         Reservar por {RESERVATION_DAYS} dias
       </Button>
       <Fine>A reserva guarda a demanda só para você enquanto decide. Dá para liberar a qualquer momento.</Fine>
-      <AskLink />
+      <AskLink demandId={demand.id} />
       {error}
     </Panel>
   );

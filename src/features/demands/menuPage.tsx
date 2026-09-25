@@ -141,7 +141,7 @@ export const MenuPage = () => {
       </p>
 
       {visible.length > 0 ? (
-        <ul className="grid gap-4 md:grid-cols-2">
+        <ul className="grid grid-cols-1 gap-4 md:grid-cols-2">
           {visible.map(({ demand, best }) => (
             <li key={demand.id}>
               <DemandCard demand={demand} best={best} today={calendar.today} />

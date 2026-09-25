@@ -4,11 +4,12 @@ import { buttonClassName, textLinkClassName } from '@/components/ui/buttonStyles
 import { FolderIcon, TrayIcon } from '@/components/ui/icons';
 import { AnchorIcon, Item, ItemList } from '@/components/ui/itemList';
 import { Monogram } from '@/components/ui/monogram';
-import { FactGrid, Page, Section } from '@/components/ui/page';
+import { FactGrid, Page } from '@/components/ui/page';
+import { UnderlineTabs } from '@/components/ui/underlineTabs';
+import { useTabParam } from '@/hooks/useTabParam';
 import { Tag } from '@/components/ui/tag';
 import { formatShortDate } from '@/domain/calendar';
 import type { Demand } from '@/domain/types';
-import { useScrollToHash } from '@/hooks/useScrollToHash';
 import { paths } from '@/routes/paths';
 import { cn } from '@/utils/cn';
 import { useOrganization } from './useOrganizations';
@@ -21,6 +22,8 @@ const RowAction = ({ children }: { children: string }) => (
   </span>
 );
 
+const TABS = ['demandas', 'projetos', 'historico', 'contato'] as const;
+
 /** Só aparece quando há reserva: é o que muda a decisão de quem olha. */
 const reservationLine = (demand: Demand) => {
   if (!demand.reservation) return undefined;
@@ -30,7 +33,7 @@ const reservationLine = (demand: Demand) => {
 
 const OrganizationView = ({ detail }: { detail: OrganizationDetail }) => {
   const { organization, contact, openDemands, myProjects } = detail;
-  useScrollToHash();
+  const [tab, setTab] = useTabParam(TABS);
 
   return (
     <Page
@@ -44,8 +47,7 @@ const OrganizationView = ({ detail }: { detail: OrganizationDetail }) => {
         </div>
       }
     >
-      <Section title="Sobre" compact>
-        <p className="mb-5 text-[15px] leading-relaxed text-ink-2">{organization.about}</p>
+      <p className="mb-5 text-[15px] leading-relaxed text-ink-2">{organization.about}</p>
         <FactGrid
           items={[
             { label: 'Público atendido', value: organization.audience },
@@ -53,13 +55,25 @@ const OrganizationView = ({ detail }: { detail: OrganizationDetail }) => {
             { label: 'Visita da turma', value: organization.onSiteVisit },
             { label: 'Site', value: organization.site },
           ]}
-        />
-      </Section>
+      />
 
       {/* Primeiro o que dá para levar para a turma agora. */}
-      <Section title="Demandas abertas" id="demandas" compact>
-        {openDemands.length > 0 ? (
-          <ItemList>
+      <UnderlineTabs
+        label="Sobre a parceria"
+        value={tab}
+        onChange={setTab}
+        className="mt-10"
+        options={[
+          { value: 'demandas', label: 'Demandas abertas', count: openDemands.length },
+          { value: 'projetos', label: 'Seus projetos', count: myProjects.length },
+          { value: 'historico', label: 'Histórico com o CIn', count: organization.history.length },
+          { value: 'contato', label: 'Contato' },
+        ]}
+      />
+
+      {tab === 'demandas' &&
+        (openDemands.length > 0 ? (
+          <ItemList flush>
             {openDemands.map((demand) => {
               const reservation = reservationLine(demand);
               return (
@@ -86,13 +100,12 @@ const OrganizationView = ({ detail }: { detail: OrganizationDetail }) => {
             })}
           </ItemList>
         ) : (
-          <p className="text-sm text-ink-3">Nenhuma demanda no cardápio agora.</p>
-        )}
-      </Section>
+          <p className="py-6 text-sm text-ink-3">Nenhuma demanda no cardápio agora.</p>
+        ))}
 
-      {myProjects.length > 0 && (
-        <Section title="Seus projetos" compact>
-          <ItemList>
+      {tab === 'projetos' &&
+        (myProjects.length > 0 ? (
+          <ItemList flush>
             {myProjects.map((project) => (
               <Item
                 key={project.id}
@@ -112,33 +125,36 @@ const OrganizationView = ({ detail }: { detail: OrganizationDetail }) => {
               </Item>
             ))}
           </ItemList>
-        </Section>
+        ) : (
+          <p className="py-6 text-sm text-ink-3">Você ainda não tem projeto com esta organização.</p>
+        ))}
+
+      {tab === 'contato' && (
+        <div className="pt-6">
+          {contact ? (
+            <FactGrid
+              items={[
+                { label: 'Ponto focal', value: `${contact.focalName}, ${contact.focalRole}` },
+                {
+                  label: 'E-mail',
+                  value: (
+                    <a href={`mailto:${contact.email}`} className={textLinkClassName}>
+                      {contact.email}
+                    </a>
+                  ),
+                },
+                { label: 'Canal preferido', value: contact.channel },
+              ]}
+            />
+          ) : (
+            <p className="text-sm text-ink-3">Aparece quando uma demanda desta organização virar projeto seu.</p>
+          )}
+        </div>
       )}
 
-      <Section title="Contato" compact>
-        {contact ? (
-          <FactGrid
-            items={[
-              { label: 'Ponto focal', value: `${contact.focalName}, ${contact.focalRole}` },
-              {
-                label: 'E-mail',
-                value: (
-                  <a href={`mailto:${contact.email}`} className={textLinkClassName}>
-                    {contact.email}
-                  </a>
-                ),
-              },
-              { label: 'Canal preferido', value: contact.channel },
-            ]}
-          />
-        ) : (
-          <p className="text-sm text-ink-3">Aparece quando uma demanda desta organização virar projeto seu.</p>
-        )}
-      </Section>
-
-      <Section title="O que já foi feito com o CIn" compact>
-        {organization.history.length > 0 ? (
-          <ItemList>
+      {tab === 'historico' &&
+        (organization.history.length > 0 ? (
+          <ItemList flush>
             {organization.history.map((entry) => (
               <Item key={`${entry.title}-${entry.semester}`} anchor={<span className="pt-0.5 text-[13px] text-ink-2 tabular-nums">{entry.semester}</span>}>
                 <p className="text-[15px] font-semibold text-ink">{entry.title}</p>
@@ -150,9 +166,8 @@ const OrganizationView = ({ detail }: { detail: OrganizationDetail }) => {
             ))}
           </ItemList>
         ) : (
-          <p className="text-sm text-ink-3">Nenhum projeto ainda. O seu seria o primeiro.</p>
-        )}
-      </Section>
+          <p className="py-6 text-sm text-ink-3">Nenhum projeto ainda. O seu seria o primeiro.</p>
+        ))}
     </Page>
   );
 };

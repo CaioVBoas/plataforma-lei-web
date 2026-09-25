@@ -161,7 +161,7 @@ const Suggestions = ({ demands, disciplines, today }: { demands: Demand[]; disci
   }
 
   return (
-    <ul className="grid gap-4 md:grid-cols-2">
+    <ul className="grid grid-cols-1 gap-4 md:grid-cols-2">
       {fitting.map(({ demand, best }) => (
         <li key={demand.id}>
           <DemandCard demand={demand} best={best} today={today} />

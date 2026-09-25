@@ -1,7 +1,11 @@
 import { useState, type ReactNode } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { QueryView } from '@/components/feedback/queryStates';
-import { Page } from '@/components/ui/page';
+import { textLinkClassName } from '@/components/ui/buttonStyles';
+import { FactGrid, Page } from '@/components/ui/page';
+import { UnderlineTabs } from '@/components/ui/underlineTabs';
+import { useTabParam } from '@/hooks/useTabParam';
+import { cn } from '@/utils/cn';
 import { Tag } from '@/components/ui/tag';
 import { ArrowUpRightIcon } from '@/components/ui/icons';
 import { rankDisciplines, type DisciplineMatch } from '@/domain/matching';
@@ -20,16 +24,18 @@ import { InvitationNote } from './components/invitationNote';
 import { LEVEL_COPY } from '@/features/disciplines/utils/disciplinePresentation';
 import { CONSTRAINT_COPY, SCOPE_COPY, SEMESTER_DELIVERY } from './utils/demandPresentation';
 
-const Block = ({ title, id, children }: { title: string; id?: string; children: ReactNode }) => (
-  <section id={id} className="scroll-mt-6 border-t border-line py-7 first:border-t-0 first:pt-0">
-    <h2 className="mb-3 text-headline">{title}</h2>
+const TABS = ['problema', 'competencias', 'perguntas', 'inspiracao', 'organizacao'] as const;
+
+const SubBlock = ({ title, children }: { title: string; children: ReactNode }) => (
+  <section className="mt-8">
+    <h3 className="mb-2.5 text-[15px] font-semibold text-ink">{title}</h3>
     {children}
   </section>
 );
 
 /** Cobertura por disciplina: quais competências a turma já trabalha e quais faltam. */
 const CoverageList = ({ matches }: { matches: DisciplineMatch<DisciplineWithUsage>[] }) => (
-  <ul className="mt-4 space-y-2">
+  <ul className="mt-5 space-y-2">
     {matches.map((match) => (
       <li key={match.discipline.id} className="text-sm leading-relaxed text-ink-2">
         <span className="font-medium text-ink">{match.discipline.name}</span> cobre {match.covered.length} de{' '}
@@ -43,6 +49,7 @@ const CoverageList = ({ matches }: { matches: DisciplineMatch<DisciplineWithUsag
 
 const DemandView = ({ detail, disciplines, calendar }: { detail: DemandDetail; disciplines: DisciplineWithUsage[]; calendar: SemesterCalendar }) => {
   const [adopting, setAdopting] = useState(false);
+  const [tab, setTab] = useTabParam(TABS);
   const { demand, organization } = detail;
   const matches = rankDisciplines(demand, disciplines);
   const best = matches[0];
@@ -59,103 +66,115 @@ const DemandView = ({ detail, disciplines, calendar }: { detail: DemandDetail; d
 
       <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_300px]">
         <div className="min-w-0">
-          <Block title="O problema">
-            <p className="text-[15px] leading-relaxed text-ink-2">{demand.description}</p>
-            <p className="mt-3 text-sm text-ink-2">
-              <span className="text-ink-3">Quem sente:</span> {demand.affectedPublic}
-            </p>
-          </Block>
+          <FactGrid
+            columns={2}
+            items={[
+              { label: 'Quem sente', value: demand.affectedPublic },
+              { label: 'Reuniões', value: demand.meetingCadence },
+              { label: 'Semestre', value: <span className={scope.tone === 'caution' ? 'text-caution' : undefined}>{scope.label}</span> },
+              { label: 'Altura do curso', value: `${LEVEL_COPY[demand.level].label}, ${LEVEL_COPY[demand.level].periods}` },
+            ]}
+          />
 
-          <Block title="O que a organização oferece">
-            <ul className="space-y-2 text-[15px] text-ink-2">
-              {demand.offers.map((offer) => (
-                <li key={offer} className="flex gap-2.5">
-                  <span aria-hidden="true" className="mt-2.5 size-1 shrink-0 rounded-full bg-ink-3" />
-                  {offer}
-                </li>
-              ))}
-              <li className="flex gap-2.5">
-                <span aria-hidden="true" className="mt-2.5 size-1 shrink-0 rounded-full bg-ink-3" />
-                {demand.meetingCadence}
-              </li>
-            </ul>
-          </Block>
+          <UnderlineTabs
+            label="Sobre a demanda"
+            value={tab}
+            onChange={setTab}
+            className="mt-10 mb-7"
+            options={[
+              { value: 'problema', label: 'Problema' },
+              { value: 'competencias', label: 'Competências', count: demand.skills.length },
+              { value: 'perguntas', label: 'Perguntas', count: demand.questions.length },
+              ...(demand.references.length > 0 ? [{ value: 'inspiracao' as const, label: 'Para se inspirar' }] : []),
+              { value: 'organizacao', label: 'Organização' },
+            ]}
+          />
 
-          <Block title="Competências pedidas">
-            <div className="flex flex-wrap gap-1.5">
-              {demand.skills.map((skill) => (
-                <Tag key={skill} covered={coveredByBest.has(skill)}>
-                  {skill}
-                </Tag>
-              ))}
-            </div>
-            {matches.length > 0 && <CoverageList matches={matches} />}
-          </Block>
+          {tab === 'problema' && (
+            <>
+              <p className="text-[15px] leading-relaxed text-ink-2">{demand.description}</p>
 
-          <Block title="Cabe na turma?">
-            <div className="flex flex-wrap gap-1.5">
-              <Tag tone={scope.tone}>{scope.label}</Tag>
-              <Tag>
-                {LEVEL_COPY[demand.level].label}, {LEVEL_COPY[demand.level].periods}
-              </Tag>
-            </div>
-            <p className="mt-3 text-[15px] leading-relaxed text-ink-2">{demand.scopeNote}</p>
-            <p className="mt-3 text-sm leading-relaxed text-ink-2">
-              <span className="font-medium text-ink">O que um semestre entrega:</span> {SEMESTER_DELIVERY}
-            </p>
-          </Block>
+              <SubBlock title="O que a organização oferece">
+                <ul className="space-y-2 text-[15px] text-ink-2">
+                  {demand.offers.map((offer) => (
+                    <li key={offer} className="flex gap-2.5">
+                      <span aria-hidden="true" className="mt-2.5 size-1 shrink-0 rounded-full bg-ink-3" />
+                      {offer}
+                    </li>
+                  ))}
+                </ul>
+              </SubBlock>
 
-          {demand.constraints.length > 0 && (
-            <Block title="Antes de aceitar">
-              <ul className="space-y-2.5">
-                {demand.constraints.map((constraint) => (
-                  <li key={constraint} className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-                    <Tag className="shrink-0">{CONSTRAINT_COPY[constraint].label}</Tag>
-                    <span className="text-sm text-ink-2">{CONSTRAINT_COPY[constraint].detail}</span>
-                  </li>
-                ))}
-              </ul>
-            </Block>
+              <SubBlock title="O que cabe no semestre">
+                <p className="text-[15px] leading-relaxed text-ink-2">{demand.scopeNote}</p>
+                <p className="mt-2 text-[15px] leading-relaxed text-ink-2">{SEMESTER_DELIVERY}</p>
+              </SubBlock>
+
+              {demand.constraints.length > 0 && (
+                <SubBlock title="Antes de aceitar">
+                  <ul className="space-y-2">
+                    {demand.constraints.map((constraint) => (
+                      <li key={constraint} className="text-[15px] leading-relaxed text-ink-2">
+                        <span className="font-medium text-ink">{CONSTRAINT_COPY[constraint].label}.</span> {CONSTRAINT_COPY[constraint].detail}
+                      </li>
+                    ))}
+                  </ul>
+                </SubBlock>
+              )}
+            </>
           )}
 
-          {demand.references.length > 0 && (
-            <Block title="Para se inspirar">
-              <p className="mb-3 text-sm text-ink-2">Soluções parecidas que já existem. A turma não precisa começar do zero.</p>
-              <ul className="divide-y divide-line overflow-hidden rounded-lg border border-line">
+          {tab === 'competencias' && (
+            <>
+              <div className="flex flex-wrap gap-1.5">
+                {demand.skills.map((skill) => (
+                  <Tag key={skill} covered={coveredByBest.has(skill)}>
+                    {skill}
+                  </Tag>
+                ))}
+              </div>
+              {matches.length > 0 && <CoverageList matches={matches} />}
+            </>
+          )}
+
+          {tab === 'perguntas' && <DemandQuestions demand={demand} canAsk={!detail.projectId} />}
+
+          {tab === 'inspiracao' && (
+            <>
+              <p className="mb-4 text-sm text-ink-2">Soluções parecidas que já existem. A turma não precisa começar do zero.</p>
+              <ul className="grid gap-3 sm:grid-cols-2">
                 {demand.references.map((reference) => (
                   <li key={reference.name}>
                     <a
                       href={reference.url}
                       target="_blank"
                       rel="noreferrer"
-                      className="flex items-center justify-between gap-4 px-4 py-3 transition-colors duration-100 hover:bg-canvas"
+                      className="flex h-full flex-col rounded-lg bg-canvas px-4 py-3.5 transition-colors duration-150 hover:bg-fill"
                     >
-                      <span className="min-w-0">
-                        <span className="block text-[15px] font-medium text-ink">{reference.name}</span>
-                        <span className="block text-[13px] text-ink-2">{reference.description}</span>
+                      <span className="flex items-center justify-between gap-3 text-[15px] font-medium text-ink">
+                        {reference.name}
+                        <ArrowUpRightIcon size={15} className="shrink-0 text-ink-3" />
                       </span>
-                      <ArrowUpRightIcon size={16} className="shrink-0 text-ink-3" />
+                      <span className="mt-1 text-[13px] leading-relaxed text-ink-2">{reference.description}</span>
                     </a>
                   </li>
                 ))}
               </ul>
-            </Block>
+            </>
           )}
 
-          <Block title="Perguntas à organização" id="perguntas">
-            <DemandQuestions demand={demand} canAsk={!detail.projectId} />
-          </Block>
-
-          <Block title={`Sobre ${organization.name}`}>
-            <p className="text-[15px] leading-relaxed text-ink-2">{organization.about}</p>
-            <p className="mt-3 text-sm text-ink-3">
-              {organization.type} · {organization.location}
-              {organization.history.length > 0 && ` · ${pluralize(organization.history.length, 'projeto', 'projetos')} com o CIn`}
-            </p>
-            <Link to={paths.organization(organization.id)} className="mt-3 inline-block text-sm text-accent hover:text-accent-hover">
-              Ver organização
-            </Link>
-          </Block>
+          {tab === 'organizacao' && (
+            <>
+              <p className="text-[15px] leading-relaxed text-ink-2">{organization.about}</p>
+              <p className="mt-3 text-sm text-ink-3">
+                {organization.type} · {organization.location}
+                {organization.history.length > 0 && ` · ${pluralize(organization.history.length, 'projeto', 'projetos')} com o CIn`}
+              </p>
+              <Link to={paths.organization(organization.id)} className={cn(textLinkClassName, 'mt-3 inline-block text-sm')}>
+                Ver organização
+              </Link>
+            </>
+          )}
         </div>
 
         <aside className="-order-1 lg:sticky lg:top-8 lg:order-none lg:self-start">
