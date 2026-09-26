@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { textLinkClassName } from '@/components/ui/buttonStyles';
+import { buttonClassName, textLinkClassName } from '@/components/ui/buttonStyles';
 import { FactGrid } from '@/components/ui/page';
 import type { Project } from '@/domain/types';
 import { useOrganization } from '@/features/organizations/useOrganizations';
@@ -32,11 +32,11 @@ export const OrganizationTab = ({ project }: { project: Project }) => {
   return (
     <div>
       <FactGrid items={items} />
-      <div className="mt-5 flex flex-wrap gap-x-6 gap-y-2 text-sm">
-        <Link to={paths.organization(project.organization.id)} className={textLinkClassName}>
+      <div className="mt-6 flex flex-wrap gap-2">
+        <Link to={paths.organization(project.organization.id)} className={buttonClassName({ variant: 'secondary' })}>
           Sobre {project.organization.name}
         </Link>
-        <Link to={paths.demand(project.demandId)} className={textLinkClassName}>
+        <Link to={paths.demand(project.demandId)} className={buttonClassName({ variant: 'secondary' })}>
           Demanda original
         </Link>
       </div>

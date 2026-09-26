@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { useToast } from '@/components/feedback/toastContext';
 import { Button } from '@/components/ui/button';
-import { buttonClassName, textLinkClassName } from '@/components/ui/buttonStyles';
+import { buttonClassName } from '@/components/ui/buttonStyles';
 import { CheckIcon } from '@/components/ui/icons';
 import { formatShortDate, isLinkWindowOpen } from '@/domain/calendar';
 import { freeSlots } from '@/domain/disciplineRules';
@@ -26,13 +26,6 @@ const Panel = ({ tone = 'default', children }: { tone?: 'default' | 'reserve'; c
 const Eyebrow = ({ children, tone = 'neutral' }: { children: ReactNode; tone?: StatusTone }) => <Tag tone={tone}>{children}</Tag>;
 
 const Fine = ({ children }: { children: ReactNode }) => <p className="mt-3 text-[13px] leading-relaxed text-ink-3">{children}</p>;
-
-/** Dúvida não é motivo para desistir da demanda: a pergunta vai para a organização sem sair da tela. */
-const AskLink = ({ demandId }: { demandId: string }) => (
-  <Link to={paths.demandQuestions(demandId)} replace className={cn(textLinkClassName, 'mt-3 inline-block text-[13px]')}>
-    Tem uma dúvida? Pergunte à organização
-  </Link>
-);
 
 interface DecisionPanelProps {
   detail: DemandDetail;
@@ -83,8 +76,7 @@ export const DecisionPanel = ({ detail, best, calendar, hasDisciplines, onAdopt 
           Levar para uma disciplina
         </Button>
         <Button
-          variant="plain"
-          size="sm"
+          variant="secondary"
           fullWidth
           className="mt-2"
           disabled={release.isPending}
@@ -93,7 +85,6 @@ export const DecisionPanel = ({ detail, best, calendar, hasDisciplines, onAdopt 
           Liberar reserva
         </Button>
         {!windowOpen && <Fine>O prazo de {calendar.id} para levar demandas terminou em {formatShortDate(calendar.linkDeadline)}.</Fine>}
-        <AskLink demandId={demand.id} />
         {error}
       </Panel>
     );
@@ -159,7 +150,6 @@ export const DecisionPanel = ({ detail, best, calendar, hasDisciplines, onAdopt 
         Reservar por {RESERVATION_DAYS} dias
       </Button>
       <Fine>A reserva guarda a demanda só para você enquanto decide. Dá para liberar a qualquer momento.</Fine>
-      <AskLink demandId={demand.id} />
       {error}
     </Panel>
   );

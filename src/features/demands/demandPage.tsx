@@ -1,7 +1,7 @@
 import { useState, type ReactNode } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { QueryView } from '@/components/feedback/queryStates';
-import { textLinkClassName } from '@/components/ui/buttonStyles';
+import { buttonClassName } from '@/components/ui/buttonStyles';
 import { FactGrid, Page } from '@/components/ui/page';
 import { UnderlineTabs } from '@/components/ui/underlineTabs';
 import { useTabParam } from '@/hooks/useTabParam';
@@ -170,7 +170,7 @@ const DemandView = ({ detail, disciplines, calendar }: { detail: DemandDetail; d
                 {organization.type} · {organization.location}
                 {organization.history.length > 0 && ` · ${pluralize(organization.history.length, 'projeto', 'projetos')} com o CIn`}
               </p>
-              <Link to={paths.organization(organization.id)} className={cn(textLinkClassName, 'mt-3 inline-block text-sm')}>
+              <Link to={paths.organization(organization.id)} className={cn(buttonClassName({ variant: 'secondary' }), 'mt-5')}>
                 Ver organização
               </Link>
             </>

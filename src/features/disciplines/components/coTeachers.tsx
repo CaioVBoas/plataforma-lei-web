@@ -1,14 +1,24 @@
-import { useId, useState, type FormEvent } from 'react';
+import { useId, useState, type FormEvent, type ReactNode } from 'react';
 import { useToast } from '@/components/feedback/toastContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/formControls';
-import { Item, ItemList } from '@/components/ui/itemList';
 import { ActionMenu } from '@/components/ui/actionMenu';
 import { Monogram } from '@/components/ui/monogram';
-import { Tag } from '@/components/ui/tag';
 import { useAccount } from '@/features/account/useAccount';
 import { useInviteCoTeacher, useRemoveCoTeacher } from '../useDisciplines';
 import type { DisciplineWithUsage } from '../types';
+
+/** Pessoa, não link: card cinza claro sem borda, com o kebab quando há o que fazer. */
+const TeacherCard = ({ name, detail, menu }: { name: string; detail: string; menu?: ReactNode }) => (
+  <div className="flex items-center gap-3 rounded-lg bg-canvas px-4 py-3.5">
+    <Monogram name={name} />
+    <div className="min-w-0 flex-1">
+      <p className="truncate text-[15px] font-semibold text-ink">{name}</p>
+      <p className="mt-0.5 truncate text-[13px] text-ink-2">{detail}</p>
+    </div>
+    {menu}
+  </div>
+);
 
 /**
  * Disciplina dada em dupla: o colega entra pelo e-mail institucional e passa a
@@ -37,44 +47,38 @@ export const CoTeachers = ({ discipline }: { discipline: DisciplineWithUsage }) 
 
   return (
     <div>
-      <ItemList>
+      <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         {account && (
-          <Item anchor={<Monogram name={account.name} />}>
-            <p className="truncate text-[15px] font-semibold text-ink">{account.name}</p>
-            <p className="mt-1 truncate text-[13px] text-ink-2">{account.email} · você</p>
-          </Item>
+          <li>
+            <TeacherCard name={account.name} detail={`${account.email} · você`} />
+          </li>
         )}
         {discipline.coTeachers.map((teacher) => (
-          <Item
-            key={teacher.email}
-            anchor={<Monogram name={teacher.name ?? teacher.email} />}
-            menu={
-              discipline.isCurrent && (
-                <ActionMenu
-                  label={`Ações de ${teacher.name ?? teacher.email}`}
-                  items={[
-                    {
-                      label: 'Tirar da disciplina',
-                      destructive: true,
-                      onSelect: () => remove.mutate({ id: discipline.id, email: teacher.email }, { onSuccess: () => toast.show('Colega retirado da disciplina.') }),
-                    },
-                  ]}
-                />
-              )
-            }
-          >
-            <p className="truncate text-[15px] font-semibold text-ink">{teacher.name ?? teacher.email}</p>
-            {teacher.name ? (
-              <p className="mt-1 truncate text-[13px] text-ink-2">{teacher.email}</p>
-            ) : (
-              <Tag className="mt-2">Convite enviado</Tag>
-            )}
-          </Item>
+          <li key={teacher.email}>
+            <TeacherCard
+              name={teacher.name ?? teacher.email}
+              detail={teacher.name ? teacher.email : 'Convite enviado'}
+              menu={
+                discipline.isCurrent && (
+                  <ActionMenu
+                    label={`Ações de ${teacher.name ?? teacher.email}`}
+                    items={[
+                      {
+                        label: 'Tirar da disciplina',
+                        destructive: true,
+                        onSelect: () => remove.mutate({ id: discipline.id, email: teacher.email }, { onSuccess: () => toast.show('Colega retirado da disciplina.') }),
+                      },
+                    ]}
+                  />
+                )
+              }
+            />
+          </li>
         ))}
-      </ItemList>
+      </ul>
 
       {discipline.isCurrent && (
-        <form onSubmit={submit} className="mt-5">
+        <form onSubmit={submit} className="mt-6">
           <label htmlFor={fieldId} className="mb-1.5 block text-[13px] font-medium text-ink-2">
             Divide a disciplina com alguém?
           </label>

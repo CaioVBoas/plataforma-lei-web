@@ -2,6 +2,7 @@ import { useId, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/components/feedback/toastContext';
 import { Button } from '@/components/ui/button';
+import { PlusIcon } from '@/components/ui/icons';
 import { Modal } from '@/components/ui/modal';
 import { Stepper } from '@/components/ui/stepper';
 import { formatShortDate } from '@/domain/calendar';
@@ -174,9 +175,10 @@ export const AdoptDemandModal = ({ demand, disciplines, calendar, onClose }: Ado
         {!firstAvailable && (
           <p className="mt-2.5 text-[13px] text-caution">Nenhuma turma pode receber esta demanda: estão sem vaga ou abaixo do nível pedido. Ajuste uma disciplina ou cadastre outra.</p>
         )}
-        <button type="button" onClick={() => setCreating(true)} className="mt-2.5 text-[13px] text-accent hover:text-accent-hover">
+        <Button size="sm" className="mt-3" onClick={() => setCreating(true)}>
+          <PlusIcon size={14} />
           Cadastrar outra disciplina
-        </button>
+        </Button>
       </fieldset>
 
       {selected && (

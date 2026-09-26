@@ -10,6 +10,7 @@ import { useAccount, useUpdateAccount } from '@/features/account/useAccount';
 import { useCalendar } from '@/features/calendar/useCalendar';
 import { MILESTONE_COPY } from '@/features/projects/shared/utils/projectPresentation';
 import { paths } from '@/routes/paths';
+import { cn } from '@/utils/cn';
 
 interface JourneyStep {
   title: string;
@@ -149,7 +150,7 @@ export const GuidePage = () => {
                 <p className="text-[15px] font-semibold text-ink">{step.title}</p>
                 <p className="mt-1 text-sm leading-relaxed text-ink-2">{step.text}</p>
                 {step.link && (
-                  <Link to={step.link.to} className="mt-2 inline-block text-sm text-accent hover:text-accent-hover">
+                  <Link to={step.link.to} className={cn(buttonClassName({ variant: 'secondary', size: 'sm' }), 'mt-3')}>
                     Ir para {step.link.label}
                   </Link>
                 )}

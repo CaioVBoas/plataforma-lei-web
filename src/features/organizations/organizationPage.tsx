@@ -1,15 +1,18 @@
 import { useParams } from 'react-router-dom';
 import { QueryView } from '@/components/feedback/queryStates';
 import { buttonClassName, textLinkClassName } from '@/components/ui/buttonStyles';
-import { FolderIcon, TrayIcon } from '@/components/ui/icons';
+import { cardGridClassName } from '@/components/ui/card';
+import { FolderIcon } from '@/components/ui/icons';
 import { AnchorIcon, Item, ItemList } from '@/components/ui/itemList';
 import { Monogram } from '@/components/ui/monogram';
 import { FactGrid, Page } from '@/components/ui/page';
-import { UnderlineTabs } from '@/components/ui/underlineTabs';
-import { useTabParam } from '@/hooks/useTabParam';
 import { Tag } from '@/components/ui/tag';
-import { formatShortDate } from '@/domain/calendar';
-import type { Demand } from '@/domain/types';
+import { UnderlineTabs } from '@/components/ui/underlineTabs';
+import { rankDisciplines } from '@/domain/matching';
+import { useCalendar } from '@/features/calendar/useCalendar';
+import { DemandCard } from '@/features/demands/components/demandCard';
+import { useCurrentDisciplines } from '@/features/disciplines/useDisciplines';
+import { useTabParam } from '@/hooks/useTabParam';
 import { paths } from '@/routes/paths';
 import { cn } from '@/utils/cn';
 import { useOrganization } from './useOrganizations';
@@ -24,16 +27,11 @@ const RowAction = ({ children }: { children: string }) => (
 
 const TABS = ['demandas', 'projetos', 'historico', 'contato'] as const;
 
-/** Só aparece quando há reserva: é o que muda a decisão de quem olha. */
-const reservationLine = (demand: Demand) => {
-  if (!demand.reservation) return undefined;
-  const until = formatShortDate(demand.reservation.until);
-  return demand.reservation.mine ? `Reservada por você até ${until}` : `Reservada por ${demand.reservation.teacherName} até ${until}`;
-};
-
 const OrganizationView = ({ detail }: { detail: OrganizationDetail }) => {
   const { organization, contact, openDemands, myProjects } = detail;
   const [tab, setTab] = useTabParam(TABS);
+  const { data: disciplines = [] } = useCurrentDisciplines();
+  const { data: calendar } = useCalendar();
 
   return (
     <Page
@@ -72,33 +70,14 @@ const OrganizationView = ({ detail }: { detail: OrganizationDetail }) => {
       />
 
       {tab === 'demandas' &&
-        (openDemands.length > 0 ? (
-          <ItemList flush>
-            {openDemands.map((demand) => {
-              const reservation = reservationLine(demand);
-              return (
-                <Item
-                  key={demand.id}
-                  to={paths.demand(demand.id)}
-                  label={demand.title}
-                  anchor={
-                    <AnchorIcon>
-                      <TrayIcon size={18} />
-                    </AnchorIcon>
-                  }
-                  action={<RowAction>Ver demanda</RowAction>}
-                >
-                  <p className="truncate text-[15px] font-semibold text-ink">{demand.title}</p>
-                  <p className="mt-1 truncate text-sm text-ink-2">{demand.problem}</p>
-                  {reservation && (
-                    <Tag tone="reserve" className="mt-2">
-                      {reservation}
-                    </Tag>
-                  )}
-                </Item>
-              );
-            })}
-          </ItemList>
+        (openDemands.length > 0 && calendar ? (
+          <ul className={cn(cardGridClassName, 'pt-6')}>
+            {openDemands.map((demand) => (
+              <li key={demand.id}>
+                <DemandCard demand={demand} best={rankDisciplines(demand, disciplines)[0]} today={calendar.today} />
+              </li>
+            ))}
+          </ul>
         ) : (
           <p className="py-6 text-sm text-ink-3">Nenhuma demanda no cardápio agora.</p>
         ))}

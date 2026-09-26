@@ -124,11 +124,13 @@ Na página da disciplina, a seção Docentes mostra quem divide a turma. O docen
 4. **Estado calculado, não guardado.** O estado do projeto, as vagas e a compatibilidade saem das regras em `src/domain`.
 5. **Linguagem da sala de aula**, não do sistema: "levar para a disciplina", e não "vincular demanda".
 6. **Cada elemento tem uma aparência só.** Rótulo estático (tipo, competência) é texto sobre fundo cinza claro, sem borda. Contagem é texto puro, apagada quando é zero. Link é texto azul, sublinhado só no hover. Só botão tem borda (secundário) ou preenchimento (primário), e um menu de ações é sempre o kebab de 32px. Nenhuma ação aparece só no hover.
-7. **Listas com âncora e item inteiro clicável.** Todo item de lista tem uma âncora de 40px à esquerda (monograma, código ou ícone), no máximo três linhas de conteúdo e a linha inteira como área de clique.
-8. **Resumo em mini cards, detalhe em abas.** Telas de detalhe (demanda, organização, disciplina, projeto) abrem com os fatos principais em mini cards cinza claro e organizam o resto em abas sublinhadas, guardadas na URL (`?aba=`). Nada de rolagem longa com seções empilhadas.
-9. **Tag só para estado.** No cartão, tag é reservada ao estado da demanda. Cobertura vira medidor e o resto vira texto.
-10. **Uma data só: "21 ago 2026".** Tempo relativo ("em 7 dias", "há 9 dias") entra só como complemento, nunca no lugar da data.
-11. **Visual sóbrio com identidade própria.** Tipografia do sistema, cantos de 6 a 10px e cinzas neutros. A identidade vem do Design System Aperta o PLEI: o Azul Tecnológico nas ações e o Laranja Social usado só na reserva. Nada de gradiente, emoji ou roxo.
+7. **Card para escolher, lista para percorrer.** O que o docente escolhe ou decide (próximos passos, demandas, organizações, colegas) é card em grade de duas colunas. Lista fica para índices que se percorrem em coluna (disciplinas, projetos de uma turma, histórico): âncora de 40px à esquerda, no máximo três linhas e a linha inteira clicável.
+8. **Botão é botão.** Ação solta numa linha de texto azul só vale dentro de uma frase ou para copiar um campo. Ação própria (liberar reserva, ver a organização, cadastrar outra disciplina) é botão secundário.
+9. **Conversa não é card.** Pergunta do docente em balão branco com borda, resposta da organização em balão azul claro, alinhado à direita. Fundo cinza claro é só para fatos (mini cards).
+10. **Resumo em mini cards, detalhe em abas.** Telas de detalhe (demanda, organização, disciplina, projeto) abrem com os fatos principais em mini cards cinza claro e organizam o resto em abas sublinhadas, guardadas na URL (`?aba=`). Nada de rolagem longa com seções empilhadas.
+11. **Tag só para estado.** No cartão, tag é reservada ao estado da demanda. Cobertura vira medidor e o resto vira texto.
+12. **Uma data só: "21 ago 2026".** Tempo relativo ("em 7 dias", "há 9 dias") entra só como complemento, nunca no lugar da data.
+13. **Visual sóbrio com identidade própria.** Tipografia do sistema, cantos de 6 a 10px e cinzas neutros. A identidade vem do Design System Aperta o PLEI: o Azul Tecnológico nas ações e o Laranja Social usado só na reserva. Nada de gradiente, emoji ou roxo.
 
 ## 8. O que nos faz únicos
 

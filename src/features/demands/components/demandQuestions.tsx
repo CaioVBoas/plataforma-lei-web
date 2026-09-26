@@ -2,7 +2,6 @@ import { useId, useState, type FormEvent } from 'react';
 import { useToast } from '@/components/feedback/toastContext';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/formControls';
-import { Tag } from '@/components/ui/tag';
 import { formatShortDate } from '@/domain/calendar';
 import type { Demand } from '@/domain/types';
 import { useAskQuestion } from '../useDemands';
@@ -35,26 +34,33 @@ export const DemandQuestions = ({ demand, canAsk }: { demand: Demand; canAsk: bo
   return (
     <div>
       {demand.questions.length > 0 && (
-        <ul className="mb-5 divide-y divide-line border-y border-line">
+        // Conversa, não lista: a pergunta do docente em cinza à esquerda e a resposta da
+        // organização em azul, recuada, para nunca se confundir com um card de informação.
+        <ol className="mb-8 space-y-6">
           {demand.questions.map((question) => (
-            <li key={question.id} className="py-4">
-              <p className="text-[13px] text-ink-3">
-                {question.mine ? 'Você' : question.teacherName} · {formatShortDate(question.askedAt)}
-              </p>
-              <p className="mt-1 text-[15px] leading-relaxed text-ink">{question.text}</p>
+            <li key={question.id}>
+              <div className="max-w-[88%]">
+                <p className="mb-1 px-1 text-[13px] text-ink-3">
+                  {question.mine ? 'Você' : question.teacherName} · {formatShortDate(question.askedAt)}
+                </p>
+                <p className="rounded-lg rounded-tl-sm border border-line bg-surface px-4 py-3 text-[15px] leading-relaxed text-ink">{question.text}</p>
+              </div>
               {question.answer ? (
-                <div className="mt-3 rounded-lg bg-canvas px-4 py-3">
-                  <p className="text-[13px] text-ink-3">
+                <div className="mt-3 ml-auto max-w-[88%]">
+                  <p className="mb-1 px-1 text-right text-[13px] text-ink-3">
                     {question.answer.by} · {formatShortDate(question.answer.answeredAt)}
                   </p>
-                  <p className="mt-1 text-sm leading-relaxed text-ink-2">{question.answer.text}</p>
+                  <p className="rounded-lg rounded-tr-sm bg-accent-soft px-4 py-3 text-[15px] leading-relaxed text-ink">{question.answer.text}</p>
                 </div>
               ) : (
-                <Tag className="mt-2.5">Aguardando resposta</Tag>
+                <p className="mt-2 flex items-center gap-1.5 px-1 text-[13px] text-ink-3">
+                  <span aria-hidden="true" className="size-1.5 animate-pulse rounded-full bg-ink-3" />
+                  Aguardando resposta da organização
+                </p>
               )}
             </li>
           ))}
-        </ul>
+        </ol>
       )}
 
       {canAsk && (

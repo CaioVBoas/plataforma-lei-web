@@ -3,18 +3,19 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { QueryView } from '@/components/feedback/queryStates';
 import { useToast } from '@/components/feedback/toastContext';
 import { Button } from '@/components/ui/button';
-import { CoverageMeter } from '@/components/ui/coverageMeter';
-import { TrayIcon } from '@/components/ui/icons';
-import { AnchorIcon, Item, ItemList } from '@/components/ui/itemList';
+import { cardGridClassName } from '@/components/ui/card';
+import { ItemList } from '@/components/ui/itemList';
 import { FactGrid, Page } from '@/components/ui/page';
 import { Tag } from '@/components/ui/tag';
 import { UnderlineTabs } from '@/components/ui/underlineTabs';
 import { useCalendar } from '@/features/calendar/useCalendar';
+import { DemandCard } from '@/features/demands/components/demandCard';
 import { useMenu } from '@/features/demands/useDemands';
 import { ProjectRow } from '@/features/projects/shared/components/projectRow';
 import { useProjects } from '@/features/projects/shared/hooks/useProjects';
 import { useTabParam } from '@/hooks/useTabParam';
 import { paths } from '@/routes/paths';
+import { cn } from '@/utils/cn';
 import { pluralize } from '@/utils/format';
 import { CoTeachers } from './components/coTeachers';
 import { DisciplineForm } from './components/disciplineForm';
@@ -43,34 +44,22 @@ const DisciplineProjects = ({ discipline }: { discipline: DisciplineWithUsage })
   );
 };
 
-/** Demandas livres em que a turma cobre metade das competências e que cabem na altura do curso. */
+/** Demandas livres em que a turma cobre metade das competências e que cabem na altura do curso, como no cardápio. */
 const MatchingDemands = ({ discipline }: { discipline: DisciplineWithUsage }) => {
   const { data: menu = [] } = useMenu();
+  const { data: calendar } = useCalendar();
   const matches = matchingDemands(menu, discipline);
+  if (!calendar) return null;
   if (matches.length === 0) return <Empty>Nenhuma demanda livre combina agora. Revise as competências na aba Turma se ela trabalha mais coisas.</Empty>;
 
   return (
-    <ItemList flush>
+    <ul className={cn(cardGridClassName, 'pt-6')}>
       {matches.map(({ demand, match }) => (
-        <Item
-          key={demand.id}
-          to={paths.demand(demand.id)}
-          label={demand.title}
-          anchor={
-            <AnchorIcon>
-              <TrayIcon size={18} />
-            </AnchorIcon>
-          }
-        >
-          <p className="truncate text-[15px] font-semibold text-ink">{demand.title}</p>
-          <p className="mt-1 truncate text-[13px] text-ink-2">{demand.organization.name}</p>
-          <div className="mt-2 flex items-center gap-2.5 text-[13px] text-ink-3">
-            <CoverageMeter covered={match.covered.length} total={demand.skills.length} fits={match.fits} />
-            Cobre {match.covered.length} de {demand.skills.length} competências
-          </div>
-        </Item>
+        <li key={demand.id}>
+          <DemandCard demand={demand} best={match} today={calendar.today} />
+        </li>
       ))}
-    </ItemList>
+    </ul>
   );
 };
 

@@ -9,7 +9,6 @@ export const paths = {
   /** O cardápio de demandas: o que as organizações pediram e ainda não virou projeto. */
   menu: '/cardapio',
   demand: (id: string) => `/cardapio/${id}`,
-  demandQuestions: (id: string) => `/cardapio/${id}?aba=perguntas`,
   projects: '/projetos',
   project: (id: string, tab?: ProjectTab) => (tab && tab !== 'etapas' ? `/projetos/${id}?aba=${tab}` : `/projetos/${id}`),
   disciplines: '/disciplinas',
@@ -21,6 +20,5 @@ export const paths = {
   disciplineMatches: (id: string) => `/disciplinas/${id}?aba=demandas`,
   organizations: '/organizacoes',
   organization: (id: string) => `/organizacoes/${id}`,
-  organizationDemands: (id: string) => `/organizacoes/${id}?aba=demandas`,
   account: '/conta',
 } as const;

@@ -1,40 +1,34 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { QueryView } from '@/components/feedback/queryStates';
-import { buttonClassName } from '@/components/ui/buttonStyles';
 import { EmptyState } from '@/components/ui/emptyState';
 import { SearchInput } from '@/components/ui/formControls';
-import { Item, ItemList } from '@/components/ui/itemList';
+import { cardGridClassName, linkCardClassName } from '@/components/ui/card';
 import { Monogram } from '@/components/ui/monogram';
 import { Page } from '@/components/ui/page';
-import { Tag } from '@/components/ui/tag';
 import { paths } from '@/routes/paths';
-import { cn } from '@/utils/cn';
 import { normalizeText } from '@/utils/format';
 import { OrganizationMeta } from './components/organizationMeta';
 import { useOrganizations } from './useOrganizations';
 import type { OrganizationSummary } from './types';
 
-const OrganizationItem = ({ organization }: { organization: OrganizationSummary }) => (
-  <Item
-    to={paths.organization(organization.id)}
-    label={organization.name}
-    anchor={<Monogram name={organization.name} />}
-    action={
-      // Só afordância: quem recebe o clique é a linha inteira.
-      <span aria-hidden="true" className={cn(buttonClassName({ variant: 'secondary' }), 'w-full px-3')}>
-        Ver organização
-      </span>
-    }
-  >
-    <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 sm:flex-nowrap">
-      <p className="min-w-0 text-headline sm:truncate">{organization.name}</p>
-      <Tag className="shrink-0">{organization.type}</Tag>
+/** Um card por organização: quem é, o que faz em poucas linhas e se há demanda para levar agora. */
+const OrganizationCard = ({ organization }: { organization: OrganizationSummary }) => (
+  <Link to={paths.organization(organization.id)} className={linkCardClassName}>
+    <div className="flex items-start gap-3">
+      <Monogram name={organization.name} />
+      <div className="min-w-0 flex-1">
+        <p className="truncate text-headline group-hover:text-accent">{organization.name}</p>
+        <p className="mt-0.5 truncate text-[13px] text-ink-3">
+          {organization.type} · {organization.location}
+        </p>
+      </div>
     </div>
-    <p className="mt-1 truncate text-sm text-ink-2">{organization.about}</p>
-    <div className="mt-1.5">
+    <p className="mt-4 line-clamp-2 flex-1 text-sm leading-relaxed text-ink-2">{organization.about}</p>
+    <div className="mt-4 border-t border-line pt-3.5">
       <OrganizationMeta organization={organization} openDemands={organization.openDemands} />
     </div>
-  </Item>
+  </Link>
 );
 
 const OrganizationList = ({ organizations, search }: { organizations: OrganizationSummary[]; search: string }) => {
@@ -47,11 +41,13 @@ const OrganizationList = ({ organizations, search }: { organizations: Organizati
   if (visible.length === 0) return <EmptyState title="Nada encontrado" description={`Nenhuma organização com "${search}".`} />;
 
   return (
-    <ItemList>
+    <ul className={cardGridClassName}>
       {visible.map((organization) => (
-        <OrganizationItem key={organization.id} organization={organization} />
+        <li key={organization.id}>
+          <OrganizationCard organization={organization} />
+        </li>
       ))}
-    </ItemList>
+    </ul>
   );
 };
 
