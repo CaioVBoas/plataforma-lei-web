@@ -59,7 +59,7 @@ export const LoginPage = () => {
 
       <div className="relative grid w-full max-w-[980px] overflow-hidden rounded-lg bg-surface shadow-sheet lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
         <section className="hidden flex-col justify-between gap-12 bg-brand px-10 py-10 lg:flex">
-          <BrandMark onDark />
+          <BrandMark onDark className="h-10" />
           <div>
             <h1 className="text-[34px] leading-[1.15] font-bold tracking-[-0.02em] text-balance text-white">Leve um problema real de Pernambuco para a sua disciplina.</h1>
             <ul className="mt-9 space-y-5">

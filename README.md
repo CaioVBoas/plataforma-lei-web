@@ -42,6 +42,7 @@ React 19, TypeScript, Vite, Tailwind CSS v4, React Router, TanStack Query, React
 ```
 src/
 ├── domain/          # Entidades e regras puras, sem React: calendário, reserva, compatibilidade, ciclo do projeto
+├── assets/brand/    # Logotipo oficial em SVG (horizontal, empilhado, centralizado, caixa alta e símbolo). Ver o README da pasta
 ├── components/
 │   ├── ui/          # Primitivos visuais sem regra de negócio (Page, ItemList, ActionMenu, UnderlineTabs, Modal…)
 │   └── feedback/    # Aviso (toast) e estados de carregamento e erro
@@ -79,6 +80,7 @@ src/
 - **Taxonomia de elementos:** rótulo estático e estado (livre, reservada, combina, cabe no semestre) são `Tag`, com `tone` suave dos tokens, link de texto usa `textLinkClassName`, ação é `Button` (ou `buttonClassName` num `Link`) e menu de ações é `ActionMenu`. Contagem é texto puro, nunca pílula. Detalhes na seção 7 do [`docs/fluxos.md`](docs/fluxos.md).
 - **Listas usam `ItemList` e `Item`:** âncora de 40px, até três linhas e linha inteira clicável. Link ou botão dentro do item leva `aboveRowLink`.
 - **Datas só com `formatShortDate`** ("21 ago 2026").
+- **Marca:** use só os SVGs de `src/assets/brand` pelo componente `BrandMark`; o favicon é o símbolo `petroleo-600`.
 - **Identidade visual:** Verde Petróleo (`brand`, `fact`, `monogram`, `nav-active`) para identidade, Azul Tecnológico (`accent`) para ação e Laranja Social (`reserve`) só na reserva. Regras 13 a 16 da seção 7 do `docs/fluxos.md`.
 - **Cor, fonte, raio e movimento vêm dos tokens** do `index.css`. Não use hex solto nos componentes.
 - **URLs só em `routes/paths.ts`, chaves de cache só em `lib/queryKeys.ts`.**
