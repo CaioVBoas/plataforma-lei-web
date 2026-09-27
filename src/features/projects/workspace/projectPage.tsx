@@ -14,16 +14,16 @@ import { CompleteMilestoneModal } from './components/completeMilestoneModal';
 import { MilestoneTimeline } from './components/milestoneTimeline';
 import { MilestoneTrack } from '../shared/components/milestoneTrack';
 import { NextStepCard } from './components/nextStepCard';
-import { OrganizationTab } from './components/organizationTab';
+import { DemandTab } from './components/demandTab';
 import { PlanTab } from './components/planTab';
-import { ProjectSettings } from './components/projectSettings';
+import { ProjectAside } from './components/projectAside';
 import { useProject } from './useProjectWorkspace';
 import { STAGE_COPY } from '../shared/utils/projectPresentation';
 
 const TABS: { value: ProjectTab; label: string }[] = [
   { value: 'etapas', label: 'Etapas' },
   { value: 'plano', label: 'Plano' },
-  { value: 'organizacao', label: 'Organização' },
+  { value: 'demanda', label: 'Demanda' },
 ];
 
 const isProjectTab = (value: string | null): value is ProjectTab => TABS.some((tab) => tab.value === value);
@@ -76,18 +76,17 @@ const ProjectView = ({ project, calendar }: { project: Project; calendar: Semest
       <MilestoneTrack milestones={project.milestones} className="mb-5" />
       <NextStepCard project={project} today={calendar.today} onAct={act} />
 
-      <div ref={tabContentRef} className="mt-10 mb-8 scroll-mt-16">
-        <UnderlineTabs label="Seções do projeto" value={tab} options={TABS} onChange={changeTab} />
+      <div className="mt-10 grid gap-8 lg:grid-cols-[minmax(0,1fr)_300px]">
+        <div className="min-w-0">
+          <div ref={tabContentRef} className="mb-7 scroll-mt-20">
+            <UnderlineTabs label="Seções do projeto" value={tab} options={TABS} onChange={changeTab} />
+          </div>
+          {tab === 'etapas' && <MilestoneTimeline milestones={project.milestones} today={calendar.today} />}
+          {tab === 'plano' && <PlanTab project={project} today={calendar.today} />}
+          {tab === 'demanda' && <DemandTab project={project} />}
+        </div>
+        <ProjectAside project={project} />
       </div>
-
-      {tab === 'etapas' && (
-        <>
-          <MilestoneTimeline milestones={project.milestones} today={calendar.today} />
-          <ProjectSettings project={project} />
-        </>
-      )}
-      {tab === 'plano' && <PlanTab project={project} today={calendar.today} />}
-      {tab === 'organizacao' && <OrganizationTab project={project} />}
 
       {completing && <CompleteMilestoneModal project={project} milestone={completing} today={calendar.today} onClose={() => setCompleting(null)} />}
     </Page>

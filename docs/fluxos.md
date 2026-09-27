@@ -71,13 +71,15 @@ Só a próxima etapa pendente tem ação. As outras mostram a data prevista ou a
 | Item | Para quê | Pergunta que responde |
 | --- | --- | --- |
 | **Início** | O que fazer agora: reservas a decidir e etapas dos projetos | "O que eu preciso fazer hoje?" |
+| **Avisos** | Indicações, reservas, prazos, demandas liberadas e respostas das organizações | "O que mudou e o que pede decisão minha?" |
 | **Cardápio** | Escolher e reservar uma demanda | "Que problema a minha turma pode resolver?" |
 | **Projetos** | Acompanhar as etapas | "Em que pé estão os meus projetos?" |
 | **Disciplinas** | Dizer o que cada turma sabe fazer | "Quais turmas podem receber projeto?" |
 | **Organizações** | Conhecer os parceiros | "Com quem eu vou trabalhar?" |
 | **Como funciona** | Tutorial | "Como isso funciona?" |
+| **Minha conta** | Dados do docente | "Meus dados estão certos?" |
 
-A conta fica no rodapé da barra lateral, com Minha conta e Sair. O único contador da navegação fica no Início e soma reservas abertas e etapas com prazo nos próximos 14 dias.
+A barra lateral recolhe para só ícones (a escolha fica no navegador). A barra superior tem o sino de avisos e a conta, com Minha conta e Sair. O único contador do portal fica no sino e soma o que pede decisão: indicações do L.E.I., reservas abertas, demandas que liberaram para quem pediu aviso e etapas com prazo nos próximos 14 dias. Respostas das organizações aparecem como novidade, sem contar.
 
 ## 6. Fluxos
 

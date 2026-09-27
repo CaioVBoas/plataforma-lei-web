@@ -123,7 +123,20 @@ export const DEMANDS: Demand[] = [
       { name: 'KoboToolbox', description: 'Coleta de dados em campo que funciona sem conexão.', url: 'https://www.kobotoolbox.org' },
       { name: 'ODK', description: 'Formulários offline usados em pesquisa de campo.', url: 'https://getodk.org' },
     ],
-    questions: [],
+    questions: [
+      {
+        id: 'recife-q1',
+        teacherName: 'Paola Accioly',
+        mine: true,
+        askedAt: '2026-08-18',
+        text: 'Dá para a turma acompanhar os agentes em campo mais de uma vez no semestre?',
+        answer: {
+          text: 'Sim. Podemos receber a turma em duas rondas, uma no começo e outra perto da entrega, sempre com um agente da regional junto.',
+          answeredAt: '2026-08-21',
+          by: 'Coordenação de Fiscalização, Prefeitura do Recife',
+        },
+      },
+    ],
   },
   {
     id: 'mesa',

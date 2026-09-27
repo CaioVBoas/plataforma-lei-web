@@ -1,26 +1,24 @@
 import { useState, type ReactNode } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { QueryView } from '@/components/feedback/queryStates';
-import { buttonClassName } from '@/components/ui/buttonStyles';
 import { FactGrid, Page } from '@/components/ui/page';
 import { UnderlineTabs } from '@/components/ui/underlineTabs';
 import { useTabParam } from '@/hooks/useTabParam';
-import { cn } from '@/utils/cn';
-import { Tag } from '@/components/ui/tag';
 import { ArrowUpRightIcon } from '@/components/ui/icons';
-import { rankDisciplines, type DisciplineMatch } from '@/domain/matching';
+import { rankDisciplines } from '@/domain/matching';
 import type { SemesterCalendar } from '@/domain/types';
 import { useCalendar } from '@/features/calendar/useCalendar';
 import { useCurrentDisciplines } from '@/features/disciplines/useDisciplines';
 import type { DisciplineWithUsage } from '@/features/disciplines/types';
 import { paths } from '@/routes/paths';
-import { joinWithAnd, pluralize } from '@/utils/format';
 import { AdoptDemandModal } from './components/adoptDemandModal';
 import { DecisionPanel } from './components/decisionPanel';
 import { useDemand } from './useDemands';
 import type { DemandDetail } from './types';
 import { DemandQuestions } from './components/demandQuestions';
 import { InvitationNote } from './components/invitationNote';
+import { OrganizationBrief } from './components/organizationBrief';
+import { SkillsCoverage } from './components/skillsCoverage';
 import { LEVEL_COPY } from '@/features/disciplines/utils/disciplinePresentation';
 import { CONSTRAINT_COPY, SCOPE_COPY, SEMESTER_DELIVERY } from './utils/demandPresentation';
 
@@ -33,20 +31,6 @@ const SubBlock = ({ title, children }: { title: string; children: ReactNode }) =
   </section>
 );
 
-/** Cobertura por disciplina: quais competências a turma já trabalha e quais faltam. */
-const CoverageList = ({ matches }: { matches: DisciplineMatch<DisciplineWithUsage>[] }) => (
-  <ul className="mt-5 space-y-2">
-    {matches.map((match) => (
-      <li key={match.discipline.id} className="text-sm leading-relaxed text-ink-2">
-        <span className="font-medium text-ink">{match.discipline.name}</span> cobre {match.covered.length} de{' '}
-        {match.covered.length + match.missing.length}
-        {match.missing.length > 0 && `. Falta ${joinWithAnd(match.missing)}`}
-        {match.aboveLevel && `. A demanda pede mais do que a turma, que está no ${LEVEL_COPY[match.discipline.level].label.toLowerCase()}`}.
-      </li>
-    ))}
-  </ul>
-);
-
 const DemandView = ({ detail, disciplines, calendar }: { detail: DemandDetail; disciplines: DisciplineWithUsage[]; calendar: SemesterCalendar }) => {
   const [adopting, setAdopting] = useState(false);
   const [tab, setTab] = useTabParam(TABS);
@@ -54,7 +38,6 @@ const DemandView = ({ detail, disciplines, calendar }: { detail: DemandDetail; d
   const matches = rankDisciplines(demand, disciplines);
   const best = matches[0];
   const scope = SCOPE_COPY[demand.scopeFit];
-  const coveredByBest = new Set(best?.covered ?? []);
 
   return (
     <Page
@@ -125,18 +108,7 @@ const DemandView = ({ detail, disciplines, calendar }: { detail: DemandDetail; d
             </>
           )}
 
-          {tab === 'competencias' && (
-            <>
-              <div className="flex flex-wrap gap-1.5">
-                {demand.skills.map((skill) => (
-                  <Tag key={skill} covered={coveredByBest.has(skill)}>
-                    {skill}
-                  </Tag>
-                ))}
-              </div>
-              {matches.length > 0 && <CoverageList matches={matches} />}
-            </>
-          )}
+          {tab === 'competencias' && <SkillsCoverage skills={demand.skills} matches={matches} />}
 
           {tab === 'perguntas' && <DemandQuestions demand={demand} canAsk={!detail.projectId} />}
 
@@ -164,21 +136,10 @@ const DemandView = ({ detail, disciplines, calendar }: { detail: DemandDetail; d
             </>
           )}
 
-          {tab === 'organizacao' && (
-            <>
-              <p className="text-[15px] leading-relaxed text-ink-2">{organization.about}</p>
-              <p className="mt-3 text-sm text-ink-3">
-                {organization.type} · {organization.location}
-                {organization.history.length > 0 && ` · ${pluralize(organization.history.length, 'projeto', 'projetos')} com o CIn`}
-              </p>
-              <Link to={paths.organization(organization.id)} className={cn(buttonClassName({ variant: 'secondary' }), 'mt-5')}>
-                Ver organização
-              </Link>
-            </>
-          )}
+          {tab === 'organizacao' && <OrganizationBrief organization={organization} hasProject={Boolean(detail.projectId)} />}
         </div>
 
-        <aside className="-order-1 lg:sticky lg:top-8 lg:order-none lg:self-start">
+        <aside className="-order-1 lg:sticky lg:top-20 lg:order-none lg:self-start">
           <DecisionPanel detail={detail} best={best} calendar={calendar} hasDisciplines={disciplines.length > 0} onAdopt={() => setAdopting(true)} />
         </aside>
       </div>

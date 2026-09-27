@@ -1,4 +1,3 @@
-import type { ReactNode } from 'react';
 import { useParams } from 'react-router-dom';
 import { QueryView } from '@/components/feedback/queryStates';
 import { buttonClassName, textLinkClassName } from '@/components/ui/buttonStyles';
@@ -8,6 +7,7 @@ import { AnchorIcon, Item, ItemList } from '@/components/ui/itemList';
 import { Monogram } from '@/components/ui/monogram';
 import { FactGrid, Page } from '@/components/ui/page';
 import { ProfileHeader } from '@/components/ui/profileHeader';
+import { SideCard, SideFact } from '@/components/ui/sideCard';
 import { UnderlineTabs } from '@/components/ui/underlineTabs';
 import { rankDisciplines } from '@/domain/matching';
 import { useCalendar } from '@/features/calendar/useCalendar';
@@ -25,21 +25,6 @@ const RowAction = ({ children }: { children: string }) => (
   <span aria-hidden="true" className={cn(buttonClassName({ variant: 'secondary' }), 'w-full px-3')}>
     {children}
   </span>
-);
-
-/** Bloco da coluna lateral do perfil: título pequeno e conteúdo em card branco. */
-const SideCard = ({ title, children }: { title: string; children: ReactNode }) => (
-  <section className="rounded-lg border border-line p-5">
-    <h2 className="text-[13px] font-semibold text-brand-strong">{title}</h2>
-    <div className="mt-3">{children}</div>
-  </section>
-);
-
-const SideFact = ({ label, children }: { label: string; children: ReactNode }) => (
-  <div className="border-t border-line py-2.5 first:border-t-0 first:pt-0 last:pb-0">
-    <dt className="text-[12px] text-ink-3">{label}</dt>
-    <dd className="mt-0.5 text-sm break-words text-ink">{children}</dd>
-  </div>
 );
 
 const TABS = ['projetos', 'cin'] as const;
@@ -98,7 +83,7 @@ const OrganizationView = ({ detail }: { detail: OrganizationDetail }) => {
           )}
         </div>
 
-        <aside className="flex flex-col gap-4 lg:sticky lg:top-8 lg:self-start">
+        <aside className="flex flex-col gap-4 lg:sticky lg:top-20 lg:self-start">
           <SideCard title="Parceria com o CIn">
             <dl className="grid grid-cols-3 gap-2 text-center">
               {[

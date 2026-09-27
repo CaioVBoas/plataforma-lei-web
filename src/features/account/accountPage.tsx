@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react';
+import { CheckIcon, LogoutIcon } from '@/components/ui/icons';
 import { QueryView } from '@/components/feedback/queryStates';
 import { useToast } from '@/components/feedback/toastContext';
 import { Button } from '@/components/ui/button';
@@ -54,6 +55,7 @@ const AccountForm = ({ account }: { account: Account }) => {
       )}
       <div className="flex justify-end">
         <Button variant="primary" type="submit" disabled={update.isPending}>
+          <CheckIcon size={15} />
           Salvar
         </Button>
       </div>
@@ -89,6 +91,7 @@ export const AccountPage = () => {
       </Section>
       <Section title="Sessão">
         <Button variant="secondary" onClick={logout}>
+          <LogoutIcon size={16} />
           Sair
         </Button>
       </Section>

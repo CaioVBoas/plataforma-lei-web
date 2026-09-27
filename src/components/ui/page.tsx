@@ -27,7 +27,7 @@ export const Page = ({ title, eyebrow, subtitle, meta, leading, back, hero, acti
   }, [title]);
 
   return (
-    <div className={cn('mx-auto w-full px-5 pt-8 pb-24 sm:px-10 sm:pt-12', width === 'default' ? 'max-w-[1000px]' : 'max-w-[760px]')}>
+    <div className={cn('mx-auto w-full px-4 pt-6 pb-20 sm:px-6 sm:pt-8 lg:px-8', width === 'default' ? 'max-w-[1280px]' : 'max-w-[820px]')}>
       {back && (
         // Voltar é navegação, não ação: texto cinza escuro, sem peso de botão.
         <Link to={back.to} className="-ml-1.5 mb-4 inline-flex items-center gap-0.5 text-sm text-ink-2 hover:text-ink">
@@ -68,7 +68,7 @@ interface SectionProps {
 }
 
 export const Section = ({ title, id, description, aside, compact, className, children }: SectionProps) => (
-  <section id={id} className={cn(compact ? 'mt-10' : 'mt-12', 'scroll-mt-6 first:mt-0', className)}>
+  <section id={id} className={cn(compact ? 'mt-10' : 'mt-12', 'scroll-mt-20 first:mt-0', className)}>
     <div className="mb-5 flex flex-wrap items-end justify-between gap-x-4 gap-y-2">
       <div className="min-w-0">
         <h2 className="text-title">{title}</h2>

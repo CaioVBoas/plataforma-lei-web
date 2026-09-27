@@ -18,6 +18,7 @@ const DisciplinesPage = lazyPage(() => import('@/features/disciplines/discipline
 const DisciplinePage = lazyPage(() => import('@/features/disciplines/disciplinePage'), 'DisciplinePage');
 const OrganizationsPage = lazyPage(() => import('@/features/organizations/organizationsPage'), 'OrganizationsPage');
 const OrganizationPage = lazyPage(() => import('@/features/organizations/organizationPage'), 'OrganizationPage');
+const NotificationsPage = lazyPage(() => import('@/features/notifications/notificationsPage'), 'NotificationsPage');
 const AccountPage = lazyPage(() => import('@/features/account/accountPage'), 'AccountPage');
 
 export const AppRoutes = () => (
@@ -37,6 +38,7 @@ export const AppRoutes = () => (
           <Route path="/disciplinas/:disciplineId" element={<DisciplinePage />} />
           <Route path={paths.organizations} element={<OrganizationsPage />} />
           <Route path="/organizacoes/:organizationId" element={<OrganizationPage />} />
+          <Route path={paths.notifications} element={<NotificationsPage />} />
           <Route path={paths.account} element={<AccountPage />} />
         </Route>
       </Route>

@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { CopyIcon } from '@/components/ui/icons';
+import { CheckIcon, CopyIcon } from '@/components/ui/icons';
 import { useCopyToClipboard } from '@/hooks/useCopyToClipboard';
 import { isOverdue, nextMilestone } from '@/domain/projectLifecycle';
 import type { IsoDate, Milestone, Project } from '@/domain/types';
@@ -59,6 +59,7 @@ export const NextStepCard = ({ project, today, onAct }: NextStepCardProps) => {
         <p className="mt-1 text-sm leading-relaxed text-ink-2">{copy.description}</p>
       </div>
       <Button variant="primary" size="lg" onClick={() => onAct(milestone)}>
+        <CheckIcon size={16} />
         {copy.action}
       </Button>
     </div>

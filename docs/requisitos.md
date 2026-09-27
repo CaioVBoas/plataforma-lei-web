@@ -44,7 +44,9 @@ Levantamento do que a plataforma faz hoje, do que foi verificado e do que ainda 
 | RF07 | Sem disciplina cadastrada, pedir o cadastro antes de tudo (F4) | Pronto |
 | RF08 | Próximos passos: indicações do L.E.I., reservas a decidir (F5) e a próxima etapa de cada projeto, com atraso em destaque | Pronto |
 | RF09 | Sugestões do cardápio que combinam com turma com vaga | Pronto |
-| RF10 | Contador único na navegação: reservas abertas e etapas nos próximos 14 dias | Pronto |
+| RF10 | Contador único no sino da barra superior: indicações, reservas abertas, demandas liberadas e etapas nos próximos 14 dias | Pronto |
+| RF10a | Avisos no portal (sino e página Avisos): o que pede decisão e as respostas das organizações às perguntas do docente | Pronto |
+| RF10b | Barra lateral recolhível e barra superior com avisos e conta | Pronto |
 
 ### 2.3. Cardápio e reserva
 
@@ -52,11 +54,11 @@ Levantamento do que a plataforma faz hoje, do que foi verificado e do que ainda 
 | --- | --- | --- |
 | RF11 | Filtros "Para minhas turmas", "Minhas reservas" e "Todas", com busca; filtro e busca ficam na URL | Pronto |
 | RF12 | Cartão com organização, problema, competências cobertas, disciplina que combina e se cabe no semestre, em tags | Pronto |
-| RF13 | Detalhe da demanda com problema, o que a organização oferece, cobertura por disciplina, escopo, "Para se inspirar" e sobre a organização | Pronto |
+| RF13 | Detalhe da demanda com problema, o que a organização oferece, cobertura por disciplina (competência a competência), escopo, "Para se inspirar" e o perfil resumido da organização | Pronto |
 | RF14 | Uma ação primária por estado: Reservar, Levar para uma disciplina, Avise-me se liberar, Abrir projeto | Pronto |
 | RF15 | Reservar por 7 dias, até 3 reservas ativas, liberar com um clique, expirar sozinha | Pronto |
 | RF16 | Reserva de colega visível com nome e data de fim | Pronto |
-| RF17 | "Avise-me se liberar" liga e desliga o aviso | Parcial: o pedido é guardado, mas nenhum aviso é enviado |
+| RF17 | "Avise-me se liberar" liga e desliga o aviso | Parcial: a demanda liberada aparece nos Avisos do portal; falta o e-mail |
 | RF17a | Perguntar à organização na demanda, com o histórico de perguntas e respostas visível para todos os docentes | Parcial: a pergunta é registrada; a resposta depende do L.E.I. repassar (sem portal da organização) |
 | RF17b | Nível da demanda contra a altura do curso da turma: acima do nível não combina e não pode ser levada | Pronto |
 | RF17c | Condições da demanda (presencial, dados sensíveis, sigilo) e o que um semestre entrega, no cartão e no detalhe | Pronto |
@@ -74,15 +76,15 @@ Levantamento do que a plataforma faz hoje, do que foi verificado e do que ainda 
 | RF23 | Registrar cada etapa em ordem, com data (nunca no futuro), anotação e código do SIGAA | Pronto |
 | RF24 | Plano editável com limite de caracteres do SIGAA, salvo ao sair do campo, copiável por seção ou inteiro | Pronto |
 | RF25 | Encerramento pede o resultado e se a organização usa a entrega, e lembra do relatório final no SIGAA com o resultado pronto para copiar | Pronto |
-| RF26 | Ajustar equipes e desistir (só no planejamento) | Pronto |
-| RF27 | Aba Organização com o contato do ponto focal | Pronto |
+| RF26 | Ajustar equipes, com quantos estudantes da turma isso soma, e desistir (só no planejamento), na coluna lateral do projeto | Pronto |
+| RF27 | Contato do ponto focal na coluna lateral e aba Demanda com o combinado (problema, oferta, escopo, competências, condições) | Pronto |
 | RF28 | Lista de projetos em tabela, com abas por estado, "Com atraso", ações sempre visíveis e linha clicável | Pronto |
 
 ### 2.5. Disciplinas e organizações
 
 | # | Requisito | Status |
 | --- | --- | --- |
-| RF29 | Cadastrar, editar e remover disciplina (remover só sem projeto) | Pronto |
+| RF29 | Cadastrar, editar e remover disciplina (remover só sem projeto), com o formulário em blocos e o resumo de equipes e projetos | Pronto |
 | RF30 | Lista com vagas livres e demandas compatíveis; abas do semestre atual e anteriores | Pronto |
 | RF31 | Detalhe com projetos da turma, demandas que combinam e formulário de competências | Pronto |
 | RF31a | Disciplina com mais de um docente, convidado pelo e-mail institucional; projeto mostra a coordenação compartilhada (F7) | Parcial: o convite é registrado, sem e-mail enviado |
@@ -115,7 +117,7 @@ Cada regra do `fluxos.md` foi testada direto no backend simulado, incluindo os c
 | 12. Dúvida pela demanda | Pergunta vazia recusada; registrada como do docente, sem resposta; demanda em projeto não recebe pergunta | Pronto |
 | 13. Mais de um docente | Só e-mail institucional, sem repetir nem convidar a si mesmo; editar a disciplina mantém os colegas | Pronto |
 
-**Fluxos verificados no navegador (37 passos, sem erro no console), além das 30 verificações de regra no backend simulado:** indicação do L.E.I. no Início e na demanda (F6), pergunta à organização, condições e nível na demanda, turma abaixo do nível bloqueada, convite de colega na disciplina e coordenação compartilhada no projeto (F7), entrada e redirecionamento, Início (F4, F5, contador), cardápio (filtros e busca), F1 completo (reservar, levar, projeto criado na aba Plano, demanda fora do cardápio), F2 e F3 completos (plano, abertura, SIGAA com código, entregas, encerramento e histórico), desistência, liberar reserva, aviso, disciplinas (cadastrar, editar pelo kebab, remover, abas, link de compatíveis), organizações (linha e link da contagem), projetos (abas, linha, copiar plano), menu no celular, conta e saída.
+**Fluxos verificados no navegador (41 passos, sem erro no console), além das 30 verificações de regra no backend simulado:** indicação do L.E.I. no Início e na demanda (F6), pergunta à organização, condições e nível na demanda, turma abaixo do nível bloqueada, convite de colega na disciplina e coordenação compartilhada no projeto (F7), entrada e redirecionamento, Início (F4, F5, contador), cardápio (filtros e busca), F1 completo (reservar, levar, projeto criado na aba Plano, demanda fora do cardápio), F2 e F3 completos (plano, abertura, SIGAA com código, entregas, encerramento e histórico), desistência, liberar reserva, aviso, disciplinas (cadastrar, editar pelo kebab, remover, abas, link de compatíveis), organizações (linha e link da contagem), projetos (abas, linha, copiar plano), menu no celular, sino e página de avisos, barra lateral recolhida, menu da conta, conta e saída.
 
 ---
 

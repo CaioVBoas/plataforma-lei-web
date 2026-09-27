@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useToast } from '@/components/feedback/toastContext';
 import { Button } from '@/components/ui/button';
 import { buttonClassName } from '@/components/ui/buttonStyles';
-import { CheckIcon } from '@/components/ui/icons';
+import { ArrowRightIcon, BellIcon, BookmarkIcon, CheckIcon, FolderIcon } from '@/components/ui/icons';
 import { formatShortDate, isLinkWindowOpen } from '@/domain/calendar';
 import { freeSlots } from '@/domain/disciplineRules';
 import type { DisciplineMatch } from '@/domain/matching';
@@ -53,6 +53,7 @@ export const DecisionPanel = ({ detail, best, calendar, hasDisciplines, onAdopt 
         <p className="text-headline">Esta demanda é um projeto seu</p>
         <p className="mt-1 text-sm text-ink-2">Acompanhe as etapas e o plano no projeto.</p>
         <Link to={paths.project(detail.projectId)} className={cn(buttonClassName({ variant: 'primary', fullWidth: true }), 'mt-4')}>
+          <FolderIcon size={16} />
           Abrir projeto
         </Link>
       </Panel>
@@ -74,6 +75,7 @@ export const DecisionPanel = ({ detail, best, calendar, hasDisciplines, onAdopt 
         <p className="mt-1 text-sm text-ink-2">Ninguém mais consegue levar esta demanda enquanto a reserva valer.</p>
         <Button variant="primary" size="lg" fullWidth className="mt-5" disabled={!windowOpen} onClick={onAdopt}>
           Levar para uma disciplina
+          <ArrowRightIcon size={16} />
         </Button>
         <Button
           variant="secondary"
@@ -105,7 +107,10 @@ export const DecisionPanel = ({ detail, best, calendar, hasDisciplines, onAdopt 
               Aviso ligado
             </>
           ) : (
-            'Avise-me se liberar'
+            <>
+              <BellIcon size={16} />
+              Avise-me se liberar
+            </>
           )}
         </Button>
         <Fine>
@@ -147,6 +152,7 @@ export const DecisionPanel = ({ detail, best, calendar, hasDisciplines, onAdopt 
         disabled={reserve.isPending}
         onClick={() => reserve.mutate(demand.id, { onSuccess: () => toast.show(`Reservada por ${RESERVATION_DAYS} dias. Quando decidir, leve para uma disciplina.`) })}
       >
+        <BookmarkIcon size={16} />
         Reservar por {RESERVATION_DAYS} dias
       </Button>
       <Fine>A reserva guarda a demanda só para você enquanto decide. Dá para liberar a qualquer momento.</Fine>

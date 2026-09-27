@@ -4,6 +4,7 @@ import { QueryView } from '@/components/feedback/queryStates';
 import { useToast } from '@/components/feedback/toastContext';
 import { Button } from '@/components/ui/button';
 import { cardGridClassName } from '@/components/ui/card';
+import { CheckIcon } from '@/components/ui/icons';
 import { ItemList } from '@/components/ui/itemList';
 import { FactGrid, Page, Section } from '@/components/ui/page';
 import { ProfileHeader } from '@/components/ui/profileHeader';
@@ -77,28 +78,30 @@ const DisciplineSettings = ({ discipline }: { discipline: DisciplineWithUsage })
     });
 
   return (
-    <div className="rounded-lg border border-line p-5 sm:p-6">
-      <p className="mb-6 text-sm text-ink-2">Mudar as competências ou a altura do curso muda na hora quais demandas combinam com esta disciplina.</p>
-      <DisciplineForm
-        key={discipline.id}
-        formId={formId}
-        defaultValues={discipline}
-        onSubmit={(input) => update.mutate({ id: discipline.id, input }, { onSuccess: () => toast.show('Disciplina atualizada.') })}
-      />
-      {update.isError && (
-        <p role="alert" className="mt-4 text-sm text-critical">
-          {update.error.message}
-        </p>
-      )}
-      <div className="mt-8 flex flex-wrap items-center justify-between gap-3 border-t border-line pt-6">
+    <div className="overflow-hidden rounded-lg border border-line">
+      <div className="p-5 sm:p-6">
+        <DisciplineForm
+          key={discipline.id}
+          formId={formId}
+          defaultValues={discipline}
+          onSubmit={(input) => update.mutate({ id: discipline.id, input }, { onSuccess: () => toast.show('Disciplina atualizada.') })}
+        />
+        {update.isError && (
+          <p role="alert" className="mt-4 text-sm text-critical">
+            {update.error.message}
+          </p>
+        )}
+      </div>
+      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line bg-canvas px-5 py-3.5 sm:px-6">
         {discipline.activeProjects === 0 ? (
           <Button variant="destructive" size="sm" onClick={removeDiscipline}>
             Remover disciplina
           </Button>
         ) : (
-          <span />
+          <span className="text-[13px] text-ink-3">Com projeto em curso, a disciplina não pode ser removida.</span>
         )}
         <Button variant="primary" type="submit" form={formId} disabled={update.isPending}>
+          <CheckIcon size={15} />
           Salvar alterações
         </Button>
       </div>
@@ -163,7 +166,7 @@ const DisciplineView = ({ discipline }: { discipline: DisciplineWithUsage }) => 
       </Section>
 
       {discipline.isCurrent && (
-        <Section id="turma" title="Turma" compact>
+        <Section id="turma" title="Turma" description="Mudar as competências ou a altura do curso muda na hora as demandas que combinam." compact>
           <DisciplineSettings discipline={discipline} />
         </Section>
       )}

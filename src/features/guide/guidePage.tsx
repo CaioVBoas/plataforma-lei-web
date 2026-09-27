@@ -1,7 +1,7 @@
 import { useEffect, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { buttonClassName } from '@/components/ui/buttonStyles';
-import { ChevronDownIcon } from '@/components/ui/icons';
+import { ChevronDownIcon, TrayIcon } from '@/components/ui/icons';
 import { Page, Section } from '@/components/ui/page';
 import { formatShortDate } from '@/domain/calendar';
 import { MILESTONE_ORDER } from '@/domain/projectLifecycle';
@@ -203,6 +203,7 @@ export const GuidePage = () => {
       <div className="mt-14 flex flex-wrap items-center justify-between gap-4 rounded-lg bg-canvas px-5 py-5">
         <p className="text-[15px] font-medium text-ink">Pronto para reservar a primeira demanda?</p>
         <Link to={paths.menu} className={buttonClassName({ variant: 'primary' })}>
+          <TrayIcon size={16} />
           Abrir o cardápio
         </Link>
       </div>

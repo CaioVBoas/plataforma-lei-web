@@ -1,5 +1,6 @@
 import horizontalOnDark from '@/assets/brand/horizontal/branco.svg';
 import horizontal from '@/assets/brand/horizontal/principal.svg';
+import symbol from '@/assets/brand/simbolo/petroleo-600.svg';
 import { cn } from '@/utils/cn';
 
 interface BrandMarkProps {
@@ -14,4 +15,9 @@ interface BrandMarkProps {
  */
 export const BrandMark = ({ onDark = false, className }: BrandMarkProps) => (
   <img src={onDark ? horizontalOnDark : horizontal} alt="Aperta o PL.E.I." width={168} height={32} className={cn('h-8 w-auto self-start', className)} />
+);
+
+/** Só o símbolo, para a barra lateral recolhida. */
+export const BrandSymbol = ({ className }: { className?: string }) => (
+  <img src={symbol} alt="Aperta o PL.E.I." width={32} height={32} className={cn('size-8', className)} />
 );

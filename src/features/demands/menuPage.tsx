@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { PlusIcon, TrayIcon } from '@/components/ui/icons';
 import { Link, useSearchParams } from 'react-router-dom';
 import { LoadingState } from '@/components/feedback/queryStates';
 import { Button } from '@/components/ui/button';
@@ -89,6 +90,7 @@ export const MenuPage = () => {
           description="O cardápio mostra as demandas que combinam com o que suas turmas trabalham."
           action={
             <Link to={paths.newDiscipline} className={buttonClassName({ variant: 'primary' })}>
+              <PlusIcon size={15} />
               Cadastrar disciplina
             </Link>
           }
@@ -101,6 +103,7 @@ export const MenuPage = () => {
         description="Novas demandas chegam toda semana. Você também pode ver o cardápio inteiro e revisar as competências das suas disciplinas."
         action={
           <Button variant="secondary" onClick={() => updateParams({ ver: 'todas' })}>
+            <TrayIcon size={16} />
             Ver o cardápio inteiro
           </Button>
         }

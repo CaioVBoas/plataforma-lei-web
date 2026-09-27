@@ -1,4 +1,5 @@
 import type { MouseEvent } from 'react';
+import { TrayIcon } from '@/components/ui/icons';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { ErrorState, LoadingState } from '@/components/feedback/queryStates';
 import { useToast } from '@/components/feedback/toastContext';
@@ -149,6 +150,7 @@ const ProjectsView = () => {
         description="Um projeto nasce quando você leva uma demanda para uma das suas disciplinas."
         action={
           <Link to={paths.menu} className={buttonClassName({ variant: 'primary' })}>
+            <TrayIcon size={16} />
             Abrir o cardápio
           </Link>
         }

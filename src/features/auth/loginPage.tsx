@@ -6,7 +6,7 @@ import { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import { BrandMark } from '@/components/ui/brandMark';
 import { Field, Input } from '@/components/ui/formControls';
-import { BookIcon, CheckIcon, TrayIcon } from '@/components/ui/icons';
+import { ArrowRightIcon, BookIcon, CheckIcon, TrayIcon } from '@/components/ui/icons';
 import { paths } from '@/routes/paths';
 import { session } from './session';
 import { useLogin } from './useAuth';
@@ -103,6 +103,7 @@ export const LoginPage = () => {
 
               <Button variant="primary" size="lg" type="submit" fullWidth disabled={login.isPending}>
                 {login.isPending ? 'Entrando' : 'Entrar'}
+                {!login.isPending && <ArrowRightIcon size={16} />}
               </Button>
             </form>
 

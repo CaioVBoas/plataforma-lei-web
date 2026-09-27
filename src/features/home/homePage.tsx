@@ -3,7 +3,7 @@ import { LoadingState } from '@/components/feedback/queryStates';
 import { buttonClassName } from '@/components/ui/buttonStyles';
 import { EmptyState } from '@/components/ui/emptyState';
 import { cardGridClassName, linkCardClassName } from '@/components/ui/card';
-import { CloseIcon } from '@/components/ui/icons';
+import { CloseIcon, PlusIcon, TrayIcon } from '@/components/ui/icons';
 import type { StatusTone } from '@/components/ui/statusLabel';
 import { Page, Section } from '@/components/ui/page';
 import { formatShortDate, isLinkWindowOpen, semesterWeek } from '@/domain/calendar';
@@ -93,6 +93,7 @@ const NextSteps = ({ agenda, reservations, invitations, today }: NextStepsProps)
         description="Nenhum projeto em curso nem reserva aberta. Que tal escolher uma demanda no cardápio?"
         action={
           <Link to={paths.menu} className={buttonClassName({ variant: 'primary' })}>
+            <TrayIcon size={16} />
             Abrir o cardápio
           </Link>
         }
@@ -245,6 +246,7 @@ const HomeContent = ({ account, calendar }: { account: Account; calendar: Semest
             description="É o que a turma trabalha que decide quais demandas combinam com ela. Leva um minuto."
             action={
               <Link to={paths.newDiscipline} className={buttonClassName({ variant: 'primary' })}>
+                <PlusIcon size={15} />
                 Cadastrar disciplina
               </Link>
             }
@@ -266,6 +268,7 @@ const HomeContent = ({ account, calendar }: { account: Account; calendar: Semest
               title="No cardápio para suas turmas"
               aside={
                 <Link to={paths.menu} className={buttonClassName({ variant: 'secondary', size: 'sm' })}>
+                  <TrayIcon size={15} />
                   Abrir o cardápio
                 </Link>
               }

@@ -1,4 +1,5 @@
 import { useId, useState, type FormEvent, type ReactNode } from 'react';
+import { MailIcon } from '@/components/ui/icons';
 import { useToast } from '@/components/feedback/toastContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/formControls';
@@ -92,6 +93,7 @@ export const CoTeachers = ({ discipline }: { discipline: DisciplineWithUsage }) 
               className="h-9 max-w-[320px] flex-1"
             />
             <Button type="submit" disabled={!email.trim() || invite.isPending}>
+              <MailIcon size={15} />
               Convidar
             </Button>
           </div>

@@ -105,6 +105,7 @@ const DisciplineList = ({ disciplines, menu, projects, tab, onCreate }: GroupsPr
         description="Cadastre as turmas que você leciona agora. Sem elas, não dá para saber quais demandas combinam com você."
         action={
           <Button variant="primary" onClick={onCreate}>
+            <PlusIcon size={15} />
             Cadastrar disciplina
           </Button>
         }
