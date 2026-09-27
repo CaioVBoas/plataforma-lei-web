@@ -19,7 +19,7 @@ import type { DemandDetail } from '../types';
 import { daysLeftLabel } from '../utils/demandPresentation';
 
 const Panel = ({ tone = 'default', children }: { tone?: 'default' | 'reserve'; children: ReactNode }) => (
-  <div className={cn('rounded-lg border p-5', tone === 'reserve' ? 'border-reserve-dot/40 bg-reserve-soft' : 'border-line')}>{children}</div>
+  <div className={cn('rounded-lg border p-5', tone === 'reserve' ? 'border-reserve-dot/40 bg-surface' : 'border-line')}>{children}</div>
 );
 
 /** O estado da demanda no topo do painel, como tag: livre, reservada, em projeto. */

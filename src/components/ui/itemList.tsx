@@ -57,7 +57,7 @@ export const Item = ({ to, label, anchor, action, menu, children }: ItemProps) =
 
 /** Âncora neutra para listas sem monograma nem código: o ícone do tipo de item. */
 export const AnchorIcon = ({ children }: { children: ReactNode }) => (
-  <span aria-hidden="true" className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-fill text-ink-2">
+  <span aria-hidden="true" className="flex size-10 shrink-0 items-center justify-center rounded-md bg-monogram text-monogram-ink">
     {children}
   </span>
 );

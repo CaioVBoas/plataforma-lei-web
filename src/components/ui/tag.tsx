@@ -29,12 +29,12 @@ interface TagProps {
 export const Tag = ({ children, tone = 'neutral', covered, icon, className }: TagProps) => (
   <span
     className={cn(
-      'inline-flex max-w-full items-center gap-1 rounded-sm px-2.5 py-1 text-[13px] leading-tight',
+      'inline-flex max-w-full items-center gap-1 rounded-sm px-2 py-[3px] text-[12px] leading-tight font-semibold whitespace-nowrap',
       TONE_CLASSES[covered ? 'positive' : tone],
       className,
     )}
   >
-    {covered ? <CheckIcon size={13} /> : icon}
+    {covered ? <CheckIcon size={13} /> : (icon ?? (tone === 'reserve' && <span aria-hidden="true" className="size-1.5 shrink-0 rounded-full bg-reserve-dot" />))}
     <span className="truncate">{children}</span>
   </span>
 );

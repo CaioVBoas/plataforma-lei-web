@@ -130,7 +130,13 @@ Na página da disciplina, a seção Docentes mostra quem divide a turma. O docen
 10. **Resumo em mini cards, detalhe em abas.** Telas de detalhe (demanda, organização, disciplina, projeto) abrem com os fatos principais em mini cards cinza claro e organizam o resto em abas sublinhadas, guardadas na URL (`?aba=`). Nada de rolagem longa com seções empilhadas.
 11. **Tag só para estado.** No cartão, tag é reservada ao estado da demanda. Cobertura vira medidor e o resto vira texto.
 12. **Uma data só: "21 ago 2026".** Tempo relativo ("em 7 dias", "há 9 dias") entra só como complemento, nunca no lugar da data.
-13. **Visual sóbrio com identidade própria.** Tipografia do sistema, cantos de 6 a 10px e cinzas neutros. A identidade vem do Design System Aperta o PLEI: o Azul Tecnológico nas ações e o Laranja Social usado só na reserva. Nada de gradiente, emoji ou roxo.
+13. **Visual sóbrio com identidade própria.** Tipografia do sistema, cantos de 6 a 10px e neutros levemente frios. A identidade (Identidade Visual Aperta o PLEI) tem três papéis que não se misturam, e nada de gradiente, emoji ou roxo:
+    - **Verde Petróleo** é a identidade: marca, fatos, monogramas e "onde estou" (item ativo da barra lateral, aba ativa sublinhada em `brand`). Nada clicável é petróleo.
+    - **Azul Tecnológico** é a ação: botão primário, links, foco, seleção, balão de resposta e aviso de indicação (`accent-soft`, nunca petróleo).
+    - **Laranja Social** aparece só na reserva de demanda.
+14. **Fato, tag e card não se confundem.** Mini card de fato usa `fact`, borda `fact-line` de 1px, rótulo `fact-label` e valor `ink`. Tag de estado não tem borda e ocupa uma linha só. Card clicável continua branco com borda `line`. Monograma usa `monogram` com a inicial em `monogram-ink`.
+15. **Fundo escuro de marca (`panel-deep`) só na tela de entrada.** Medidor de cobertura e linha das etapas continuam em `positive` sobre `fill-strong`.
+16. **Contraste AA sempre.** Nenhum texto abaixo de 4,5:1 sobre o fundo; `ink-3` é o cinza mais claro permitido.
 
 ## 8. O que nos faz únicos
 

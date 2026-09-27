@@ -72,15 +72,15 @@ export const Section = ({ title, id, description, aside, compact, className, chi
 );
 
 /**
- * Pares de rótulo e valor em mini cards, até quatro por linha. O fundo cinza
- * claro sem borda separa um fato do outro sem parecer botão.
+ * Pares de rótulo e valor em mini cards de fato, até quatro por linha. Fato é o
+ * único bloco com fundo petróleo e borda: não se confunde com tag, botão nem card clicável.
  */
 export const FactGrid = ({ items, columns = 4 }: { items: { label: string; value: ReactNode }[]; columns?: 2 | 4 }) => (
   <dl className={cn('grid grid-cols-1 gap-3 sm:grid-cols-2', columns === 4 && 'lg:grid-cols-4')}>
     {items.map((item) => (
-      <div key={item.label} className="min-w-0 rounded-lg bg-canvas px-4 py-3.5">
-        <dt className="text-[13px] text-ink-3">{item.label}</dt>
-        <dd className="mt-1.5 text-sm leading-snug break-words text-ink">{item.value}</dd>
+      <div key={item.label} className="min-w-0 rounded-md border border-fact-line bg-fact px-3.5 py-3">
+        <dt className="text-[12px] font-semibold text-fact-label">{item.label}</dt>
+        <dd className="mt-1 text-[15px] leading-snug break-words text-ink">{item.value}</dd>
       </div>
     ))}
   </dl>

@@ -4,26 +4,58 @@
  * Tokens visuais do portal. Toda cor, fonte, raio e movimento sai daqui;
  * componentes nunca usam hex solto.
  *
- * A estrutura é sóbria, no espírito das interfaces da Apple: tipografia do
- * sistema, cinzas neutros e cantos discretos. A identidade vem do Design
- * System Aperta o PLEI: o Azul Tecnológico nas ações e o Laranja Social na
- * reserva, o momento em que o docente segura um problema real para a turma.
+ * A estrutura é sóbria: tipografia do sistema, neutros levemente frios e
+ * cantos discretos. A identidade (Identidade Visual Aperta o PLEI) tem três
+ * papéis que não se misturam: Verde Petróleo na marca e nos fatos, Azul
+ * Tecnológico nas ações e Laranja Social só na reserva.
  */
 @theme {
   --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
 
-  /* Texto: três níveis de hierarquia. */
-  --color-ink: #1d1d1f;
-  --color-ink-2: #515154;
-  --color-ink-3: #86868b;
+  /*
+   * Identidade: Verde Petróleo. Marca, fatos, monogramas e "onde estou"
+   * (item ativo, aba ativa). Nada clicável é petróleo: ação é sempre azul.
+   */
+  --color-brand-50: #edf6f5;
+  --color-brand-100: #d3e9e7;
+  --color-brand-200: #a8d2cf;
+  --color-brand-300: #74b4b1;
+  --color-brand-400: #3f9491;
+  --color-brand-500: #1f7976;
+  --color-brand-600: #146461;
+  --color-brand-700: #10514f;
+  --color-brand-800: #0d4140;
+  --color-brand-900: #0a3232;
+  --color-brand: #146461;
+  --color-brand-strong: #10514f;
+  --color-brand-soft: #edf6f5;
+  --color-brand-on-dark: #8fd0cc;
+  /* Fundo escuro de marca: só na tela de entrada. */
+  --color-panel-deep: #0a3232;
 
-  /* Superfícies. "canvas" é o fundo da barra lateral e de áreas agrupadas. */
+  /* Fatos (mini cards): o único bloco com fundo petróleo e borda. */
+  --color-fact: #edf6f5;
+  --color-fact-line: #d3e9e7;
+  --color-fact-label: #10514f;
+
+  /* Monograma e item ativo da navegação. */
+  --color-monogram: #d3e9e7;
+  --color-monogram-ink: #0d4140;
+  --color-nav-active: #d3e9e7;
+  --color-nav-active-ink: #0d4140;
+
+  /* Texto: três níveis. ink-3 é o cinza mais claro que ainda passa AA no branco. */
+  --color-ink: #1b1f20;
+  --color-ink-2: #4a5254;
+  --color-ink-3: #636c6f;
+
+  /* Superfícies. "canvas" é o fundo da barra lateral e do cardápio. */
   --color-surface: #ffffff;
-  --color-canvas: #f5f5f7;
-  --color-fill: #ececf0;
-  --color-fill-strong: #e2e2e7;
-  --color-line: #e3e3e8;
-  --color-line-strong: #d2d2d7;
+  --color-canvas: #f4f6f6;
+  --color-fill: #e8eced;
+  --color-fill-strong: #dde2e3;
+  --color-line: #e0e5e6;
+  --color-line-strong: #ccd3d4;
 
   /* Ação: Azul Tecnológico do Design System, no tom 600 para não gritar. */
   --color-accent: #1a42c2;
@@ -32,7 +64,7 @@
   /* Azul legível sobre o fundo escuro do aviso. */
   --color-accent-on-dark: #86a4ff;
 
-  /* Reserva: Laranja Social do Design System, só onde há reserva. */
+  /* Reserva: Laranja Social do Design System, exclusivo da reserva. */
   --color-reserve: #a63d10;
   --color-reserve-dot: #e8622a;
   --color-reserve-soft: #fff3ed;

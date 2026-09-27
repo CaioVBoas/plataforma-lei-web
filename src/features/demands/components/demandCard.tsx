@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { CoverageMeter } from '@/components/ui/coverageMeter';
+import { Monogram } from '@/components/ui/monogram';
 import { Tag } from '@/components/ui/tag';
 import type { DisciplineMatch } from '@/domain/matching';
 import type { Demand, IsoDate } from '@/domain/types';
@@ -30,12 +31,15 @@ export const DemandCard = ({ demand, best, today }: DemandCardProps) => {
     <Link
       to={paths.demand(demand.id)}
       className={cn(
-        'group flex h-full min-w-0 flex-col rounded-lg border bg-surface p-5 transition-[border-color,box-shadow] duration-150 hover:shadow-[0_2px_12px_rgba(0,0,0,0.06)]',
+        'group flex h-full min-w-0 flex-col rounded-lg border bg-surface p-5 transition-[border-color,box-shadow] duration-150 hover:shadow-[0_2px_8px_rgba(10,50,50,0.08)]',
         demand.reservation?.mine ? 'border-reserve-dot/40' : 'border-line hover:border-line-strong',
       )}
     >
       <div className="flex min-h-6 flex-wrap items-center justify-between gap-x-3 gap-y-1.5">
-        <p className="text-[13px] text-ink-3">{demand.organization.name}</p>
+        <div className="flex min-w-0 items-center gap-2.5">
+          <Monogram name={demand.organization.name} size="sm" />
+          <p className="truncate text-[13px] font-semibold text-ink-2">{demand.organization.name}</p>
+        </div>
         {reservation ? (
           <Tag tone={takenByOther ? 'neutral' : 'reserve'}>{reservation}</Tag>
         ) : demand.invitation ? (
@@ -45,7 +49,7 @@ export const DemandCard = ({ demand, best, today }: DemandCardProps) => {
         )}
       </div>
 
-      <p className="mt-2 text-[17px] leading-snug font-semibold tracking-[-0.01em] text-ink group-hover:text-accent">{demand.title}</p>
+      <p className="mt-3 text-[17px] leading-snug font-semibold tracking-[-0.01em] text-ink group-hover:text-accent">{demand.title}</p>
       <p className="mt-1.5 line-clamp-2 flex-1 text-sm leading-relaxed text-ink-2">{demand.problem}</p>
 
       <div className="mt-5 border-t border-line pt-4">

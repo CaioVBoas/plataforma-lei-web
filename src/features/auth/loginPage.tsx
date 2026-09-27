@@ -51,20 +51,20 @@ export const LoginPage = () => {
 
   return (
     <div className="grid min-h-screen bg-surface lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
-      <section className="hidden flex-col justify-between bg-canvas px-14 py-12 lg:flex">
-        <BrandMark />
+      <section className="hidden flex-col justify-between bg-panel-deep px-14 py-12 lg:flex">
+        <BrandMark onDark />
         <div className="max-w-[440px]">
-          <h1 className="text-[40px] leading-[1.1] font-bold tracking-[-0.025em] text-ink">Problemas reais para as suas turmas.</h1>
+          <h1 className="text-[40px] leading-[1.1] font-bold tracking-[-0.025em] text-balance text-white">Leve um problema real de Pernambuco para a sua disciplina.</h1>
           <ul className="mt-8 space-y-4">
             {PROMISES.map((promise, index) => (
-              <li key={promise} className="flex gap-4 text-[17px] leading-snug text-ink-2">
-                <span className="w-4 shrink-0 text-ink-3 tabular-nums">{index + 1}</span>
+              <li key={promise} className="flex gap-4 text-[17px] leading-snug text-brand-100">
+                <span className="w-4 shrink-0 font-bold text-brand-on-dark tabular-nums">{index + 1}</span>
                 {promise}
               </li>
             ))}
           </ul>
         </div>
-        <p className="text-[13px] text-ink-3">L.E.I. · Centro de Informática da UFPE</p>
+        <p className="text-[13px] text-brand-200">L.E.I. · Centro de Informática da UFPE</p>
       </section>
 
       <section className="flex flex-col justify-center px-6 py-12 sm:px-14">

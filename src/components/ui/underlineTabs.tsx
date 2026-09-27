@@ -30,7 +30,7 @@ export const UnderlineTabs = <Value extends string>({ label, value, options, onC
           onClick={() => onChange(option.value)}
           className={cn(
             '-mb-px flex h-10 items-center gap-1.5 border-b-2 text-sm transition-colors duration-150',
-            selected ? 'border-ink font-medium text-ink' : 'border-transparent text-ink-2 hover:text-ink',
+            selected ? 'border-brand font-semibold text-ink' : 'border-transparent text-ink-2 hover:text-ink',
           )}
         >
           {option.label}
