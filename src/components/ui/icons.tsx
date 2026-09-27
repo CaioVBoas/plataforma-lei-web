@@ -173,3 +173,8 @@ export const ChatIcon = (props: IconProps) => (
     <path d="M5 5.5h14A1.5 1.5 0 0120.5 7v8.5A1.5 1.5 0 0119 17h-7.5L7 20.5V17H5a1.5 1.5 0 01-1.5-1.5V7A1.5 1.5 0 015 5.5z" />
   </IconBase>
 );
+export const SendIcon = (props: IconProps) => (
+  <IconBase {...props}>
+    <path d="M4.5 12L19.5 4.5l-4 15-3.8-6.2L4.5 12zM11.7 13.3l7.8-8.8" />
+  </IconBase>
+);

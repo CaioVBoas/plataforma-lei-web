@@ -38,14 +38,19 @@ export const MenuPage = () => {
   const { data: calendar } = useCalendar();
 
   // Filtro e busca moram na URL para que voltar do detalhe devolva o mesmo cardápio.
-  const updateParams = (next: { ver?: Scope; busca?: string }) => {
-    const params = new URLSearchParams(searchParams);
-    if (next.ver !== undefined) params.set('ver', next.ver);
-    if (next.busca !== undefined) params.set('busca', next.busca);
-    if (params.get('ver') === 'turmas') params.delete('ver');
-    if (!params.get('busca')) params.delete('busca');
-    setSearchParams(params, { replace: true });
-  };
+  // Parte sempre da URL mais recente, para trocar de aba e digitar logo em seguida não perder nada.
+  const updateParams = (next: { ver?: Scope; busca?: string }) =>
+    setSearchParams(
+      (current) => {
+        const params = new URLSearchParams(current);
+        if (next.ver !== undefined) params.set('ver', next.ver);
+        if (next.busca !== undefined) params.set('busca', next.busca);
+        if (params.get('ver') === 'turmas') params.delete('ver');
+        if (!params.get('busca')) params.delete('busca');
+        return params;
+      },
+      { replace: true },
+    );
 
   const ranked = useMemo(
     () =>

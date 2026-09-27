@@ -59,7 +59,7 @@ Levantamento do que a plataforma faz hoje, do que foi verificado e do que ainda 
 | RF15 | Reservar por 7 dias, até 3 reservas ativas, liberar com um clique, expirar sozinha | Pronto |
 | RF16 | Reserva de colega visível com nome e data de fim | Pronto |
 | RF17 | "Avise-me se liberar" liga e desliga o aviso | Parcial: a demanda liberada aparece nos Avisos do portal; falta o e-mail |
-| RF17a | Perguntar à organização na demanda, com o histórico de perguntas e respostas visível para todos os docentes | Parcial: a pergunta é registrada; a resposta depende do L.E.I. repassar (sem portal da organização) |
+| RF17a | Perguntar à organização na demanda, numa conversa de altura fixa que rola por dentro (abre na mensagem mais recente, Enter envia), com o histórico visível para todos os docentes | Parcial: a pergunta é registrada; a resposta depende do L.E.I. repassar (sem portal da organização) |
 | RF17b | Nível da demanda contra a altura do curso da turma: acima do nível não combina e não pode ser levada | Pronto |
 | RF17c | Condições da demanda (presencial, dados sensíveis, sigilo) e o que um semestre entrega, no cartão e no detalhe | Pronto |
 | RF17d | Chegar por indicação do L.E.I.: o link abre a demanda com quem indicou e o que é extensão na disciplina (F6) | Parcial: a indicação vem do seed; o envio é da coordenação |
