@@ -20,7 +20,7 @@ export const PortalLayout = () => {
 
   return (
     <div className="min-h-screen bg-surface">
-      <aside className="fixed inset-y-0 left-0 z-30 hidden w-[236px] border-r border-line bg-canvas md:block">
+      <aside className="fixed inset-y-0 left-0 z-30 hidden w-[236px] border-r border-line bg-surface md:block">
         <Sidebar />
       </aside>
 
@@ -36,7 +36,7 @@ export const PortalLayout = () => {
       {drawerOpen && (
         <div className="fixed inset-0 z-40 md:hidden">
           <div aria-hidden="true" onClick={closeDrawer} className="absolute inset-0 bg-black/25 animate-fade-in" />
-          <aside className={cn('absolute inset-y-0 left-0 w-[272px] bg-canvas shadow-sheet animate-fade-in')}>
+          <aside className={cn('absolute inset-y-0 left-0 w-[272px] bg-surface shadow-sheet animate-fade-in')}>
             <button type="button" aria-label="Fechar menu" onClick={closeDrawer} className="absolute top-4 right-3 flex size-8 items-center justify-center rounded-md hover:bg-fill">
               <CloseIcon size={16} />
             </button>

@@ -5,17 +5,16 @@ import { useToast } from '@/components/feedback/toastContext';
 import { Button } from '@/components/ui/button';
 import { cardGridClassName } from '@/components/ui/card';
 import { ItemList } from '@/components/ui/itemList';
-import { FactGrid, Page } from '@/components/ui/page';
+import { FactGrid, Page, Section } from '@/components/ui/page';
+import { ProfileHeader } from '@/components/ui/profileHeader';
 import { Tag } from '@/components/ui/tag';
-import { UnderlineTabs } from '@/components/ui/underlineTabs';
 import { useCalendar } from '@/features/calendar/useCalendar';
 import { DemandCard } from '@/features/demands/components/demandCard';
 import { useMenu } from '@/features/demands/useDemands';
 import { ProjectRow } from '@/features/projects/shared/components/projectRow';
 import { useProjects } from '@/features/projects/shared/hooks/useProjects';
-import { useTabParam } from '@/hooks/useTabParam';
+import { useScrollToHash } from '@/hooks/useScrollToHash';
 import { paths } from '@/routes/paths';
-import { cn } from '@/utils/cn';
 import { pluralize } from '@/utils/format';
 import { CoTeachers } from './components/coTeachers';
 import { DisciplineForm } from './components/disciplineForm';
@@ -24,19 +23,17 @@ import type { DisciplineWithUsage } from './types';
 import { LEVEL_COPY, slotsLabel } from './utils/disciplinePresentation';
 import { matchingDemands } from './utils/matchingDemands';
 
-const TABS = ['projetos', 'demandas', 'docentes', 'turma'] as const;
-
-const Empty = ({ children }: { children: string }) => <p className="py-6 text-sm text-ink-3">{children}</p>;
+const Empty = ({ children }: { children: string }) => <p className="text-sm text-ink-3">{children}</p>;
 
 const DisciplineProjects = ({ discipline }: { discipline: DisciplineWithUsage }) => {
   const { data: projects = [] } = useProjects();
   const { data: calendar } = useCalendar();
   const own = projects.filter((project) => project.disciplineId === discipline.id);
   if (!calendar) return null;
-  if (own.length === 0) return <Empty>Nenhum projeto nesta turma ainda. As demandas que combinam estão na aba ao lado.</Empty>;
+  if (own.length === 0) return <Empty>Nenhum projeto nesta turma ainda. Veja as demandas que combinam logo abaixo.</Empty>;
 
   return (
-    <ItemList flush>
+    <ItemList>
       {own.map((project) => (
         <ProjectRow key={project.id} project={project} today={calendar.today} />
       ))}
@@ -50,10 +47,10 @@ const MatchingDemands = ({ discipline }: { discipline: DisciplineWithUsage }) =>
   const { data: calendar } = useCalendar();
   const matches = matchingDemands(menu, discipline);
   if (!calendar) return null;
-  if (matches.length === 0) return <Empty>Nenhuma demanda livre combina agora. Revise as competências na aba Turma se ela trabalha mais coisas.</Empty>;
+  if (matches.length === 0) return <Empty>Nenhuma demanda livre combina agora. Revise as competências da turma, logo abaixo, se ela trabalha mais coisas.</Empty>;
 
   return (
-    <ul className={cn(cardGridClassName, 'pt-6')}>
+    <ul className={cardGridClassName}>
       {matches.map(({ demand, match }) => (
         <li key={demand.id}>
           <DemandCard demand={demand} best={match} today={calendar.today} />
@@ -80,7 +77,7 @@ const DisciplineSettings = ({ discipline }: { discipline: DisciplineWithUsage })
     });
 
   return (
-    <div className="pt-6">
+    <div className="rounded-lg border border-line p-5 sm:p-6">
       <p className="mb-6 text-sm text-ink-2">Mudar as competências ou a altura do curso muda na hora quais demandas combinam com esta disciplina.</p>
       <DisciplineForm
         key={discipline.id}
@@ -109,56 +106,67 @@ const DisciplineSettings = ({ discipline }: { discipline: DisciplineWithUsage })
   );
 };
 
+/**
+ * A disciplina em uma página: o resumo da turma na capa e, em seguida, os
+ * projetos, as demandas que combinam, quem divide a turma e o formulário.
+ */
 const DisciplineView = ({ discipline }: { discipline: DisciplineWithUsage }) => {
-  const [tab, setTab] = useTabParam(TABS);
-  const { data: menu = [] } = useMenu();
   const { data: projects = [] } = useProjects();
   const projectCount = projects.filter((project) => project.disciplineId === discipline.id).length;
-  // Turma de semestre passado não recebe demanda nem tem formulário (regra 4): as abas somem.
-  const tabs = discipline.isCurrent ? TABS : (['projetos', 'docentes'] as const);
-  const active = tabs.includes(tab as never) ? tab : 'projetos';
+  useScrollToHash();
 
   return (
     <Page
       title={discipline.name}
       back={{ to: paths.disciplines, label: 'Disciplinas' }}
-      subtitle={
-        <span className="flex flex-wrap items-center gap-x-3 gap-y-1">
-          <Tag tone={discipline.isCurrent ? 'positive' : 'neutral'}>{discipline.isCurrent ? 'Recebendo demandas' : 'Semestre encerrado'}</Tag>
-          <span>{[discipline.semester, discipline.code].filter(Boolean).join(' · ')}</span>
-        </span>
+      hero={
+        <ProfileHeader
+          avatar={
+            <span className="flex size-[72px] items-center justify-center rounded-lg bg-monogram text-[13px] font-bold text-monogram-ink tabular-nums">
+              {discipline.code || discipline.name.charAt(0)}
+            </span>
+          }
+          eyebrow={`Semestre ${discipline.semester}`}
+          title={discipline.name}
+          meta={
+            <Tag tone={discipline.isCurrent ? 'positive' : 'neutral'}>{discipline.isCurrent ? 'Recebendo demandas' : 'Semestre encerrado'}</Tag>
+          }
+        />
       }
     >
       <FactGrid
+        columns={3}
         items={[
           { label: 'Estudantes', value: `${discipline.students} em equipes de ${discipline.teamSize}` },
           { label: 'Altura do curso', value: `${LEVEL_COPY[discipline.level].label}, ${LEVEL_COPY[discipline.level].periods}` },
           { label: 'Vagas de projeto', value: discipline.isCurrent ? `${slotsLabel(discipline)} de ${discipline.projectSlots}` : pluralize(projectCount, 'projeto', 'projetos') },
-          { label: 'Competências', value: pluralize(discipline.skills.length, 'competência', 'competências') },
         ]}
       />
+      <div className="mt-4 flex flex-wrap gap-1.5" aria-label="Competências da turma">
+        {discipline.skills.map((skill) => (
+          <Tag key={skill}>{skill}</Tag>
+        ))}
+      </div>
 
-      <UnderlineTabs
-        label="Sobre a disciplina"
-        value={active}
-        onChange={setTab}
-        className="mt-10"
-        options={[
-          { value: 'projetos', label: 'Projetos', count: projectCount },
-          ...(discipline.isCurrent ? [{ value: 'demandas' as const, label: 'Demandas que combinam', count: matchingDemands(menu, discipline).length }] : []),
-          { value: 'docentes', label: 'Docentes', count: discipline.coTeachers.length + 1 },
-          ...(discipline.isCurrent ? [{ value: 'turma' as const, label: 'Turma' }] : []),
-        ]}
-      />
+      <Section id="projetos" title="Projetos" description={pluralize(projectCount, 'projeto nesta turma', 'projetos nesta turma')} compact>
+        <DisciplineProjects discipline={discipline} />
+      </Section>
 
-      {active === 'projetos' && <DisciplineProjects discipline={discipline} />}
-      {active === 'demandas' && <MatchingDemands discipline={discipline} />}
-      {active === 'docentes' && (
-        <div className="pt-6">
-          <CoTeachers discipline={discipline} />
-        </div>
+      {discipline.isCurrent && (
+        <Section id="demandas" title="Demandas que combinam" description="Livres no cardápio, cobrem metade das competências e cabem na altura do curso." compact>
+          <MatchingDemands discipline={discipline} />
+        </Section>
       )}
-      {active === 'turma' && <DisciplineSettings discipline={discipline} />}
+
+      <Section id="docentes" title="Docentes" description="Quem divide a disciplina vê e edita os mesmos projetos." compact>
+        <CoTeachers discipline={discipline} />
+      </Section>
+
+      {discipline.isCurrent && (
+        <Section id="turma" title="Turma" compact>
+          <DisciplineSettings discipline={discipline} />
+        </Section>
+      )}
     </Page>
   );
 };

@@ -6,6 +6,7 @@ import { ActionMenu } from '@/components/ui/actionMenu';
 import { buttonClassName, textLinkClassName } from '@/components/ui/buttonStyles';
 import { EmptyState } from '@/components/ui/emptyState';
 import { Page } from '@/components/ui/page';
+import { StatTiles } from '@/components/ui/profileHeader';
 import { UnderlineTabs } from '@/components/ui/underlineTabs';
 import { formatRelativeDays, formatShortDate } from '@/domain/calendar';
 import type { ProjectStage } from '@/domain/projectLifecycle';
@@ -158,8 +159,20 @@ const ProjectsView = () => {
   const count = (value: Filter) => items.filter((item) => matchesFilter(item, value)).length;
   const visible = items.filter((item) => matchesFilter(item, filter));
 
+  const nextDue = items.find((item) => item.next)?.date;
+
   return (
     <>
+      <div className="mb-8">
+        <StatTiles
+          items={[
+            { value: count('planejamento'), label: 'em planejamento' },
+            { value: count('andamento'), label: 'em andamento' },
+            { value: count('concluidos'), label: count('concluidos') === 1 ? 'concluído' : 'concluídos' },
+            { value: nextDue ? formatShortDate(nextDue) : '–', label: 'próximo prazo' },
+          ]}
+        />
+      </div>
       <UnderlineTabs
         label="Estado dos projetos"
         value={filter}

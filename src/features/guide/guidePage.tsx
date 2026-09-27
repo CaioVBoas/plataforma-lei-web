@@ -143,7 +143,7 @@ export const GuidePage = () => {
         <ol className="flex flex-col gap-3">
           {JOURNEY.map((step, index) => (
             <li key={step.title} className="flex gap-4 rounded-lg border border-line p-4 sm:p-5">
-              <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-ink text-[13px] font-semibold text-white tabular-nums">
+              <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-brand text-[13px] font-semibold text-white tabular-nums">
                 {index + 1}
               </span>
               <div className="min-w-0">

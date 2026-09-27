@@ -54,6 +54,7 @@ const ProjectView = ({ project, calendar }: { project: Project; calendar: Semest
   return (
     <Page
       title={project.title}
+      eyebrow={`Projeto de extensão · ${project.semester}`}
       back={{ to: paths.projects, label: 'Projetos' }}
       subtitle={
         <span className="flex flex-wrap items-center gap-x-3 gap-y-1">

@@ -11,6 +11,7 @@ import { Page } from '@/components/ui/page';
 import { UnderlineTabs } from '@/components/ui/underlineTabs';
 import { freeSlots } from '@/domain/disciplineRules';
 import type { Demand, Project } from '@/domain/types';
+import { StatTiles } from '@/components/ui/profileHeader';
 import { useMenu } from '@/features/demands/useDemands';
 import { useProjects } from '@/features/projects/shared/hooks/useProjects';
 import { paths } from '@/routes/paths';
@@ -57,7 +58,7 @@ const DisciplineItem = ({ discipline, matches, projects }: DisciplineItemProps) 
     <Item
       to={paths.discipline(discipline.id)}
       label={discipline.name}
-      anchor={<span className="pt-1 text-[13px] whitespace-nowrap text-ink-2 tabular-nums">{discipline.code || '—'}</span>}
+      anchor={<span className="pt-1 text-[13px] whitespace-nowrap text-ink-2 tabular-nums">{discipline.code || '–'}</span>}
       menu={<ActionMenu label={`Ações de ${discipline.name}`} items={actions} />}
     >
       <p className="truncate text-headline">{discipline.name}</p>
@@ -127,18 +128,26 @@ const DisciplineList = ({ disciplines, menu, projects, tab, onCreate }: GroupsPr
   );
 };
 
-/** "3 vagas livres · 2 demandas compatíveis": o que as turmas do semestre ainda podem receber. */
+/** O semestre em números: o que as turmas ainda podem receber. */
 const SemesterSummary = ({ disciplines, menu }: { disciplines: DisciplineWithUsage[]; menu: Demand[] }) => {
   const current = disciplines.filter((discipline) => discipline.isCurrent);
   if (current.length === 0) return null;
   const slots = current.reduce((sum, discipline) => sum + freeSlots(discipline), 0);
+  const running = current.reduce((sum, discipline) => sum + discipline.activeProjects, 0);
   // Uma demanda que combina com duas turmas conta uma vez só.
   const demands = new Set(current.flatMap((discipline) => matchingDemands(menu, discipline).map(({ demand }) => demand.id)));
 
   return (
-    <span className="tabular-nums">
-      {pluralize(slots, 'vaga livre', 'vagas livres')} · {pluralize(demands.size, 'demanda compatível', 'demandas compatíveis')}
-    </span>
+    <div className="mb-8">
+      <StatTiles
+        items={[
+          { value: current.length, label: current.length === 1 ? 'disciplina ativa' : 'disciplinas ativas' },
+          { value: running, label: running === 1 ? 'projeto em curso' : 'projetos em curso' },
+          { value: slots, label: slots === 1 ? 'vaga livre' : 'vagas livres' },
+          { value: demands.size, label: demands.size === 1 ? 'demanda compatível' : 'demandas compatíveis' },
+        ]}
+      />
+    </div>
   );
 };
 
@@ -171,7 +180,6 @@ export const DisciplinesPage = () => {
     <Page
       title="Disciplinas"
       subtitle="Suas turmas e as demandas que combinam com cada uma."
-      meta={<SemesterSummary disciplines={disciplines} menu={menu} />}
       actions={
         <Button variant="primary" onClick={() => setCreating(true)}>
           <PlusIcon size={15} />
@@ -179,6 +187,7 @@ export const DisciplinesPage = () => {
         </Button>
       }
     >
+      <SemesterSummary disciplines={disciplines} menu={menu} />
       <UnderlineTabs
         label="Semestre"
         value={tab}

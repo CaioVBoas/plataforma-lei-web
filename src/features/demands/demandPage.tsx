@@ -59,6 +59,7 @@ const DemandView = ({ detail, disciplines, calendar }: { detail: DemandDetail; d
   return (
     <Page
       title={demand.title}
+      eyebrow={`${demand.organization.name} · ${demand.organization.type}`}
       back={detail.projectId ? { to: paths.project(detail.projectId), label: 'Projeto' } : { to: paths.menu, label: 'Cardápio' }}
       subtitle={demand.problem}
     >

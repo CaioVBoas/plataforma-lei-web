@@ -4,6 +4,8 @@ import { useToast } from '@/components/feedback/toastContext';
 import { Button } from '@/components/ui/button';
 import { Field, Input } from '@/components/ui/formControls';
 import { Page, Section } from '@/components/ui/page';
+import { ProfileHeader } from '@/components/ui/profileHeader';
+import { initialsOf } from '@/utils/format';
 import type { Account } from '@/domain/types';
 import { useLogout } from '@/features/auth/useAuth';
 import { useAccount, useUpdateAccount } from './useAccount';
@@ -64,7 +66,24 @@ export const AccountPage = () => {
   const logout = useLogout();
 
   return (
-    <Page title="Minha conta" width="narrow">
+    <Page
+      title="Minha conta"
+      width="narrow"
+      hero={
+        accountQuery.data && (
+          <ProfileHeader
+            avatar={
+              <span className="flex size-[72px] items-center justify-center rounded-lg bg-monogram text-[26px] font-bold text-monogram-ink">
+                {initialsOf(accountQuery.data.name)}
+              </span>
+            }
+            eyebrow={accountQuery.data.department}
+            title={accountQuery.data.name}
+            meta={accountQuery.data.email}
+          />
+        )
+      }
+    >
       <Section title="Seus dados">
         <QueryView query={accountQuery}>{(account) => <AccountForm account={account} />}</QueryView>
       </Section>

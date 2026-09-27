@@ -6,6 +6,8 @@ import { ChevronLeftIcon } from './icons';
 interface PageProps {
   title: string;
   subtitle?: ReactNode;
+  /** Linha pequena em petróleo acima do título: de quem é, que tipo de coisa é. */
+  eyebrow?: ReactNode;
   /** Linha de contexto em texto 13 logo abaixo do subtítulo: resumo, metadados. */
   meta?: ReactNode;
   /** Elemento de identidade à esquerda do título, como o monograma da organização. */
@@ -19,7 +21,7 @@ interface PageProps {
 }
 
 /** Casca de toda tela do portal: voltar, título grande, subtítulo e ações à direita. */
-export const Page = ({ title, subtitle, meta, leading, back, hero, actions, width = 'default', children }: PageProps) => {
+export const Page = ({ title, eyebrow, subtitle, meta, leading, back, hero, actions, width = 'default', children }: PageProps) => {
   useEffect(() => {
     document.title = `${title} · Aperta o PLEI`;
   }, [title]);
@@ -40,6 +42,7 @@ export const Page = ({ title, subtitle, meta, leading, back, hero, actions, widt
         <div className="flex min-w-0 flex-[1_1_420px] items-start gap-4">
           {leading}
           <div className="min-w-0 flex-1">
+            {eyebrow && <p className="mb-1.5 text-[13px] font-semibold text-brand-strong">{eyebrow}</p>}
             <h1 className={cn('text-balance', leading ? 'text-[26px] leading-tight font-bold tracking-[-0.019em] text-ink' : 'text-large-title')}>{title}</h1>
             {subtitle && <div className={cn('leading-snug text-ink-2', leading ? 'mt-1 text-[15px]' : 'mt-2 text-[17px]')}>{subtitle}</div>}
             {meta && <div className="mt-2 text-[13px] text-ink-2">{meta}</div>}
@@ -81,8 +84,8 @@ export const Section = ({ title, id, description, aside, compact, className, chi
  * Pares de rótulo e valor em mini cards de fato, até quatro por linha. Fato é o
  * único bloco com fundo petróleo e borda: não se confunde com tag, botão nem card clicável.
  */
-export const FactGrid = ({ items, columns = 4 }: { items: { label: string; value: ReactNode }[]; columns?: 2 | 4 }) => (
-  <dl className={cn('grid grid-cols-1 gap-3 sm:grid-cols-2', columns === 4 && 'lg:grid-cols-4')}>
+export const FactGrid = ({ items, columns = 4 }: { items: { label: string; value: ReactNode }[]; columns?: 2 | 3 | 4 }) => (
+  <dl className={cn('grid grid-cols-1 gap-3 sm:grid-cols-2', columns === 3 && 'lg:grid-cols-3', columns === 4 && 'lg:grid-cols-4')}>
     {items.map((item) => (
       <div key={item.label} className="min-w-0 rounded-md border border-fact-line bg-fact px-3.5 py-3">
         <dt className="text-[12px] font-semibold text-fact-label">{item.label}</dt>
