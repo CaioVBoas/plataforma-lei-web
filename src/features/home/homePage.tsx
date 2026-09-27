@@ -172,6 +172,37 @@ const semesterLine = (calendar: SemesterCalendar, disciplines: DisciplineWithUsa
   return `${base} Suas turmas têm ${pluralize(slots, 'vaga', 'vagas')} para projetos até ${formatShortDate(calendar.linkDeadline)}.`;
 };
 
+interface HeroProps {
+  firstName: string;
+  line: string;
+  stats: { value: number; label: string }[];
+}
+
+/**
+ * Boas-vindas em petróleo: o único bloco de cor cheia do portal, para o Início
+ * ter cara de ponto de partida. Os números são o semestre do docente em um olhar.
+ */
+const HomeHero = ({ firstName, line, stats }: HeroProps) => (
+  <section className="relative overflow-hidden rounded-lg bg-brand px-6 py-7 text-white sm:px-8 sm:py-8">
+    <span aria-hidden="true" className="absolute -top-16 -right-16 size-56 rounded-full bg-brand-500" />
+    <div className="relative flex flex-wrap items-end justify-between gap-6">
+      <div className="min-w-0 flex-[1_1_360px]">
+        <h1 className="text-[32px] leading-tight font-bold tracking-[-0.021em]">Olá, {firstName}</h1>
+        <p className="mt-2 max-w-[58ch] text-[15px] leading-relaxed text-brand-100">{line}</p>
+      </div>
+      <dl className="flex flex-wrap gap-2.5">
+        {stats.map((stat) => (
+          <div key={stat.label} className="min-w-[104px] rounded-md bg-brand-700 px-4 py-3">
+            <dt className="sr-only">{stat.label}</dt>
+            <dd className="text-[24px] leading-none font-bold tabular-nums">{stat.value}</dd>
+            <dd className="mt-1.5 text-[12px] text-brand-100">{stat.label}</dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+  </section>
+);
+
 const HomeContent = ({ account, calendar }: { account: Account; calendar: SemesterCalendar }) => {
   const { agenda } = useAgenda();
   const { data: disciplines } = useCurrentDisciplines();
@@ -186,8 +217,25 @@ const HomeContent = ({ account, calendar }: { account: Account; calendar: Semest
     );
   }
 
+  const reservations = demands.filter(isMyReservation);
+  const running = agenda.length;
+  const freeSlotsTotal = disciplines.reduce((total, discipline) => total + freeSlots(discipline), 0);
+
   return (
-    <Page title={`Olá, ${firstName}`} subtitle={semesterLine(calendar, disciplines)}>
+    <Page
+      title={`Olá, ${firstName}`}
+      hero={
+        <HomeHero
+          firstName={firstName}
+          line={semesterLine(calendar, disciplines)}
+          stats={[
+            { value: running, label: running === 1 ? 'projeto em curso' : 'projetos em curso' },
+            { value: reservations.length, label: reservations.length === 1 ? 'reserva' : 'reservas' },
+            { value: freeSlotsTotal, label: freeSlotsTotal === 1 ? 'vaga livre' : 'vagas livres' },
+          ]}
+        />
+      }
+    >
       {!account.tutorialSeen && <TutorialInvite />}
 
       {disciplines.length === 0 ? (
@@ -207,7 +255,7 @@ const HomeContent = ({ account, calendar }: { account: Account; calendar: Semest
           <Section title="Próximos passos" description="Indicações, reservas e a próxima etapa de cada projeto em curso.">
             <NextSteps
               agenda={agenda}
-              reservations={demands.filter(isMyReservation)}
+              reservations={reservations}
               invitations={demands.filter((demand) => demand.invitation && demand.status === 'open')}
               today={calendar.today}
             />

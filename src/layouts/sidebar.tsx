@@ -25,14 +25,21 @@ const NavItem = ({ to, icon, label, active, badge, onNavigate }: NavItemProps) =
     onClick={onNavigate}
     aria-current={active ? 'page' : undefined}
     className={cn(
-      'flex h-8 items-center gap-2.5 rounded-md px-2.5 text-sm transition-colors duration-100',
-      active ? 'bg-nav-active font-semibold text-nav-active-ink' : 'text-ink-2 hover:bg-fill hover:text-ink',
+      'flex h-9 items-center gap-2.5 rounded-lg px-3 text-sm transition-colors duration-150',
+      active ? 'bg-brand font-semibold text-white' : 'text-ink-2 hover:bg-brand-50 hover:text-brand-strong',
     )}
   >
-    <span className={active ? 'text-nav-active-ink' : 'text-ink-3'}>{icon}</span>
+    <span className={active ? 'text-white' : 'text-ink-3'}>{icon}</span>
     <span className="min-w-0 flex-1 truncate">{label}</span>
     {Boolean(badge) && (
-      <span className="min-w-5 rounded-full bg-accent px-1.5 text-center text-[11px] leading-5 font-semibold text-white tabular-nums">{badge}</span>
+      <span
+        className={cn(
+          'min-w-5 rounded-full px-1.5 text-center text-[11px] leading-5 font-semibold tabular-nums',
+          active ? 'bg-white text-brand-strong' : 'bg-accent text-white',
+        )}
+      >
+        {badge}
+      </span>
     )}
   </Link>
 );

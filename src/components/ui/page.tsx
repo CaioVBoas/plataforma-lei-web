@@ -11,13 +11,15 @@ interface PageProps {
   /** Elemento de identidade à esquerda do título, como o monograma da organização. */
   leading?: ReactNode;
   back?: { to: string; label: string };
+  /** Substitui o cabeçalho padrão por um bloco próprio, como a boas-vindas do Início. */
+  hero?: ReactNode;
   actions?: ReactNode;
   width?: 'default' | 'narrow';
   children: ReactNode;
 }
 
 /** Casca de toda tela do portal: voltar, título grande, subtítulo e ações à direita. */
-export const Page = ({ title, subtitle, meta, leading, back, actions, width = 'default', children }: PageProps) => {
+export const Page = ({ title, subtitle, meta, leading, back, hero, actions, width = 'default', children }: PageProps) => {
   useEffect(() => {
     document.title = `${title} · Aperta o PLEI`;
   }, [title]);
@@ -31,6 +33,9 @@ export const Page = ({ title, subtitle, meta, leading, back, actions, width = 'd
           {back.label}
         </Link>
       )}
+      {hero ? (
+        <div className="mb-10">{hero}</div>
+      ) : (
       <header className="mb-10 flex flex-wrap items-end justify-between gap-x-6 gap-y-4">
         <div className="flex min-w-0 flex-[1_1_420px] items-start gap-4">
           {leading}
@@ -42,6 +47,7 @@ export const Page = ({ title, subtitle, meta, leading, back, actions, width = 'd
         </div>
         {actions && <div className="flex shrink-0 items-center gap-2">{actions}</div>}
       </header>
+      )}
       {children}
     </div>
   );
