@@ -1,6 +1,5 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
-import centered from '@/assets/brand/centralizado/principal.svg';
 import { BrandMark } from '@/components/ui/brandMark';
 import { buttonClassName } from '@/components/ui/buttonStyles';
 import { ArrowRightIcon, BellIcon, BookIcon, BuildingIcon, CheckIcon, ChevronLeftIcon, ChevronRightIcon, CopyIcon, FolderIcon, TrayIcon, UsersIcon } from '@/components/ui/icons';
@@ -9,6 +8,7 @@ import { session } from '@/features/auth/session';
 import type { UserRole } from '@/features/auth/types';
 import { paths } from '@/routes/paths';
 import { cn } from '@/utils/cn';
+import { WaterMark } from './components/waterMark';
 import { HERO_PHOTOS, PHOTO_CREDITS } from './portalPhotos';
 
 /** Mesma largura e margens do portal, para a passagem do site para a plataforma não pular. */
@@ -174,9 +174,7 @@ const Welcome = () => (
         </p>
         <p className="mt-4 text-[16px] leading-relaxed text-ink-2">O nome vem de apertar o play: tirar o problema do papel e colocar uma turma para resolver.</p>
       </div>
-      <div className="flex aspect-[16/10] items-center justify-center rounded-lg border border-line bg-canvas px-10">
-        <img src={centered} alt="Aperta o PL.E.I." className="w-full max-w-[340px]" />
-      </div>
+      <WaterMark />
     </div>
   </section>
 );

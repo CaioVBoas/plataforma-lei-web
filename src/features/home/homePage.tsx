@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import cinPhoto from '@/assets/portal/inicio/cin.webp';
 import { LoadingState } from '@/components/feedback/queryStates';
 import { buttonClassName } from '@/components/ui/buttonStyles';
 import { EmptyState } from '@/components/ui/emptyState';
@@ -180,12 +181,13 @@ interface HeroProps {
 }
 
 /**
- * Boas-vindas em petróleo: o único bloco de cor cheia do portal, para o Início
+ * Boas-vindas em petróleo sobre a foto do CIn, para o Início
  * ter cara de ponto de partida. Os números são o semestre do docente em um olhar.
  */
 const HomeHero = ({ firstName, line, stats }: HeroProps) => (
-  <section className="relative overflow-hidden rounded-lg bg-brand px-6 py-7 text-white sm:px-8 sm:py-8">
-    <span aria-hidden="true" className="absolute -top-16 -right-16 size-56 rounded-full bg-brand-500" />
+  <section className="relative isolate overflow-hidden rounded-lg bg-brand px-6 py-9 text-white sm:px-8 sm:py-11">
+    <img src={cinPhoto} alt="" aria-hidden="true" className="absolute inset-0 -z-10 size-full object-cover" />
+    <div aria-hidden="true" className="absolute inset-0 -z-10 bg-brand-900/80" />
     <div className="relative flex flex-wrap items-end justify-between gap-6">
       <div className="min-w-0 flex-[1_1_360px]">
         <h1 className="text-[32px] leading-tight font-bold tracking-[-0.021em]">Olá, {firstName}</h1>
@@ -193,7 +195,7 @@ const HomeHero = ({ firstName, line, stats }: HeroProps) => (
       </div>
       <dl className="flex flex-wrap gap-2.5">
         {stats.map((stat) => (
-          <div key={stat.label} className="min-w-[104px] rounded-md bg-brand-700 px-4 py-3">
+          <div key={stat.label} className="min-w-[104px] rounded-md bg-white/12 px-4 py-3 backdrop-blur-sm">
             <dt className="sr-only">{stat.label}</dt>
             <dd className="text-[24px] leading-none font-bold tabular-nums">{stat.value}</dd>
             <dd className="mt-1.5 text-[12px] text-brand-100">{stat.label}</dd>

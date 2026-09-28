@@ -90,6 +90,14 @@
   --animate-fade-in: fade-in 180ms var(--ease-standard);
   --animate-sheet-in: sheet-in 220ms var(--ease-standard);
   --animate-rise-in: rise-in 220ms var(--ease-standard);
+  /* Água correndo pela meia-lua do portal: uma onda inteira por ciclo, sem emenda. */
+  --animate-water: water 6s linear infinite;
+
+  @keyframes water {
+    to {
+      transform: translateX(-80px);
+    }
+  }
 
   @keyframes fade-in {
     from { opacity: 0; }

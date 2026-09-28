@@ -26,7 +26,12 @@ export const AuthShell = ({ children }: { children: ReactNode }) => (
         <Link to={paths.landing}>
           <BrandMark onDark className="h-10" />
         </Link>
-        <p className="text-[34px] leading-[1.12] font-bold tracking-[-0.02em] text-balance text-white">Aperte o play num problema real.</p>
+        <div>
+          <p className="text-[34px] leading-[1.12] font-bold tracking-[-0.02em] text-balance text-white">Aperte o play num problema real.</p>
+          <p className="mt-3 max-w-[36ch] text-[15px] leading-relaxed text-white/85">
+            Organizações de Pernambuco trazem o problema, o L.E.I. faz a triagem e a turma resolve durante o semestre.
+          </p>
+        </div>
         <p className="text-[11px] leading-snug text-white/65">
           Foto {AUTH_PHOTO.credit.subject}:{' '}
           <a href={AUTH_PHOTO.credit.sourceUrl} target="_blank" rel="noreferrer" className="underline-offset-2 hover:text-white hover:underline">
