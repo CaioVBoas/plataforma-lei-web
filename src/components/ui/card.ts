@@ -8,3 +8,6 @@ export const linkCardClassName =
 
 /** Grade de cards: uma coluna no celular, duas a partir do tablet. */
 export const cardGridClassName = 'grid grid-cols-1 gap-4 md:grid-cols-2';
+
+/** Foto no topo de um card com p-5: encosta nas bordas e só arredonda os cantos de cima. */
+export const cardCoverClassName = '-mx-5 -mt-5 mb-4 block aspect-[16/7] w-[calc(100%+2.5rem)] max-w-none rounded-t-[inherit] object-cover';

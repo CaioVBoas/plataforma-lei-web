@@ -99,8 +99,6 @@ export const LoginPage = () => {
   return (
     <AuthShell>
       <h2 className="text-[28px] leading-tight font-bold tracking-[-0.02em] text-ink">Entrar</h2>
-      <p className="mt-2 text-[15px] text-ink-2">Escolha como você participa.</p>
-
       <div className="mt-6 mb-7">
         <RoleTabs value={role} onChange={(next) => setSearchParams(next === 'docente' ? {} : { perfil: next }, { replace: true })} />
       </div>

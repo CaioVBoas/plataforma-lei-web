@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom';
 import { CoverageMeter } from '@/components/ui/coverageMeter';
+import { cardCoverClassName } from '@/components/ui/card';
 import { Monogram } from '@/components/ui/monogram';
+import { demandCover } from '@/lib/covers';
 import { Tag } from '@/components/ui/tag';
 import type { DisciplineMatch } from '@/domain/matching';
 import type { Demand, IsoDate } from '@/domain/types';
@@ -25,6 +27,7 @@ export const DemandCard = ({ demand, best, today }: DemandCardProps) => {
   const reservation = reservationBadge(demand, today);
   const takenByOther = demand.status === 'reserved' && !demand.reservation?.mine;
   const match = matchTag(best);
+  const cover = demandCover(demand.id, demand.organization.id);
   const facts = [scope.label, ...demand.constraints.map((constraint) => CONSTRAINT_COPY[constraint].label)];
 
   return (
@@ -35,6 +38,7 @@ export const DemandCard = ({ demand, best, today }: DemandCardProps) => {
         demand.reservation?.mine ? 'border-reserve-dot/40' : 'border-line hover:border-line-strong',
       )}
     >
+      {cover && <img src={cover} alt="" loading="lazy" className={cardCoverClassName} />}
       <div className="flex min-h-6 flex-wrap items-center justify-between gap-x-3 gap-y-1.5">
         <div className="flex min-w-0 items-center gap-2.5">
           <Monogram name={demand.organization.name} size="sm" />

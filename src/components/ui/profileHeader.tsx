@@ -8,18 +8,24 @@ interface ProfileHeaderProps {
   eyebrow?: ReactNode;
   meta?: ReactNode;
   actions?: ReactNode;
+  /** Foto de capa. Sem ela, a capa é o petróleo com os dois círculos. */
+  cover?: string;
 }
 
 /**
  * Cabeçalho de perfil (organização, disciplina, conta): capa petróleo com o
  * avatar sobreposto. É a cor de identidade dizendo "isto é uma entidade", não uma ação.
  */
-export const ProfileHeader = ({ avatar, title, eyebrow, meta, actions }: ProfileHeaderProps) => (
+export const ProfileHeader = ({ avatar, title, eyebrow, meta, actions, cover }: ProfileHeaderProps) => (
   <header className="overflow-hidden rounded-lg border border-line">
-    <div aria-hidden="true" className="relative h-24 overflow-hidden bg-brand sm:h-28">
-      <span className="absolute -top-20 right-10 size-56 rounded-full bg-brand-500" />
-      <span className="absolute -bottom-24 right-48 size-40 rounded-full bg-brand-700" />
-    </div>
+    {cover ? (
+      <img src={cover} alt="" aria-hidden="true" className="block h-36 w-full object-cover sm:h-48" />
+    ) : (
+      <div aria-hidden="true" className="relative h-24 overflow-hidden bg-brand sm:h-28">
+        <span className="absolute -top-20 right-10 size-56 rounded-full bg-brand-500" />
+        <span className="absolute -bottom-24 right-48 size-40 rounded-full bg-brand-700" />
+      </div>
+    )}
     <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-4 px-5 pb-5 sm:px-6">
       <div className="flex min-w-0 flex-[1_1_360px] items-end gap-4">
         <div className="-mt-9 shrink-0 rounded-xl bg-surface p-1">{avatar}</div>

@@ -22,7 +22,6 @@ import { useAgenda } from '@/features/projects/shared/hooks/useAgenda';
 import type { AgendaItem } from '@/features/projects/shared/utils/agenda';
 import { MILESTONE_COPY, milestoneDateLine } from '@/features/projects/shared/utils/projectPresentation';
 import { Tag } from '@/components/ui/tag';
-import { SemesterDates } from './components/semesterDates';
 import { paths } from '@/routes/paths';
 import { cn } from '@/utils/cn';
 import { capitalize, pluralize } from '@/utils/format';
@@ -239,10 +238,6 @@ const HomeContent = ({ account, calendar }: { account: Account; calendar: Semest
       }
     >
       {!account.tutorialSeen && <TutorialInvite />}
-
-      <Section title="Calendário do semestre" compact>
-        <SemesterDates calendar={calendar} />
-      </Section>
 
       {disciplines.length === 0 ? (
         <Section title="Comece pelas suas turmas">

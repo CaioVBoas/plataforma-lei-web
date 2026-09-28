@@ -33,7 +33,7 @@ export const AccountMenu = () => {
         onClick={toggle}
         className={cn('flex h-10 items-center gap-2 rounded-md pr-2 pl-1 text-left', open ? 'bg-fill' : 'hover:bg-fill')}
       >
-        <Avatar name={account.name} />
+        <Avatar name={account.name} photo={account.photo || undefined} />
         <span className="hidden max-w-[160px] truncate text-[13px] font-medium text-ink sm:block">{account.name}</span>
         <ChevronDownIcon size={13} className={cn('hidden text-ink-3 transition-transform sm:block', open && 'rotate-180')} />
       </button>

@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom';
 import { QueryView } from '@/components/feedback/queryStates';
 import { EmptyState } from '@/components/ui/emptyState';
 import { SearchInput } from '@/components/ui/formControls';
-import { cardGridClassName, linkCardClassName } from '@/components/ui/card';
+import { cardCoverClassName, cardGridClassName, linkCardClassName } from '@/components/ui/card';
+import { organizationCover } from '@/lib/covers';
 import { Monogram } from '@/components/ui/monogram';
 import { Page } from '@/components/ui/page';
 import { paths } from '@/routes/paths';
@@ -13,23 +14,27 @@ import { useOrganizations } from './useOrganizations';
 import type { OrganizationSummary } from './types';
 
 /** Um card por organização: quem é, o que faz em poucas linhas e se há demanda para levar agora. */
-const OrganizationCard = ({ organization }: { organization: OrganizationSummary }) => (
-  <Link to={paths.organization(organization.id)} className={linkCardClassName}>
-    <div className="flex items-start gap-3">
-      <Monogram name={organization.name} />
-      <div className="min-w-0 flex-1">
-        <p className="truncate text-headline group-hover:text-accent">{organization.name}</p>
-        <p className="mt-0.5 truncate text-[13px] text-ink-3">
-          {organization.type} · {organization.location}
-        </p>
+const OrganizationCard = ({ organization }: { organization: OrganizationSummary }) => {
+  const cover = organizationCover(organization.id);
+  return (
+    <Link to={paths.organization(organization.id)} className={linkCardClassName}>
+      {cover && <img src={cover} alt="" loading="lazy" className={cardCoverClassName} />}
+      <div className="flex items-start gap-3">
+        <Monogram name={organization.name} />
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-headline group-hover:text-accent">{organization.name}</p>
+          <p className="mt-0.5 truncate text-[13px] text-ink-3">
+            {organization.type} · {organization.location}
+          </p>
+        </div>
       </div>
-    </div>
-    <p className="mt-4 line-clamp-2 flex-1 text-sm leading-relaxed text-ink-2">{organization.about}</p>
-    <div className="mt-4 border-t border-line pt-3.5">
-      <OrganizationMeta organization={organization} openDemands={organization.openDemands} />
-    </div>
-  </Link>
-);
+      <p className="mt-4 line-clamp-2 flex-1 text-sm leading-relaxed text-ink-2">{organization.about}</p>
+      <div className="mt-4 border-t border-line pt-3.5">
+        <OrganizationMeta organization={organization} openDemands={organization.openDemands} />
+      </div>
+    </Link>
+  );
+};
 
 const OrganizationList = ({ organizations, search }: { organizations: OrganizationSummary[]; search: string }) => {
   const term = normalizeText(search.trim());

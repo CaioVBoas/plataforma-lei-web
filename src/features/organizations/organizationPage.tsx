@@ -10,6 +10,7 @@ import { ProfileHeader } from '@/components/ui/profileHeader';
 import { SideCard, SideFact } from '@/components/ui/sideCard';
 import { UnderlineTabs } from '@/components/ui/underlineTabs';
 import { rankDisciplines } from '@/domain/matching';
+import { organizationCover } from '@/lib/covers';
 import { useCalendar } from '@/features/calendar/useCalendar';
 import { DemandCard } from '@/features/demands/components/demandCard';
 import { useCurrentDisciplines } from '@/features/disciplines/useDisciplines';
@@ -50,6 +51,7 @@ const OrganizationView = ({ detail }: { detail: OrganizationDetail }) => {
           eyebrow={organization.type}
           title={organization.name}
           meta={organization.location}
+          cover={organizationCover(organization.id)}
         />
       }
     >

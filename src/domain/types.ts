@@ -204,6 +204,8 @@ export interface Account {
   email: string;
   department: string;
   phone: string;
+  /** Foto de perfil, já reduzida no navegador. Sem ela, aparecem as iniciais. */
+  photo?: string;
   /** Enquanto for falso, o Início convida para o tutorial. */
   tutorialSeen: boolean;
 }

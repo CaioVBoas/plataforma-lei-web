@@ -25,6 +25,7 @@ export const getAccount = (): Account => db.account;
 
 export const updateAccount = (patch: Partial<Omit<Account, 'email'>>): Account => {
   if (patch.name !== undefined && !patch.name.trim()) throw new RuleError('Informe seu nome.');
+  if (patch.photo && !patch.photo.startsWith('data:image/')) throw new RuleError('A foto precisa ser uma imagem.');
   Object.assign(db.account, patch);
   return db.account;
 };

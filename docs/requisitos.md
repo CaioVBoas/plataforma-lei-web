@@ -32,10 +32,11 @@ Levantamento do que a plataforma faz hoje, do que foi verificado e do que ainda 
 | --- | --- | --- |
 | RF01 | Entrar só com e-mail `@ufpe.br` ou `@cin.ufpe.br` | Parcial: validação pronta, sem autenticação real |
 | RF02 | Rota do portal sem sessão leva à entrada e, depois de entrar, volta para a página pedida com aba e âncora | Pronto |
-| RF03 | Editar nome, departamento e telefone; e-mail só leitura | Parcial: salva no backend simulado |
+| RF03 | Editar nome, departamento, telefone e foto de perfil (reduzida no navegador); e-mail só leitura | Parcial: salva no backend simulado |
 | RF04 | Sair limpa a sessão e o cache | Pronto |
 | RF05 | Recuperar senha | A fazer: chega com o login da UFPE |
-| RF05a | Portal público: abertura com fotos de Pernambuco, porta de cada perfil, boas-vindas com a marca, quatro passos e rodapé | Pronto |
+| RF05a | Portal público: abertura com fotos de Pernambuco, porta de cada perfil, boas-vindas com a marca, carrossel do que há na plataforma, quatro passos animados e rodapé | Pronto |
+| RF05e | Capas com foto para organizações e demandas (cartões, perfil e detalhe), lidas de `src/assets/covers` pelo id | Parcial: estrutura pronta, faltam as fotos |
 | RF05d | Foto no painel da entrada e do cadastro, com o crédito que a licença CC BY-SA 4.0 exige | Pronto |
 | RF05b | Entrada e cadastro com escolha de perfil; organização e estudante aparecem como "em breve" | Pronto |
 | RF05c | Cadastro do docente com nome, e-mail institucional, departamento e senha, entrando direto no Início | Parcial: salva no backend simulado |
@@ -51,7 +52,6 @@ Levantamento do que a plataforma faz hoje, do que foi verificado e do que ainda 
 | RF10 | Contador único no sino da barra superior: indicações, reservas abertas, demandas liberadas e etapas nos próximos 14 dias | Pronto |
 | RF10a | Avisos no portal (sino e página Avisos): o que pede decisão e as respostas das organizações às perguntas do docente | Pronto |
 | RF10b | Barra lateral recolhível e barra superior com avisos e conta; Avisos só pelo sino | Pronto |
-| RF10c | Calendário do semestre no Início, numa linha: semana atual, prazo para levar demandas, entregas e fim | Pronto |
 | RF10d | Todas as telas com a mesma largura e margens laterais | Pronto |
 
 ### 2.3. Cardápio e reserva

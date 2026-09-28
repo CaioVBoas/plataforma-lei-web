@@ -10,6 +10,7 @@ import type { SemesterCalendar } from '@/domain/types';
 import { useCalendar } from '@/features/calendar/useCalendar';
 import { useCurrentDisciplines } from '@/features/disciplines/useDisciplines';
 import type { DisciplineWithUsage } from '@/features/disciplines/types';
+import { demandCover } from '@/lib/covers';
 import { paths } from '@/routes/paths';
 import { AdoptDemandModal } from './components/adoptDemandModal';
 import { DecisionPanel } from './components/decisionPanel';
@@ -38,6 +39,7 @@ const DemandView = ({ detail, disciplines, calendar }: { detail: DemandDetail; d
   const matches = rankDisciplines(demand, disciplines);
   const best = matches[0];
   const scope = SCOPE_COPY[demand.scopeFit];
+  const cover = demandCover(demand.id, organization.id);
 
   return (
     <Page
@@ -46,6 +48,7 @@ const DemandView = ({ detail, disciplines, calendar }: { detail: DemandDetail; d
       back={detail.projectId ? { to: paths.project(detail.projectId), label: 'Projeto' } : { to: paths.menu, label: 'Cardápio' }}
       subtitle={demand.problem}
     >
+      {cover && <img src={cover} alt="" className="mb-8 block aspect-[16/5] w-full rounded-lg object-cover" />}
       {demand.invitation && !detail.projectId && <InvitationNote invitation={demand.invitation} />}
 
       <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_300px]">
