@@ -2,6 +2,7 @@ import { useEffect, useState, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { BrandMark } from '@/components/ui/brandMark';
 import { buttonClassName } from '@/components/ui/buttonStyles';
+import { PhotoCreditLine } from '@/components/ui/photoCredit';
 import { ArrowRightIcon, BellIcon, BookIcon, BuildingIcon, CheckIcon, ChevronLeftIcon, ChevronRightIcon, CopyIcon, FolderIcon, TrayIcon, UsersIcon } from '@/components/ui/icons';
 import { ROLE_COPY } from '@/features/auth/roles';
 import { session } from '@/features/auth/session';
@@ -399,17 +400,7 @@ const Footer = () => (
       <div className="border-t border-line py-5 text-center">
         <p className="text-[13px] text-ink-3">© 2026 L.E.I. · Centro de Informática da UFPE.</p>
         {PHOTO_CREDITS.map((credit) => (
-          <p key={credit.sourceUrl} className="mt-1.5 text-[11px] text-ink-3">
-            Foto {credit.subject}:{' '}
-            <a href={credit.sourceUrl} target="_blank" rel="noreferrer" className="underline-offset-2 hover:text-ink-2 hover:underline">
-              {credit.author}, {credit.source}
-            </a>
-            ,{' '}
-            <a href={credit.licenseUrl} target="_blank" rel="license noreferrer" className="underline-offset-2 hover:text-ink-2 hover:underline">
-              {credit.license}
-            </a>
-            {credit.changes && `, ${credit.changes}`}.
-          </p>
+          <PhotoCreditLine key={credit.sourceUrl} credit={credit} className="mt-1.5" />
         ))}
       </div>
     </div>

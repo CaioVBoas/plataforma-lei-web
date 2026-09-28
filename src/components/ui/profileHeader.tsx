@@ -1,4 +1,6 @@
 import type { ReactNode } from 'react';
+import type { Cover } from '@/lib/covers';
+import { PhotoCreditLine } from './photoCredit';
 
 interface ProfileHeaderProps {
   /** Monograma ou ícone grande que sobrepõe a capa. */
@@ -8,8 +10,8 @@ interface ProfileHeaderProps {
   eyebrow?: ReactNode;
   meta?: ReactNode;
   actions?: ReactNode;
-  /** Foto de capa. Sem ela, a capa é o petróleo com os dois círculos. */
-  cover?: string;
+  /** Foto de capa, com o crédito quando a licença pede. Sem ela, a capa é o petróleo com os dois círculos. */
+  cover?: Cover;
 }
 
 /**
@@ -19,7 +21,14 @@ interface ProfileHeaderProps {
 export const ProfileHeader = ({ avatar, title, eyebrow, meta, actions, cover }: ProfileHeaderProps) => (
   <header className="overflow-hidden rounded-lg border border-line">
     {cover ? (
-      <img src={cover} alt="" aria-hidden="true" className="block h-36 w-full object-cover sm:h-48" />
+      <div className="relative">
+        <img src={cover.src} alt="" aria-hidden="true" className="block h-36 w-full object-cover sm:h-48" />
+        {cover.credit && (
+          <div className="absolute right-2 bottom-2 max-w-[90%] rounded-sm bg-black/55 px-2 py-1">
+            <PhotoCreditLine credit={cover.credit} onDark />
+          </div>
+        )}
+      </div>
     ) : (
       <div aria-hidden="true" className="relative h-24 overflow-hidden bg-brand sm:h-28">
         <span className="absolute -top-20 right-10 size-56 rounded-full bg-brand-500" />

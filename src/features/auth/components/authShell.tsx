@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { BrandMark } from '@/components/ui/brandMark';
 import { ChevronLeftIcon } from '@/components/ui/icons';
+import { PhotoCreditLine } from '@/components/ui/photoCredit';
 import { AUTH_PHOTO } from '@/features/landing/portalPhotos';
 import { paths } from '@/routes/paths';
 
@@ -32,17 +33,7 @@ export const AuthShell = ({ children }: { children: ReactNode }) => (
             Organizações de Pernambuco trazem o problema, o L.E.I. faz a triagem e a turma resolve durante o semestre.
           </p>
         </div>
-        <p className="text-[11px] leading-snug text-white/65">
-          Foto {AUTH_PHOTO.credit.subject}:{' '}
-          <a href={AUTH_PHOTO.credit.sourceUrl} target="_blank" rel="noreferrer" className="underline-offset-2 hover:text-white hover:underline">
-            {AUTH_PHOTO.credit.author}, {AUTH_PHOTO.credit.source}
-          </a>
-          ,{' '}
-          <a href={AUTH_PHOTO.credit.licenseUrl} target="_blank" rel="license noreferrer" className="underline-offset-2 hover:text-white hover:underline">
-            {AUTH_PHOTO.credit.license}
-          </a>
-          , {AUTH_PHOTO.credit.changes}.
-        </p>
+        <PhotoCreditLine credit={AUTH_PHOTO.credit} onDark />
       </section>
 
       <section className="flex flex-col justify-center px-6 py-10 sm:px-14 sm:py-12">

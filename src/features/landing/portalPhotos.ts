@@ -1,4 +1,5 @@
 import ruaDaAurora from '@/assets/portal/entrada/rua-da-aurora.webp';
+import type { PhotoCredit } from '@/components/ui/photoCredit';
 import olindaVista from '@/assets/portal/capa/olinda-vista.webp';
 import ponteCapibaribe from '@/assets/portal/capa/ponte-capibaribe.webp';
 import recifeAntigoCais from '@/assets/portal/capa/recife-antigo-cais.webp';
@@ -19,22 +20,13 @@ export const HERO_PHOTOS: PortalPhoto[] = [
   { src: olindaVista, alt: 'Vista do Recife a partir do alto de Olinda', place: 'Alto da Sé, Olinda' },
 ];
 
-export interface PhotoCredit {
-  subject: string;
-  author: string;
-  license: string;
-  licenseUrl: string;
-  source: string;
-  sourceUrl: string;
-  /** Exigido pelas licenças CC: dizer se a foto foi alterada. */
-  changes?: string;
-}
-
 /**
  * Créditos que a licença de alguma foto do portal público exige. As fotos do
  * Pexels dispensam crédito; uma foto CC entra aqui e aparece sozinha no rodapé.
  */
 export const PHOTO_CREDITS: PhotoCredit[] = [];
+
+export type { PhotoCredit };
 
 /**
  * Foto do painel da entrada e do cadastro, do Wikimedia Commons. A licença
@@ -45,7 +37,6 @@ export const AUTH_PHOTO: PortalPhoto & { credit: PhotoCredit } = {
   src: ruaDaAurora,
   alt: 'Rua da Aurora e a ponte Princesa Isabel sobre o rio Capibaribe, no Recife',
   credit: {
-    subject: 'Rua da Aurora',
     author: 'Hansfotos (Hans von Manteuffel)',
     license: 'CC BY-SA 4.0',
     licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0/deed.pt-br',
