@@ -240,7 +240,7 @@ const HomeContent = ({ account, calendar }: { account: Account; calendar: Semest
     >
       {!account.tutorialSeen && <TutorialInvite />}
 
-      <Section title="Calendário do semestre" description="As datas que valem para todas as suas turmas.">
+      <Section title="Calendário do semestre" compact>
         <SemesterDates calendar={calendar} />
       </Section>
 

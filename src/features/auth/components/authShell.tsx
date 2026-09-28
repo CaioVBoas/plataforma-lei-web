@@ -11,13 +11,11 @@ const PROMISES = [
 ];
 
 /**
- * Moldura da entrada e do cadastro: fundo claro de marca com dois círculos e o
+ * Moldura da entrada e do cadastro: fundo neutro e o
  * cartão dividido, com a promessa em petróleo à esquerda e o formulário à direita.
  */
 export const AuthShell = ({ children }: { children: ReactNode }) => (
-  <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-brand-50 px-4 py-10 sm:px-8">
-    <span aria-hidden="true" className="absolute -top-24 -left-24 size-80 rounded-full bg-brand-100" />
-    <span aria-hidden="true" className="absolute -right-32 -bottom-32 size-96 rounded-full bg-brand-100" />
+  <div className="relative flex min-h-screen flex-col items-center justify-center bg-canvas px-4 py-10 sm:px-8">
 
     <div className="relative mb-4 w-full max-w-[980px]">
       <Link to={paths.landing} className="inline-flex items-center gap-0.5 text-sm text-ink-2 hover:text-ink">
@@ -64,7 +62,7 @@ export const AuthShell = ({ children }: { children: ReactNode }) => (
 
 /** Aviso de portal ainda em construção, para organização e estudante. */
 export const SoonNotice = ({ title, text, children }: { title: string; text: string; children?: ReactNode }) => (
-  <div className="rounded-lg border border-fact-line bg-fact px-5 py-5">
+  <div className="rounded-lg border border-line px-5 py-5">
     <p className="text-[15px] font-semibold text-ink">{title}</p>
     <p className="mt-1.5 text-sm leading-relaxed text-ink-2">{text}</p>
     {children && <div className="mt-4 flex flex-wrap gap-2">{children}</div>}
