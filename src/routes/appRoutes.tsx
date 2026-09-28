@@ -7,6 +7,8 @@ import { paths } from './paths';
 import { RequireAuth } from './requireAuth';
 
 /* Cada tela vira um pedaço separado do bundle, carregado só quando o docente a abre. */
+const LandingPage = lazyPage(() => import('@/features/landing/landingPage'), 'LandingPage');
+const SignupPage = lazyPage(() => import('@/features/auth/signupPage'), 'SignupPage');
 const LoginPage = lazyPage(() => import('@/features/auth/loginPage'), 'LoginPage');
 const HomePage = lazyPage(() => import('@/features/home/homePage'), 'HomePage');
 const GuidePage = lazyPage(() => import('@/features/guide/guidePage'), 'GuidePage');
@@ -24,7 +26,9 @@ const AccountPage = lazyPage(() => import('@/features/account/accountPage'), 'Ac
 export const AppRoutes = () => (
   <Suspense fallback={<LoadingState />}>
     <Routes>
+      <Route path={paths.landing} element={<LandingPage />} />
       <Route path={paths.login} element={<LoginPage />} />
+      <Route path="/cadastro" element={<SignupPage />} />
 
       <Route element={<RequireAuth />}>
         <Route element={<PortalLayout />}>
@@ -43,7 +47,7 @@ export const AppRoutes = () => (
         </Route>
       </Route>
 
-      <Route path="*" element={<Navigate to={paths.home} replace />} />
+      <Route path="*" element={<Navigate to={paths.landing} replace />} />
     </Routes>
   </Suspense>
 );

@@ -35,6 +35,9 @@ Levantamento do que a plataforma faz hoje, do que foi verificado e do que ainda 
 | RF03 | Editar nome, departamento e telefone; e-mail só leitura | Parcial: salva no backend simulado |
 | RF04 | Sair limpa a sessão e o cache | Pronto |
 | RF05 | Recuperar senha | A fazer: chega com o login da UFPE |
+| RF05a | Portal público com o L.E.I., o Aperta o PL.E.I., os quatro passos e uma porta para cada perfil | Pronto |
+| RF05b | Entrada e cadastro com escolha de perfil; organização e estudante aparecem como "em breve" | Pronto |
+| RF05c | Cadastro do docente com nome, e-mail institucional, departamento e senha, entrando direto no Início | Parcial: salva no backend simulado |
 
 ### 2.2. Início
 
@@ -46,7 +49,9 @@ Levantamento do que a plataforma faz hoje, do que foi verificado e do que ainda 
 | RF09 | Sugestões do cardápio que combinam com turma com vaga | Pronto |
 | RF10 | Contador único no sino da barra superior: indicações, reservas abertas, demandas liberadas e etapas nos próximos 14 dias | Pronto |
 | RF10a | Avisos no portal (sino e página Avisos): o que pede decisão e as respostas das organizações às perguntas do docente | Pronto |
-| RF10b | Barra lateral recolhível e barra superior com avisos e conta | Pronto |
+| RF10b | Barra lateral recolhível e barra superior com avisos e conta; Avisos só pelo sino | Pronto |
+| RF10c | Calendário do semestre no Início: prazo para levar demandas, entregas e fim, com o próximo em destaque | Pronto |
+| RF10d | Todas as telas com a mesma largura e margens laterais | Pronto |
 
 ### 2.3. Cardápio e reserva
 
@@ -117,7 +122,7 @@ Cada regra do `fluxos.md` foi testada direto no backend simulado, incluindo os c
 | 12. Dúvida pela demanda | Pergunta vazia recusada; registrada como do docente, sem resposta; demanda em projeto não recebe pergunta | Pronto |
 | 13. Mais de um docente | Só e-mail institucional, sem repetir nem convidar a si mesmo; editar a disciplina mantém os colegas | Pronto |
 
-**Fluxos verificados no navegador (41 passos, sem erro no console), além das 30 verificações de regra no backend simulado:** indicação do L.E.I. no Início e na demanda (F6), pergunta à organização, condições e nível na demanda, turma abaixo do nível bloqueada, convite de colega na disciplina e coordenação compartilhada no projeto (F7), entrada e redirecionamento, Início (F4, F5, contador), cardápio (filtros e busca), F1 completo (reservar, levar, projeto criado na aba Plano, demanda fora do cardápio), F2 e F3 completos (plano, abertura, SIGAA com código, entregas, encerramento e histórico), desistência, liberar reserva, aviso, disciplinas (cadastrar, editar pelo kebab, remover, abas, link de compatíveis), organizações (linha e link da contagem), projetos (abas, linha, copiar plano), menu no celular, sino e página de avisos, barra lateral recolhida, menu da conta, conta e saída.
+**Fluxos verificados no navegador (42 passos, sem erro no console), além das 30 verificações de regra no backend simulado:** indicação do L.E.I. no Início e na demanda (F6), pergunta à organização, condições e nível na demanda, turma abaixo do nível bloqueada, convite de colega na disciplina e coordenação compartilhada no projeto (F7), entrada e redirecionamento, Início (F4, F5, contador), cardápio (filtros e busca), F1 completo (reservar, levar, projeto criado na aba Plano, demanda fora do cardápio), F2 e F3 completos (plano, abertura, SIGAA com código, entregas, encerramento e histórico), desistência, liberar reserva, aviso, disciplinas (cadastrar, editar pelo kebab, remover, abas, link de compatíveis), organizações (linha e link da contagem), projetos (abas, linha, copiar plano), menu no celular, sino e página de avisos, barra lateral recolhida, menu da conta, conta e saída, portal público com perfis, entrada por perfil e cadastro do docente.
 
 ---
 

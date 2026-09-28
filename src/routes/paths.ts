@@ -1,10 +1,16 @@
+import type { UserRole } from '@/features/auth/types';
+
 /** Toda URL do portal nasce aqui. Componentes nunca montam caminho à mão. */
 
 export type ProjectTab = 'etapas' | 'plano' | 'demanda';
 export type DemandTab = 'problema' | 'competencias' | 'perguntas' | 'inspiracao' | 'organizacao';
 
 export const paths = {
+  /** Portal público: apresenta o L.E.I. e leva cada perfil para a entrada ou o cadastro. */
+  landing: '/',
   login: '/entrar',
+  loginAs: (role: UserRole) => (role === 'docente' ? '/entrar' : `/entrar?perfil=${role}`),
+  signup: (role?: UserRole) => (role ? `/cadastro?perfil=${role}` : '/cadastro'),
   home: '/inicio',
   guide: '/como-funciona',
   /** Tudo que pede decisão ou é novidade para o docente. */

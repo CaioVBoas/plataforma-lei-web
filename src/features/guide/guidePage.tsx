@@ -136,7 +136,6 @@ export const GuidePage = () => {
   return (
     <Page
       title="Como funciona"
-      width="narrow"
       subtitle="Organizações de fora da universidade publicam problemas reais no cardápio. Você reserva um, leva para uma disciplina, e a turma resolve com a organização durante o semestre."
     >
       <Section title="Em cinco passos">

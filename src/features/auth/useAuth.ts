@@ -5,6 +5,12 @@ import * as authApi from './authApi';
 
 export const useLogin = () => useMutation({ mutationFn: authApi.login });
 
+/** O cadastro troca a conta: o cache da anterior não pode sobrar. */
+export const useSignup = () => {
+  const queryClient = useQueryClient();
+  return useMutation({ mutationFn: authApi.signup, onSuccess: () => queryClient.clear() });
+};
+
 /** Sair limpa o cache para que a próxima conta não veja dados da anterior. */
 export const useLogout = () => {
   const queryClient = useQueryClient();

@@ -71,7 +71,6 @@ Só a próxima etapa pendente tem ação. As outras mostram a data prevista ou a
 | Item | Para quê | Pergunta que responde |
 | --- | --- | --- |
 | **Início** | O que fazer agora: reservas a decidir e etapas dos projetos | "O que eu preciso fazer hoje?" |
-| **Avisos** | Indicações, reservas, prazos, demandas liberadas e respostas das organizações | "O que mudou e o que pede decisão minha?" |
 | **Cardápio** | Escolher e reservar uma demanda | "Que problema a minha turma pode resolver?" |
 | **Projetos** | Acompanhar as etapas | "Em que pé estão os meus projetos?" |
 | **Disciplinas** | Dizer o que cada turma sabe fazer | "Quais turmas podem receber projeto?" |
@@ -79,7 +78,9 @@ Só a próxima etapa pendente tem ação. As outras mostram a data prevista ou a
 | **Como funciona** | Tutorial | "Como isso funciona?" |
 | **Minha conta** | Dados do docente | "Meus dados estão certos?" |
 
-A barra lateral recolhe para só ícones (a escolha fica no navegador). A barra superior tem o sino de avisos e a conta, com Minha conta e Sair. O único contador do portal fica no sino e soma o que pede decisão: indicações do L.E.I., reservas abertas, demandas que liberaram para quem pediu aviso e etapas com prazo nos próximos 14 dias. Respostas das organizações aparecem como novidade, sem contar.
+Avisos não fica na barra lateral: o sino da barra superior abre os mais recentes e leva à página Avisos. O Início mostra também o calendário do semestre (prazo para levar demandas, entregas e fim), com o próximo marco em destaque. A barra lateral recolhe para só ícones (a escolha fica no navegador). A barra superior tem o sino de avisos e a conta, com Minha conta e Sair. O único contador do portal fica no sino e soma o que pede decisão: indicações do L.E.I., reservas abertas, demandas que liberaram para quem pediu aviso e etapas com prazo nos próximos 14 dias. Respostas das organizações aparecem como novidade, sem contar.
+
+**Portal público.** Antes da plataforma, a página inicial (`/`) apresenta o L.E.I. e o Aperta o PL.E.I., explica o caminho em quatro passos e abre uma porta para cada perfil: organização, docente e estudante. Entrada e cadastro perguntam primeiro como a pessoa participa. Só o docente tem portal hoje; organização e estudante veem "em breve" e como funciona enquanto isso. O cadastro do docente pede nome, e-mail institucional, departamento e senha e já entra no Início.
 
 ## 6. Fluxos
 

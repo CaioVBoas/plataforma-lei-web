@@ -16,7 +16,7 @@ export const NotificationsPage = () => {
   const news = notifications.filter((item) => !item.actionable);
 
   return (
-    <Page title="Avisos" width="narrow">
+    <Page title="Avisos">
       {notifications.length === 0 ? (
         <EmptyState
           title="Nenhum aviso"

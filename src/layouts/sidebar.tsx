@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { BrandMark, BrandSymbol } from '@/components/ui/brandMark';
-import { BellIcon, BookIcon, BuildingIcon, FolderIcon, HomeIcon, QuestionIcon, TrayIcon, UserIcon } from '@/components/ui/icons';
+import { BookIcon, BuildingIcon, FolderIcon, HomeIcon, QuestionIcon, TrayIcon, UserIcon } from '@/components/ui/icons';
 import { paths } from '@/routes/paths';
 import { cn } from '@/utils/cn';
 
@@ -34,7 +34,6 @@ const NavItem = ({ to, icon, label, active, collapsed, onNavigate }: NavItemProp
 /** A ordem da navegação segue o caminho do docente: o que fazer, escolher, acompanhar e a base. */
 const NAVIGATION = [
   { to: paths.home, label: 'Início', icon: <HomeIcon /> },
-  { to: paths.notifications, label: 'Avisos', icon: <BellIcon /> },
   { to: paths.menu, label: 'Cardápio', icon: <TrayIcon /> },
   { to: paths.projects, label: 'Projetos', icon: <FolderIcon /> },
   { to: paths.disciplines, label: 'Disciplinas', icon: <BookIcon /> },

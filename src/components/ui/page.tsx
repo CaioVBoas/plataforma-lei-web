@@ -16,18 +16,20 @@ interface PageProps {
   /** Substitui o cabeçalho padrão por um bloco próprio, como a boas-vindas do Início. */
   hero?: ReactNode;
   actions?: ReactNode;
-  width?: 'default' | 'narrow';
   children: ReactNode;
 }
 
+/** Mesma zona de respiro em todas as telas: largura máxima e margens laterais iguais. */
+export const PAGE_FRAME = 'mx-auto w-full max-w-[1280px] px-4 pt-6 pb-20 sm:px-6 sm:pt-8 lg:px-8';
+
 /** Casca de toda tela do portal: voltar, título grande, subtítulo e ações à direita. */
-export const Page = ({ title, eyebrow, subtitle, meta, leading, back, hero, actions, width = 'default', children }: PageProps) => {
+export const Page = ({ title, eyebrow, subtitle, meta, leading, back, hero, actions, children }: PageProps) => {
   useEffect(() => {
     document.title = `${title} · Aperta o PLEI`;
   }, [title]);
 
   return (
-    <div className={cn('mx-auto w-full px-4 pt-6 pb-20 sm:px-6 sm:pt-8 lg:px-8', width === 'default' ? 'max-w-[1280px]' : 'max-w-[820px]')}>
+    <div className={PAGE_FRAME}>
       {back && (
         // Voltar é navegação, não ação: texto cinza escuro, sem peso de botão.
         <Link to={back.to} className="-ml-1.5 mb-4 inline-flex items-center gap-0.5 text-sm text-ink-2 hover:text-ink">

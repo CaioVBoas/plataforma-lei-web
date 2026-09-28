@@ -70,7 +70,6 @@ export const AccountPage = () => {
   return (
     <Page
       title="Minha conta"
-      width="narrow"
       hero={
         accountQuery.data && (
           <ProfileHeader
