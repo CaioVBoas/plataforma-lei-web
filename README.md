@@ -1,4 +1,4 @@
-# Aperta o PLEI · Portal do Docente
+# Aperta o PL.E.I. · Portal público e portal do docente
 
 Organizações de fora da UFPE publicam problemas reais. O docente do CIn leva um deles para uma disciplina que está lecionando, e a turma resolve o problema com a organização dentro do semestre.
 
@@ -18,18 +18,21 @@ npm run dev
 | `npm run build` | Typecheck (`tsc -b`) + build de produção |
 | `npm run lint` | Oxlint |
 
-Para entrar, use qualquer e-mail `@ufpe.br` ou `@cin.ufpe.br` com qualquer senha.
+A página inicial (`/`) é o portal público do L.E.I. Para entrar como docente, use qualquer e-mail `@ufpe.br` ou `@cin.ufpe.br` com qualquer senha, ou crie uma conta em **Criar conta**. Organização e estudante aparecem como "em breve".
 
 ## O produto em uma tela
 
 | Item | Pergunta que responde |
 | --- | --- |
+| Portal público (`/`) | O que é o L.E.I. e como eu participo? |
 | Início | O que eu preciso fazer hoje? |
+| Avisos (sino da barra superior) | O que mudou e o que pede decisão minha? |
 | Cardápio | Que problema a minha turma pode resolver? |
 | Projetos | Em que pé estão os meus projetos? |
 | Disciplinas | Quais turmas podem receber projeto? |
 | Organizações | Com quem eu vou trabalhar? |
 | Como funciona | Tutorial dentro do portal |
+| Minha conta | Meus dados e minha foto |
 
 No cardápio, o docente reserva uma demanda por 7 dias enquanto decide e depois a leva para uma disciplina. Todo projeto passa pelas mesmas seis etapas: revisar o plano, reunião de abertura, registro no SIGAA, entrega parcial, entrega final e encerramento. O estado do projeto (planejamento, em andamento, concluído) é calculado a partir delas.
 
@@ -43,6 +46,8 @@ React 19, TypeScript, Vite, Tailwind CSS v4, React Router, TanStack Query, React
 src/
 ├── domain/          # Entidades e regras puras, sem React: calendário, reserva, compatibilidade, ciclo do projeto
 ├── assets/brand/    # Logotipo oficial em SVG (horizontal, empilhado, centralizado, caixa alta e símbolo). Ver o README da pasta
+├── assets/portal/   # Fotos do portal público, do Início e da entrada, com origem e crédito no README
+├── assets/covers/   # Capas de organizações e demandas, pelo id; crédito em lib/covers.ts
 ├── components/
 │   ├── ui/          # Primitivos visuais sem regra de negócio (Page, ItemList, ActionMenu, UnderlineTabs, Modal…)
 │   └── feedback/    # Aviso (toast) e estados de carregamento e erro
@@ -54,10 +59,10 @@ src/
 │       ├── types.ts
 │       ├── components/  # Componentes da feature
 │       └── utils/       # Apresentação: textos, rótulos e agrupamentos
-├── layouts/         # Barra lateral e casca do portal
+├── layouts/         # Casca do portal: barra lateral recolhível, barra superior com avisos e conta
 ├── mocks/           # Backend simulado: seed, banco em memória e handlers
 ├── routes/          # Rotas, caminhos (paths.ts) e guarda de autenticação
-├── lib/             # Cliente HTTP e chaves do React Query
+├── lib/             # Cliente HTTP, chaves do React Query e capas (covers.ts)
 └── index.css        # Tokens visuais no @theme do Tailwind
 ```
 
@@ -68,8 +73,10 @@ src/
 | `projects` | `list/` (lista de projetos), `workspace/` (próximo passo, etapas, plano e organização) e `shared/` (o que outras telas usam) |
 | `disciplines` | Disciplinas, cadastro e detalhe com as demandas que combinam |
 | `organizations` | Organizações e detalhe com contato e histórico |
+| `landing` | Portal público: abertura com fotos, perfis, boas-vindas, carrossel e como funciona |
+| `notifications` | Sino e página de avisos, derivados do cardápio, dos projetos e do calendário |
 | `guide` | Como funciona |
-| `account`, `auth`, `calendar` | Conta, entrada e calendário do semestre |
+| `account`, `auth`, `calendar` | Conta com foto, entrada e cadastro por perfil, calendário do semestre |
 
 ### Regras que valem para o projeto todo
 
@@ -80,6 +87,7 @@ src/
 - **Taxonomia de elementos:** rótulo estático e estado (livre, reservada, combina, cabe no semestre) são `Tag`, com `tone` suave dos tokens, link de texto usa `textLinkClassName`, ação é `Button` (ou `buttonClassName` num `Link`) e menu de ações é `ActionMenu`. Contagem é texto puro, nunca pílula. Detalhes na seção 7 do [`docs/fluxos.md`](docs/fluxos.md).
 - **Listas usam `ItemList` e `Item`:** âncora de 40px, até três linhas e linha inteira clicável. Link ou botão dentro do item leva `aboveRowLink`.
 - **Datas só com `formatShortDate`** ("21 ago 2026").
+- **Fotos com licença que exige crédito** levam o crédito junto da foto (`PhotoCreditLine`). Fotos esperando crédito ou autorização ficam em `image/pendentes`, fora do código.
 - **Marca:** use só os SVGs de `src/assets/brand` pelo componente `BrandMark`; o favicon é o símbolo `petroleo-600`.
 - **Identidade visual:** Verde Petróleo (`brand`, `fact`, `monogram`, `nav-active`) para identidade, Azul Tecnológico (`accent`) para ação e Laranja Social (`reserve`) só na reserva. Regras 13 a 16 da seção 7 do `docs/fluxos.md`.
 - **Cor, fonte, raio e movimento vêm dos tokens** do `index.css`. Não use hex solto nos componentes.
@@ -105,6 +113,6 @@ export const getMenu = () => api.get<Demand[]>('/menu').then((response) => respo
 
 - **Propor um projeto a uma organização**, sem partir de uma demanda do cardápio, ainda não tem fluxo. Por isso a página da organização não tem esse botão.
 - **Ementa, carga horária e nível da disciplina**, e as ações de duplicar, pausar e arquivar disciplina, dependem do modelo `Course` da API (seção 5 do plano de reestruturação).
-- O **portal das organizações** (publicar demanda, acompanhar o projeto) ainda não foi desenhado.
+- Os **portais das organizações e dos estudantes** (publicar demanda, acompanhar o projeto, participar da turma) ainda não foram desenhados; entrada e cadastro já mostram esses perfis como "em breve".
 - O **plano gerado** vem pronto do seed. Na versão real ele sai de um modelo de linguagem alimentado pela demanda e pela disciplina.
 - O **prazo de vinculação** e o calendário do semestre precisam vir do calendário acadêmico oficial.

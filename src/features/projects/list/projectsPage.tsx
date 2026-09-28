@@ -94,7 +94,7 @@ const ProjectTableRow = ({ item, today }: { item: ProjectListItem; today: IsoDat
 };
 
 const ProjectTable = ({ items, today }: { items: ProjectListItem[]; today: IsoDate }) => (
-  <div className="overflow-x-auto">
+  <div className="relative overflow-x-auto">
     <table className="w-full min-w-[760px] table-fixed border-collapse text-left">
       <colgroup>
         <col className="w-[38%]" />
