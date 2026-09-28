@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { BrandMark, BrandSymbol } from '@/components/ui/brandMark';
-import { BookIcon, BuildingIcon, FolderIcon, HomeIcon, QuestionIcon, TrayIcon, UserIcon } from '@/components/ui/icons';
+import { ArrowUpRightIcon, BookIcon, BuildingIcon, FolderIcon, HomeIcon, QuestionIcon, TrayIcon, UserIcon } from '@/components/ui/icons';
 import { paths } from '@/routes/paths';
 import { cn } from '@/utils/cn';
 
@@ -41,6 +41,7 @@ const NAVIGATION = [
 ];
 
 const FOOTER = [
+  { to: paths.landing, label: 'Portal do L.E.I.', icon: <ArrowUpRightIcon /> },
   { to: paths.guide, label: 'Como funciona', icon: <QuestionIcon /> },
   { to: paths.account, label: 'Minha conta', icon: <UserIcon /> },
 ];
@@ -68,7 +69,7 @@ export const Sidebar = ({ collapsed, onNavigate }: SidebarProps) => {
 
       <div className="mt-auto flex flex-col gap-0.5 border-t border-line pt-3">
         {FOOTER.map((item) => (
-          <NavItem key={item.to} {...item} active={pathname.startsWith(item.to)} collapsed={collapsed} onNavigate={onNavigate} />
+          <NavItem key={item.to} {...item} active={item.to !== paths.landing && pathname.startsWith(item.to)} collapsed={collapsed} onNavigate={onNavigate} />
         ))}
       </div>
     </div>
