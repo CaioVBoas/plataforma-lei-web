@@ -1,7 +1,9 @@
 import { useRef, useState } from 'react';
 import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { QueryView } from '@/components/feedback/queryStates';
+import { CoverBanner } from '@/components/ui/coverBanner';
 import { Page } from '@/components/ui/page';
+import { demandCover } from '@/lib/covers';
 import { UnderlineTabs } from '@/components/ui/underlineTabs';
 import { Tag } from '@/components/ui/tag';
 import { projectStage } from '@/domain/projectLifecycle';
@@ -38,6 +40,7 @@ const ProjectView = ({ project, calendar }: { project: Project; calendar: Semest
   const coTeachers = (discipline?.coTeachers ?? []).map((teacher) => teacher.name ?? teacher.email);
 
   const tabContentRef = useRef<HTMLDivElement>(null);
+  const cover = demandCover(project.demandId, project.organization.id);
 
   const changeTab = (next: ProjectTab) => setSearchParams(next === 'etapas' ? {} : { aba: next }, { replace: true });
 
@@ -73,6 +76,7 @@ const ProjectView = ({ project, calendar }: { project: Project; calendar: Semest
       }
       meta={coTeachers.length > 0 ? `Coordenação compartilhada com ${joinWithAnd(coTeachers)}` : undefined}
     >
+      {cover && <CoverBanner cover={cover} />}
       <MilestoneTrack milestones={project.milestones} className="mb-5" />
       <NextStepCard project={project} today={calendar.today} onAct={act} />
 

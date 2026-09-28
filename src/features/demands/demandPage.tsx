@@ -10,7 +10,7 @@ import type { SemesterCalendar } from '@/domain/types';
 import { useCalendar } from '@/features/calendar/useCalendar';
 import { useCurrentDisciplines } from '@/features/disciplines/useDisciplines';
 import type { DisciplineWithUsage } from '@/features/disciplines/types';
-import { PhotoCreditLine } from '@/components/ui/photoCredit';
+import { CoverBanner } from '@/components/ui/coverBanner';
 import { demandCover } from '@/lib/covers';
 import { paths } from '@/routes/paths';
 import { AdoptDemandModal } from './components/adoptDemandModal';
@@ -49,16 +49,7 @@ const DemandView = ({ detail, disciplines, calendar }: { detail: DemandDetail; d
       back={detail.projectId ? { to: paths.project(detail.projectId), label: 'Projeto' } : { to: paths.menu, label: 'Cardápio' }}
       subtitle={demand.problem}
     >
-      {cover && (
-        <figure className="relative mb-8">
-          <img src={cover.src} alt="" className="block h-48 w-full rounded-lg object-cover sm:h-60" />
-          {cover.credit && (
-            <figcaption className="absolute right-2 bottom-2 max-w-[90%] rounded-sm bg-black/55 px-2 py-1">
-              <PhotoCreditLine credit={cover.credit} onDark />
-            </figcaption>
-          )}
-        </figure>
-      )}
+      {cover && <CoverBanner cover={cover} />}
       {demand.invitation && !detail.projectId && <InvitationNote invitation={demand.invitation} />}
 
       <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_300px]">

@@ -28,9 +28,7 @@ export const DemandTab = ({ project }: { project: Project }) => {
 
   return (
     <div>
-      <p className="rounded-lg border border-fact-line bg-fact px-5 py-4 text-[17px] leading-snug font-medium text-ink">{demand.problem}</p>
-
-      <div className="mt-6">
+      <div>
         <Block title="O problema">
           <p className="text-[15px] leading-relaxed text-ink-2">{demand.description}</p>
         </Block>
