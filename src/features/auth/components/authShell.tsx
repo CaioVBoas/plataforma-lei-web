@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { BrandMark } from '@/components/ui/brandMark';
 import { BookIcon, CheckIcon, ChevronLeftIcon, TrayIcon } from '@/components/ui/icons';
+import { AUTH_PHOTO } from '@/features/landing/portalPhotos';
 import { paths } from '@/routes/paths';
 
 const PROMISES = [
@@ -11,8 +12,8 @@ const PROMISES = [
 ];
 
 /**
- * Moldura da entrada e do cadastro: fundo neutro e o
- * cartão dividido, com a promessa em petróleo à esquerda e o formulário à direita.
+ * Moldura da entrada e do cadastro: fundo neutro e o cartão dividido, com a
+ * foto da Rua da Aurora e a promessa à esquerda e o formulário à direita.
  */
 export const AuthShell = ({ children }: { children: ReactNode }) => (
   <div className="relative flex min-h-screen flex-col items-center justify-center bg-canvas px-4 py-10 sm:px-8">
@@ -25,7 +26,9 @@ export const AuthShell = ({ children }: { children: ReactNode }) => (
     </div>
 
     <div className="relative grid w-full max-w-[980px] overflow-hidden rounded-lg bg-surface shadow-sheet lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
-      <section className="hidden flex-col justify-between gap-12 bg-brand px-10 py-10 lg:flex">
+      <section className="relative isolate hidden flex-col justify-between gap-10 overflow-hidden bg-brand-900 px-10 pt-10 pb-6 lg:flex">
+        <img src={AUTH_PHOTO.src} alt={AUTH_PHOTO.alt} className="absolute inset-0 -z-10 size-full object-cover" />
+        <div aria-hidden="true" className="absolute inset-0 -z-10 bg-black/55" />
         <Link to={paths.landing}>
           <BrandMark onDark className="h-10" />
         </Link>
@@ -34,18 +37,28 @@ export const AuthShell = ({ children }: { children: ReactNode }) => (
           <ul className="mt-9 space-y-5">
             {PROMISES.map(({ icon, title, text }) => (
               <li key={title} className="flex items-start gap-3.5">
-                <span aria-hidden="true" className="flex size-9 shrink-0 items-center justify-center rounded-full bg-brand-700 text-brand-on-dark">
+                <span aria-hidden="true" className="flex size-9 shrink-0 items-center justify-center rounded-full bg-brand text-white">
                   {icon}
                 </span>
                 <span>
                   <span className="block text-[15px] font-semibold text-white">{title}</span>
-                  <span className="block text-sm leading-snug text-brand-100">{text}</span>
+                  <span className="block text-sm leading-snug text-white/80">{text}</span>
                 </span>
               </li>
             ))}
           </ul>
         </div>
-        <p className="text-[13px] text-brand-100">L.E.I. · Centro de Informática da UFPE</p>
+        <p className="text-[11px] leading-snug text-white/65">
+          Foto {AUTH_PHOTO.credit.subject}:{' '}
+          <a href={AUTH_PHOTO.credit.sourceUrl} target="_blank" rel="noreferrer" className="underline-offset-2 hover:text-white hover:underline">
+            {AUTH_PHOTO.credit.author}, {AUTH_PHOTO.credit.source}
+          </a>
+          ,{' '}
+          <a href={AUTH_PHOTO.credit.licenseUrl} target="_blank" rel="license noreferrer" className="underline-offset-2 hover:text-white hover:underline">
+            {AUTH_PHOTO.credit.license}
+          </a>
+          , {AUTH_PHOTO.credit.changes}.
+        </p>
       </section>
 
       <section className="flex flex-col justify-center px-6 py-10 sm:px-14 sm:py-12">
