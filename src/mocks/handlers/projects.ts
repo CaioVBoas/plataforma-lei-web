@@ -22,6 +22,7 @@ export const adoptDemand = ({ demandId, disciplineId, teams }: AdoptDemandInput)
 
   if (!isMyReservation(demand)) throw new RuleError('Reserve a demanda antes de levar para uma disciplina.');
   if (!discipline.isCurrent) throw new RuleError(`Só disciplinas de ${db.calendar.id} recebem demandas.`);
+  // Cobertura abaixo da metade não bloqueia (regra 9): a tela avisa e o docente confirma. Só a altura do curso impede.
   if (isAboveLevel(demand, discipline)) {
     throw new RuleError(`Esta demanda pede mais do que a altura do curso de ${discipline.name}. Se a turma dá conta, ajuste a disciplina.`);
   }

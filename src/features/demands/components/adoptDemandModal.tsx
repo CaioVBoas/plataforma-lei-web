@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/components/feedback/toastContext';
 import { Button } from '@/components/ui/button';
 import { PlusIcon } from '@/components/ui/icons';
+import { Tag } from '@/components/ui/tag';
 import { Modal } from '@/components/ui/modal';
 import { Stepper } from '@/components/ui/stepper';
 import { formatShortDate } from '@/domain/calendar';
@@ -16,7 +17,7 @@ import { LEVEL_COPY, slotsLabel } from '@/features/disciplines/utils/disciplineP
 import { useAdoptDemand } from '@/features/projects/shared/hooks/useAdoptDemand';
 import { paths } from '@/routes/paths';
 import { cn } from '@/utils/cn';
-import { pluralize } from '@/utils/format';
+import { joinWithAnd, pluralize } from '@/utils/format';
 
 const DEFAULT_TEAMS = 2;
 
@@ -44,7 +45,10 @@ const DisciplineOption = ({ match, demand, selected, name, onSelect }: Disciplin
     >
       <input type="radio" name={name} checked={selected} disabled={full} onChange={onSelect} className="mt-1 accent-accent" />
       <span className="min-w-0 flex-1">
-        <span className="block text-[15px] font-medium text-ink">{discipline.name}</span>
+        <span className="flex flex-wrap items-center gap-2">
+          <span className="text-[15px] font-medium text-ink">{discipline.name}</span>
+          {!full && !match.fits && <Tag tone="caution">Não combina</Tag>}
+        </span>
         <span className="mt-0.5 block text-[13px] text-ink-2">
           Cobre {match.covered.length} de {demand.skills.length} competências ·{' '}
           {match.aboveLevel ? `Acima do ${LEVEL_COPY[discipline.level].label.toLowerCase()}` : slotsLabel(discipline)}
@@ -85,7 +89,11 @@ export const AdoptDemandModal = ({ demand, disciplines, calendar, onClose }: Ado
   const firstAvailable = ranked.find(canReceive);
   const [selectedId, setSelectedId] = useState(firstAvailable?.discipline.id);
   const [creating, setCreating] = useState(disciplines.length === 0);
-  const selected = ranked.find((match) => match.discipline.id === selectedId)?.discipline;
+  const selectedMatch = ranked.find((match) => match.discipline.id === selectedId);
+  const selected = selectedMatch?.discipline;
+  // Cobertura baixa não bloqueia (regra 9): o docente pode levar, mas confirma que viu o aviso.
+  const [acknowledged, setAcknowledged] = useState(false);
+  const needsAck = Boolean(selectedMatch && !selectedMatch.fits);
   const teamLimit = selected ? maxTeams(selected) : 1;
   const [teams, setTeams] = useState(DEFAULT_TEAMS);
   const effectiveTeams = Math.min(teams, teamLimit);
@@ -152,7 +160,7 @@ export const AdoptDemandModal = ({ demand, disciplines, calendar, onClose }: Ado
           <Button variant="secondary" onClick={onClose}>
             Cancelar
           </Button>
-          <Button variant="primary" disabled={!selected || adopt.isPending} onClick={confirm}>
+          <Button variant="primary" disabled={!selected || (needsAck && !acknowledged) || adopt.isPending} onClick={confirm}>
             Criar projeto
           </Button>
         </>
@@ -168,7 +176,10 @@ export const AdoptDemandModal = ({ demand, disciplines, calendar, onClose }: Ado
               demand={demand}
               name={`${formId}-discipline`}
               selected={match.discipline.id === selectedId}
-              onSelect={() => setSelectedId(match.discipline.id)}
+              onSelect={() => {
+                setSelectedId(match.discipline.id);
+                setAcknowledged(false);
+              }}
             />
           ))}
         </div>
@@ -180,6 +191,21 @@ export const AdoptDemandModal = ({ demand, disciplines, calendar, onClose }: Ado
           Cadastrar outra disciplina
         </Button>
       </fieldset>
+
+      {needsAck && selectedMatch && (
+        <div role="alert" className="mt-5 rounded-md bg-caution-soft px-4 py-3.5">
+          <p className="text-sm font-medium text-caution">Esta demanda não serve para {selectedMatch.discipline.name}</p>
+          <p className="mt-1 text-[13px] leading-relaxed text-ink-2">
+            A turma cobre {selectedMatch.covered.length} de {demand.skills.length} competências pedidas
+            {selectedMatch.missing.length > 0 && ` e não trabalha ${joinWithAnd(selectedMatch.missing)}`}. Dá para levar, mas o resultado com a organização fica
+            por sua conta.
+          </p>
+          <label className="mt-3 flex cursor-pointer items-start gap-2.5 text-[13px] text-ink">
+            <input type="checkbox" checked={acknowledged} onChange={(event) => setAcknowledged(event.target.checked)} className="mt-0.5 accent-accent" />
+            Entendo e quero levar para esta turma mesmo assim.
+          </label>
+        </div>
+      )}
 
       {selected && (
         <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
