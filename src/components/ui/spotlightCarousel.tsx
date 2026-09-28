@@ -26,9 +26,9 @@ const ARROW = 'flex size-10 shrink-0 items-center justify-center rounded-full bo
 
 /**
  * Carrossel em destaque: o cartão do meio em petróleo, os vizinhos esmaecidos,
- * setas e pontos. Usado no portal ("O que você encontra") e nas regras do Como funciona.
+ * setas e pontos. Usado no portal, em "O que você encontra na plataforma".
  */
-export const SpotlightCarousel = ({ items, label, wide }: { items: SpotlightItem[]; label: string; wide?: boolean }) => {
+export const SpotlightCarousel = ({ items, label }: { items: SpotlightItem[]; label: string }) => {
   const [active, setActive] = useState(0);
   const count = items.length;
   const at = (offset: number) => items[(active + offset + count) % count];
@@ -45,10 +45,7 @@ export const SpotlightCarousel = ({ items, label, wide }: { items: SpotlightItem
         {count > 2 && <SideCard item={at(-1)} onSelect={() => move(-1)} />}
         <div
           aria-live="polite"
-          className={cn(
-            'flex min-h-[260px] w-full flex-col items-center justify-center rounded-lg bg-brand px-7 py-8 text-center text-white shadow-sheet',
-            wide ? 'max-w-[400px]' : 'max-w-[320px]',
-          )}
+          className="flex min-h-[260px] w-full max-w-[320px] flex-col items-center justify-center rounded-lg bg-brand px-7 py-8 text-center text-white shadow-sheet"
         >
           <span className="flex size-14 items-center justify-center rounded-full bg-brand-700">{current.icon}</span>
           <p className="mt-5 text-[18px] font-semibold">{current.title}</p>

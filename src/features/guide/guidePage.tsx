@@ -2,7 +2,6 @@ import { useEffect, useState, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { buttonClassName } from '@/components/ui/buttonStyles';
 import { ArrowRightIcon, BookmarkIcon, CheckIcon, ChevronDownIcon, FolderIcon, TrayIcon } from '@/components/ui/icons';
-import { SpotlightCarousel, type SpotlightItem } from '@/components/ui/spotlightCarousel';
 import { Page, Section } from '@/components/ui/page';
 import { formatShortDate } from '@/domain/calendar';
 import { MILESTONE_ORDER, projectStage } from '@/domain/projectLifecycle';
@@ -126,67 +125,101 @@ const MILESTONE_TIMING: Record<MilestoneId, string> = {
   closing: 'Fim do semestre',
 };
 
-/**
- * As seis etapas de cima para baixo, todas à vista: número no trilho, o que
- * acontece e quando. Diferente do caminho, aqui não há o que escolher.
- */
-const Stages = () => (
-  <ol className="relative">
-    <span aria-hidden="true" className="absolute top-3 bottom-3 left-[15px] w-px bg-line-strong" />
-    {MILESTONE_ORDER.map((id, index) => (
-      <li key={id} className="relative flex gap-4 pb-6 last:pb-0">
-        <span className="relative flex size-8 shrink-0 items-center justify-center rounded-full bg-surface text-[13px] font-semibold text-brand-strong tabular-nums ring-1 ring-line-strong">
-          {index + 1}
-        </span>
-        <div className="min-w-0 flex-1 pt-1">
-          <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-0.5">
-            <p className="text-[15px] font-semibold text-ink">{MILESTONE_COPY[id].title}</p>
-            <p className="text-[13px] text-ink-3">{MILESTONE_TIMING[id]}</p>
-          </div>
-          <p className="mt-0.5 text-sm leading-relaxed text-ink-2">{MILESTONE_COPY[id].description}</p>
-        </div>
-      </li>
-    ))}
-  </ol>
-);
+/** Em que fase o projeto fica em cada etapa, dito uma vez em cada troca. */
+const PHASE_START: Partial<Record<MilestoneId, string>> = { plan: 'Planejamento', midterm: 'Em andamento', closing: 'Concluído' };
 
-const RULES: SpotlightItem[] = [
+/**
+ * As seis etapas de cima para baixo. Clicar numa abre o que acontece nela;
+ * as outras ficam fechadas, só com o título e o prazo.
+ */
+const Stages = () => {
+  const [open, setOpen] = useState<MilestoneId>('plan');
+
+  return (
+    <ol className="overflow-hidden rounded-lg border border-line">
+      {MILESTONE_ORDER.map((id, index) => {
+        const current = id === open;
+        const phase = PHASE_START[id];
+        return (
+          <li key={id} className="border-t border-line first:border-t-0">
+            {phase && <p className="bg-canvas px-5 py-1.5 text-[12px] font-semibold text-ink-2">{phase}</p>}
+            <button
+              type="button"
+              onClick={() => setOpen(id)}
+              aria-expanded={current}
+              className={cn('flex w-full items-start gap-4 px-5 py-4 text-left transition-colors', current ? 'bg-surface' : 'hover:bg-canvas')}
+            >
+              <span
+                className={cn(
+                  'flex size-8 shrink-0 items-center justify-center rounded-full text-[13px] font-semibold tabular-nums transition-colors',
+                  current ? 'bg-brand text-white' : 'bg-fill text-ink-2',
+                )}
+              >
+                {index + 1}
+              </span>
+              <span className="min-w-0 flex-1 pt-1">
+                <span className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-0.5">
+                  <span className={cn('text-[15px] text-ink', current ? 'font-semibold' : 'font-medium')}>{MILESTONE_COPY[id].title}</span>
+                  <span className={cn('text-[13px]', current ? 'font-medium text-brand-strong' : 'text-ink-3')}>{MILESTONE_TIMING[id]}</span>
+                </span>
+                {current && <span className="mt-1.5 block text-sm leading-relaxed text-ink-2 animate-fade-in">{MILESTONE_COPY[id].description}</span>}
+              </span>
+            </button>
+          </li>
+        );
+      })}
+    </ol>
+  );
+};
+
+const RULE_GROUPS: { icon: ReactNode; title: string; rules: string[] }[] = [
   {
-    icon: <BookmarkIcon size={24} />,
+    icon: <BookmarkIcon size={20} />,
     title: 'Reserva',
-    body: (
-      <ul className="space-y-2">
-        <li>
-          Vale {RESERVATION_DAYS} dias, até {MAX_ACTIVE_RESERVATIONS} por docente. Se não virar projeto, volta sozinha para o cardápio.
-        </li>
-        <li>Reservada por um colega, aparece com o nome dele, e você pode pedir aviso para quando voltar.</li>
-        <li>Cada demanda vai para uma única turma.</li>
-      </ul>
-    ),
+    rules: [
+      `Vale ${RESERVATION_DAYS} dias, até ${MAX_ACTIVE_RESERVATIONS} por docente. Se não virar projeto, volta sozinha para o cardápio.`,
+      'Reservada por um colega, aparece com o nome dele, e você pode pedir aviso para quando voltar.',
+      'Cada demanda vai para uma única turma.',
+    ],
   },
   {
-    icon: <CheckIcon size={24} />,
+    icon: <CheckIcon size={20} />,
     title: 'Quando combina',
-    body: (
-      <ul className="space-y-2">
-        <li>Só turmas do semestre atual e com vaga recebem demandas.</li>
-        <li>A turma precisa cobrir metade das competências e estar na altura do curso que a demanda pede.</li>
-        <li>Dúvidas vão pela própria demanda, e a resposta fica para todos.</li>
-      </ul>
-    ),
+    rules: [
+      'Só turmas do semestre atual e com vaga recebem demandas.',
+      'A turma precisa cobrir metade das competências e estar na altura do curso que a demanda pede.',
+      'Dúvidas vão pela própria demanda, e a resposta fica para todos.',
+    ],
   },
   {
-    icon: <FolderIcon size={24} />,
+    icon: <FolderIcon size={20} />,
     title: 'Durante o projeto',
-    body: (
-      <ul className="space-y-2">
-        <li>O contato da organização aparece quando a demanda vira projeto seu.</li>
-        <li>Depois do registro no SIGAA, o plano fica travado e não dá mais para desistir.</li>
-        <li>O resultado do encerramento vai para o histórico da organização e para o relatório que libera as horas.</li>
-      </ul>
-    ),
+    rules: [
+      'O contato da organização aparece quando a demanda vira projeto seu.',
+      'Depois do registro no SIGAA, o plano fica travado e não dá mais para desistir.',
+      'O resultado do encerramento vai para o histórico da organização e para o relatório que libera as horas.',
+    ],
   },
 ];
+
+/** As regras no mesmo desenho da faixa de perfis do portal: um cartão, três colunas. */
+const Rules = () => (
+  <ul className="grid overflow-hidden rounded-lg border border-line md:grid-cols-3">
+    {RULE_GROUPS.map((group) => (
+      <li key={group.title} className="border-line p-6 not-first:border-t md:not-first:border-t-0 md:not-first:border-l">
+        <span className="flex size-10 items-center justify-center rounded-md bg-brand text-white">{group.icon}</span>
+        <p className="mt-4 text-[17px] font-semibold text-ink">{group.title}</p>
+        <ul className="mt-2 space-y-2">
+          {group.rules.map((rule) => (
+            <li key={rule} className="text-sm leading-relaxed text-ink-2">
+              {rule}
+            </li>
+          ))}
+        </ul>
+      </li>
+    ))}
+  </ul>
+);
 
 const FAQ: { question: string; answer: ReactNode }[] = [
   {
@@ -266,13 +299,13 @@ export const GuidePage = () => {
 
       <Section
         title="As seis etapas do projeto"
-        description={calendar ? `Em ${calendar.id}, o prazo para levar e registrar é ${formatShortDate(calendar.linkDeadline)}.` : undefined}
+        description={`Clique numa etapa para ver o que acontece nela.${calendar ? ` Em ${calendar.id}, o prazo para levar e registrar é ${formatShortDate(calendar.linkDeadline)}.` : ''}`}
       >
         <Stages />
       </Section>
 
       <Section title="Regras">
-        <SpotlightCarousel items={RULES} label="Regras" wide />
+        <Rules />
       </Section>
 
       <Section title="Perguntas frequentes">
