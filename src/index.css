@@ -33,9 +33,9 @@
   /* Fundo escuro de marca: só na tela de entrada. */
   --color-panel-deep: #0a3232;
 
-  /* Fatos (mini cards): o único bloco com fundo petróleo e borda. */
-  --color-fact: #edf6f5;
-  --color-fact-line: #d3e9e7;
+  /* Fatos (mini cards): brancos com borda fina; a identidade fica só no rótulo petróleo. */
+  --color-fact: #ffffff;
+  --color-fact-line: #e0e5e6;
   --color-fact-label: #10514f;
 
   /* Monograma e item ativo da navegação. */

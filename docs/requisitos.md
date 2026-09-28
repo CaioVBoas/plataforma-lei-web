@@ -35,7 +35,7 @@ Levantamento do que a plataforma faz hoje, do que foi verificado e do que ainda 
 | RF03 | Editar nome, departamento e telefone; e-mail só leitura | Parcial: salva no backend simulado |
 | RF04 | Sair limpa a sessão e o cache | Pronto |
 | RF05 | Recuperar senha | A fazer: chega com o login da UFPE |
-| RF05a | Portal público com o L.E.I., o Aperta o PL.E.I., os quatro passos e uma porta para cada perfil | Pronto |
+| RF05a | Portal público no formato institucional: abertura com foto, boas-vindas, carrossel do que há na plataforma e rodapé | Parcial: faltam as fotos (espaços prontos em `src/assets/portal`) |
 | RF05b | Entrada e cadastro com escolha de perfil; organização e estudante aparecem como "em breve" | Pronto |
 | RF05c | Cadastro do docente com nome, e-mail institucional, departamento e senha, entrando direto no Início | Parcial: salva no backend simulado |
 
@@ -50,7 +50,7 @@ Levantamento do que a plataforma faz hoje, do que foi verificado e do que ainda 
 | RF10 | Contador único no sino da barra superior: indicações, reservas abertas, demandas liberadas e etapas nos próximos 14 dias | Pronto |
 | RF10a | Avisos no portal (sino e página Avisos): o que pede decisão e as respostas das organizações às perguntas do docente | Pronto |
 | RF10b | Barra lateral recolhível e barra superior com avisos e conta; Avisos só pelo sino | Pronto |
-| RF10c | Calendário do semestre no Início: prazo para levar demandas, entregas e fim, com o próximo em destaque | Pronto |
+| RF10c | Calendário do semestre no Início, numa linha: semana atual, prazo para levar demandas, entregas e fim | Pronto |
 | RF10d | Todas as telas com a mesma largura e margens laterais | Pronto |
 
 ### 2.3. Cardápio e reserva
