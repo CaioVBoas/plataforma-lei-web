@@ -35,7 +35,7 @@ Levantamento do que a plataforma faz hoje, do que foi verificado e do que ainda 
 | RF03 | Editar nome, departamento e telefone; e-mail só leitura | Parcial: salva no backend simulado |
 | RF04 | Sair limpa a sessão e o cache | Pronto |
 | RF05 | Recuperar senha | A fazer: chega com o login da UFPE |
-| RF05a | Portal público no formato institucional: abertura com foto, boas-vindas, carrossel do que há na plataforma e rodapé | Parcial: faltam as fotos (espaços prontos em `src/assets/portal`) |
+| RF05a | Portal público no formato institucional: abertura com foto, boas-vindas, carrossel do que há na plataforma e rodapé | Pronto: fotos em `src/assets/portal`, crédito da foto do Commons no rodapé |
 | RF05b | Entrada e cadastro com escolha de perfil; organização e estudante aparecem como "em breve" | Pronto |
 | RF05c | Cadastro do docente com nome, e-mail institucional, departamento e senha, entrando direto no Início | Parcial: salva no backend simulado |
 

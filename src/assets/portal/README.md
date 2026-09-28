@@ -1,10 +1,14 @@
 # Fotos do portal público
 
-O portal (`/`) procura aqui duas fotos pelo nome. Sem elas, o espaço aparece em petróleo escuro liso.
+Versões leves (WebP) das fotos usadas em `/`. Os originais ficam fora do repositório.
 
-| Arquivo | Onde aparece | Tamanho sugerido |
-| --- | --- | --- |
-| `capa.jpg` | Faixa grande do topo, atrás do título | 2400 x 1200 px, paisagem |
-| `boas-vindas.jpg` | Ao lado do texto de boas-vindas | 1600 x 1000 px, paisagem |
+| Pasta | Arquivo | Onde aparece | Origem | Crédito |
+| --- | --- | --- | --- | --- |
+| `capa/` | `recife-antigo-cais.webp` | Abertura, 1ª foto | Pexels (vikeph, 17298658) | Não exige |
+| `capa/` | `rua-do-bom-jesus.webp` | Abertura, 2ª foto | Pexels (vikeph, 20502520) | Não exige |
+| `capa/` | `ponte-capibaribe.webp` | Abertura, 3ª foto | Pexels (imvitordiniz, 29849994) | Não exige |
+| `capa/` | `olinda-vista.webp` | Abertura, 4ª foto | Pexels (aldoazdesign, 635402) | Não exige |
+| `boas-vindas/` | `estudantes.webp` | Boas-vindas, foto maior | Pexels (yankrukov, 8199761) | Não exige |
+| `boas-vindas/` | `rua-da-aurora.webp` | Boas-vindas, foto estreita | [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Rua_da_Aurora_com_rio_Capibaribe1x.jpg), Hans von Manteuffel | CC BY-SA 4.0, no rodapé |
 
-Também servem `.jpeg`, `.png` e `.webp`. Use fotos com direito de uso (do CIn, da UFPE ou de projetos com organizações, com autorização de quem aparece).
+Para trocar uma foto, mantenha o nome e a proporção (abertura em paisagem, 2400 px de largura). Foto nova com licença que exija crédito entra em `PHOTO_CREDITS`, em `src/features/landing/portalPhotos.ts`, e aparece sozinha no rodapé.

@@ -1,12 +1,12 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
-import { BrandMark, BrandSymbol } from '@/components/ui/brandMark';
+import { BrandMark } from '@/components/ui/brandMark';
 import { buttonClassName } from '@/components/ui/buttonStyles';
 import { BellIcon, ChevronLeftIcon, ChevronRightIcon, CopyIcon, FolderIcon, TrayIcon, UsersIcon } from '@/components/ui/icons';
 import { session } from '@/features/auth/session';
 import { paths } from '@/routes/paths';
 import { cn } from '@/utils/cn';
-import { portalPhoto } from './portalPhotos';
+import { HERO_PHOTOS, PHOTO_CREDITS, WELCOME_PHOTOS } from './portalPhotos';
 
 /** Mesma largura e margens do portal, para a passagem do site para a plataforma não pular. */
 const FRAME = 'mx-auto w-full max-w-[1280px] px-4 sm:px-6 lg:px-8';
@@ -43,13 +43,43 @@ const PublicHeader = () => {
   );
 };
 
-/** Faixa de abertura: foto em tela cheia com véu escuro e o título centralizado, como um portal institucional. */
+const SLIDE_MS = 7000;
+
+const prefersReducedMotion = () => {
+  try {
+    return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  } catch {
+    return false;
+  }
+};
+
+/**
+ * Faixa de abertura como a de um portal institucional: fotos do Recife passando
+ * uma de cada vez, véu escuro e o título centralizado. Com movimento reduzido, a foto fica parada.
+ */
 const Hero = () => {
-  const photo = portalPhoto('capa');
+  const [active, setActive] = useState(0);
+
+  useEffect(() => {
+    if (prefersReducedMotion()) return;
+    const timer = window.setInterval(() => setActive((current) => (current + 1) % HERO_PHOTOS.length), SLIDE_MS);
+    return () => window.clearInterval(timer);
+  }, [active]);
+
   return (
-    <section className="relative isolate flex min-h-[520px] items-center overflow-hidden bg-brand-900 sm:min-h-[600px]">
-      {photo && <img src={photo} alt="" className="absolute inset-0 -z-10 size-full object-cover" />}
-      <div aria-hidden="true" className={cn('absolute inset-0 -z-10', photo ? 'bg-black/50' : 'bg-transparent')} />
+    <section aria-label="Abertura" className="relative isolate flex min-h-[520px] items-center overflow-hidden bg-brand-900 sm:min-h-[600px]">
+      {HERO_PHOTOS.map((photo, index) => (
+        <img
+          key={photo.src}
+          src={photo.src}
+          alt={index === active ? photo.alt : ''}
+          aria-hidden={index !== active}
+          fetchPriority={index === 0 ? 'high' : 'low'}
+          loading={index === 0 ? 'eager' : 'lazy'}
+          className={cn('absolute inset-0 -z-10 size-full object-cover transition-opacity duration-1000', index === active ? 'opacity-100' : 'opacity-0')}
+        />
+      ))}
+      <div aria-hidden="true" className="absolute inset-0 -z-10 bg-black/50" />
       <div className={cn(FRAME, 'py-20 text-center text-white')}>
         <h1 className="mx-auto max-w-[820px] text-[36px] leading-[1.1] font-bold tracking-[-0.022em] text-balance sm:text-[52px]">
           Problemas reais viram projetos de extensão no CIn
@@ -64,13 +94,23 @@ const Hero = () => {
           </a>
         </div>
       </div>
+      <div className="absolute inset-x-0 bottom-6 flex justify-center gap-2">
+        {HERO_PHOTOS.map((photo, index) => (
+          <button
+            key={photo.src}
+            type="button"
+            aria-label={`Foto ${index + 1}: ${photo.alt}`}
+            aria-current={index === active}
+            onClick={() => setActive(index)}
+            className={cn('h-1.5 rounded-full transition-all', index === active ? 'w-8 bg-white' : 'w-5 bg-white/45 hover:bg-white/70')}
+          />
+        ))}
+      </div>
     </section>
   );
 };
 
-const Welcome = () => {
-  const photo = portalPhoto('boas-vindas');
-  return (
+const Welcome = () => (
     <section id="sobre" className="scroll-mt-16 py-16 sm:py-24">
       <div className={cn(FRAME, 'grid items-center gap-10 lg:grid-cols-2 lg:gap-16')}>
         <div>
@@ -85,19 +125,13 @@ const Welcome = () => {
             Aqui, a organização apresenta um problema real, o docente leva para uma disciplina e a turma resolve durante o semestre, com o projeto registrado no SIGAA.
           </p>
         </div>
-        <div className="aspect-[16/10] overflow-hidden rounded-lg bg-fill">
-          {photo ? (
-            <img src={photo} alt="Estudantes do CIn trabalhando em um projeto de extensão" className="size-full object-cover" />
-          ) : (
-            <div className="flex size-full items-center justify-center">
-              <BrandSymbol className="size-16 opacity-40" />
-            </div>
-          )}
+        <div className="grid grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)] gap-3">
+          <img src={WELCOME_PHOTOS.students.src} alt={WELCOME_PHOTOS.students.alt} loading="lazy" className="aspect-[4/5] size-full rounded-lg object-cover" />
+          <img src={WELCOME_PHOTOS.city.src} alt={WELCOME_PHOTOS.city.alt} loading="lazy" className="aspect-[5/8] size-full rounded-lg object-cover" />
         </div>
       </div>
     </section>
-  );
-};
+);
 
 const FEATURES: { icon: ReactNode; title: string; text: string }[] = [
   { icon: <TrayIcon size={24} />, title: 'Cardápio de demandas', text: 'Problemas reais de organizações parceiras, já triados pelo L.E.I.' },
@@ -234,7 +268,22 @@ const Footer = () => (
       </FooterColumn>
     </div>
     <div className={FRAME}>
-      <p className="border-t border-line py-5 text-center text-[13px] text-ink-3">© 2026 L.E.I. · Centro de Informática da UFPE. Todos os direitos reservados.</p>
+      <div className="border-t border-line py-5 text-center">
+      <p className="text-[13px] text-ink-3">© 2026 L.E.I. · Centro de Informática da UFPE.</p>
+      {PHOTO_CREDITS.map((credit) => (
+        <p key={credit.sourceUrl} className="mt-1.5 text-[11px] text-ink-3">
+          Foto {credit.subject}:{' '}
+          <a href={credit.sourceUrl} target="_blank" rel="noreferrer" className="underline-offset-2 hover:text-ink-2 hover:underline">
+            {credit.author}, {credit.source}
+          </a>
+          ,{' '}
+          <a href={credit.licenseUrl} target="_blank" rel="license noreferrer" className="underline-offset-2 hover:text-ink-2 hover:underline">
+            {credit.license}
+          </a>
+          , {credit.changes}.
+        </p>
+      ))}
+      </div>
     </div>
   </footer>
 );
