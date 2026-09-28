@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom';
 import { BrandMark } from '@/components/ui/brandMark';
 import { buttonClassName } from '@/components/ui/buttonStyles';
 import { PhotoCreditLine } from '@/components/ui/photoCredit';
-import { ArrowRightIcon, BellIcon, BookIcon, BuildingIcon, CheckIcon, ChevronLeftIcon, ChevronRightIcon, CopyIcon, FolderIcon, TrayIcon, UsersIcon } from '@/components/ui/icons';
+import { SpotlightCarousel, type SpotlightItem } from '@/components/ui/spotlightCarousel';
+import { ArrowRightIcon, BellIcon, BookIcon, BuildingIcon, CheckIcon, CopyIcon, FolderIcon, TrayIcon, UsersIcon } from '@/components/ui/icons';
 import { ROLE_COPY } from '@/features/auth/roles';
 import { session } from '@/features/auth/session';
 import type { UserRole } from '@/features/auth/types';
@@ -180,88 +181,24 @@ const Welcome = () => (
   </section>
 );
 
-const FEATURES: { icon: ReactNode; title: string; text: string }[] = [
-  { icon: <TrayIcon size={24} />, title: 'Cardápio de demandas', text: 'Problemas reais de organizações parceiras, já triados pelo L.E.I.' },
-  { icon: <UsersIcon size={24} />, title: 'Projetos na disciplina', text: 'O docente leva a demanda para a turma que já trabalha o que ela pede.' },
-  { icon: <CopyIcon size={24} />, title: 'Plano pronto para o SIGAA', text: 'O projeto nasce com o plano escrito, no formato do sistema.' },
-  { icon: <FolderIcon size={24} />, title: 'Acompanhamento em etapas', text: 'Da reunião de abertura ao encerramento, com os prazos do semestre.' },
-  { icon: <BellIcon size={24} />, title: 'Avisos no tempo certo', text: 'Prazos chegando, reservas e respostas das organizações.' },
+const FEATURES: SpotlightItem[] = [
+  { icon: <TrayIcon size={24} />, title: 'Cardápio de demandas', body: 'Problemas reais de organizações parceiras, já triados pelo L.E.I.' },
+  { icon: <UsersIcon size={24} />, title: 'Projetos na disciplina', body: 'O docente leva a demanda para a turma que já trabalha o que ela pede.' },
+  { icon: <CopyIcon size={24} />, title: 'Plano pronto para o SIGAA', body: 'O projeto nasce com o plano escrito, no formato do sistema.' },
+  { icon: <FolderIcon size={24} />, title: 'Acompanhamento em etapas', body: 'Da reunião de abertura ao encerramento, com os prazos do semestre.' },
+  { icon: <BellIcon size={24} />, title: 'Avisos no tempo certo', body: 'Prazos chegando, reservas e respostas das organizações.' },
 ];
 
-type Feature = (typeof FEATURES)[number];
-
-/** Vizinho esmaecido do carrossel: clicar traz o cartão para o meio. */
-const SideCard = ({ feature, onSelect }: { feature: Feature; onSelect: () => void }) => (
-  <button
-    type="button"
-    onClick={onSelect}
-    aria-label={`Ver ${feature.title}`}
-    className="hidden h-[220px] w-[240px] shrink-0 flex-col items-center justify-center gap-4 rounded-lg bg-fill px-6 text-center text-ink-3 transition-colors hover:bg-fill-strong md:flex"
-  >
-    <span className="flex size-12 items-center justify-center rounded-full bg-surface">{feature.icon}</span>
-    <span className="text-[15px] font-semibold text-ink-2">{feature.title}</span>
-  </button>
-);
-
-/** Carrossel como o da referência: o cartão do meio em destaque, os vizinhos esmaecidos, setas e pontos. */
-const Features = () => {
-  const [active, setActive] = useState(0);
-  const count = FEATURES.length;
-  const at = (offset: number) => FEATURES[(active + offset + count) % count];
-  const move = (step: number) => setActive((current) => (current + step + count) % count);
-
-  const current = at(0);
-
-  return (
-    <section className="bg-canvas py-16 sm:py-24">
-      <div className={FRAME}>
-        <h2 className="text-center text-[28px] font-bold tracking-[-0.018em] text-ink sm:text-[32px]">O que você encontra na plataforma</h2>
-
-        <div className="mt-12 flex items-center justify-center gap-3 sm:gap-5">
-          <button
-            type="button"
-            aria-label="Anterior"
-            onClick={() => move(-1)}
-            className="flex size-10 shrink-0 items-center justify-center rounded-full border border-line-strong bg-surface text-ink hover:bg-fill"
-          >
-            <ChevronLeftIcon size={18} />
-          </button>
-
-          <SideCard feature={at(-1)} onSelect={() => move(-1)} />
-          <div aria-live="polite" className="flex h-[260px] w-full max-w-[320px] flex-col items-center justify-center rounded-lg bg-brand px-7 text-center text-white shadow-sheet">
-            <span className="flex size-14 items-center justify-center rounded-full bg-brand-700">{current.icon}</span>
-            <p className="mt-5 text-[18px] font-semibold">{current.title}</p>
-            <p className="mt-2 text-sm leading-relaxed text-white/80">{current.text}</p>
-          </div>
-          <SideCard feature={at(1)} onSelect={() => move(1)} />
-
-          <button
-            type="button"
-            aria-label="Próximo"
-            onClick={() => move(1)}
-            className="flex size-10 shrink-0 items-center justify-center rounded-full border border-line-strong bg-surface text-ink hover:bg-fill"
-          >
-            <ChevronRightIcon size={18} />
-          </button>
-        </div>
-
-        <div className="mt-8 flex justify-center gap-2">
-          {FEATURES.map((feature, index) => (
-            <button
-              key={feature.title}
-              type="button"
-              aria-label={feature.title}
-              aria-current={index === active}
-              onClick={() => setActive(index)}
-              className={cn('h-2 rounded-full transition-all', index === active ? 'w-6 bg-brand' : 'w-2 bg-line-strong hover:bg-ink-3')}
-            />
-          ))}
-        </div>
+const Features = () => (
+  <section className="bg-canvas py-16 sm:py-24">
+    <div className={FRAME}>
+      <h2 className="text-center text-[28px] font-bold tracking-[-0.018em] text-ink sm:text-[32px]">O que você encontra na plataforma</h2>
+      <div className="mt-12">
+        <SpotlightCarousel items={FEATURES} label="O que você encontra na plataforma" />
       </div>
-    </section>
-  );
-};
-
+    </div>
+  </section>
+);
 
 const STEPS = [
   { icon: <BuildingIcon size={20} />, title: 'A organização publica', text: 'Conta o problema, quem sente e o que oferece à turma.' },
