@@ -60,6 +60,8 @@ const INSTITUTIONAL_EMAIL = /@(cin\.)?ufpe\.br$/i;
 /** Quem divide a disciplina entra pelo e-mail institucional e passa a ver os projetos dela. */
 export const inviteCoTeacher = (id: string, email: string): DisciplineWithUsage => {
   const discipline = findOrThrow(db.disciplines, id, NOT_FOUND);
+  // Regra 13: só a disciplina do semestre atual aceita convite, mesmo que a chamada não venha da tela.
+  if (discipline.semester !== db.calendar.id) throw new RuleError(`Só disciplinas de ${db.calendar.id} aceitam convite.`);
   const normalized = email.trim().toLowerCase();
   if (!INSTITUTIONAL_EMAIL.test(normalized)) throw new RuleError('Use o e-mail @ufpe.br ou @cin.ufpe.br do colega.');
   if (normalized === db.account.email) throw new RuleError('Você já é docente desta disciplina.');
