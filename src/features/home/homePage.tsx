@@ -1,9 +1,12 @@
 import { Link } from 'react-router-dom';
+import cinPhoto from '@/assets/portal/inicio/cin.webp';
 import { LoadingState } from '@/components/feedback/queryStates';
 import { buttonClassName } from '@/components/ui/buttonStyles';
 import { EmptyState } from '@/components/ui/emptyState';
-import { GroupedList, ListRow } from '@/components/ui/groupedList';
-import { CloseIcon } from '@/components/ui/icons';
+import { cardGridClassName } from '@/components/ui/card';
+import { StepCard } from '@/components/ui/stepCard';
+import { WelcomeHero } from '@/components/ui/welcomeHero';
+import { CloseIcon, PlusIcon, TrayIcon } from '@/components/ui/icons';
 import { Page, Section } from '@/components/ui/page';
 import { formatShortDate, isLinkWindowOpen, semesterWeek } from '@/domain/calendar';
 import { freeSlots } from '@/domain/disciplineRules';
@@ -21,7 +24,6 @@ import { useAgenda } from '@/features/projects/shared/hooks/useAgenda';
 import type { AgendaItem } from '@/features/projects/shared/utils/agenda';
 import { MILESTONE_COPY, milestoneDateLine } from '@/features/projects/shared/utils/projectPresentation';
 import { paths } from '@/routes/paths';
-import { cn } from '@/utils/cn';
 import { capitalize, pluralize } from '@/utils/format';
 
 const SUGGESTIONS_ON_HOME = 3;
@@ -51,31 +53,22 @@ const TutorialInvite = () => {
   );
 };
 
-/** Reserva ativa também é um próximo passo: decidir antes que ela expire. */
-const ReservationStep = ({ demand, today }: { demand: Demand; today: string }) => {
-  const until = demand.reservation?.until ?? today;
-  return (
-    <ListRow
-      to={paths.demand(demand.id)}
-      leading={<span className="block size-2.5 rounded-full bg-reserve-dot" />}
-      trailing={<span className="text-[13px] font-medium text-reserve">{capitalize(daysLeftLabel(until, today))}</span>}
-    >
-      <p className="text-[15px] font-medium text-ink">Decidir a reserva</p>
-      <p className="mt-0.5 truncate text-[13px] text-ink-3">
-        {demand.title} · {demand.organization.name}
-      </p>
-    </ListRow>
-  );
-};
+interface NextStepsProps {
+  agenda: AgendaItem[];
+  reservations: Demand[];
+  invitations: Demand[];
+  today: string;
+}
 
-const NextSteps = ({ agenda, reservations, today }: { agenda: AgendaItem[]; reservations: Demand[]; today: string }) => {
-  if (agenda.length === 0 && reservations.length === 0) {
+const NextSteps = ({ agenda, reservations, invitations, today }: NextStepsProps) => {
+  if (agenda.length === 0 && reservations.length === 0 && invitations.length === 0) {
     return (
       <EmptyState
         title="Nada pendente"
         description="Nenhum projeto em curso nem reserva aberta. Que tal escolher uma demanda no cardápio?"
         action={
           <Link to={paths.menu} className={buttonClassName({ variant: 'primary' })}>
+            <TrayIcon size={16} />
             Abrir o cardápio
           </Link>
         }
@@ -84,24 +77,43 @@ const NextSteps = ({ agenda, reservations, today }: { agenda: AgendaItem[]; rese
   }
 
   return (
-    <GroupedList>
+    <ul className={cardGridClassName}>
+      {invitations.map((demand) => (
+        <li key={demand.id}>
+          <StepCard
+            to={paths.demand(demand.id)}
+            kind={`Indicada por ${demand.invitation?.from.split(',')[0]}`}
+            tone="accent"
+            title="Avaliar a indicação do L.E.I."
+            context={`${demand.title} · ${demand.organization.name}`}
+          />
+        </li>
+      ))}
       {reservations.map((demand) => (
-        <ReservationStep key={demand.id} demand={demand} today={today} />
+        <li key={demand.id}>
+          <StepCard
+            to={paths.demand(demand.id)}
+            kind={capitalize(daysLeftLabel(demand.reservation?.until ?? today, today))}
+            tone="reserve"
+            title="Decidir a reserva"
+            context={`${demand.title} · ${demand.organization.name}`}
+          />
+        </li>
       ))}
       {agenda.map(({ project, milestone, overdue }) => (
-        <ListRow
-          key={project.id}
-          to={paths.project(project.id, milestone.id === 'plan' ? 'plano' : undefined)}
-          leading={<span className={cn('block size-2.5 rounded-full', overdue ? 'bg-caution' : 'bg-accent')} />}
-          trailing={<span className={cn('text-[13px]', overdue ? 'font-medium text-caution' : 'text-ink-2')}>{milestoneDateLine(milestone, today, true)}</span>}
-        >
-          <p className="text-[15px] font-medium text-ink">{MILESTONE_COPY[milestone.id].title}</p>
-          <p className="mt-0.5 truncate text-[13px] text-ink-3">
-            {project.title} · {project.organization.name}
-          </p>
-        </ListRow>
+        <li key={project.id}>
+          <StepCard
+            to={paths.project(project.id, milestone.id === 'plan' ? 'plano' : undefined)}
+            kind="Etapa do projeto"
+            tone={overdue ? 'caution' : 'neutral'}
+            title={MILESTONE_COPY[milestone.id].title}
+            context={`${project.title} · ${project.organization.name}`}
+            when={milestoneDateLine(milestone, today, true)}
+            overdue={overdue}
+          />
+        </li>
       ))}
-    </GroupedList>
+    </ul>
   );
 };
 
@@ -117,7 +129,7 @@ const Suggestions = ({ demands, disciplines, today }: { demands: Demand[]; disci
   }
 
   return (
-    <ul className="grid gap-4 md:grid-cols-2">
+    <ul className={cardGridClassName}>
       {fitting.map(({ demand, best }) => (
         <li key={demand.id}>
           <DemandCard demand={demand} best={best} today={today} />
@@ -150,8 +162,26 @@ const HomeContent = ({ account, calendar }: { account: Account; calendar: Semest
     );
   }
 
+  const reservations = demands.filter(isMyReservation);
+  const running = agenda.length;
+  const freeSlotsTotal = disciplines.reduce((total, discipline) => total + freeSlots(discipline), 0);
+
   return (
-    <Page title={`Olá, ${firstName}`} subtitle={semesterLine(calendar, disciplines)}>
+    <Page
+      title={`Olá, ${firstName}`}
+      hero={
+        <WelcomeHero
+          photo={cinPhoto}
+          title={`Olá, ${firstName}`}
+          line={semesterLine(calendar, disciplines)}
+          stats={[
+            { value: running, label: running === 1 ? 'projeto em curso' : 'projetos em curso' },
+            { value: reservations.length, label: reservations.length === 1 ? 'reserva' : 'reservas' },
+            { value: freeSlotsTotal, label: freeSlotsTotal === 1 ? 'vaga livre' : 'vagas livres' },
+          ]}
+        />
+      }
+    >
       {!account.tutorialSeen && <TutorialInvite />}
 
       {disciplines.length === 0 ? (
@@ -161,6 +191,7 @@ const HomeContent = ({ account, calendar }: { account: Account; calendar: Semest
             description="É o que a turma trabalha que decide quais demandas combinam com ela. Leva um minuto."
             action={
               <Link to={paths.newDiscipline} className={buttonClassName({ variant: 'primary' })}>
+                <PlusIcon size={15} />
                 Cadastrar disciplina
               </Link>
             }
@@ -168,15 +199,21 @@ const HomeContent = ({ account, calendar }: { account: Account; calendar: Semest
         </Section>
       ) : (
         <>
-          <Section title="Próximos passos" description="Suas reservas e a próxima etapa de cada projeto em curso.">
-            <NextSteps agenda={agenda} reservations={demands.filter(isMyReservation)} today={calendar.today} />
+          <Section title="Próximos passos" description="Indicações, reservas e a próxima etapa de cada projeto em curso.">
+            <NextSteps
+              agenda={agenda}
+              reservations={reservations}
+              invitations={demands.filter((demand) => demand.invitation && demand.status === 'open')}
+              today={calendar.today}
+            />
           </Section>
 
           {isLinkWindowOpen(calendar) && (
             <Section
               title="No cardápio para suas turmas"
               aside={
-                <Link to={paths.menu} className={buttonClassName({ variant: 'plain', size: 'sm' })}>
+                <Link to={paths.menu} className={buttonClassName({ variant: 'secondary', size: 'sm' })}>
+                  <TrayIcon size={15} />
                   Abrir o cardápio
                 </Link>
               }

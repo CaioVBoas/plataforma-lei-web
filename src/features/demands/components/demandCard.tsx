@@ -1,11 +1,12 @@
 import { Link } from 'react-router-dom';
-import { StatusLabel } from '@/components/ui/statusLabel';
+import { CoverageMeter } from '@/components/ui/coverageMeter';
+import { Monogram } from '@/components/ui/monogram';
 import { Tag } from '@/components/ui/tag';
 import type { DisciplineMatch } from '@/domain/matching';
 import type { Demand, IsoDate } from '@/domain/types';
 import { paths } from '@/routes/paths';
 import { cn } from '@/utils/cn';
-import { isNew, matchLine, reservationBadge, SCOPE_COPY } from '../utils/demandPresentation';
+import { CONSTRAINT_COPY, isNew, matchTag, reservationBadge, SCOPE_COPY } from '../utils/demandPresentation';
 
 interface DemandCardProps {
   demand: Demand;
@@ -14,45 +15,53 @@ interface DemandCardProps {
 }
 
 /**
- * Um prato do cardápio: quem pede, o problema, o que pede da turma e as duas
- * perguntas que decidem (combina? cabe?). A reserva aparece no topo, em laranja.
+ * Um prato do cardápio: quem pede, o problema e as duas perguntas que decidem.
+ * "Combina?" vira um medidor com a turma que mais cobre; "cabe?" e o que pesa
+ * na rotina viram uma linha de texto. Só o estado da demanda é tag. As
+ * competências uma a uma ficam no detalhe, onde há espaço para explicá-las.
  */
 export const DemandCard = ({ demand, best, today }: DemandCardProps) => {
   const scope = SCOPE_COPY[demand.scopeFit];
   const reservation = reservationBadge(demand, today);
-  const covered = new Set(best?.covered ?? []);
   const takenByOther = demand.status === 'reserved' && !demand.reservation?.mine;
+  const match = matchTag(best);
+  const facts = [scope.label, ...demand.constraints.map((constraint) => CONSTRAINT_COPY[constraint].label)];
 
   return (
     <Link
       to={paths.demand(demand.id)}
       className={cn(
-        'group flex h-full flex-col rounded-lg border bg-surface p-5 transition-[border-color,box-shadow] duration-150 hover:shadow-[0_2px_12px_rgba(0,0,0,0.06)]',
+        'group flex h-full min-w-0 flex-col rounded-lg border bg-surface p-5 transition-[border-color,box-shadow] duration-150 hover:shadow-[0_2px_8px_rgba(10,50,50,0.08)]',
         demand.reservation?.mine ? 'border-reserve-dot/40' : 'border-line hover:border-line-strong',
       )}
     >
-      <div className="flex flex-wrap items-start justify-between gap-x-3 gap-y-1">
-        <p className="flex items-center gap-2 text-[13px] text-ink-3">
-          {demand.organization.name}
-          {isNew(demand, today) && !reservation && <span className="font-medium text-accent">Nova</span>}
+      <div className="flex min-h-6 flex-wrap items-center justify-between gap-x-3 gap-y-1.5">
+        <div className="flex min-w-0 items-center gap-2.5">
+          <Monogram name={demand.organization.name} size="sm" />
+          <p className="truncate text-[13px] font-semibold text-ink-2">{demand.organization.name}</p>
+        </div>
+        {reservation ? (
+          <Tag tone={takenByOther ? 'neutral' : 'reserve'}>{reservation}</Tag>
+        ) : demand.invitation ? (
+          <Tag tone="accent">Indicada para você</Tag>
+        ) : (
+          isNew(demand, today) && <Tag tone="accent">Nova</Tag>
+        )}
+      </div>
+
+      <p className="mt-3 text-[17px] leading-snug font-semibold tracking-[-0.01em] text-ink group-hover:text-accent">{demand.title}</p>
+      <p className="mt-1.5 line-clamp-2 flex-1 text-sm leading-relaxed text-ink-2">{demand.problem}</p>
+
+      <div className="mt-5 border-t border-line pt-4">
+        <div className="flex items-center justify-between gap-3">
+          <p className={cn('min-w-0 truncate text-sm', match.tone === 'accent' ? 'font-medium text-ink' : 'text-ink-3')}>{match.label}</p>
+          {best && <CoverageMeter covered={best.covered.length} total={demand.skills.length} fits={best.fits} />}
+        </div>
+        <p className="mt-1 truncate text-[13px] text-ink-3">
+          {best && `${best.covered.length} de ${demand.skills.length} competências · `}
+          <span className={scope.tone === 'caution' ? 'text-caution' : undefined}>{facts[0]}</span>
+          {facts.length > 1 && ` · ${facts.slice(1).join(' · ')}`}
         </p>
-        {reservation && <StatusLabel tone={takenByOther ? 'neutral' : 'reserve'}>{reservation}</StatusLabel>}
-      </div>
-
-      <p className="mt-1.5 text-[17px] leading-snug font-semibold tracking-[-0.01em] text-ink group-hover:text-accent">{demand.title}</p>
-      <p className="mt-1.5 line-clamp-2 text-sm leading-relaxed text-ink-2">{demand.problem}</p>
-
-      <div className="mt-4 mb-4 flex flex-1 flex-wrap content-start gap-1.5">
-        {demand.skills.map((skill) => (
-          <Tag key={skill} covered={covered.has(skill)}>
-            {skill}
-          </Tag>
-        ))}
-      </div>
-
-      <div className="flex flex-wrap gap-x-5 gap-y-1.5 border-t border-line pt-3.5">
-        <StatusLabel tone={best?.fits ? 'positive' : 'neutral'}>{matchLine(best, demand)}</StatusLabel>
-        <StatusLabel tone={scope.tone}>{scope.label}</StatusLabel>
       </div>
     </Link>
   );

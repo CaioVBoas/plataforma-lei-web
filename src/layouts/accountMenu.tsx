@@ -1,26 +1,30 @@
 import { useNavigate } from 'react-router-dom';
 import { Avatar } from '@/components/ui/avatar';
-import { ChevronDownIcon } from '@/components/ui/icons';
-import { useAccount } from '@/features/account/useAccount';
+import { ChevronDownIcon, LogoutIcon, UserIcon } from '@/components/ui/icons';
 import { useLogout } from '@/features/auth/useAuth';
 import { usePopover } from '@/hooks/usePopover';
-import { paths } from '@/routes/paths';
 import { cn } from '@/utils/cn';
 
-const MENU_ITEM = 'flex h-8 w-full items-center rounded-[5px] px-2.5 text-left text-sm hover:bg-accent hover:text-white';
+const MENU_ITEM = 'flex h-9 w-full items-center gap-2.5 rounded-[5px] px-2.5 text-left text-sm';
 
-export const AccountMenu = ({ onNavigate }: { onNavigate?: () => void }) => {
+interface AccountMenuProps {
+  name: string;
+  email: string;
+  photo?: string;
+  /** Página da conta ou do perfil, e o nome dela no menu. */
+  accountPath: string;
+  accountLabel: string;
+}
+
+/** A conta fica no canto da barra superior: quem está logado, a página da conta e sair. */
+export const AccountMenu = ({ name, email, photo, accountPath, accountLabel }: AccountMenuProps) => {
   const navigate = useNavigate();
   const logout = useLogout();
-  const { data: account } = useAccount();
   const { open, toggle, close, containerRef } = usePopover();
-
-  if (!account) return null;
 
   const goToAccount = () => {
     close();
-    onNavigate?.();
-    navigate(paths.account);
+    navigate(accountPath);
   };
 
   return (
@@ -29,24 +33,28 @@ export const AccountMenu = ({ onNavigate }: { onNavigate?: () => void }) => {
         type="button"
         aria-expanded={open}
         aria-haspopup="menu"
+        aria-label={`Conta de ${name}`}
         onClick={toggle}
-        className={cn('flex h-11 w-full items-center gap-2.5 rounded-md px-2 text-left', open ? 'bg-fill-strong' : 'hover:bg-fill')}
+        className={cn('flex h-10 items-center gap-2 rounded-md pr-2 pl-1 text-left', open ? 'bg-fill' : 'hover:bg-fill')}
       >
-        <Avatar name={account.name} />
-        <span className="min-w-0 flex-1 leading-tight">
-          <span className="block truncate text-[13px] font-medium text-ink">{account.name}</span>
-          <span className="block truncate text-[11px] text-ink-3">{account.email}</span>
-        </span>
-        <ChevronDownIcon size={13} className={cn('text-ink-3 transition-transform', open && 'rotate-180')} />
+        <Avatar name={name} photo={photo} />
+        <span className="hidden max-w-[160px] truncate text-[13px] font-medium text-ink sm:block">{name}</span>
+        <ChevronDownIcon size={13} className={cn('hidden text-ink-3 transition-transform sm:block', open && 'rotate-180')} />
       </button>
 
       {open && (
-        <div role="menu" className="absolute right-0 bottom-12 left-0 z-40 rounded-md bg-surface p-1 shadow-popover animate-fade-in">
-          <button type="button" role="menuitem" className={MENU_ITEM} onClick={goToAccount}>
-            Minha conta
+        <div role="menu" className="absolute top-12 right-0 z-40 w-60 rounded-md bg-surface p-1 shadow-popover animate-fade-in">
+          <div className="px-2.5 pt-2 pb-2.5">
+            <p className="truncate text-[13px] font-semibold text-ink">{name}</p>
+            <p className="truncate text-[12px] text-ink-3">{email}</p>
+          </div>
+          <div className="mb-1 h-px bg-line" />
+          <button type="button" role="menuitem" className={cn(MENU_ITEM, 'text-ink hover:bg-brand-50 hover:text-brand-strong')} onClick={goToAccount}>
+            <UserIcon size={16} />
+            {accountLabel}
           </button>
-          <div className="my-1 h-px bg-line" />
-          <button type="button" role="menuitem" className={MENU_ITEM} onClick={logout}>
+          <button type="button" role="menuitem" className={cn(MENU_ITEM, 'text-critical hover:bg-critical-soft')} onClick={logout}>
+            <LogoutIcon size={16} />
             Sair
           </button>
         </div>

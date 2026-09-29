@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useToast } from '@/components/feedback/toastContext';
 import { Button } from '@/components/ui/button';
 import { buttonClassName } from '@/components/ui/buttonStyles';
-import { CheckIcon } from '@/components/ui/icons';
+import { ArrowRightIcon, BellIcon, BookmarkIcon, CheckIcon, FolderIcon } from '@/components/ui/icons';
 import { formatShortDate, isLinkWindowOpen } from '@/domain/calendar';
 import { freeSlots } from '@/domain/disciplineRules';
 import type { DisciplineMatch } from '@/domain/matching';
@@ -11,18 +11,19 @@ import { RESERVATION_DAYS } from '@/domain/reservation';
 import type { SemesterCalendar } from '@/domain/types';
 import type { DisciplineWithUsage } from '@/features/disciplines/types';
 import { paths } from '@/routes/paths';
+import type { StatusTone } from '@/components/ui/statusLabel';
+import { Tag } from '@/components/ui/tag';
 import { cn } from '@/utils/cn';
 import { useReleaseReservation, useReserveDemand, useToggleWatch } from '../useDemands';
 import type { DemandDetail } from '../types';
 import { daysLeftLabel } from '../utils/demandPresentation';
 
 const Panel = ({ tone = 'default', children }: { tone?: 'default' | 'reserve'; children: ReactNode }) => (
-  <div className={cn('rounded-lg border p-5', tone === 'reserve' ? 'border-reserve-dot/40 bg-reserve-soft' : 'border-line')}>{children}</div>
+  <div className={cn('rounded-lg border p-5', tone === 'reserve' ? 'border-reserve-dot/40 bg-surface' : 'border-line')}>{children}</div>
 );
 
-const Eyebrow = ({ children, className }: { children: ReactNode; className?: string }) => (
-  <p className={cn('text-[13px] font-medium text-ink-3', className)}>{children}</p>
-);
+/** O estado da demanda no topo do painel, como tag: livre, reservada, em projeto. */
+const Eyebrow = ({ children, tone = 'neutral' }: { children: ReactNode; tone?: StatusTone }) => <Tag tone={tone}>{children}</Tag>;
 
 const Fine = ({ children }: { children: ReactNode }) => <p className="mt-3 text-[13px] leading-relaxed text-ink-3">{children}</p>;
 
@@ -52,6 +53,7 @@ export const DecisionPanel = ({ detail, best, calendar, hasDisciplines, onAdopt 
         <p className="text-headline">Esta demanda é um projeto seu</p>
         <p className="mt-1 text-sm text-ink-2">Acompanhe as etapas e o plano no projeto.</p>
         <Link to={paths.project(detail.projectId)} className={cn(buttonClassName({ variant: 'primary', fullWidth: true }), 'mt-4')}>
+          <FolderIcon size={16} />
           Abrir projeto
         </Link>
       </Panel>
@@ -68,15 +70,15 @@ export const DecisionPanel = ({ detail, best, calendar, hasDisciplines, onAdopt 
     const windowOpen = isLinkWindowOpen(calendar);
     return (
       <Panel tone="reserve">
-        <Eyebrow className="text-reserve">Sua reserva, {daysLeftLabel(demand.reservation.until, calendar.today)}</Eyebrow>
-        <p className="mt-1 text-headline">Guardada para você até {formatShortDate(demand.reservation.until)}</p>
+        <Eyebrow tone="reserve">Sua reserva, {daysLeftLabel(demand.reservation.until, calendar.today)}</Eyebrow>
+        <p className="mt-2.5 text-headline">Guardada para você até {formatShortDate(demand.reservation.until)}</p>
         <p className="mt-1 text-sm text-ink-2">Ninguém mais consegue levar esta demanda enquanto a reserva valer.</p>
         <Button variant="primary" size="lg" fullWidth className="mt-5" disabled={!windowOpen} onClick={onAdopt}>
           Levar para uma disciplina
+          <ArrowRightIcon size={16} />
         </Button>
         <Button
-          variant="plain"
-          size="sm"
+          variant="secondary"
           fullWidth
           className="mt-2"
           disabled={release.isPending}
@@ -94,7 +96,7 @@ export const DecisionPanel = ({ detail, best, calendar, hasDisciplines, onAdopt 
     return (
       <Panel>
         <Eyebrow>Reservada</Eyebrow>
-        <p className="mt-1 text-headline">{demand.reservation.teacherName} está avaliando esta demanda</p>
+        <p className="mt-2.5 text-headline">{demand.reservation.teacherName} está avaliando esta demanda</p>
         <p className="mt-1 text-sm text-ink-2">
           A reserva vale até {formatShortDate(demand.reservation.until)}. Se não virar projeto, a demanda volta para o cardápio.
         </p>
@@ -105,7 +107,10 @@ export const DecisionPanel = ({ detail, best, calendar, hasDisciplines, onAdopt 
               Aviso ligado
             </>
           ) : (
-            'Avise-me se liberar'
+            <>
+              <BellIcon size={16} />
+              Avise-me se liberar
+            </>
           )}
         </Button>
         <Fine>
@@ -122,13 +127,21 @@ export const DecisionPanel = ({ detail, best, calendar, hasDisciplines, onAdopt 
 
   return (
     <Panel>
-      <Eyebrow>Livre no cardápio</Eyebrow>
-      <p className="mt-1 text-headline">
-        {!hasDisciplines ? 'Nenhuma turma cadastrada ainda' : best?.fits ? `Combina com ${best.discipline.name}` : 'Não combina com suas turmas'}
+      <Eyebrow tone="positive">Livre no cardápio</Eyebrow>
+      <p className="mt-2.5 text-headline">
+        {!hasDisciplines
+          ? 'Nenhuma turma cadastrada ainda'
+          : best?.fits
+            ? `Combina com ${best.discipline.name}`
+            : best?.aboveLevel
+              ? 'Acima do nível das suas turmas'
+              : 'Não combina com suas turmas'}
       </p>
       {best && hasDisciplines && (
         <p className="mt-1 text-sm text-ink-2">
-          Cobre {best.covered.length} de {demand.skills.length} competências pedidas{anySlot ? '.' : ', mas a turma está sem vaga.'}
+          {best.aboveLevel && !best.fits
+            ? `A turma cobre ${best.covered.length} de ${demand.skills.length} competências, mas a demanda pede mais do que a altura do curso dela.`
+            : `Cobre ${best.covered.length} de ${demand.skills.length} competências pedidas${anySlot ? '.' : ', mas a turma está sem vaga.'}`}
         </p>
       )}
       <Button
@@ -139,6 +152,7 @@ export const DecisionPanel = ({ detail, best, calendar, hasDisciplines, onAdopt 
         disabled={reserve.isPending}
         onClick={() => reserve.mutate(demand.id, { onSuccess: () => toast.show(`Reservada por ${RESERVATION_DAYS} dias. Quando decidir, leve para uma disciplina.`) })}
       >
+        <BookmarkIcon size={16} />
         Reservar por {RESERVATION_DAYS} dias
       </Button>
       <Fine>A reserva guarda a demanda só para você enquanto decide. Dá para liberar a qualquer momento.</Fine>

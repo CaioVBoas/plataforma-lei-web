@@ -1,13 +1,15 @@
 import {
   forwardRef,
+  useId,
   useLayoutEffect,
   useRef,
   type InputHTMLAttributes,
   type ReactNode,
+  type SelectHTMLAttributes,
   type TextareaHTMLAttributes,
 } from 'react';
 import { cn } from '@/utils/cn';
-import { SearchIcon } from './icons';
+import { ChevronDownIcon, SearchIcon } from './icons';
 
 const FIELD_CLASSES =
   'w-full rounded-md border border-line-strong bg-surface text-ink placeholder:text-ink-3 transition-[border-color,box-shadow] duration-150 focus:border-accent';
@@ -16,6 +18,16 @@ export const Input = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInputE
   <input ref={ref} className={cn(FIELD_CLASSES, 'h-10 px-3 text-[15px]', className)} {...props} />
 ));
 Input.displayName = 'Input';
+
+export const Select = forwardRef<HTMLSelectElement, SelectHTMLAttributes<HTMLSelectElement>>(({ className, children, ...props }, ref) => (
+  <div className="relative">
+    <select ref={ref} className={cn(FIELD_CLASSES, 'h-10 appearance-none pr-9 pl-3 text-[15px]', className)} {...props}>
+      {children}
+    </select>
+    <ChevronDownIcon size={14} className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-ink-3" />
+  </div>
+));
+Select.displayName = 'Select';
 
 const TEXTAREA_CLASSES = cn(FIELD_CLASSES, 'px-3 py-2.5 text-[15px] leading-relaxed');
 
@@ -81,3 +93,31 @@ export const Field = ({ label, htmlFor, hint, error, className, children }: Fiel
     )}
   </div>
 );
+
+interface FormGroupProps {
+  title: string;
+  hint?: ReactNode;
+  aside?: ReactNode;
+  children: ReactNode;
+}
+
+/**
+ * Um bloco do formulário: título e explicação curta de um lado, campos do outro.
+ * Em espaço estreito, como uma janela, o título fica em cima. Precisa de um
+ * `@container` em volta.
+ */
+export const FormGroup = ({ title, hint, aside, children }: FormGroupProps) => {
+  const titleId = useId();
+  return (
+    <div role="group" aria-labelledby={titleId} className="grid gap-3 border-t border-line py-6 first:border-t-0 first:pt-0 last:pb-0 @2xl:grid-cols-[200px_minmax(0,1fr)] @2xl:gap-8">
+      <div>
+        <h3 id={titleId} className="text-[15px] font-semibold text-ink">
+          {title}
+        </h3>
+        {hint && <p className="mt-1 text-[13px] leading-relaxed text-ink-3">{hint}</p>}
+        {aside && <div className="mt-2">{aside}</div>}
+      </div>
+      <div className="min-w-0">{children}</div>
+    </div>
+  );
+};

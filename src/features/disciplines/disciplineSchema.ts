@@ -6,6 +6,7 @@ export const disciplineSchema = z
   .object({
     name: z.string().trim().min(1, 'Informe o nome da disciplina.'),
     code: z.string().trim(),
+    level: z.enum(['intro', 'intermediate', 'advanced']),
     students: wholeNumber('Informe quantos estudantes a turma tem.'),
     teamSize: wholeNumber('Informe quantas pessoas por equipe.'),
     projectSlots: wholeNumber('A turma precisa comportar ao menos um projeto.'),

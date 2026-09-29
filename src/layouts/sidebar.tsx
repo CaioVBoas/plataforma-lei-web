@@ -1,82 +1,78 @@
 import type { ReactNode } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { BrandMark } from '@/components/ui/brandMark';
-import { BookIcon, BuildingIcon, FolderIcon, HomeIcon, QuestionIcon, TrayIcon } from '@/components/ui/icons';
-import { isMyReservation } from '@/domain/reservation';
-import { useMenu } from '@/features/demands/useDemands';
-import { useAgenda } from '@/features/projects/shared/hooks/useAgenda';
-import { needsAttention } from '@/features/projects/shared/utils/agenda';
+import { BrandMark, BrandSymbol } from '@/components/ui/brandMark';
 import { paths } from '@/routes/paths';
 import { cn } from '@/utils/cn';
-import { AccountMenu } from './accountMenu';
 
 interface NavItemProps {
   to: string;
   icon: ReactNode;
   label: string;
   active: boolean;
-  badge?: number;
+  collapsed?: boolean;
   onNavigate?: () => void;
 }
 
-const NavItem = ({ to, icon, label, active, badge, onNavigate }: NavItemProps) => (
+const NavItem = ({ to, icon, label, active, collapsed, onNavigate }: NavItemProps) => (
   <Link
     to={to}
     onClick={onNavigate}
     aria-current={active ? 'page' : undefined}
+    title={collapsed ? label : undefined}
     className={cn(
-      'flex h-8 items-center gap-2.5 rounded-md px-2.5 text-sm transition-colors duration-100',
-      active ? 'bg-fill-strong font-medium text-ink' : 'text-ink hover:bg-fill',
+      'flex h-9 items-center gap-2.5 rounded-lg text-sm transition-colors duration-150',
+      collapsed ? 'justify-center' : 'px-3',
+      active ? 'bg-brand font-semibold text-white' : 'text-ink-2 hover:bg-brand-50 hover:text-brand-strong',
     )}
   >
-    <span className={active ? 'text-accent' : 'text-ink-2'}>{icon}</span>
-    <span className="min-w-0 flex-1 truncate">{label}</span>
-    {Boolean(badge) && (
-      <span className="min-w-5 rounded-full bg-accent px-1.5 text-center text-[11px] leading-5 font-semibold text-white tabular-nums">{badge}</span>
-    )}
+    <span className={active ? 'text-white' : 'text-ink-3'}>{icon}</span>
+    <span className={collapsed ? 'sr-only' : 'min-w-0 flex-1 truncate'}>{label}</span>
   </Link>
 );
 
-/** A ordem da navegação segue o caminho do docente: o que fazer, escolher, acompanhar e a base. */
-const NAVIGATION = [
-  { to: paths.home, label: 'Início', icon: <HomeIcon /> },
-  { to: paths.menu, label: 'Cardápio', icon: <TrayIcon /> },
-  { to: paths.projects, label: 'Projetos', icon: <FolderIcon /> },
-  { to: paths.disciplines, label: 'Disciplinas', icon: <BookIcon /> },
-  { to: paths.organizations, label: 'Organizações', icon: <BuildingIcon /> },
-];
+export interface NavEntry {
+  to: string;
+  label: string;
+  icon: ReactNode;
+}
 
-export const Sidebar = ({ onNavigate }: { onNavigate?: () => void }) => {
+/** O Início da organização é o prefixo de todas as rotas dela, então só vale como ativo na própria página. */
+const isActive = (pathname: string, to: string, homePath: string) => (to === homePath ? pathname === to : pathname.startsWith(to));
+
+export interface SidebarConfig {
+  /** Nome acessível da navegação principal. */
+  label: string;
+  homePath: string;
+  navigation: NavEntry[];
+  /** Links de apoio no pé da barra. O portal público nunca aparece como ativo. */
+  footer: NavEntry[];
+}
+
+interface SidebarProps extends SidebarConfig {
+  /** Só ícones, para dar mais largura às telas. */
+  collapsed?: boolean;
+  onNavigate?: () => void;
+}
+
+export const Sidebar = ({ label, homePath, navigation, footer, collapsed, onNavigate }: SidebarProps) => {
   const { pathname } = useLocation();
-  const { agenda = [] } = useAgenda();
-  const { data: menu = [] } = useMenu();
-  // O único contador da navegação responde "quanta coisa pede decisão minha agora":
-  // etapas com prazo perto e reservas abertas.
-  const pendingSteps = agenda.filter(needsAttention).length + menu.filter(isMyReservation).length;
 
   return (
-    <div className="flex h-full flex-col px-3 pt-5 pb-3">
-      <Link to={paths.home} onClick={onNavigate} className="mb-7 px-2.5">
-        <BrandMark />
+    <div className={cn('flex h-full flex-col pt-3 pb-3', collapsed ? 'px-2.5' : 'px-3')}>
+      <Link to={homePath} onClick={onNavigate} className={cn('mb-6 flex h-10 items-center', collapsed ? 'justify-center' : 'px-2.5')}>
+        {collapsed ? <BrandSymbol /> : <BrandMark />}
       </Link>
 
-      <nav aria-label="Portal do docente" className="flex flex-col gap-0.5">
-        {NAVIGATION.map((item) => (
-          <NavItem
-            key={item.to}
-            {...item}
-            active={pathname.startsWith(item.to)}
-            badge={item.to === paths.home ? pendingSteps : undefined}
-            onNavigate={onNavigate}
-          />
+      <nav aria-label={label} className="flex flex-col gap-0.5">
+        {navigation.map((item) => (
+          <NavItem key={item.to} {...item} active={isActive(pathname, item.to, homePath)} collapsed={collapsed} onNavigate={onNavigate} />
         ))}
       </nav>
 
-      <div className="mt-auto flex flex-col gap-0.5">
-        <NavItem to={paths.guide} label="Como funciona" icon={<QuestionIcon />} active={pathname.startsWith(paths.guide)} onNavigate={onNavigate} />
-        <div className="mt-2 border-t border-line pt-2">
-          <AccountMenu onNavigate={onNavigate} />
-        </div>
+      <div className="mt-auto flex flex-col gap-0.5 border-t border-line pt-3">
+        {footer.map((item) => (
+          <NavItem key={item.to} {...item} active={item.to !== paths.landing && isActive(pathname, item.to, homePath)} collapsed={collapsed} onNavigate={onNavigate} />
+        ))}
       </div>
     </div>
   );

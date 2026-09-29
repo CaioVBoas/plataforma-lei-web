@@ -3,8 +3,10 @@ import { ACCOUNT } from './seed/account';
 import { CALENDAR } from './seed/calendar';
 import { DEMANDS } from './seed/demands';
 import { DISCIPLINES } from './seed/disciplines';
+import { ORG_ACCOUNT } from './seed/orgAccount';
 import { ORGANIZATIONS } from './seed/organizations';
 import { PROJECTS } from './seed/projects';
+import { SUBMISSIONS } from './seed/submissions';
 
 /** O backend guarda o contato junto da organização, mas só o entrega a quem tem projeto com ela. */
 export type OrganizationRecord = Organization & { contact: OrganizationContact };
@@ -20,6 +22,10 @@ export const db = {
   demands: structuredClone(DEMANDS),
   disciplines: structuredClone(DISCIPLINES),
   projects: structuredClone(PROJECTS),
+  /** Quem está no portal da organização. */
+  orgAccount: structuredClone(ORG_ACCOUNT),
+  /** Pedidos das organizações que ainda não entraram no cardápio. */
+  submissions: structuredClone(SUBMISSIONS),
 };
 
 export class NotFoundError extends Error {

@@ -1,10 +1,23 @@
-export const BrandMark = () => (
-  <span className="flex items-center gap-2">
-    <span aria-hidden="true" className="flex size-6 shrink-0 items-center justify-center rounded-[6px] bg-accent">
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M7 5l7 7-7 7M17 12h2" />
-      </svg>
-    </span>
-    <span className="text-[15px] font-semibold tracking-[-0.01em] text-ink">Aperta o PLEI</span>
-  </span>
+import horizontalOnDark from '@/assets/brand/horizontal/branco.svg';
+import horizontal from '@/assets/brand/horizontal/principal.svg';
+import symbol from '@/assets/brand/simbolo/petroleo-600.svg';
+import { cn } from '@/utils/cn';
+
+interface BrandMarkProps {
+  /** Versão branca, para o painel petróleo da tela de entrada. */
+  onDark?: boolean;
+  className?: string;
+}
+
+/**
+ * Logotipo horizontal do PLEI: o mascote com o botão de play e o
+ * nome. Vem dos arquivos oficiais em `src/assets/brand`; não redesenhar aqui.
+ */
+export const BrandMark = ({ onDark = false, className }: BrandMarkProps) => (
+  <img src={onDark ? horizontalOnDark : horizontal} alt="PLEI" width={80} height={32} className={cn('h-8 w-auto self-start', className)} />
+);
+
+/** Só o símbolo, para a barra lateral recolhida. */
+export const BrandSymbol = ({ className }: { className?: string }) => (
+  <img src={symbol} alt="PLEI" width={32} height={32} className={cn('size-8', className)} />
 );

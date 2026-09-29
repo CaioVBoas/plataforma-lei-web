@@ -1,27 +1,48 @@
 import { useMemo } from 'react';
-import { projectStage, type ProjectStage } from '@/domain/projectLifecycle';
-import type { Project } from '@/domain/types';
+import { isOverdue, nextMilestone, projectStage, type ProjectStage } from '@/domain/projectLifecycle';
+import type { IsoDate, Milestone, Project } from '@/domain/types';
 import { useCalendar } from '@/features/calendar/useCalendar';
 import { useProjects } from '../shared/hooks/useProjects';
 
-const EMPTY_GROUPS = (): Record<ProjectStage, Project[]> => ({ planning: [], running: [], done: [] });
+export interface ProjectListItem {
+  project: Project;
+  stage: ProjectStage;
+  /** Próxima etapa pendente; ausente quando o projeto já foi encerrado. */
+  next?: Milestone;
+  overdue: boolean;
+  /** A data que importa na linha: o prazo da próxima etapa ou o dia do encerramento. */
+  date?: IsoDate;
+}
 
-/** Os projetos agrupados pelo estado calculado das etapas, com a data de hoje para os prazos. */
+const STAGE_ORDER: Record<ProjectStage, number> = { planning: 0, running: 1, done: 2 };
+
+/** Os projetos com o estado calculado das etapas, na ordem em que passam por eles. */
 export const useProjectsList = () => {
   const projectsQuery = useProjects();
   const calendarQuery = useCalendar();
   const projects = projectsQuery.data;
+  const today = calendarQuery.data?.today;
 
-  const byStage = useMemo(() => {
-    const groups = EMPTY_GROUPS();
-    for (const project of projects ?? []) groups[projectStage(project.milestones)].push(project);
-    return groups;
-  }, [projects]);
+  const items = useMemo<ProjectListItem[]>(() => {
+    if (!projects || !today) return [];
+    return projects
+      .map((project) => {
+        const next = nextMilestone(project.milestones);
+        const closing = project.milestones.find((milestone) => milestone.id === 'closing');
+        return {
+          project,
+          stage: projectStage(project.milestones),
+          next,
+          overdue: next ? isOverdue(next, today) : false,
+          date: next ? next.dueAt : closing?.doneAt,
+        };
+      })
+      .sort((a, b) => STAGE_ORDER[a.stage] - STAGE_ORDER[b.stage] || (a.stage === 'done' ? -1 : 1) * (a.date ?? '').localeCompare(b.date ?? ''));
+  }, [projects, today]);
 
   return {
-    byStage,
-    total: projects?.length ?? 0,
-    today: calendarQuery.data?.today,
+    items,
+    today,
     isPending: projectsQuery.isPending || calendarQuery.isPending,
     error: projectsQuery.error ?? calendarQuery.error,
     refetch: () => Promise.all([projectsQuery.refetch(), calendarQuery.refetch()]),

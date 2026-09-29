@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { PlusIcon, TrayIcon } from '@/components/ui/icons';
 import { Link, useSearchParams } from 'react-router-dom';
 import { LoadingState } from '@/components/feedback/queryStates';
 import { Button } from '@/components/ui/button';
@@ -6,7 +7,7 @@ import { buttonClassName } from '@/components/ui/buttonStyles';
 import { EmptyState } from '@/components/ui/emptyState';
 import { SearchInput } from '@/components/ui/formControls';
 import { Page } from '@/components/ui/page';
-import { SegmentedControl } from '@/components/ui/segmentedControl';
+import { UnderlineTabs } from '@/components/ui/underlineTabs';
 import { formatShortDate, isLinkWindowOpen } from '@/domain/calendar';
 import { rankDisciplines } from '@/domain/matching';
 import { isMyReservation, MAX_ACTIVE_RESERVATIONS, RESERVATION_DAYS } from '@/domain/reservation';
@@ -37,14 +38,19 @@ export const MenuPage = () => {
   const { data: calendar } = useCalendar();
 
   // Filtro e busca moram na URL para que voltar do detalhe devolva o mesmo cardápio.
-  const updateParams = (next: { ver?: Scope; busca?: string }) => {
-    const params = new URLSearchParams(searchParams);
-    if (next.ver !== undefined) params.set('ver', next.ver);
-    if (next.busca !== undefined) params.set('busca', next.busca);
-    if (params.get('ver') === 'turmas') params.delete('ver');
-    if (!params.get('busca')) params.delete('busca');
-    setSearchParams(params, { replace: true });
-  };
+  // Parte sempre da URL mais recente, para trocar de aba e digitar logo em seguida não perder nada.
+  const updateParams = (next: { ver?: Scope; busca?: string }) =>
+    setSearchParams(
+      (current) => {
+        const params = new URLSearchParams(current);
+        if (next.ver !== undefined) params.set('ver', next.ver);
+        if (next.busca !== undefined) params.set('busca', next.busca);
+        if (params.get('ver') === 'turmas') params.delete('ver');
+        if (!params.get('busca')) params.delete('busca');
+        return params;
+      },
+      { replace: true },
+    );
 
   const ranked = useMemo(
     () =>
@@ -89,6 +95,7 @@ export const MenuPage = () => {
           description="O cardápio mostra as demandas que combinam com o que suas turmas trabalham."
           action={
             <Link to={paths.newDiscipline} className={buttonClassName({ variant: 'primary' })}>
+              <PlusIcon size={15} />
               Cadastrar disciplina
             </Link>
           }
@@ -101,6 +108,7 @@ export const MenuPage = () => {
         description="Novas demandas chegam toda semana. Você também pode ver o cardápio inteiro e revisar as competências das suas disciplinas."
         action={
           <Button variant="secondary" onClick={() => updateParams({ ver: 'todas' })}>
+            <TrayIcon size={16} />
             Ver o cardápio inteiro
           </Button>
         }
@@ -116,8 +124,9 @@ export const MenuPage = () => {
         </p>
       )}
 
-      <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
-        <SegmentedControl
+      <div className="mb-3 flex flex-wrap items-end justify-between gap-x-6 gap-y-3 border-b border-line">
+        <UnderlineTabs
+          bordered={false}
           label="Quais demandas mostrar"
           value={scope}
           onChange={(ver) => updateParams({ ver })}
@@ -132,15 +141,15 @@ export const MenuPage = () => {
           placeholder="Buscar no cardápio"
           value={search}
           onChange={(event) => updateParams({ busca: event.target.value })}
-          containerClassName="w-full sm:w-[280px]"
+          containerClassName="mb-2 w-full sm:w-[280px]"
         />
       </div>
-      <p className="mb-6 text-[13px] text-ink-3">
+      <p className="mb-6 text-[13px] text-ink-2">
         Você tem {byScope.reservas.length} de {MAX_ACTIVE_RESERVATIONS} reservas. Cada uma guarda a demanda por {RESERVATION_DAYS} dias enquanto você decide.
       </p>
 
       {visible.length > 0 ? (
-        <ul className="grid gap-4 md:grid-cols-2">
+        <ul className="grid grid-cols-1 gap-4 md:grid-cols-2">
           {visible.map(({ demand, best }) => (
             <li key={demand.id}>
               <DemandCard demand={demand} best={best} today={calendar.today} />

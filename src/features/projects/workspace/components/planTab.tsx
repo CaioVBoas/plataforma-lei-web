@@ -116,7 +116,7 @@ export const PlanTab = ({ project, today }: { project: Project; today: IsoDate }
 
   return (
     <div>
-      <p className="mb-8 max-w-[68ch] text-sm leading-relaxed text-ink-2">
+      <p className="mb-8 text-sm leading-relaxed text-ink-2">
         {locked && registeredAt
           ? `Registrado no SIGAA em ${formatShortDate(registeredAt)}${project.sigaaCode ? ` com o código ${project.sigaaCode}` : ''}. Este é o texto oficial e não muda mais por aqui.`
           : 'Este é o texto que vai para o SIGAA, já com os limites de cada campo. As mudanças são salvas quando você sai do campo.'}

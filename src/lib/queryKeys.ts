@@ -14,4 +14,12 @@ export const queryKeys = {
   discipline: (id: string) => ['disciplines', id],
   organizations: ['organizations'],
   organization: (id: string) => ['organizations', id],
+  /* Portal da organização: tudo sob "org", para não se misturar com o cache do docente. */
+  org: ['org'],
+  orgAccount: ['org', 'account'],
+  orgProfile: ['org', 'profile'],
+  orgDemands: ['org', 'demands'],
+  orgDemand: (id: string) => ['org', 'demand', id],
+  orgProjects: ['org', 'projects'],
+  orgProject: (id: string) => ['org', 'project', id],
 } as const;

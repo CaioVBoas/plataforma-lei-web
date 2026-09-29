@@ -3,73 +3,70 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { QueryView } from '@/components/feedback/queryStates';
 import { useToast } from '@/components/feedback/toastContext';
 import { Button } from '@/components/ui/button';
-import { GroupedList, ListRow } from '@/components/ui/groupedList';
-import { Page, Section } from '@/components/ui/page';
-import { StatusLabel } from '@/components/ui/statusLabel';
-import { matchDiscipline } from '@/domain/matching';
+import { cardGridClassName } from '@/components/ui/card';
+import { CheckIcon } from '@/components/ui/icons';
+import { ItemList } from '@/components/ui/itemList';
+import { FactGrid, Page, Section } from '@/components/ui/page';
+import { ProfileHeader } from '@/components/ui/profileHeader';
+import { Tag } from '@/components/ui/tag';
 import { useCalendar } from '@/features/calendar/useCalendar';
+import { DemandCard } from '@/features/demands/components/demandCard';
 import { useMenu } from '@/features/demands/useDemands';
 import { ProjectRow } from '@/features/projects/shared/components/projectRow';
 import { useProjects } from '@/features/projects/shared/hooks/useProjects';
+import { useScrollToHash } from '@/hooks/useScrollToHash';
 import { paths } from '@/routes/paths';
+import { pluralize } from '@/utils/format';
+import { CoTeachers } from './components/coTeachers';
 import { DisciplineForm } from './components/disciplineForm';
 import { useDiscipline, useRemoveDiscipline, useUpdateDiscipline } from './useDisciplines';
 import type { DisciplineWithUsage } from './types';
-import { disciplineMeta, slotsLabel } from './utils/disciplinePresentation';
+import { LEVEL_COPY, slotsLabel } from './utils/disciplinePresentation';
+import { matchingDemands } from './utils/matchingDemands';
+
+const Empty = ({ children }: { children: string }) => <p className="text-sm text-ink-3">{children}</p>;
 
 const DisciplineProjects = ({ discipline }: { discipline: DisciplineWithUsage }) => {
   const { data: projects = [] } = useProjects();
   const { data: calendar } = useCalendar();
   const own = projects.filter((project) => project.disciplineId === discipline.id);
-  if (own.length === 0 || !calendar) return null;
+  if (!calendar) return null;
+  if (own.length === 0) return <Empty>Nenhum projeto nesta turma ainda. Veja as demandas que combinam logo abaixo.</Empty>;
 
   return (
-    <Section title="Projetos" description={discipline.isCurrent ? slotsLabel(discipline) : undefined}>
-      <GroupedList>
-        {own.map((project) => (
-          <ProjectRow key={project.id} project={project} today={calendar.today} />
-        ))}
-      </GroupedList>
-    </Section>
+    <ItemList>
+      {own.map((project) => (
+        <ProjectRow key={project.id} project={project} today={calendar.today} />
+      ))}
+    </ItemList>
   );
 };
 
-/** Só faz sentido para a turma atual: as antigas não recebem demandas (regra 4). */
+/** Demandas livres em que a turma cobre metade das competências e que cabem na altura do curso, como no cardápio. */
 const MatchingDemands = ({ discipline }: { discipline: DisciplineWithUsage }) => {
   const { data: menu = [] } = useMenu();
-  // Reservada por colega não está disponível para esta turma.
-  const demands = menu.filter((demand) => demand.status === 'open' || demand.reservation?.mine);
-  if (!discipline.isCurrent) return null;
-  const matches = demands.map((demand) => ({ demand, match: matchDiscipline(demand, discipline) })).filter(({ match }) => match.fits);
+  const { data: calendar } = useCalendar();
+  const matches = matchingDemands(menu, discipline);
+  if (!calendar) return null;
+  if (matches.length === 0) return <Empty>Nenhuma demanda livre combina agora. Revise as competências da turma, logo abaixo, se ela trabalha mais coisas.</Empty>;
 
   return (
-    <Section title="Demandas que combinam" description="Demandas livres no cardápio em que a turma cobre pelo menos metade das competências pedidas.">
-      {matches.length > 0 ? (
-        <GroupedList>
-          {matches.map(({ demand, match }) => (
-            <ListRow key={demand.id} to={paths.demand(demand.id)}>
-              <p className="text-[13px] text-ink-3">{demand.organization.name}</p>
-              <p className="mt-0.5 text-[15px] font-medium text-ink">{demand.title}</p>
-              <p className="mt-1 text-[13px] text-ink-2">
-                Cobre {match.covered.length} de {demand.skills.length} competências
-              </p>
-            </ListRow>
-          ))}
-        </GroupedList>
-      ) : (
-        <p className="text-sm text-ink-2">Nenhuma demanda livre no cardápio combina agora. Revise as competências acima se a turma trabalha mais coisas.</p>
-      )}
-    </Section>
+    <ul className={cardGridClassName}>
+      {matches.map(({ demand, match }) => (
+        <li key={demand.id}>
+          <DemandCard demand={demand} best={match} today={calendar.today} />
+        </li>
+      ))}
+    </ul>
   );
 };
 
-const DisciplineView = ({ discipline }: { discipline: DisciplineWithUsage }) => {
+const DisciplineSettings = ({ discipline }: { discipline: DisciplineWithUsage }) => {
   const formId = useId();
   const toast = useToast();
   const navigate = useNavigate();
   const update = useUpdateDiscipline();
   const remove = useRemoveDiscipline();
-  const hasProjects = discipline.activeProjects > 0;
 
   const removeDiscipline = () =>
     remove.mutate(discipline.id, {
@@ -81,48 +78,96 @@ const DisciplineView = ({ discipline }: { discipline: DisciplineWithUsage }) => 
     });
 
   return (
+    <div className="overflow-hidden rounded-lg border border-line">
+      <div className="p-5 sm:p-6">
+        <DisciplineForm
+          key={discipline.id}
+          formId={formId}
+          defaultValues={discipline}
+          onSubmit={(input) => update.mutate({ id: discipline.id, input }, { onSuccess: () => toast.show('Disciplina atualizada.') })}
+        />
+        {update.isError && (
+          <p role="alert" className="mt-4 text-sm text-critical">
+            {update.error.message}
+          </p>
+        )}
+      </div>
+      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line bg-canvas px-5 py-3.5 sm:px-6">
+        {discipline.activeProjects === 0 ? (
+          <Button variant="destructive" size="sm" onClick={removeDiscipline}>
+            Remover disciplina
+          </Button>
+        ) : (
+          <span className="text-[13px] text-ink-3">Com projeto em curso, a disciplina não pode ser removida.</span>
+        )}
+        <Button variant="primary" type="submit" form={formId} disabled={update.isPending}>
+          <CheckIcon size={15} />
+          Salvar alterações
+        </Button>
+      </div>
+    </div>
+  );
+};
+
+/**
+ * A disciplina em uma página: o resumo da turma na capa e, em seguida, os
+ * projetos, as demandas que combinam, quem divide a turma e o formulário.
+ */
+const DisciplineView = ({ discipline }: { discipline: DisciplineWithUsage }) => {
+  const { data: projects = [] } = useProjects();
+  const projectCount = projects.filter((project) => project.disciplineId === discipline.id).length;
+  useScrollToHash();
+
+  return (
     <Page
       title={discipline.name}
       back={{ to: paths.disciplines, label: 'Disciplinas' }}
-      subtitle={
-        <span className="flex flex-wrap items-center gap-x-3 gap-y-1">
-          {discipline.isCurrent ? <StatusLabel tone="positive">Recebendo demandas</StatusLabel> : <StatusLabel tone="neutral">Semestre encerrado</StatusLabel>}
-          <span>
-            {discipline.semester} · {disciplineMeta(discipline)}
-          </span>
-        </span>
+      hero={
+        <ProfileHeader
+          avatar={
+            <span className="flex size-[72px] items-center justify-center rounded-lg bg-monogram text-[13px] font-bold text-monogram-ink tabular-nums">
+              {discipline.code || discipline.name.charAt(0)}
+            </span>
+          }
+          eyebrow={`Semestre ${discipline.semester}`}
+          title={discipline.name}
+          meta={
+            <Tag tone={discipline.isCurrent ? 'positive' : 'neutral'}>{discipline.isCurrent ? 'Recebendo demandas' : 'Semestre encerrado'}</Tag>
+          }
+        />
       }
     >
-      <DisciplineProjects discipline={discipline} />
-      <MatchingDemands discipline={discipline} />
+      <FactGrid
+        columns={3}
+        items={[
+          { label: 'Estudantes', value: `${discipline.students} em equipes de ${discipline.teamSize}` },
+          { label: 'Altura do curso', value: `${LEVEL_COPY[discipline.level].label}, ${LEVEL_COPY[discipline.level].periods}` },
+          { label: 'Vagas de projeto', value: discipline.isCurrent ? `${slotsLabel(discipline)} de ${discipline.projectSlots}` : pluralize(projectCount, 'projeto', 'projetos') },
+        ]}
+      />
+      <div className="mt-4 flex flex-wrap gap-1.5" aria-label="Competências da turma">
+        {discipline.skills.map((skill) => (
+          <Tag key={skill}>{skill}</Tag>
+        ))}
+      </div>
+
+      <Section id="projetos" title="Projetos" description={pluralize(projectCount, 'projeto nesta turma', 'projetos nesta turma')} compact>
+        <DisciplineProjects discipline={discipline} />
+      </Section>
 
       {discipline.isCurrent && (
-        <Section title="Turma" description="Mudar as competências muda na hora quais demandas combinam com esta disciplina.">
-          <div className="rounded-lg border border-line p-5 sm:p-6">
-            <DisciplineForm
-              key={discipline.id}
-              formId={formId}
-              defaultValues={discipline}
-              onSubmit={(input) => update.mutate({ id: discipline.id, input }, { onSuccess: () => toast.show('Disciplina atualizada.') })}
-            />
-            {update.isError && (
-              <p role="alert" className="mt-4 text-sm text-critical">
-                {update.error.message}
-              </p>
-            )}
-            <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
-              {!hasProjects ? (
-                <Button variant="destructive" size="sm" onClick={removeDiscipline}>
-                  Remover disciplina
-                </Button>
-              ) : (
-                <span />
-              )}
-              <Button variant="primary" type="submit" form={formId} disabled={update.isPending}>
-                Salvar alterações
-              </Button>
-            </div>
-          </div>
+        <Section id="demandas" title="Demandas que combinam" description="Livres no cardápio, cobrem metade das competências e cabem na altura do curso." compact>
+          <MatchingDemands discipline={discipline} />
+        </Section>
+      )}
+
+      <Section id="docentes" title="Docentes" description="Quem divide a disciplina vê e edita os mesmos projetos." compact>
+        <CoTeachers discipline={discipline} />
+      </Section>
+
+      {discipline.isCurrent && (
+        <Section id="turma" title="Turma" description="Mudar as competências ou a altura do curso muda na hora as demandas que combinam." compact>
+          <DisciplineSettings discipline={discipline} />
         </Section>
       )}
     </Page>

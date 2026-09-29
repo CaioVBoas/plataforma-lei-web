@@ -33,4 +33,15 @@ export const useRemoveDiscipline = () => {
   });
 };
 
+/** Convidar ou tirar um colega muda a disciplina e o que ele vê nos projetos dela. */
+export const useInviteCoTeacher = () => {
+  const invalidate = useInvalidateQueries();
+  return useMutation({ mutationFn: disciplinesApi.inviteCoTeacher, onSuccess: () => invalidate([queryKeys.disciplines, queryKeys.projects]) });
+};
+
+export const useRemoveCoTeacher = () => {
+  const invalidate = useInvalidateQueries();
+  return useMutation({ mutationFn: disciplinesApi.removeCoTeacher, onSuccess: () => invalidate([queryKeys.disciplines, queryKeys.projects]) });
+};
+
 export const useSkillCatalog = () => useQuery({ queryKey: queryKeys.skillCatalog, queryFn: disciplinesApi.getSkillCatalog, staleTime: Infinity });

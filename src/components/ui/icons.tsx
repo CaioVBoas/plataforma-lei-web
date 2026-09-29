@@ -115,3 +115,66 @@ export const ArrowUpRightIcon = (props: IconProps) => (
     <path d="M7.5 16.5l9-9M9 7.5h7.5V15" />
   </IconBase>
 );
+/** Três pontos na vertical: o menu de ações de um item. */
+export const MoreIcon = (props: IconProps) => (
+  <IconBase {...props}>
+    <circle cx="12" cy="5.5" r="1.1" fill="currentColor" />
+    <circle cx="12" cy="12" r="1.1" fill="currentColor" />
+    <circle cx="12" cy="18.5" r="1.1" fill="currentColor" />
+  </IconBase>
+);
+export const BellIcon = (props: IconProps) => (
+  <IconBase {...props}>
+    <path d="M6.5 16.5V11a5.5 5.5 0 0111 0v5.5l1.5 1.5H5l1.5-1.5zM10 20.5a2.2 2.2 0 004 0" />
+  </IconBase>
+);
+export const LogoutIcon = (props: IconProps) => (
+  <IconBase {...props}>
+    <path d="M14 4.5H6.5A1.5 1.5 0 005 6v12a1.5 1.5 0 001.5 1.5H14M10.5 12H20M16.5 8.5L20 12l-3.5 3.5" />
+  </IconBase>
+);
+export const UserIcon = (props: IconProps) => (
+  <IconBase {...props}>
+    <circle cx="12" cy="8.5" r="3.8" />
+    <path d="M4.5 20c1-3.6 4-5.5 7.5-5.5s6.5 1.9 7.5 5.5" />
+  </IconBase>
+);
+/** Painel com a coluna da esquerda marcada: abrir e recolher a barra lateral. */
+export const SidebarIcon = (props: IconProps) => (
+  <IconBase {...props}>
+    <rect x="3.5" y="4.5" width="17" height="15" rx="2" />
+    <path d="M9.5 4.5v15" />
+  </IconBase>
+);
+export const ArrowRightIcon = (props: IconProps) => (
+  <IconBase strokeWidth={2} {...props}>
+    <path d="M5 12h14M13.5 6.5L19 12l-5.5 5.5" />
+  </IconBase>
+);
+export const BookmarkIcon = (props: IconProps) => (
+  <IconBase {...props}>
+    <path d="M7 4.5h10A1.5 1.5 0 0118.5 6v14L12 16l-6.5 4V6A1.5 1.5 0 017 4.5z" />
+  </IconBase>
+);
+export const MailIcon = (props: IconProps) => (
+  <IconBase {...props}>
+    <rect x="3.5" y="5.5" width="17" height="13" rx="2" />
+    <path d="M4 7l8 6 8-6" />
+  </IconBase>
+);
+export const UsersIcon = (props: IconProps) => (
+  <IconBase {...props}>
+    <circle cx="9" cy="8.5" r="3.3" />
+    <path d="M3 19.5c.8-3.2 3.1-5 6-5s5.2 1.8 6 5M15.5 5.4a3.3 3.3 0 010 6.2M17.5 14.8c1.8.6 3 2.2 3.5 4.7" />
+  </IconBase>
+);
+export const ChatIcon = (props: IconProps) => (
+  <IconBase {...props}>
+    <path d="M5 5.5h14A1.5 1.5 0 0120.5 7v8.5A1.5 1.5 0 0119 17h-7.5L7 20.5V17H5a1.5 1.5 0 01-1.5-1.5V7A1.5 1.5 0 015 5.5z" />
+  </IconBase>
+);
+export const SendIcon = (props: IconProps) => (
+  <IconBase {...props}>
+    <path d="M4.5 12L19.5 4.5l-4 15-3.8-6.2L4.5 12zM11.7 13.3l7.8-8.8" />
+  </IconBase>
+);

@@ -8,7 +8,7 @@ Este documento registra a revisão técnica da branch `feat/portal-docente`, o p
 
 ## 1. Diagnóstico
 
-A branch implementa a interface mockada do Portal do Docente do L.E.I., baseada no protótipo "Aperta o PLEI" e especificada em `docs/fluxos.md`.
+A branch implementa a interface mockada do Portal do Docente do L.E.I., baseada no protótipo "PLEI" e especificada em `docs/fluxos.md`.
 
 * **Build e typecheck:** `tsc -b && vite build` sem erros.
 * **Linter:** `oxlint` sem erros nem avisos.
@@ -44,14 +44,15 @@ src/features/
 ├── auth/           loginPage, useAuth, authApi, session, types
 ├── calendar/       useCalendar, calendarApi                      (sem tela: calendário do semestre)
 ├── demands/        menuPage, demandPage, useDemands, demandsApi, types
-│   ├── components/ adoptDemandModal, decisionPanel, demandCard
+│   ├── components/ adoptDemandModal, decisionPanel, demandCard, demandQuestions, invitationNote
 │   └── utils/      demandPresentation
 ├── disciplines/    disciplinesPage, disciplinePage, useDisciplines, disciplinesApi, disciplineSchema, types
-│   ├── components/ disciplineForm, newDisciplineModal
-│   └── utils/      disciplinePresentation
+│   ├── components/ coTeachers, disciplineForm, newDisciplineModal
+│   └── utils/      disciplinePresentation, matchingDemands
 ├── guide/          guidePage
 ├── home/           homePage
 ├── organizations/  organizationsPage, organizationPage, useOrganizations, organizationsApi, types
+│   └── components/ organizationMeta
 └── projects/       ver seção 3
 ```
 
@@ -75,8 +76,8 @@ Além disso, um único `useProjects.ts` juntava a consulta da lista, a consulta 
 ```text
 src/features/projects/
 ├── list/                              A lista de projetos
-│   ├── projectsPage.tsx
-│   └── useProjectsList.ts             Agrupa os projetos por estado
+│   ├── projectsPage.tsx               Tabela com abas por estado
+│   └── useProjectsList.ts             Estado, próxima etapa e atraso de cada projeto
 │
 ├── workspace/                         A tela de um projeto
 │   ├── projectPage.tsx
@@ -92,8 +93,8 @@ src/features/projects/
 └── shared/                            Usado pelos dois submódulos e por outras features
     ├── api/projectsApi.ts
     ├── components/
-    │   ├── projectRow.tsx             Lista de projetos e página de disciplina
-    │   └── milestoneTrack.tsx         Linha do projeto e cabeçalho do workspace
+    │   ├── projectRow.tsx             Projetos na página de disciplina
+    │   └── milestoneTrack.tsx         Cabeçalho do workspace
     ├── hooks/
     │   ├── useProjects.ts             Consulta de todos os projetos (lista, agenda, disciplina)
     │   ├── useAgenda.ts               Próximos passos (Início e barra lateral)
@@ -109,9 +110,9 @@ src/features/projects/
 
 A proposta original foi mantida, com três correções que o código exigiu:
 
-1. **`milestoneTrack.tsx` foi para `shared/components/`**, e não para `workspace/`. A linha do projeto, que está em `shared`, usa esse componente. Se ele ficasse no workspace, `shared` passaria a importar de `workspace`, que é exatamente o acoplamento que a estrutura quer evitar.
-2. **A consulta de todos os projetos (`useProjects`) ficou em `shared/hooks/`.** Ela não é só da listagem: a agenda do Início, a barra lateral e a página de disciplina também leem. `list/useProjectsList.ts` é uma camada fina por cima, que agrupa os projetos por estado.
-3. **Nada de lógica que não existe.** A lista não tem busca nem filtro, então `useProjectsList` só agrupa. Quando busca e filtro existirem, é ali que entram.
+1. **`milestoneTrack.tsx` foi para `shared/components/`**, e não para `workspace/`. Hoje só o cabeçalho do workspace o usa; ele fica em `shared` porque é leitura do ciclo do projeto, reaproveitável por qualquer tela que precise mostrar as seis etapas.
+2. **A consulta de todos os projetos (`useProjects`) ficou em `shared/hooks/`.** Ela não é só da listagem: a agenda do Início, a barra lateral e a página de disciplina também leem. `list/useProjectsList.ts` é uma camada fina por cima, que calcula o estado e a próxima etapa de cada projeto.
+3. **Nada de lógica que não existe.** `useProjectsList` calcula só o que a tabela mostra: estado, próxima etapa, atraso e a data da linha. O recorte por aba fica na página.
 
 ### 3.4. Regra de dependência
 
