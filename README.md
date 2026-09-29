@@ -1,6 +1,6 @@
-# Aperta o PL.E.I. · Portal público e portal do docente
+# PLEI · Portal público, portal do docente e portal da organização
 
-Organizações de fora da UFPE publicam problemas reais. O docente do CIn leva um deles para uma disciplina que está lecionando, e a turma resolve o problema com a organização dentro do semestre.
+Organizações de fora da UFPE submetem problemas reais. O L.E.I. faz a triagem e as demandas aprovadas entram no cardápio. O docente do CIn leva uma delas para uma disciplina que está lecionando, e a turma resolve o problema com a organização dentro do semestre.
 
 **Antes de mudar qualquer tela, leia [`docs/fluxos.md`](docs/fluxos.md).** O inventário do que está pronto e do que falta está em [`docs/requisitos.md`](docs/requisitos.md). Ele é a especificação do produto: os três objetos, as seis etapas do projeto, as regras de negócio e as regras de design.
 
@@ -18,7 +18,7 @@ npm run dev
 | `npm run build` | Typecheck (`tsc -b`) + build de produção |
 | `npm run lint` | Oxlint |
 
-A página inicial (`/`) é o portal público do L.E.I. Para entrar como docente, use qualquer e-mail `@ufpe.br` ou `@cin.ufpe.br` com qualquer senha, ou crie uma conta em **Criar conta**. Organização e estudante aparecem como "em breve".
+A página inicial (`/`) é o portal público do L.E.I. Para entrar como docente, use qualquer e-mail `@ufpe.br` ou `@cin.ufpe.br` com qualquer senha, ou crie uma conta em **Criar conta**. Para entrar como organização, escolha **Organização** na entrada e use qualquer e-mail e senha: a demonstração abre a conta do Hospital das Clínicas. Em **Criar conta** dá para cadastrar uma organização nova. O estudante aparece como "em breve".
 
 ## O produto em uma tela
 
@@ -33,6 +33,17 @@ A página inicial (`/`) é o portal público do L.E.I. Para entrar como docente,
 | Organizações | Com quem eu vou trabalhar? |
 | Como funciona | Tutorial dentro do portal |
 | Minha conta | Meus dados e minha foto |
+
+**Portal da organização** (`/organizacao`):
+
+| Item | Pergunta que responde |
+| --- | --- |
+| Início | O que pede minha atenção: ajuste do L.E.I., pergunta de docente, rascunho, etapa do projeto? |
+| Avisos (sino) | O que mudou nas minhas demandas e projetos? |
+| Demandas | Em que pé está cada pedido: em preparo, no cardápio, em projeto ou concluído? |
+| Submeter demanda | Como conto o problema para uma turma do CIn? |
+| Projetos | Que turma está trabalhando no meu problema e em que etapa? |
+| Perfil da organização | O que os docentes leem sobre nós e quem é o ponto focal? |
 
 No cardápio, o docente reserva uma demanda por 7 dias enquanto decide e depois a leva para uma disciplina. Todo projeto passa pelas mesmas seis etapas: revisar o plano, reunião de abertura, registro no SIGAA, entrega parcial, entrega final e encerramento. O estado do projeto (planejamento, em andamento, concluído) é calculado a partir delas.
 
@@ -59,7 +70,7 @@ src/
 │       ├── types.ts
 │       ├── components/  # Componentes da feature
 │       └── utils/       # Apresentação: textos, rótulos e agrupamentos
-├── layouts/         # Casca do portal: barra lateral recolhível, barra superior com avisos e conta
+├── layouts/         # Casca dos portais (portalLayout) e a configuração de cada perfil (teacherLayout, orgLayout)
 ├── mocks/           # Backend simulado: seed, banco em memória e handlers
 ├── routes/          # Rotas, caminhos (paths.ts) e guarda de autenticação
 ├── lib/             # Cliente HTTP, chaves do React Query e capas (covers.ts)
@@ -75,8 +86,9 @@ src/
 | `organizations` | Organizações e detalhe com contato e histórico |
 | `landing` | Portal público: abertura com fotos, perfis, boas-vindas, carrossel e como funciona |
 | `notifications` | Sino e página de avisos, derivados do cardápio, dos projetos e do calendário |
+| `orgPortal` | Portal da organização: Início, demandas (lista, detalhe com perguntas e formulário de envio em quatro etapas), projetos, perfil e avisos |
 | `guide` | Como funciona |
-| `account`, `auth`, `calendar` | Conta com foto, entrada e cadastro por perfil, calendário do semestre |
+| `account`, `auth`, `calendar` | Conta com foto, entrada e cadastro por perfil (docente e organização), calendário do semestre |
 
 ### Regras que valem para o projeto todo
 
@@ -98,7 +110,7 @@ src/
 
 ## Backend simulado e integração com a API
 
-Ainda não existe backend, então `src/mocks` faz esse papel. O `db.ts` guarda o estado em memória, semeado com as demandas reais do L.E.I. Os `handlers/` aplicam as regras de negócio e o `mockRequest` simula a latência de uma chamada HTTP. Recarregar a página volta ao cenário de demonstração, com a data fixa em 24 de agosto de 2026.
+Ainda não existe backend, então `src/mocks` faz esse papel. O `db.ts` guarda o estado em memória, semeado com as demandas reais do L.E.I. Os `handlers/` aplicam as regras de negócio e o `mockRequest` simula a latência de uma chamada HTTP. Recarregar a página volta ao cenário de demonstração, com a data fixa em 24 de agosto de 2026. Como os dois portais leem o mesmo banco em memória, dá para responder uma pergunta como organização, sair e entrar como docente (sem recarregar) para ver a resposta na demanda.
 
 Para integrar a API real, basta trocar o corpo das funções nos arquivos `*Api.ts` de cada feature. Hooks, páginas e componentes não mudam:
 
@@ -113,6 +125,7 @@ export const getMenu = () => api.get<Demand[]>('/menu').then((response) => respo
 
 - **Propor um projeto a uma organização**, sem partir de uma demanda do cardápio, ainda não tem fluxo. Por isso a página da organização não tem esse botão.
 - **Ementa, carga horária e nível da disciplina**, e as ações de duplicar, pausar e arquivar disciplina, dependem do modelo `Course` da API (seção 5 do plano de reestruturação).
-- Os **portais das organizações e dos estudantes** (publicar demanda, acompanhar o projeto, participar da turma) ainda não foram desenhados; entrada e cadastro já mostram esses perfis como "em breve".
+- A **triagem do L.E.I.** ainda não tem painel. A demanda enviada pela organização fica "Na triagem do L.E.I." e não chega sozinha ao cardápio; o pedido de ajuste e a aprovação vêm do seed. O matchmaking por IA entre demandas, docentes e disciplinas também fica de fora deste repositório.
+- O **portal dos estudantes** (participar da turma, contar horas) ainda não foi desenhado; entrada e cadastro mostram esse perfil como "em breve".
 - O **plano gerado** vem pronto do seed. Na versão real ele sai de um modelo de linguagem alimentado pela demanda e pela disciplina.
 - O **prazo de vinculação** e o calendário do semestre precisam vir do calendário acadêmico oficial.

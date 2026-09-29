@@ -1,16 +1,22 @@
 import { Link } from 'react-router-dom';
 import { BellIcon } from '@/components/ui/icons';
+import type { PortalNotification } from '@/features/notifications/buildNotifications';
 import { NotificationItem } from '@/features/notifications/notificationItem';
-import { useNotifications } from '@/features/notifications/useNotifications';
 import { usePopover } from '@/hooks/usePopover';
-import { paths } from '@/routes/paths';
 import { cn } from '@/utils/cn';
 
 const IN_POPOVER = 5;
 
+interface NotificationsBellProps {
+  notifications?: PortalNotification[];
+  /** Quantos avisos pedem decisão: o único contador do portal. */
+  pending: number;
+  /** Página com todos os avisos do perfil. */
+  allPath: string;
+}
+
 /** O sino da barra superior: o único contador do portal e os avisos mais recentes. */
-export const NotificationsBell = () => {
-  const { notifications = [], pending } = useNotifications();
+export const NotificationsBell = ({ notifications = [], pending, allPath }: NotificationsBellProps) => {
   const { open, toggle, close, containerRef } = usePopover();
 
   return (
@@ -49,7 +55,7 @@ export const NotificationsBell = () => {
             </ul>
           )}
           <div className="mt-1 border-t border-line p-1.5">
-            <Link to={paths.notifications} onClick={close} className="flex h-9 items-center justify-center rounded-md text-sm font-medium text-brand-strong hover:bg-brand-50">
+            <Link to={allPath} onClick={close} className="flex h-9 items-center justify-center rounded-md text-sm font-medium text-brand-strong hover:bg-brand-50">
               Ver todos os avisos
             </Link>
           </div>

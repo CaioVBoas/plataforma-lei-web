@@ -25,7 +25,7 @@ export const PAGE_FRAME = 'mx-auto w-full max-w-[1280px] px-4 pt-6 pb-20 sm:px-6
 /** Casca de toda tela do portal: voltar, título grande, subtítulo e ações à direita. */
 export const Page = ({ title, eyebrow, subtitle, meta, leading, back, hero, actions, children }: PageProps) => {
   useEffect(() => {
-    document.title = `${title} · Aperta o PLEI`;
+    document.title = `${title} · PLEI`;
   }, [title]);
 
   return (

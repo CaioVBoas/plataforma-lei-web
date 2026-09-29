@@ -1,4 +1,4 @@
-# Requisitos · Aperta o PLEI
+# Requisitos · PLEI
 
 Levantamento do que a plataforma faz hoje, do que foi verificado e do que ainda falta para ela cumprir o objetivo. A especificação do produto continua em [`fluxos.md`](fluxos.md); este documento é o inventário.
 
@@ -19,7 +19,7 @@ Levantamento do que a plataforma faz hoje, do que foi verificado e do que ainda 
 | Ator | O que precisa fazer | Situação |
 | --- | --- | --- |
 | Docente do CIn | Escolher demanda, levar para a turma, acompanhar as seis etapas | Portal do docente pronto (este repositório) |
-| Organização parceira | Publicar demanda, acompanhar o projeto, receber o resultado | A fazer: portal das organizações |
+| Organização parceira | Publicar demanda, acompanhar o projeto, receber o resultado | Portal da organização pronto (este repositório), contra o backend simulado |
 | Equipe do L.E.I. | Triar demandas, manter o calendário, acompanhar os projetos | A fazer: painel da coordenação |
 
 ---
@@ -38,7 +38,7 @@ Levantamento do que a plataforma faz hoje, do que foi verificado e do que ainda 
 | RF05a | Portal público: abertura com fotos de Pernambuco, porta de cada perfil, boas-vindas com a marca, carrossel do que há na plataforma, quatro passos animados e rodapé | Pronto |
 | RF05e | Capas com foto nas telas de detalhe de organizações e demandas (os cartões ficam sem foto), lidas de `src/assets/covers` pelo id | Parcial: 5 de 6 organizações com foto; NASE espera a foto da UFPE |
 | RF05d | Foto no painel da entrada e do cadastro, com o crédito que a licença CC BY-SA 4.0 exige | Pronto |
-| RF05b | Entrada e cadastro com escolha de perfil; organização e estudante aparecem como "em breve" | Pronto |
+| RF05b | Entrada e cadastro com escolha de perfil; estudante aparece como "em breve" | Pronto |
 | RF05c | Cadastro do docente com nome, e-mail institucional, departamento e senha, entrando direto no Início | Parcial: salva no backend simulado |
 
 ### 2.2. Início
@@ -65,7 +65,7 @@ Levantamento do que a plataforma faz hoje, do que foi verificado e do que ainda 
 | RF15 | Reservar por 7 dias, até 3 reservas ativas, liberar com um clique, expirar sozinha | Pronto |
 | RF16 | Reserva de colega visível com nome e data de fim | Pronto |
 | RF17 | "Avise-me se liberar" liga e desliga o aviso | Parcial: a demanda liberada aparece nos Avisos do portal; falta o e-mail |
-| RF17a | Perguntar à organização na demanda, numa conversa de altura fixa que rola por dentro (abre na mensagem mais recente, Enter envia), com o histórico visível para todos os docentes | Parcial: a pergunta é registrada; a resposta depende do L.E.I. repassar (sem portal da organização) |
+| RF17a | Perguntar à organização na demanda, numa conversa de altura fixa que rola por dentro (abre na mensagem mais recente, Enter envia), com o histórico visível para todos os docentes | Pronto: a organização responde no portal dela (RF45); falta o aviso por e-mail |
 | RF17b | Nível da demanda contra a altura do curso da turma: acima do nível não combina e não pode ser levada | Pronto |
 | RF17e | Turma que cobre menos da metade das competências: a janela de levar avisa que a demanda não serve e pede confirmação do docente, sem bloquear | Pronto |
 | RF17c | Condições da demanda (presencial, dados sensíveis, sigilo) e o que um semestre entrega, no cartão e no detalhe | Pronto |
@@ -99,6 +99,24 @@ Levantamento do que a plataforma faz hoje, do que foi verificado e do que ainda 
 | RF33 | Lista de organizações com demanda aberta primeiro e contagens em texto | Pronto |
 | RF34 | Detalhe com sobre, demandas abertas, seus projetos, contato (só com projeto) e histórico com o CIn | Pronto |
 | RF35 | Propor um projeto a uma organização sem partir de demanda | A fazer: fluxo não desenhado |
+
+### 2.6. Portal da organização
+
+| # | Requisito | Status |
+| --- | --- | --- |
+| RF36 | Entrar com e-mail e senha e cadastrar a organização (nome, tipo, local, quem cuida das demandas, e-mail e senha), entrando direto no Início | Parcial: qualquer e-mail entra na conta de demonstração; o cadastro salva no backend simulado |
+| RF37 | Sessão guarda o perfil; rota de um portal com sessão do outro volta ao Início do próprio perfil; sair volta à entrada do mesmo perfil | Pronto |
+| RF38 | Início com boas-vindas e números (na triagem, no cardápio, em projeto), o que pede atenção em cards e como uma demanda chega a uma turma | Pronto |
+| RF39 | Submeter demanda em quatro etapas (problema, o que a turma faz, como trabalham, revisar e enviar), com validação por etapa, etapa na URL e prévia do cartão do cardápio ao lado | Pronto |
+| RF40 | Salvar rascunho a qualquer momento só com o nome; excluir rascunho com confirmação | Pronto |
+| RF41 | Enviar para a triagem só com os campos obrigatórios; na triagem o texto não se edita | Pronto |
+| RF42 | Ajuste pedido pelo L.E.I. no topo do detalhe e do formulário; ajustar e reenviar | Parcial: o pedido vem do seed, sem painel da coordenação |
+| RF43 | Lista de demandas com abas Em preparo, No cardápio, Em projeto e Concluídas, estado em tag e a data que importa em cada estado | Pronto |
+| RF44 | Detalhe com o caminho em cinco passos, a situação e a única ação que cabe agora, a demanda como o docente lê e o cartão do cardápio | Pronto |
+| RF45 | Responder as perguntas dos docentes; a resposta aparece na hora para todos os docentes | Pronto |
+| RF46 | Projetos da organização com as seis etapas contadas do lado dela, próximo passo, contato do docente e o resultado no encerramento, sem o plano nem as anotações do docente | Pronto |
+| RF47 | Perfil da organização editável (o mesmo que os docentes veem) e dados de quem usa a conta | Parcial: salva no backend simulado |
+| RF48 | Sino e página de avisos: ajuste pedido e pergunta sem resposta pedem decisão; reserva e etapa chegando são novidade | Pronto |
 
 ---
 
@@ -153,8 +171,8 @@ Em ordem de prioridade para um piloto com docentes e organizações reais.
 | 1 | **Backend real** (`plataforma-lei-api`) com os ajustes da seção 5 do plano de reestruturação | Sem persistência nada do que o docente faz fica guardado |
 | 1 | **Login institucional da UFPE** | Identificar o docente de verdade e calcular "minha reserva" |
 | 1 | **Calendário acadêmico oficial** | Prazo de vinculação, meio e fim do semestre vêm dele |
-| 2 | **Portal das organizações**: publicar demanda, ver quem reservou, acompanhar etapas, confirmar a entrega | O outro lado do produto; hoje as demandas vêm do seed |
-| 2 | **Triagem do L.E.I.**: aprovar, pedir ajuste ou recusar demanda antes do cardápio | O cardápio promete demandas já triadas |
+| 2 | **Triagem do L.E.I.**: aprovar, pedir ajuste ou recusar demanda antes do cardápio, definindo altura do curso e recorte | O portal da organização já envia; sem a triagem, nada novo chega ao cardápio |
+| 2 | **Portal das organizações, o que falta**: confirmar o recebimento das entregas, retirar demanda do cardápio | O envio, as respostas e o acompanhamento já existem |
 | 2 | **Avisos por e-mail**: reserva perto de vencer, demanda liberada ("Avise-me"), resposta da organização, convite de colega, etapa atrasada | Hoje esses avisos só aparecem quando o docente abre o portal |
 | 3 | **Plano gerado por modelo de linguagem** a partir da demanda e da disciplina | Hoje o texto vem pronto do seed |
 | 3 | **Dados completos da disciplina** (ementa, carga horária) e ações de semestre (duplicar, pausar, arquivar) | Pedido nas telas, depende do modelo `Course` |

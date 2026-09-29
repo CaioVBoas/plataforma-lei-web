@@ -6,7 +6,7 @@ const WAVE = Array.from({ length: 10 }, () => 'q 20 -7 40 0 t 40 0').join(' ');
 const LINES = Array.from({ length: 10 }, (_, index) => 222 + index * 15);
 
 /**
- * O caranguejo do Aperta o PL.E.I. com a água passando por ele numa meia-lua:
+ * O caranguejo do PLEI com a água passando por ele numa meia-lua:
  * a metade de baixo do mascote fica "dentro do rio", em traço fino petróleo.
  * A água corre devagar e para quando a pessoa pede menos movimento.
  */

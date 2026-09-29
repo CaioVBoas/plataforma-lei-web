@@ -21,7 +21,7 @@ const PublicHeader = () => {
   return (
     <header className="sticky top-0 z-30 border-b border-line bg-surface">
       <div className={cn(FRAME, 'flex h-16 items-center gap-4')}>
-        <Link to={paths.landing} aria-label="Aperta o PL.E.I., página inicial">
+        <Link to={paths.landing} aria-label="PLEI, página inicial">
           <BrandMark />
         </Link>
         <nav aria-label="Acesso" className="ml-auto flex items-center gap-5">
@@ -135,7 +135,7 @@ const ROLE_ICON: Record<UserRole, ReactNode> = {
 
 const ROLE_ORDER: UserRole[] = ['organizacao', 'docente', 'estudante'];
 
-/** Uma porta para cada perfil, sobre a borda da abertura. Só o docente entra hoje. */
+/** Uma porta para cada perfil, sobre a borda da abertura. Docente e organização entram; o estudante ainda não. */
 const RoleStrip = () => (
   <section aria-label="Acesso por perfil" className={cn(FRAME, 'relative z-10 -mt-24')}>
     <ul className="grid overflow-hidden rounded-lg bg-surface shadow-sheet md:grid-cols-3">
@@ -153,7 +153,7 @@ const RoleStrip = () => (
               to={copy.available ? paths.loginAs(role) : paths.signup(role)}
               className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-accent-hover hover:underline"
             >
-              {copy.available ? 'Entrar como docente' : 'Quero participar'}
+              {copy.available ? `Entrar como ${copy.short.toLowerCase()}` : 'Quero participar'}
               <ArrowRightIcon size={14} />
             </Link>
           </li>
@@ -168,7 +168,7 @@ const Welcome = () => (
     <div className={cn(FRAME, 'grid items-center gap-10 lg:grid-cols-2 lg:gap-16')}>
       <div>
         <h2 className="text-[28px] leading-tight font-bold tracking-[-0.018em] text-balance text-ink sm:text-[32px]">
-          Bem-vindo(a) ao Aperta o PL.E.I., a plataforma de extensão do L.E.I.
+          Bem-vindo(a) ao PLEI, a plataforma de extensão do L.E.I.
         </h2>
         <p className="mt-5 text-[16px] leading-relaxed text-ink-2">
           O Laboratório de Extensão e Inovação do Centro de Informática da UFPE aproxima a universidade de quem precisa de tecnologia: ONGs, coletivos, órgãos
@@ -347,7 +347,7 @@ const Footer = () => (
 /** Portal público: abertura com fotos de Pernambuco, uma porta por perfil, boas-vindas, o que há na plataforma, o caminho em quatro passos e o rodapé. */
 export const LandingPage = () => {
   useEffect(() => {
-    document.title = 'Aperta o PL.E.I. · Extensão no CIn da UFPE';
+    document.title = 'PLEI · Extensão no CIn da UFPE';
   }, []);
 
   return (

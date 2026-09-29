@@ -3,9 +3,10 @@ import cinPhoto from '@/assets/portal/inicio/cin.webp';
 import { LoadingState } from '@/components/feedback/queryStates';
 import { buttonClassName } from '@/components/ui/buttonStyles';
 import { EmptyState } from '@/components/ui/emptyState';
-import { cardGridClassName, linkCardClassName } from '@/components/ui/card';
+import { cardGridClassName } from '@/components/ui/card';
+import { StepCard } from '@/components/ui/stepCard';
+import { WelcomeHero } from '@/components/ui/welcomeHero';
 import { CloseIcon, PlusIcon, TrayIcon } from '@/components/ui/icons';
-import type { StatusTone } from '@/components/ui/statusLabel';
 import { Page, Section } from '@/components/ui/page';
 import { formatShortDate, isLinkWindowOpen, semesterWeek } from '@/domain/calendar';
 import { freeSlots } from '@/domain/disciplineRules';
@@ -22,9 +23,7 @@ import type { DisciplineWithUsage } from '@/features/disciplines/types';
 import { useAgenda } from '@/features/projects/shared/hooks/useAgenda';
 import type { AgendaItem } from '@/features/projects/shared/utils/agenda';
 import { MILESTONE_COPY, milestoneDateLine } from '@/features/projects/shared/utils/projectPresentation';
-import { Tag } from '@/components/ui/tag';
 import { paths } from '@/routes/paths';
-import { cn } from '@/utils/cn';
 import { capitalize, pluralize } from '@/utils/format';
 
 const SUGGESTIONS_ON_HOME = 3;
@@ -53,31 +52,6 @@ const TutorialInvite = () => {
     </div>
   );
 };
-
-interface StepCardProps {
-  to: string;
-  kind: string;
-  tone: StatusTone;
-  title: string;
-  context: string;
-  when?: string;
-  overdue?: boolean;
-}
-
-/**
- * Cada próximo passo é um card: o tipo de passo em tag, a ação em destaque e
- * de onde ela vem. Em grade, o docente vê o dia inteiro sem ler linha a linha.
- */
-const StepCard = ({ to, kind, tone, title, context, when, overdue }: StepCardProps) => (
-  <Link to={to} className={linkCardClassName}>
-    <div className="flex flex-wrap items-center justify-between gap-2">
-      <Tag tone={tone}>{kind}</Tag>
-      {when && <span className={cn('text-[13px]', overdue ? 'font-medium text-caution' : 'text-ink-3')}>{when}</span>}
-    </div>
-    <p className="mt-3 text-headline group-hover:text-accent">{title}</p>
-    <p className="mt-1 line-clamp-2 text-[13px] leading-relaxed text-ink-2">{context}</p>
-  </Link>
-);
 
 interface NextStepsProps {
   agenda: AgendaItem[];
@@ -174,38 +148,6 @@ const semesterLine = (calendar: SemesterCalendar, disciplines: DisciplineWithUsa
   return `${base} Suas turmas têm ${pluralize(slots, 'vaga', 'vagas')} para projetos até ${formatShortDate(calendar.linkDeadline)}.`;
 };
 
-interface HeroProps {
-  firstName: string;
-  line: string;
-  stats: { value: number; label: string }[];
-}
-
-/**
- * Boas-vindas em petróleo sobre a foto do CIn, para o Início
- * ter cara de ponto de partida. Os números são o semestre do docente em um olhar.
- */
-const HomeHero = ({ firstName, line, stats }: HeroProps) => (
-  <section className="relative isolate overflow-hidden rounded-lg bg-brand px-6 py-9 text-white sm:px-8 sm:py-11">
-    <img src={cinPhoto} alt="" aria-hidden="true" className="absolute inset-0 -z-10 size-full object-cover" />
-    <div aria-hidden="true" className="absolute inset-0 -z-10 bg-brand-900/80" />
-    <div className="relative flex flex-wrap items-end justify-between gap-6">
-      <div className="min-w-0 flex-[1_1_360px]">
-        <h1 className="text-[32px] leading-tight font-bold tracking-[-0.021em]">Olá, {firstName}</h1>
-        <p className="mt-2 max-w-[58ch] text-[15px] leading-relaxed text-brand-100">{line}</p>
-      </div>
-      <dl className="flex flex-wrap gap-2.5">
-        {stats.map((stat) => (
-          <div key={stat.label} className="min-w-[104px] rounded-md bg-white/12 px-4 py-3 backdrop-blur-sm">
-            <dt className="sr-only">{stat.label}</dt>
-            <dd className="text-[24px] leading-none font-bold tabular-nums">{stat.value}</dd>
-            <dd className="mt-1.5 text-[12px] text-brand-100">{stat.label}</dd>
-          </div>
-        ))}
-      </dl>
-    </div>
-  </section>
-);
-
 const HomeContent = ({ account, calendar }: { account: Account; calendar: SemesterCalendar }) => {
   const { agenda } = useAgenda();
   const { data: disciplines } = useCurrentDisciplines();
@@ -228,8 +170,9 @@ const HomeContent = ({ account, calendar }: { account: Account; calendar: Semest
     <Page
       title={`Olá, ${firstName}`}
       hero={
-        <HomeHero
-          firstName={firstName}
+        <WelcomeHero
+          photo={cinPhoto}
+          title={`Olá, ${firstName}`}
           line={semesterLine(calendar, disciplines)}
           stats={[
             { value: running, label: running === 1 ? 'projeto em curso' : 'projetos em curso' },

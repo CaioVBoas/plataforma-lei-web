@@ -1,8 +1,8 @@
 import { CheckIcon } from '@/components/ui/icons';
 import { nextMilestone } from '@/domain/projectLifecycle';
-import type { IsoDate, Milestone } from '@/domain/types';
+import type { IsoDate, Milestone, MilestoneId } from '@/domain/types';
 import { cn } from '@/utils/cn';
-import { MILESTONE_COPY, milestoneDateLine } from '../../shared/utils/projectPresentation';
+import { MILESTONE_COPY, milestoneDateLine } from '../utils/projectPresentation';
 
 const MilestoneMarker = ({ done, current }: { done: boolean; current: boolean }) => {
   if (done) {
@@ -15,8 +15,15 @@ const MilestoneMarker = ({ done, current }: { done: boolean; current: boolean })
   return <span className={cn('size-6 rounded-full border-2 bg-surface', current ? 'border-accent' : 'border-line-strong')} />;
 };
 
+interface MilestoneTimelineProps {
+  milestones: Milestone[];
+  today: IsoDate;
+  /** Texto de cada etapa para quem lê. Sem ele, os títulos do docente; com descrição, ela aparece embaixo. */
+  copy?: Record<MilestoneId, { title: string; description?: string }>;
+}
+
 /** As seis etapas em ordem, com a data feita ou prevista e o que foi anotado em cada uma. */
-export const MilestoneTimeline = ({ milestones, today }: { milestones: Milestone[]; today: IsoDate }) => {
+export const MilestoneTimeline = ({ milestones, today, copy }: MilestoneTimelineProps) => {
   const next = nextMilestone(milestones);
 
   return (
@@ -30,12 +37,13 @@ export const MilestoneTimeline = ({ milestones, today }: { milestones: Milestone
             <MilestoneMarker done={Boolean(milestone.doneAt)} current={current} />
             <div className="min-w-0 flex-1 pt-0.5">
               <p className={cn('text-[15px] font-medium', milestone.doneAt || current ? 'text-ink' : 'text-ink-2')}>
-                {MILESTONE_COPY[milestone.id].title}
+                {(copy ?? MILESTONE_COPY)[milestone.id].title}
                 <span className="sr-only">{milestone.doneAt ? ', concluída' : current ? ', próxima' : ', pendente'}</span>
               </p>
               <p className={cn('mt-0.5 text-[13px]', current && milestone.dueAt < today ? 'text-caution' : 'text-ink-3')}>
                 {milestoneDateLine(milestone, today, current)}
               </p>
+              {copy?.[milestone.id].description && <p className="mt-1.5 text-sm leading-relaxed text-ink-2">{copy[milestone.id].description}</p>}
               {milestone.note && <p className="mt-2 text-sm leading-relaxed text-ink-2">{milestone.note}</p>}
             </div>
           </li>

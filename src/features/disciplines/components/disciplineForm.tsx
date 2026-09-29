@@ -1,8 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useId, type ReactNode } from 'react';
 import { Controller, useForm, useWatch } from 'react-hook-form';
-import { Field, Input } from '@/components/ui/formControls';
-import { CheckIcon } from '@/components/ui/icons';
+import { ChoiceChips } from '@/components/ui/choiceChips';
+import { Field, FormGroup, Input } from '@/components/ui/formControls';
 import { Tag } from '@/components/ui/tag';
 import type { CourseLevel } from '@/domain/types';
 import { cn } from '@/utils/cn';
@@ -38,65 +37,6 @@ const LevelPicker = ({ value, onChange }: { value: CourseLevel; onChange: (level
     })}
   </div>
 );
-
-interface FormGroupProps {
-  title: string;
-  hint?: string;
-  aside?: ReactNode;
-  children: ReactNode;
-}
-
-/**
- * Um bloco do formulário: título e explicação curta de um lado, campos do outro.
- * Em espaço estreito, como a janela de cadastro, o título fica em cima.
- */
-const FormGroup = ({ title, hint, aside, children }: FormGroupProps) => {
-  const titleId = useId();
-  return (
-    <div role="group" aria-labelledby={titleId} className="grid gap-3 border-t border-line py-6 first:border-t-0 first:pt-0 last:pb-0 @2xl:grid-cols-[200px_minmax(0,1fr)] @2xl:gap-8">
-      <div>
-        <h3 id={titleId} className="text-[15px] font-semibold text-ink">
-          {title}
-        </h3>
-        {hint && <p className="mt-1 text-[13px] leading-relaxed text-ink-3">{hint}</p>}
-        {aside && <div className="mt-2">{aside}</div>}
-      </div>
-      <div className="min-w-0">{children}</div>
-    </div>
-  );
-};
-
-interface SkillPickerProps {
-  catalog: string[];
-  value: string[];
-  onChange: (skills: string[]) => void;
-}
-
-const SkillPicker = ({ catalog, value, onChange }: SkillPickerProps) => {
-  const toggle = (skill: string) => onChange(value.includes(skill) ? value.filter((item) => item !== skill) : [...value, skill]);
-  return (
-    <div className="flex flex-wrap gap-1.5">
-      {catalog.map((skill) => {
-        const selected = value.includes(skill);
-        return (
-          <button
-            key={skill}
-            type="button"
-            aria-pressed={selected}
-            onClick={() => toggle(skill)}
-            className={cn(
-              'inline-flex h-8 items-center gap-1 rounded-md border px-2.5 text-[13px] transition-colors duration-100',
-              selected ? 'border-accent bg-accent-soft text-accent' : 'border-line-strong bg-surface text-ink-2 hover:border-ink-3',
-            )}
-          >
-            {selected && <CheckIcon size={13} />}
-            {skill}
-          </button>
-        );
-      })}
-    </div>
-  );
-};
 
 interface DisciplineFormProps {
   formId: string;
@@ -162,7 +102,7 @@ export const DisciplineForm = ({ formId, defaultValues = EMPTY_DISCIPLINE, onSub
         hint="Uma demanda combina quando a turma cobre pelo menos metade das competências pedidas."
         aside={<Tag tone={skills.length > 0 ? 'positive' : 'neutral'}>{skills.length === 1 ? '1 marcada' : `${skills.length} marcadas`}</Tag>}
       >
-        <Controller control={control} name="skills" render={({ field }) => <SkillPicker catalog={catalog} value={field.value} onChange={field.onChange} />} />
+        <Controller control={control} name="skills" render={({ field }) => <ChoiceChips label="Competências da turma" options={catalog} value={field.value} onChange={field.onChange} />} />
         {errors.skills && (
           <p role="alert" className="mt-2 text-[13px] text-critical">
             {errors.skills.message}

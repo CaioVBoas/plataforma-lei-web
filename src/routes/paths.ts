@@ -4,12 +4,15 @@ import type { UserRole } from '@/features/auth/types';
 
 export type ProjectTab = 'etapas' | 'plano' | 'demanda';
 export type DemandTab = 'problema' | 'competencias' | 'perguntas' | 'inspiracao' | 'organizacao';
+export type OrgDemandTab = 'demanda' | 'perguntas' | 'cardapio';
+export type OrgDemandsView = 'preparo' | 'cardapio' | 'projeto' | 'concluidas';
 
 export const paths = {
   /** Portal público: apresenta o L.E.I. e leva cada perfil para a entrada ou o cadastro. */
   landing: '/',
   login: '/entrar',
-  loginAs: (role: UserRole) => (role === 'docente' ? '/entrar' : `/entrar?perfil=${role}`),
+  /** Sem perfil, a entrada pergunta primeiro como a pessoa participa. */
+  loginAs: (role: UserRole) => `/entrar?perfil=${role}`,
   signup: (role?: UserRole) => (role ? `/cadastro?perfil=${role}` : '/cadastro'),
   home: '/inicio',
   guide: '/como-funciona',
@@ -30,4 +33,19 @@ export const paths = {
   organizations: '/organizacoes',
   organization: (id: string) => `/organizacoes/${id}`,
   account: '/conta',
+
+  /* Portal da organização. */
+  orgHome: '/organizacao',
+  orgNotifications: '/organizacao/avisos',
+  orgDemands: (view?: OrgDemandsView) => (view && view !== 'preparo' ? `/organizacao/demandas?ver=${view}` : '/organizacao/demandas'),
+  orgNewDemand: '/organizacao/demandas/nova',
+  orgDemand: (id: string, tab?: OrgDemandTab) =>
+    tab && tab !== 'demanda' ? `/organizacao/demandas/${id}?aba=${tab}` : `/organizacao/demandas/${id}`,
+  orgEditDemand: (id: string) => `/organizacao/demandas/${id}/editar`,
+  orgProjects: '/organizacao/projetos',
+  orgProject: (id: string) => `/organizacao/projetos/${id}`,
+  orgProfile: '/organizacao/perfil',
 } as const;
+
+/** Onde cada perfil cai depois de entrar. */
+export const homeFor = (role: UserRole) => (role === 'organizacao' ? paths.orgHome : paths.home);

@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { BellIcon, BookmarkIcon, ChatIcon, FolderIcon, MailIcon } from '@/components/ui/icons';
+import { BellIcon, BookmarkIcon, ChatIcon, FolderIcon, MailIcon, UsersIcon } from '@/components/ui/icons';
 import { Tag } from '@/components/ui/tag';
 import { cn } from '@/utils/cn';
 import type { NotificationKind, PortalNotification } from './buildNotifications';
@@ -10,6 +10,9 @@ const KIND_ICON: Record<NotificationKind, typeof BellIcon> = {
   milestone: FolderIcon,
   released: BellIcon,
   answer: ChatIcon,
+  question: ChatIcon,
+  review: MailIcon,
+  project: UsersIcon,
 };
 
 /** Um aviso: ícone do tipo, o que fazer em destaque, de onde vem e o prazo em tag. */

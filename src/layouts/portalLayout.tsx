@@ -1,13 +1,10 @@
-import { Suspense, useEffect, useState } from 'react';
+import { Suspense, useEffect, useState, type ReactNode } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import { LoadingState } from '@/components/feedback/queryStates';
 import { BrandSymbol } from '@/components/ui/brandMark';
 import { CloseIcon, MenuIcon, SidebarIcon } from '@/components/ui/icons';
-import { paths } from '@/routes/paths';
 import { cn } from '@/utils/cn';
-import { AccountMenu } from './accountMenu';
-import { NotificationsBell } from './notificationsBell';
-import { Sidebar } from './sidebar';
+import { Sidebar, type SidebarConfig } from './sidebar';
 
 const COLLAPSED_KEY = 'plei.sidebarCollapsed';
 
@@ -22,11 +19,19 @@ const readCollapsed = () => {
 
 const ICON_BUTTON = 'size-10 items-center justify-center rounded-md text-ink-2 hover:bg-fill hover:text-ink';
 
+interface PortalLayoutProps {
+  sidebar: SidebarConfig;
+  /** Sino de avisos do perfil. */
+  bell: ReactNode;
+  /** Menu da conta do perfil. */
+  account: ReactNode;
+}
+
 /**
- * Casca de todas as telas do portal: barra lateral recolhível no desktop,
- * gaveta no celular e a barra superior com avisos e conta.
+ * Casca de todas as telas dos portais do docente e da organização: barra
+ * lateral recolhível no desktop, gaveta no celular e a barra superior com avisos e conta.
  */
-export const PortalLayout = () => {
+export const PortalLayout = ({ sidebar, bell, account }: PortalLayoutProps) => {
   const { pathname } = useLocation();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(readCollapsed);
@@ -55,7 +60,7 @@ export const PortalLayout = () => {
           collapsed ? 'w-[68px]' : 'w-[236px]',
         )}
       >
-        <Sidebar collapsed={collapsed} />
+        <Sidebar {...sidebar} collapsed={collapsed} />
       </aside>
 
       {drawerOpen && (
@@ -65,7 +70,7 @@ export const PortalLayout = () => {
             <button type="button" aria-label="Fechar menu" onClick={closeDrawer} className="absolute top-4 right-3 flex size-8 items-center justify-center rounded-md hover:bg-fill">
               <CloseIcon size={16} />
             </button>
-            <Sidebar onNavigate={closeDrawer} />
+            <Sidebar {...sidebar} onNavigate={closeDrawer} />
           </aside>
         </div>
       )}
@@ -75,7 +80,7 @@ export const PortalLayout = () => {
           <button type="button" aria-label="Abrir menu" onClick={() => setDrawerOpen(true)} className={cn(ICON_BUTTON, 'flex md:hidden')}>
             <MenuIcon />
           </button>
-          <Link to={paths.home} className="md:hidden">
+          <Link to={sidebar.homePath} className="md:hidden">
             <BrandSymbol />
           </Link>
           <button
@@ -90,9 +95,9 @@ export const PortalLayout = () => {
           </button>
 
           <div className="ml-auto flex items-center gap-1">
-            <NotificationsBell />
+            {bell}
             <span aria-hidden="true" className="mx-1 h-6 w-px bg-line" />
-            <AccountMenu />
+            {account}
           </div>
         </header>
 

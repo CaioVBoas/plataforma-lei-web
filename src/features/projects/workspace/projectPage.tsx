@@ -13,7 +13,7 @@ import { useDiscipline } from '@/features/disciplines/useDisciplines';
 import { joinWithAnd } from '@/utils/format';
 import { paths, type ProjectTab } from '@/routes/paths';
 import { CompleteMilestoneModal } from './components/completeMilestoneModal';
-import { MilestoneTimeline } from './components/milestoneTimeline';
+import { MilestoneTimeline } from '../shared/components/milestoneTimeline';
 import { MilestoneTrack } from '../shared/components/milestoneTrack';
 import { NextStepCard } from './components/nextStepCard';
 import { DemandTab } from './components/demandTab';

@@ -73,6 +73,13 @@ export const DEMANDS: Demand[] = [
           by: 'Renata Vasconcelos, Hospital das Clínicas',
         },
       },
+      {
+        id: 'hc-q2',
+        teacherName: 'Paola Accioly',
+        mine: true,
+        askedAt: '2026-08-23',
+        text: 'A turma pode trabalhar com o recorte de três meses fora do hospital, ou os dados só podem ser abertos na central?',
+      },
     ],
   },
   {

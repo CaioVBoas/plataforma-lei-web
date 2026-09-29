@@ -1,4 +1,4 @@
-# Fluxos do Portal do Docente
+# Fluxos do PLEI: portal do docente e portal da organização
 
 Este documento é a especificação do produto. Se uma tela contradiz o que está aqui, a tela está errada.
 
@@ -62,7 +62,7 @@ Só a próxima etapa pendente tem ação. As outras mostram a data prevista ou a
 9. **A compatibilidade é contada, não estimada.** Uma demanda combina com uma disciplina quando a disciplina trabalha pelo menos metade das competências que a demanda pede **e** a demanda não pede mais do que a altura do curso em que a turma está (início, meio ou fim do curso). A tela mostra quais competências combinam, quais faltam e se a demanda está acima do nível, sem percentual inventado. Turma abaixo do nível pedido não recebe a demanda. Turma que cobre menos da metade das competências pode receber, mas a janela de levar avisa que a demanda não serve para ela e pede que o docente confirme: a decisão, e a responsabilidade, são dele.
 10. **O resultado volta para a organização.** O texto do encerramento aparece no histórico da organização, para o próximo docente saber o que já foi feito.
 11. **A plataforma não acessa o SIGAA.** Ela entrega o texto pronto e guarda a data que o docente informou. O certificado de horas dos estudantes sai da aprovação do relatório final pela PROExC; o encerramento lembra disso e entrega o resultado pronto para copiar.
-12. **Dúvida vai pela demanda.** Antes de decidir, o docente pergunta à organização na própria demanda. Nesta versão o L.E.I. repassa; pergunta e resposta ficam registradas para os próximos docentes.
+12. **Dúvida vai pela demanda.** Antes de decidir, o docente pergunta à organização na própria demanda. A organização responde no portal dela; pergunta e resposta ficam registradas para os próximos docentes.
 13. **Disciplina pode ter mais de um docente.** O colega entra pelo e-mail institucional e vê e edita os mesmos projetos. Só a disciplina do semestre atual aceita convite.
 14. **A expectativa é dita no começo.** A demanda mostra o que um semestre entrega (pesquisa com usuários, protótipo ou prova de conceito) e o que pesa na rotina da turma (presencial, dados sensíveis, sigilo). A reunião de abertura lembra de combinar isso com a organização.
 
@@ -80,7 +80,9 @@ Só a próxima etapa pendente tem ação. As outras mostram a data prevista ou a
 
 Avisos não fica na barra lateral: o sino da barra superior abre os mais recentes e leva à página Avisos. A barra lateral recolhe para só ícones (a escolha fica no navegador). A barra superior tem o sino de avisos e a conta, com Minha conta e Sair. O único contador do portal fica no sino e soma o que pede decisão: indicações do L.E.I., reservas abertas, demandas que liberaram para quem pediu aviso e etapas com prazo nos próximos 14 dias. Respostas das organizações aparecem como novidade, sem contar.
 
-**Portal público.** Antes da plataforma, a página inicial (`/`) tem a abertura com fotos de Pernambuco passando (com o nome do lugar), uma faixa com a porta de cada perfil, boas-vindas com o logo sobre fundo neutro, o carrossel do que há na plataforma, o caminho em quatro passos (que acendem um de cada vez) e o rodapé. Entrada e cadastro têm só a foto da Rua da Aurora, o logo e uma frase no painel, com o crédito CC BY-SA no pé. As fotos e seus créditos ficam em `src/assets/portal` (ver o README de lá). Entrada e cadastro perguntam primeiro como a pessoa participa. Só o docente tem portal hoje; organização e estudante veem "em breve". O cadastro do docente pede nome, e-mail institucional, departamento e senha e já entra no Início.
+**Portal da organização.** Início (o que pede atenção, as demandas mais recentes e como uma demanda chega a uma turma), Demandas (abas Em preparo, No cardápio, Em projeto e Concluídas) e Projetos, com Perfil da organização no pé da barra. A ação principal é **Submeter demanda**. O sino soma o que pede decisão da organização: ajustes pedidos pelo L.E.I. e perguntas de docentes sem resposta; reserva de um docente e etapa com a organização chegando são novidades.
+
+**Portal público.** Antes da plataforma, a página inicial (`/`) tem a abertura com fotos de Pernambuco passando (com o nome do lugar), uma faixa com a porta de cada perfil, boas-vindas com o logo sobre fundo neutro, o carrossel do que há na plataforma, o caminho em quatro passos (que acendem um de cada vez) e o rodapé. Entrada e cadastro têm só a foto da Rua da Aurora, o logo e uma frase no painel, com o crédito CC BY-SA no pé. As fotos e seus créditos ficam em `src/assets/portal` (ver o README de lá). Entrada e cadastro perguntam primeiro como a pessoa participa. Docente e organização têm portal; o estudante vê "em breve". O cadastro do docente pede nome, e-mail institucional, departamento e senha e já entra no Início. O da organização pede nome, tipo e local da organização, nome, cargo e e-mail de quem cuida das demandas (que vira o ponto focal) e senha, e já entra no Início da organização. Cada sessão guarda o perfil: rota de um portal com sessão do outro volta ao Início do próprio perfil.
 
 ## 6. Fluxos
 
@@ -119,6 +121,32 @@ O L.E.I. escreve para o docente que tem perfil para uma demanda, com um link dir
 
 Na página da disciplina, a seção Docentes mostra quem divide a turma. O docente convida o colega pelo e-mail institucional; os dois veem e editam os mesmos projetos, e o projeto mostra "Coordenação compartilhada com".
 
+### F8. A organização submete uma demanda
+
+1. **Formulário em quatro etapas**, com a prévia do cartão do cardápio montada ao lado enquanto a organização escreve:
+   - *O problema*: nome, o problema em uma frase, contexto e quem sente.
+   - *O que a turma faz*: o que já ajudaria ao fim do semestre (com o aviso de que um semestre entrega pesquisa, protótipo ou prova de conceito), competências (opcionais: o L.E.I. completa) e o que pesa na rotina (presencial, dados sensíveis, sigilo).
+   - *Como vocês trabalham*: ritmo das reuniões (com sugestões de um clique), o que oferecem à turma (pelo menos uma coisa) e referências para se inspirar (opcionais, até três).
+   - *Revisar e enviar*: o texto como o docente vai ler, o que falta preencher e o que acontece depois do envio.
+2. **Rascunho** pode ser salvo a qualquer momento, só com o nome. Só a organização vê. Rascunho pode ser excluído; o que já foi enviado, não.
+3. **Enviar para a triagem** exige os campos obrigatórios (`missingForReview` em `src/domain/submission.ts`). Na triagem o texto fica com o L.E.I. e não se edita.
+4. **Ajuste pedido.** O L.E.I. pode devolver a demanda com um pedido. O pedido aparece no topo do detalhe e do formulário; a organização ajusta e reenvia.
+5. **Aprovada**, a demanda entra no cardápio. Altura do curso e o recorte do semestre são escritos na triagem; o "O que ajudaria ao fim do semestre" da organização é a base do recorte.
+
+Os estados que a organização vê, do envio ao fim: Rascunho, Na triagem do L.E.I., Ajuste pedido, No cardápio, Um docente está avaliando (a reserva, sem o laranja, que é só do portal do docente), Em projeto e Concluída. O detalhe mostra esse caminho numa linha de cinco passos.
+
+### F9. A organização responde os docentes
+
+As perguntas que os docentes fazem na demanda (regra 12) chegam no portal da organização como aviso que pede decisão e como próximo passo no Início. A organização responde logo abaixo da pergunta, no mesmo desenho de conversa do portal do docente, e a resposta aparece na hora para todos os docentes que abrirem a demanda. Depois que a demanda vira projeto, a conversa passa a ser direto com o docente.
+
+### F10. A organização acompanha o projeto
+
+Quando um docente leva a demanda para uma disciplina, ela vira projeto e aparece em Projetos: disciplina, docente, semestre, equipes, o próximo passo contado do lado da organização e as seis etapas com a data feita ou prevista. O contato do docente (e-mail, telefone se ele informou, colegas que dividem a disciplina) fica na coluna lateral. As anotações das etapas e o plano do SIGAA são do docente e não aparecem. No encerramento, o resultado e se a organização usa a entrega aparecem em "O que ficou com vocês".
+
+### F11. O perfil da organização
+
+O perfil que a organização edita é o mesmo que os docentes veem na página da organização: tipo, local, sobre, público, site, reuniões, visita da turma e o ponto focal. O contato do ponto focal continua visível só para quem tem projeto com ela (regra 6). O nome passa pelo L.E.I.
+
 ## 7. Regras de design
 
 1. **Uma pergunta por tela, uma ação primária por tela.**
@@ -133,7 +161,7 @@ Na página da disciplina, a seção Docentes mostra quem divide a turma. O docen
 10. **Resumo em mini cards, abas só quando precisa.** Telas de detalhe abrem com os fatos principais em mini cards brancos com rótulo petróleo. Demanda e projeto organizam o resto em abas sublinhadas, guardadas na URL (`?aba=`). A organização é um perfil em uma página (sobre, demandas abertas, parceria e contato ao lado), com só duas abas no fim: Projetos e Interface com o CIn. A disciplina é uma página só, sem abas, com seções âncora (`#projetos`, `#demandas`, `#docentes`, `#turma`).
 11. **Tag só para estado.** No cartão, tag é reservada ao estado da demanda. Cobertura vira medidor e o resto vira texto.
 12. **Uma data só: "21 ago 2026".** Tempo relativo ("em 7 dias", "há 9 dias") entra só como complemento, nunca no lugar da data.
-13. **Visual sóbrio com identidade própria.** Tipografia do sistema, cantos de 6 a 10px e neutros levemente frios. A identidade (Identidade Visual Aperta o PLEI) tem três papéis que não se misturam, e nada de gradiente, emoji ou roxo:
+13. **Visual sóbrio com identidade própria.** Tipografia do sistema, cantos de 6 a 10px e neutros levemente frios. A identidade (Identidade Visual PLEI) tem três papéis que não se misturam, e nada de gradiente, emoji ou roxo:
     - **Verde Petróleo** é a identidade: marca, fatos, monogramas e "onde estou" (item ativo da barra lateral preenchido em `brand`, aba ativa sublinhada em `brand`). Fora da navegação, nada clicável é petróleo.
     - **Cor cheia em poucos lugares:** o item ativo da barra lateral (que é branca), a boas-vindas do Início, o painel da tela de entrada (sobre fundo `brand-50`) e a capa dos perfis (organização, disciplina, conta). Fatos e números de resumo são blocos brancos com borda fina; o petróleo fica só no rótulo e no número. O resto do portal é branco, com o petróleo nos detalhes.
     - **Azul Tecnológico** é a ação: botão primário, links, foco, seleção, balão de resposta e aviso de indicação (`accent-soft`, nunca petróleo).
@@ -144,7 +172,7 @@ Na página da disciplina, a seção Docentes mostra quem divide a turma. O docen
 
 ## 8. O que nos faz únicos
 
-Plataformas parecidas conectam empresa e curso. O Aperta o PLEI tem quatro coisas que elas não têm, e que a interface precisa deixar à vista:
+Plataformas parecidas conectam empresa e curso. O PLEI tem quatro coisas que elas não têm, e que a interface precisa deixar à vista:
 
 1. **O cardápio.** Demandas reais de organizações sociais e órgãos públicos de Pernambuco, já triadas pelo L.E.I., e não vagas genéricas de empresa.
 2. **A reserva.** O docente guarda uma demanda enquanto pensa, e o cardápio mostra quem está avaliando o quê. É um gesto de cuidado com o colega e com a organização.
@@ -160,6 +188,6 @@ Plataformas parecidas conectam empresa e curso. O Aperta o PLEI tem quatro coisa
 | Perfil de prática, leitura automática e onboarding de prática | Três lugares para calibrar uma sugestão que era percentual inventado. A compatibilidade agora vem das competências da disciplina, que o docente edita em um só lugar |
 | Registro semanal de andamento e horas | Controle que a disciplina já faz. O projeto acompanha só os marcos que importam para a organização |
 | Central de notificações | O Início já responde "o que mudou e o que fazer" |
-| Escolha de portal e de área na entrada | O portal é do docente. Organizações têm um aviso na entrada |
+| Escolha de área na entrada | A entrada pergunta só o perfil (docente, organização ou estudante) |
 | Participantes e horas por estudante no projeto | A primeira versão vai até a proposta do projeto (orientação do Prof. Cristiano). Horas por pessoa dependem de os estudantes escolherem o projeto, que é o fluxo do estudante |
 | Recusar demanda ("Não tenho interesse") | Decisão da equipe: a demanda simplesmente não é reservada |

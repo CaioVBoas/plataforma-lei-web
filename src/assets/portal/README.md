@@ -6,7 +6,7 @@ Versões leves (WebP) das fotos usadas em `/`. Os originais ficam fora do reposi
 | --- | --- | --- | --- | --- |
 | `capa/` | `recife-antigo-cais.webp` | Abertura, 1ª foto | Pexels (vikeph, 17298658) | Não exige |
 | `capa/` | `rua-do-bom-jesus.webp` | Abertura, 2ª foto | Pexels (vikeph, 20502520) | Não exige |
-| `capa/` | `ponte-capibaribe.webp` | Abertura, 3ª foto | Pexels (imvitordiniz, 29849994) | Não exige |
+| `capa/` | `ponte-capibaribe.webp` | Abertura, 3ª foto; boas-vindas do Início da organização | Pexels (imvitordiniz, 29849994) | Não exige |
 | `capa/` | `olinda-vista.webp` | Abertura, 4ª foto | Pexels (aldoazdesign, 635402) | Não exige |
 | `inicio/` | `cin.webp` | Boas-vindas do Início, sob o véu petróleo | Site do CIn (FotoCIn) | Uso institucional; confirmar com o CIn |
 | `entrada/` | `rua-da-aurora.webp` | Painel da entrada e do cadastro | [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Rua_da_Aurora_com_rio_Capibaribe1x.jpg), Hansfotos (Hans von Manteuffel) | CC BY-SA 4.0, no pé do painel |

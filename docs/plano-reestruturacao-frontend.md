@@ -8,7 +8,7 @@ Este documento registra a revisão técnica da branch `feat/portal-docente`, o p
 
 ## 1. Diagnóstico
 
-A branch implementa a interface mockada do Portal do Docente do L.E.I., baseada no protótipo "Aperta o PLEI" e especificada em `docs/fluxos.md`.
+A branch implementa a interface mockada do Portal do Docente do L.E.I., baseada no protótipo "PLEI" e especificada em `docs/fluxos.md`.
 
 * **Build e typecheck:** `tsc -b && vite build` sem erros.
 * **Linter:** `oxlint` sem erros nem avisos.

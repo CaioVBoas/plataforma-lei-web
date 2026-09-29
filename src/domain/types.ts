@@ -63,8 +63,8 @@ export type CourseLevel = 'intro' | 'intermediate' | 'advanced';
 export type DemandConstraint = 'on-site' | 'sensitive-data' | 'confidential';
 
 /**
- * Pergunta do docente à organização antes de decidir. Nesta versão o L.E.I.
- * repassa; pergunta e resposta ficam na demanda para quem vier depois.
+ * Pergunta do docente à organização antes de decidir. A organização responde
+ * no portal dela; pergunta e resposta ficam na demanda para quem vier depois.
  */
 export interface DemandQuestion {
   id: string;
@@ -208,4 +208,52 @@ export interface Account {
   photo?: string;
   /** Enquanto for falso, o Início convida para o tutorial. */
   tutorialSeen: boolean;
+}
+
+/** Quem usa o portal em nome de uma organização parceira. */
+export interface OrgAccount {
+  organizationId: string;
+  name: string;
+  email: string;
+  /** Cargo na organização. */
+  position: string;
+  phone: string;
+}
+
+/**
+ * O que a organização escreve ao submeter uma demanda. Altura do curso e
+ * recorte do semestre ficam com a triagem do L.E.I., que conhece as turmas.
+ */
+export interface DemandDraft {
+  title: string;
+  problem: string;
+  description: string;
+  affectedPublic: string;
+  /** O que já ajudaria ao fim de um semestre. Na triagem vira o "O que cabe no semestre". */
+  expectedOutcome: string;
+  /** Opcional para a organização: o L.E.I. completa na triagem. */
+  skills: string[];
+  constraints: DemandConstraint[];
+  meetingCadence: string;
+  offers: string[];
+  references: Reference[];
+}
+
+/** Rascunho, na triagem do L.E.I. ou devolvida para ajuste. Aprovada, vira uma demanda do cardápio. */
+export type SubmissionStage = 'draft' | 'in-review' | 'needs-changes';
+
+export interface SubmissionReview {
+  note: string;
+  by: string;
+  at: IsoDate;
+}
+
+export interface DemandSubmission extends DemandDraft {
+  id: string;
+  organization: OrganizationRef;
+  stage: SubmissionStage;
+  updatedAt: IsoDate;
+  submittedAt?: IsoDate;
+  /** Presente quando o L.E.I. devolveu a demanda pedindo ajuste. */
+  review?: SubmissionReview;
 }

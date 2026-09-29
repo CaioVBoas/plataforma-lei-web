@@ -24,8 +24,8 @@ export const ROLE_COPY: Record<UserRole, RoleCopy> = {
     label: 'Organização parceira',
     short: 'Organização',
     pitch: 'ONG, órgão público ou coletivo: publique um problema e acompanhe a turma que vai resolver.',
-    available: false,
-    soon: 'O portal das organizações está em construção. Por enquanto, as demandas chegam por convite da coordenação de extensão do CIn.',
+    available: true,
+    soon: '',
   },
   estudante: {
     label: 'Estudante',

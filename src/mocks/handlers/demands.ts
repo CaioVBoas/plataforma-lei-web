@@ -69,8 +69,8 @@ export const toggleWatch = (id: string): Demand => {
 const QUESTION_LIMIT = 500;
 
 /**
- * Pergunta à organização antes de decidir. Nesta versão o L.E.I. repassa
- * e registra a resposta; a pergunta fica na demanda para os próximos docentes.
+ * Pergunta à organização antes de decidir. Ela responde no próprio portal
+ * (`orgPortal.answerQuestion`); a pergunta fica na demanda para os próximos docentes.
  */
 export const askQuestion = (id: string, text: string): Demand => {
   const demand = findDemand(id);

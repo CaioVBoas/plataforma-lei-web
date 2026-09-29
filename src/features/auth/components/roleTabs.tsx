@@ -3,7 +3,8 @@ import { ROLE_COPY, ROLES } from '../roles';
 import type { UserRole } from '../types';
 
 /** Quem está entrando: docente, organização ou estudante. Os perfis sem portal avisam "Em breve". */
-export const RoleTabs = ({ value, onChange }: { value: UserRole; onChange: (role: UserRole) => void }) => (
+/** Sem valor, nenhum perfil vem marcado: ninguém cai no formulário de outro perfil por engano. */
+export const RoleTabs = ({ value, onChange }: { value: UserRole | null; onChange: (role: UserRole) => void }) => (
   <div role="radiogroup" aria-label="Entrar como" className="grid grid-cols-3 gap-1 rounded-md bg-fill p-1">
     {ROLES.map((role) => {
       const selected = role === value;

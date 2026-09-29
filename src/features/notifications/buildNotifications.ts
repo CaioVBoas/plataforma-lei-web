@@ -8,12 +8,13 @@ import { MILESTONE_COPY, milestoneDateLine } from '@/features/projects/shared/ut
 import { paths } from '@/routes/paths';
 import { capitalize } from '@/utils/format';
 
-export type NotificationKind = 'invitation' | 'reservation' | 'milestone' | 'released' | 'answer';
+/** Os cinco primeiros são do docente; pergunta, ajuste e projeto são da organização. */
+export type NotificationKind = 'invitation' | 'reservation' | 'milestone' | 'released' | 'answer' | 'question' | 'review' | 'project';
 
 export interface PortalNotification {
   id: string;
   kind: NotificationKind;
-  /** Pede uma decisão do docente; o resto é novidade para ler. */
+  /** Pede uma decisão de quem está no portal; o resto é novidade para ler. */
   actionable: boolean;
   tone: StatusTone;
   label: string;

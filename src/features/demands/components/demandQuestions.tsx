@@ -65,7 +65,7 @@ export const DemandQuestions = ({ demand, canAsk }: { demand: Demand; canAsk: bo
       {
         onSuccess: () => {
           setText('');
-          toast.show('Pergunta enviada. O L.E.I. repassa e a resposta aparece aqui.');
+          toast.show('Pergunta enviada. A organização responde no portal dela e a resposta aparece aqui.');
         },
       },
     );
@@ -132,7 +132,7 @@ export const DemandQuestions = ({ demand, canAsk }: { demand: Demand; canAsk: bo
             </Button>
           </div>
           <div className="mt-1.5 flex flex-wrap items-center justify-between gap-2 px-0.5 text-[12px] text-ink-3">
-            <span>O L.E.I. repassa para a organização. Enter envia, Shift+Enter quebra a linha.</span>
+            <span>A organização recebe no portal dela. Enter envia, Shift+Enter quebra a linha.</span>
             {text.length > QUESTION_LIMIT * 0.8 && (
               <span className="tabular-nums">
                 {text.length}/{QUESTION_LIMIT}

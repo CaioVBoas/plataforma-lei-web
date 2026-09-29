@@ -56,3 +56,19 @@ export const SoonNotice = ({ title, text, children }: { title: string; text: str
     {children && <div className="mt-4 flex flex-wrap gap-2">{children}</div>}
   </div>
 );
+
+/** Antes de escolher o perfil: o que cada um usa para entrar, para a organização não esbarrar no e-mail da UFPE. */
+export const ChooseRoleNotice = ({ action }: { action: string }) => (
+  <div className="rounded-lg border border-fact-line bg-fact px-5 py-5">
+    <p className="text-[15px] font-semibold text-ink">Como você participa?</p>
+    <p className="mt-1.5 text-sm leading-relaxed text-ink-2">Escolha acima para {action}.</p>
+    <ul className="mt-3 space-y-1.5 text-sm leading-relaxed text-ink-2">
+      <li>
+        <span className="font-medium text-ink">Docente:</span> e-mail institucional @ufpe.br ou @cin.ufpe.br.
+      </li>
+      <li>
+        <span className="font-medium text-ink">Organização:</span> o e-mail de quem cuida das demandas, de qualquer domínio.
+      </li>
+    </ul>
+  </div>
+);
