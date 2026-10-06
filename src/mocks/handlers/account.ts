@@ -16,8 +16,10 @@ export const login = ({ email }: LoginPayload) => {
 export const signup = ({ name, email, department, password }: SignupPayload) => {
   if (!name.trim()) throw new RuleError('Informe seu nome.');
   if (!INSTITUTIONAL_EMAIL.test(email.trim())) throw new RuleError('Use seu e-mail @ufpe.br ou @cin.ufpe.br.');
+  if (!department.trim()) throw new RuleError('Informe seu departamento.');
   if (password.length < 8) throw new RuleError('A senha precisa de pelo menos 8 caracteres.');
-  Object.assign(db.account, { name: name.trim(), email: email.trim().toLowerCase(), department: department.trim(), tutorialSeen: false });
+  // Conta nova: nada da conta anterior (foto, telefone) passa para ela.
+  db.account = { name: name.trim(), email: email.trim().toLowerCase(), department: department.trim(), phone: '', tutorialSeen: false };
   return DEMO_TOKEN;
 };
 

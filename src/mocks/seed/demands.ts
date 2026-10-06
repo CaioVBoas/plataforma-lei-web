@@ -31,6 +31,7 @@ export const DEMANDS: Demand[] = [
     ],
     questions: [],
     invitation: {
+      to: 'paola.accioly@ufpe.br',
       from: 'Kiev Santos da Gama, L.E.I.',
       message: 'O NASE procurou o CIn para organizar a fila de atendimento. Pensei na sua turma de Desenvolvimento de Software: ela cobre quase tudo o que eles pedem.',
       sentAt: '2026-08-23',

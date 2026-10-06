@@ -8,7 +8,7 @@ import { ArrowRightIcon, BellIcon, BookIcon, BuildingIcon, CheckIcon, CopyIcon, 
 import { ROLE_COPY } from '@/features/auth/roles';
 import { session } from '@/features/auth/session';
 import type { UserRole } from '@/features/auth/types';
-import { paths } from '@/routes/paths';
+import { homeFor, paths } from '@/routes/paths';
 import { cn } from '@/utils/cn';
 import { WaterMark } from './components/waterMark';
 import { HERO_PHOTOS, PHOTO_CREDITS } from './portalPhotos';
@@ -32,7 +32,7 @@ const PublicHeader = () => {
             Como funciona
           </a>
           {signedIn ? (
-            <Link to={paths.home} className={buttonClassName({ variant: 'primary' })}>
+            <Link to={homeFor(session.role())} className={buttonClassName({ variant: 'primary' })}>
               Ir para o portal
             </Link>
           ) : (

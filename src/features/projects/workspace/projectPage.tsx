@@ -10,6 +10,7 @@ import { projectStage } from '@/domain/projectLifecycle';
 import type { Milestone, Project, SemesterCalendar } from '@/domain/types';
 import { useCalendar } from '@/features/calendar/useCalendar';
 import { useDiscipline } from '@/features/disciplines/useDisciplines';
+import { useOrganization } from '@/features/organizations/useOrganizations';
 import { joinWithAnd } from '@/utils/format';
 import { paths, type ProjectTab } from '@/routes/paths';
 import { CompleteMilestoneModal } from './components/completeMilestoneModal';
@@ -40,7 +41,9 @@ const ProjectView = ({ project, calendar }: { project: Project; calendar: Semest
   const coTeachers = (discipline?.coTeachers ?? []).map((teacher) => teacher.name ?? teacher.email);
 
   const tabContentRef = useRef<HTMLDivElement>(null);
-  const cover = demandCover(project.demandId, project.organization.id);
+  // A capa que a organização enviou vale aqui também, como na página dela e na demanda.
+  const { data: organizationDetail } = useOrganization(project.organization.id);
+  const cover = demandCover(project.demandId, project.organization.id, organizationDetail?.organization.cover);
 
   const changeTab = (next: ProjectTab) => setSearchParams(next === 'etapas' ? {} : { aba: next }, { replace: true });
 

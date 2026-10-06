@@ -82,6 +82,8 @@ export interface DemandQuestion {
 
 /** Indicação pessoal do L.E.I.: o docente chega pelo e-mail direto na demanda. */
 export interface DemandInvitation {
+  /** E-mail do docente indicado: só ele vê a indicação. */
+  to: string;
   from: string;
   message: string;
   sentAt: IsoDate;

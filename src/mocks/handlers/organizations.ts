@@ -1,5 +1,6 @@
 import type { OrganizationDetail, OrganizationSummary } from '@/features/organizations/types';
 import { db, findOrThrow } from '../db';
+import { forTeacher } from './demandView';
 
 /** Demandas no cardápio, livres ou reservadas. */
 const openDemandsOf = (organizationId: string) =>
@@ -15,7 +16,7 @@ export const getOrganization = (id: string): OrganizationDetail => {
     organization,
     // Regra 6: o contato só aparece para quem já tem projeto com a organização.
     contact: myProjects.length > 0 ? contact : undefined,
-    openDemands: openDemandsOf(id),
+    openDemands: openDemandsOf(id).map(forTeacher),
     myProjects,
   };
 };

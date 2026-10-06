@@ -161,7 +161,8 @@ const ProjectsView = () => {
   const count = (value: Filter) => items.filter((item) => matchesFilter(item, value)).length;
   const visible = items.filter((item) => matchesFilter(item, filter));
 
-  const nextDue = items.find((item) => item.next)?.date;
+  // O prazo mais próximo entre todos, não o do primeiro da lista: a ordem agrupa por estado.
+  const nextDue = items.flatMap((item) => (item.next ? [item.next.dueAt] : [])).sort()[0];
 
   return (
     <>

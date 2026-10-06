@@ -21,8 +21,19 @@ const Block = ({ title, children }: { title: string; children: ReactNode }) => (
  * oferece, o que cabe no semestre e as competências. Serve de referência para a turma.
  */
 export const DemandTab = ({ project }: { project: Project }) => {
-  const { data } = useDemand(project.demandId);
-  if (!data) return null;
+  const { data, isPending } = useDemand(project.demandId);
+  if (isPending) return null;
+  // Projeto antigo: a demanda já saiu da plataforma. O combinado ficou registrado no plano.
+  if (!data) {
+    return (
+      <div className="rounded-lg border border-line bg-canvas p-5">
+        <p className="text-[15px] font-medium text-ink">A demanda original já saiu da plataforma</p>
+        <p className="mt-1 text-sm leading-relaxed text-ink-2">
+          O que foi combinado com {project.organization.name} está na aba Plano{project.outcome ? ', e o resultado do semestre aparece no topo do projeto' : ''}.
+        </p>
+      </div>
+    );
+  }
   const { demand } = data;
   const answered = demand.questions.filter((question) => question.answer).length;
 

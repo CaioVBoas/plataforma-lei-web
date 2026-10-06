@@ -165,7 +165,8 @@ export const OrgProjectsPage = () => {
   const matches = (row: Row, value: Filter) => value === 'todos' || row.stage === STAGE_BY_FILTER[value];
   const count = (value: Filter) => rows.filter((row) => matches(row, value)).length;
   const visible = rows.filter((row) => matches(row, filter));
-  const nextDue = rows.find((row) => row.next)?.date;
+  // O prazo mais próximo entre todos, não o do primeiro da lista: a ordem agrupa por estado.
+  const nextDue = rows.flatMap((row) => (row.next ? [row.next.dueAt] : [])).sort()[0];
 
   return (
     <Page title={TITLE} subtitle={SUBTITLE}>

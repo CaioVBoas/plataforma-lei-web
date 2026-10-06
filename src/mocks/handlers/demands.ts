@@ -2,6 +2,7 @@ import { isMyReservation, isReservationExpired, MAX_ACTIVE_RESERVATIONS, reserva
 import type { Demand } from '@/domain/types';
 import type { DemandDetail } from '@/features/demands/types';
 import { db, findOrThrow, NotFoundError, RuleError } from '../db';
+import { forTeacher } from './demandView';
 
 /**
  * Reserva vencida volta ao cardápio. O backend real faria isso numa rotina
@@ -18,16 +19,10 @@ const expireReservations = () => {
 
 const findDemand = (id: string) => findOrThrow(db.demands, id, 'Demanda não encontrada.');
 
-/** A logo é da organização e pode mudar a qualquer hora: entra na demanda na hora de ler. */
-const withLogo = (demand: Demand): Demand => {
-  const logo = db.organizations.find((organization) => organization.id === demand.organization.id)?.logo;
-  return logo ? { ...demand, organization: { ...demand.organization, logo } } : demand;
-};
-
 /** O cardápio mostra o que está aberto e o que está reservado; o que virou projeto sai (regra 3). */
 export const listMenu = (): Demand[] => {
   expireReservations();
-  return db.demands.filter((demand) => demand.status !== 'in-project').map(withLogo);
+  return db.demands.filter((demand) => demand.status !== 'in-project').map(forTeacher);
 };
 
 export const getDemand = (id: string): DemandDetail => {
@@ -40,7 +35,7 @@ export const getDemand = (id: string): DemandDetail => {
   }
 
   const { contact: _contact, ...organization } = findOrThrow(db.organizations, demand.organization.id, 'Organização não encontrada.');
-  return { demand: withLogo(demand), organization, projectId: project?.id };
+  return { demand: forTeacher(demand), organization, projectId: project?.id };
 };
 
 export const reserveDemand = (id: string): Demand => {
@@ -53,7 +48,7 @@ export const reserveDemand = (id: string): Demand => {
   demand.status = 'reserved';
   demand.reservation = { teacherName: db.account.name, mine: true, until: reservationEnd(db.calendar.today) };
   demand.watching = false;
-  return demand;
+  return forTeacher(demand);
 };
 
 export const releaseReservation = (id: string): Demand => {
@@ -61,7 +56,7 @@ export const releaseReservation = (id: string): Demand => {
   if (!isMyReservation(demand)) throw new RuleError('Esta reserva não é sua.');
   demand.status = 'open';
   demand.reservation = undefined;
-  return demand;
+  return forTeacher(demand);
 };
 
 /** "Avise-me se liberar": só faz sentido para reserva de outra pessoa. */
@@ -69,7 +64,7 @@ export const toggleWatch = (id: string): Demand => {
   const demand = findDemand(id);
   if (demand.status !== 'reserved' || demand.reservation?.mine) throw new RuleError('O aviso vale só para demandas reservadas por outro docente.');
   demand.watching = !demand.watching;
-  return demand;
+  return forTeacher(demand);
 };
 
 const QUESTION_LIMIT = 500;
@@ -91,5 +86,5 @@ export const askQuestion = (id: string, text: string): Demand => {
     askedAt: db.calendar.today,
     text: question,
   });
-  return demand;
+  return forTeacher(demand);
 };
