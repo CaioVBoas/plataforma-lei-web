@@ -1,14 +1,18 @@
 import * as server from '@/mocks/handlers/orgPortal';
 import { mockRequest } from '@/mocks/mockRequest';
-import type { OrgAccountInput, OrgProfileInput, SaveDraftPayload } from './types';
+import type { OrgAccountInput, OrgImagesInput, OrgProfileInput, SaveDraftPayload } from './types';
 
 export const getOrgAccount = () => mockRequest(() => server.getAccount());
 
 export const updateOrgAccount = (input: OrgAccountInput) => mockRequest(() => server.updateAccount(input));
 
+export const markOrgTutorialSeen = () => mockRequest(() => server.markTutorialSeen());
+
 export const getOrgProfile = () => mockRequest(() => server.getProfile());
 
 export const updateOrgProfile = (input: OrgProfileInput) => mockRequest(() => server.updateProfile(input));
+
+export const updateOrgImages = (input: OrgImagesInput) => mockRequest(() => server.updateImages(input));
 
 export const getOrgDemands = () => mockRequest(() => server.listDemands());
 

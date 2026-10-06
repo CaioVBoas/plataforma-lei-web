@@ -37,7 +37,7 @@ export const DemandCard = ({ demand, best, today }: DemandCardProps) => {
     >
       <div className="flex min-h-6 flex-wrap items-center justify-between gap-x-3 gap-y-1.5">
         <div className="flex min-w-0 items-center gap-2.5">
-          <Monogram name={demand.organization.name} size="sm" />
+          <Monogram name={demand.organization.name} logo={demand.organization.logo} size="sm" />
           <p className="truncate text-[13px] font-semibold text-ink-2">{demand.organization.name}</p>
         </div>
         {reservation ? (

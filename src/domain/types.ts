@@ -22,6 +22,8 @@ export interface OrganizationRef {
   id: string;
   name: string;
   type: string;
+  /** Logo que a própria organização envia, como data URL. Sem ela, o monograma com a inicial. */
+  logo?: string;
 }
 
 /** Só aparece para quem já tem projeto com a organização (regra 6 do docs/fluxos.md). */
@@ -49,6 +51,8 @@ export interface Organization extends OrganizationRef {
   meetingCadence: string;
   onSiteVisit: string;
   history: OrganizationHistoryEntry[];
+  /** Capa que a própria organização envia, como data URL. Sem ela, a capa do acervo. */
+  cover?: string;
 }
 
 export type ScopeFit = 'fits' | 'needs-cut';
@@ -218,6 +222,8 @@ export interface OrgAccount {
   /** Cargo na organização. */
   position: string;
   phone: string;
+  /** Já abriu ou dispensou o Como funciona: o convite some do Início. */
+  tutorialSeen?: boolean;
 }
 
 /**

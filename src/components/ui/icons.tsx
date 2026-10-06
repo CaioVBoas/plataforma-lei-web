@@ -178,3 +178,10 @@ export const SendIcon = (props: IconProps) => (
     <path d="M4.5 12L19.5 4.5l-4 15-3.8-6.2L4.5 12zM11.7 13.3l7.8-8.8" />
   </IconBase>
 );
+export const ImageIcon = (props: IconProps) => (
+  <IconBase {...props}>
+    <rect x="3.5" y="4.5" width="17" height="15" rx="2" />
+    <circle cx="9" cy="9.5" r="1.6" />
+    <path d="M4 17.5l5-5 4 4 2.5-2.5 4.5 4.5" />
+  </IconBase>
+);

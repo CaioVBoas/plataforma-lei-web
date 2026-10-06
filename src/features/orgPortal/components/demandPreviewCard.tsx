@@ -10,7 +10,7 @@ import { pluralize } from '@/utils/format';
  * escreve. A linha de baixo mostra o que ela informou; qual turma combina é
  * calculado para cada docente e não aparece aqui.
  */
-export const DemandPreviewCard = ({ draft, organizationName }: { draft: DemandDraft; organizationName: string }) => {
+export const DemandPreviewCard = ({ draft, organization }: { draft: DemandDraft; organization: { name: string; logo?: string } }) => {
   const facts = [
     draft.skills.length > 0 ? pluralize(draft.skills.length, 'competência', 'competências') : 'Competências na triagem',
     ...draft.constraints.map((constraint) => CONSTRAINT_COPY[constraint].label),
@@ -20,8 +20,8 @@ export const DemandPreviewCard = ({ draft, organizationName }: { draft: DemandDr
     <div aria-label="Prévia do cartão no cardápio" className="flex min-w-0 flex-col rounded-lg border border-line bg-surface p-5">
       <div className="flex min-h-6 flex-wrap items-center justify-between gap-x-3 gap-y-1.5">
         <div className="flex min-w-0 items-center gap-2.5">
-          <Monogram name={organizationName} size="sm" />
-          <p className="truncate text-[13px] font-semibold text-ink-2">{organizationName}</p>
+          <Monogram name={organization.name} logo={organization.logo} size="sm" />
+          <p className="truncate text-[13px] font-semibold text-ink-2">{organization.name}</p>
         </div>
         <Tag tone="accent">Nova</Tag>
       </div>

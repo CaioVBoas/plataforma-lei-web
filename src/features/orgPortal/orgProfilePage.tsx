@@ -10,6 +10,7 @@ import { ProfileHeader } from '@/components/ui/profileHeader';
 import type { OrgAccount } from '@/domain/types';
 import { useLogout } from '@/features/auth/useAuth';
 import { organizationCover } from '@/lib/covers';
+import { ImageSettings } from './components/imageSettings';
 import type { OrgProfile, OrgProfileInput } from './types';
 import { useOrgAccount, useOrgProfile, useUpdateOrgAccount, useUpdateOrgProfile } from './useOrgPortal';
 import { MEETING_SUGGESTIONS, ORGANIZATION_TYPES } from './utils/orgPresentation';
@@ -164,11 +165,11 @@ export const OrgProfilePage = () => {
       hero={
         organization && (
           <ProfileHeader
-            avatar={<Monogram name={organization.name} size="xl" />}
+            avatar={<Monogram name={organization.name} logo={organization.logo} size="xl" />}
             eyebrow={organization.type}
             title={organization.name}
             meta={organization.location}
-            cover={organizationCover(organization.id)}
+            cover={organizationCover(organization.id, organization.cover)}
           />
         )
       }
@@ -177,7 +178,14 @@ export const OrgProfilePage = () => {
         title="Perfil público"
         description="O mesmo que os docentes veem ao abrir a organização. Para mudar o nome, fale com o L.E.I."
       >
-        <QueryView query={profileQuery}>{(profile) => <ProfileForm key={profile.organization.id} profile={profile} />}</QueryView>
+        <QueryView query={profileQuery}>
+          {(profile) => (
+            <>
+              <ImageSettings organization={profile.organization} />
+              <ProfileForm key={profile.organization.id} profile={profile} />
+            </>
+          )}
+        </QueryView>
       </Section>
       <Section title="Sua conta">
         <QueryView query={accountQuery}>{(account) => <AccountForm account={account} />}</QueryView>

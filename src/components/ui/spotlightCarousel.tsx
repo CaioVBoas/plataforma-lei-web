@@ -15,7 +15,7 @@ const SideCard = ({ item, onSelect }: { item: SpotlightItem; onSelect: () => voi
     type="button"
     onClick={onSelect}
     aria-label={`Ver ${item.title}`}
-    className="hidden h-[220px] w-[240px] shrink-0 flex-col items-center justify-center gap-4 rounded-lg bg-fill px-6 text-center text-ink-3 transition-colors hover:bg-fill-strong md:flex"
+    className="hidden h-[220px] w-[240px] min-w-0 shrink flex-col items-center justify-center gap-4 rounded-lg bg-fill px-6 text-center text-ink-3 transition-colors hover:bg-fill-strong lg:flex"
   >
     <span className="flex size-12 items-center justify-center rounded-full bg-surface">{item.icon}</span>
     <span className="text-[15px] font-semibold text-ink-2">{item.title}</span>

@@ -24,6 +24,8 @@ export interface OrgDemandSummary {
   reservation?: { teacherName: string; until: IsoDate };
   projectId?: string;
   review?: SubmissionReview;
+  /** A demanda saiu da plataforma; resta o projeto. */
+  archived?: boolean;
 }
 
 /** Projeto visto pela organização: as etapas e quem é o docente, sem o plano interno da disciplina. */
@@ -58,7 +60,10 @@ export interface OrgProfile {
 }
 
 /** O nome e o histórico não mudam por aqui: o nome passa pelo L.E.I. e o histórico vem dos projetos. */
-export type OrgProfileInput = Omit<Organization, 'id' | 'name' | 'history'> & { contact: OrganizationContact };
+export type OrgProfileInput = Omit<Organization, 'id' | 'name' | 'history' | 'logo' | 'cover'> & { contact: OrganizationContact };
+
+/** Logo e capa mudam na hora, sem esperar o Salvar do formulário. Texto vazio remove. */
+export type OrgImagesInput = Partial<Pick<Organization, 'logo' | 'cover'>>;
 
 export type OrgAccountInput = Pick<OrgAccount, 'name' | 'position' | 'phone'>;
 

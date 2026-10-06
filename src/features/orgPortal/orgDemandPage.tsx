@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { QueryView } from '@/components/feedback/queryStates';
 import { useToast } from '@/components/feedback/toastContext';
 import { Button } from '@/components/ui/button';
+import { CoverBanner } from '@/components/ui/coverBanner';
 import { buttonClassName, textLinkClassName } from '@/components/ui/buttonStyles';
 import { ArrowRightIcon } from '@/components/ui/icons';
 import { Modal } from '@/components/ui/modal';
@@ -14,16 +15,17 @@ import { formatShortDate } from '@/domain/calendar';
 import { canDeleteSubmission, canEditSubmission, unansweredQuestions } from '@/domain/submission';
 import type { DemandSubmission } from '@/domain/types';
 import { useTabParam } from '@/hooks/useTabParam';
+import { demandCover } from '@/lib/covers';
 import { paths } from '@/routes/paths';
 import { cn } from '@/utils/cn';
 import { pluralize } from '@/utils/format';
-import { DemandContent } from './components/demandContent';
+import { DemandContent, DemandFacts } from './components/demandContent';
 import { DemandPreviewCard } from './components/demandPreviewCard';
 import { JourneyTrack } from './components/journeyTrack';
 import { QuestionsInbox } from './components/questionsInbox';
 import { ReviewNote } from './components/reviewNote';
 import type { OrgDemandDetail } from './types';
-import { useDeleteDraft, useOrgDemand } from './useOrgPortal';
+import { useDeleteDraft, useOrgDemand, useOrgProfile } from './useOrgPortal';
 import { STAGE_COPY } from './utils/orgPresentation';
 
 const TABS = ['demanda', 'perguntas', 'cardapio'] as const;
@@ -74,11 +76,21 @@ const DeleteDraft = ({ submission }: { submission: DemandSubmission }) => {
 };
 
 /** A coluna da situação: o que está acontecendo com o pedido e a única ação que cabe agora. */
+const StageTag = ({ detail }: { detail: OrgDemandDetail }) => {
+  const stage = STAGE_COPY[detail.stage];
+  return (
+    <div className="mb-3">
+      <Tag tone={stage.tone}>{stage.label}</Tag>
+    </div>
+  );
+};
+
 const StatusPanel = ({ detail }: { detail: OrgDemandDetail }) => {
   if (detail.kind === 'submission') {
     const { submission } = detail;
     return (
       <SideCard title="Situação">
+        <StageTag detail={detail} />
         {submission.stage === 'draft' && <SideText>Rascunho salvo em {formatShortDate(submission.updatedAt)}. Só vocês veem até enviar para a triagem.</SideText>}
         {submission.stage === 'needs-changes' && <SideText>O L.E.I. leu e pediu um ajuste antes de publicar. Ajuste o texto e reenvie.</SideText>}
         {submission.stage === 'in-review' && (
@@ -104,6 +116,7 @@ const StatusPanel = ({ detail }: { detail: OrgDemandDetail }) => {
 
   return (
     <SideCard title="Situação">
+      <StageTag detail={detail} />
       {stage === 'open' && <SideText>No cardápio desde {formatShortDate(demand.publishedAt)}. Os docentes do CIn já podem ver, perguntar e reservar.</SideText>}
       {stage === 'reserved' && demand.reservation && (
         <SideText>
@@ -135,18 +148,19 @@ const StatusPanel = ({ detail }: { detail: OrgDemandDetail }) => {
 
 const DemandView = ({ detail }: { detail: OrgDemandDetail }) => {
   const [tab, setTab] = useTabParam(TABS);
-  const stage = STAGE_COPY[detail.stage];
   const isSubmission = detail.kind === 'submission';
   const title = isSubmission ? detail.submission.title || 'Demanda sem nome' : detail.demand.title;
   const problem = isSubmission ? detail.submission.problem : detail.demand.problem;
   const draft = isSubmission ? detail.submission : detail.demand;
-  const organizationName = draft.organization.name;
+  const { data: profile } = useOrgProfile();
+  const cover = demandCover(isSubmission ? detail.submission.id : detail.demand.id, draft.organization.id, profile?.organization.cover);
   const previewDraft = isSubmission ? detail.submission : { ...detail.demand, expectedOutcome: detail.demand.scopeNote };
   // Perguntas só existem depois de publicada; antes disso a aba não aparece.
   const activeTab = isSubmission && tab === 'perguntas' ? 'demanda' : tab;
 
   return (
-    <Page title={title} eyebrow={<Tag tone={stage.tone}>{stage.label}</Tag>} subtitle={problem} back={{ to: paths.orgDemands(), label: 'Demandas' }}>
+    <Page title={title} eyebrow={`${draft.organization.name} · ${draft.organization.type}`} subtitle={problem} back={{ to: paths.orgDemands(), label: 'Demandas' }}>
+      {cover && <CoverBanner cover={cover} />}
       <div className="mb-10">
         <JourneyTrack stage={detail.stage} />
       </div>
@@ -154,11 +168,12 @@ const DemandView = ({ detail }: { detail: OrgDemandDetail }) => {
 
       <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_300px]">
         <div className="min-w-0">
+          <DemandFacts affectedPublic={draft.affectedPublic} meetingCadence={draft.meetingCadence} />
           <UnderlineTabs
             label="Sobre a demanda"
             value={activeTab}
             onChange={setTab}
-            className="mb-7"
+            className="mt-8 mb-7"
             options={[
               { value: 'demanda', label: 'Demanda' },
               ...(isSubmission ? [] : [{ value: 'perguntas' as const, label: 'Perguntas', count: detail.demand.questions.length }]),
@@ -169,6 +184,7 @@ const DemandView = ({ detail }: { detail: OrgDemandDetail }) => {
           {activeTab === 'demanda' && (
             <DemandContent
               {...draft}
+              facts={false}
               outcome={
                 isSubmission
                   ? { title: 'O que ajudaria ao fim do semestre', text: detail.submission.expectedOutcome }
@@ -186,7 +202,7 @@ const DemandView = ({ detail }: { detail: OrgDemandDetail }) => {
                   ? 'Assim o cartão vai aparecer para os docentes quando a demanda entrar no cardápio.'
                   : 'Assim o cartão aparece para os docentes. Cada um vê também qual turma dele combina com a demanda.'}
               </p>
-              <DemandPreviewCard draft={previewDraft} organizationName={organizationName} />
+              <DemandPreviewCard draft={previewDraft} organization={draft.organization} />
             </div>
           )}
         </div>

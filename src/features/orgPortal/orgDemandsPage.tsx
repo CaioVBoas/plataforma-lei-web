@@ -1,10 +1,13 @@
+import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { LoadingState } from '@/components/feedback/queryStates';
 import { EmptyState } from '@/components/ui/emptyState';
+import { SearchInput } from '@/components/ui/formControls';
 import { ItemList } from '@/components/ui/itemList';
 import { Page } from '@/components/ui/page';
 import { UnderlineTabs } from '@/components/ui/underlineTabs';
 import type { OrgDemandsView } from '@/routes/paths';
+import { normalizeText } from '@/utils/format';
 import { OrgDemandRow } from './components/orgDemandRow';
 import { SubmitDemandLink } from './components/submitDemandLink';
 import { useOrgDemands } from './useOrgPortal';
@@ -27,6 +30,7 @@ export const OrgDemandsPage = () => {
   const requested = searchParams.get('ver') as OrgDemandsView | null;
   const view: OrgDemandsView = requested && VIEWS.includes(requested) ? requested : 'preparo';
   const { data: demands } = useOrgDemands();
+  const [search, setSearch] = useState('');
 
   if (!demands) {
     return (
@@ -40,22 +44,39 @@ export const OrgDemandsPage = () => {
     OrgDemandsView,
     typeof demands
   >;
-  const visible = byView[view];
+  const term = normalizeText(search.trim());
+  const visible = byView[view].filter((demand) => !term || normalizeText(`${demand.title} ${demand.problem}`).includes(term));
 
   return (
     <Page title={TITLE} subtitle={SUBTITLE} actions={<SubmitDemandLink />}>
-      <UnderlineTabs
-        label="Quais demandas mostrar"
-        value={view}
-        onChange={(next) => setSearchParams(next === 'preparo' ? {} : { ver: next }, { replace: true })}
-        options={VIEWS.map((key) => ({ value: key, label: VIEW_LABELS[key], count: byView[key].length }))}
-      />
+      <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-3 border-b border-line">
+        <UnderlineTabs
+          bordered={false}
+          label="Quais demandas mostrar"
+          value={view}
+          onChange={(next) => setSearchParams(next === 'preparo' ? {} : { ver: next }, { replace: true })}
+          options={VIEWS.map((key) => ({ value: key, label: VIEW_LABELS[key], count: byView[key].length }))}
+        />
+        {demands.length > 0 && (
+          <SearchInput
+            aria-label="Buscar demandas"
+            placeholder="Buscar demanda"
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+            containerClassName="mb-2 w-full sm:w-[280px]"
+          />
+        )}
+      </div>
       {visible.length > 0 ? (
         <ItemList flush>
           {visible.map((demand) => (
             <OrgDemandRow key={demand.id} demand={demand} />
           ))}
         </ItemList>
+      ) : term && byView[view].length > 0 ? (
+        <div className="mt-6">
+          <EmptyState title="Nada encontrado" description={`Nenhuma demanda com "${search.trim()}" em "${VIEW_LABELS[view]}".`} />
+        </div>
       ) : (
         <div className="mt-6">
           <EmptyState
