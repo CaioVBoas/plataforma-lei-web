@@ -19,7 +19,7 @@ import { demandCover } from '@/lib/covers';
 import { paths } from '@/routes/paths';
 import { cn } from '@/utils/cn';
 import { pluralize } from '@/utils/format';
-import { DemandContent } from './components/demandContent';
+import { DemandContent, DemandFacts } from './components/demandContent';
 import { DemandPreviewCard } from './components/demandPreviewCard';
 import { JourneyTrack } from './components/journeyTrack';
 import { QuestionsInbox } from './components/questionsInbox';
@@ -76,11 +76,21 @@ const DeleteDraft = ({ submission }: { submission: DemandSubmission }) => {
 };
 
 /** A coluna da situação: o que está acontecendo com o pedido e a única ação que cabe agora. */
+const StageTag = ({ detail }: { detail: OrgDemandDetail }) => {
+  const stage = STAGE_COPY[detail.stage];
+  return (
+    <div className="mb-3">
+      <Tag tone={stage.tone}>{stage.label}</Tag>
+    </div>
+  );
+};
+
 const StatusPanel = ({ detail }: { detail: OrgDemandDetail }) => {
   if (detail.kind === 'submission') {
     const { submission } = detail;
     return (
       <SideCard title="Situação">
+        <StageTag detail={detail} />
         {submission.stage === 'draft' && <SideText>Rascunho salvo em {formatShortDate(submission.updatedAt)}. Só vocês veem até enviar para a triagem.</SideText>}
         {submission.stage === 'needs-changes' && <SideText>O L.E.I. leu e pediu um ajuste antes de publicar. Ajuste o texto e reenvie.</SideText>}
         {submission.stage === 'in-review' && (
@@ -106,6 +116,7 @@ const StatusPanel = ({ detail }: { detail: OrgDemandDetail }) => {
 
   return (
     <SideCard title="Situação">
+      <StageTag detail={detail} />
       {stage === 'open' && <SideText>No cardápio desde {formatShortDate(demand.publishedAt)}. Os docentes do CIn já podem ver, perguntar e reservar.</SideText>}
       {stage === 'reserved' && demand.reservation && (
         <SideText>
@@ -137,7 +148,6 @@ const StatusPanel = ({ detail }: { detail: OrgDemandDetail }) => {
 
 const DemandView = ({ detail }: { detail: OrgDemandDetail }) => {
   const [tab, setTab] = useTabParam(TABS);
-  const stage = STAGE_COPY[detail.stage];
   const isSubmission = detail.kind === 'submission';
   const title = isSubmission ? detail.submission.title || 'Demanda sem nome' : detail.demand.title;
   const problem = isSubmission ? detail.submission.problem : detail.demand.problem;
@@ -149,7 +159,7 @@ const DemandView = ({ detail }: { detail: OrgDemandDetail }) => {
   const activeTab = isSubmission && tab === 'perguntas' ? 'demanda' : tab;
 
   return (
-    <Page title={title} eyebrow={<Tag tone={stage.tone}>{stage.label}</Tag>} subtitle={problem} back={{ to: paths.orgDemands(), label: 'Demandas' }}>
+    <Page title={title} eyebrow={`${draft.organization.name} · ${draft.organization.type}`} subtitle={problem} back={{ to: paths.orgDemands(), label: 'Demandas' }}>
       {cover && <CoverBanner cover={cover} />}
       <div className="mb-10">
         <JourneyTrack stage={detail.stage} />
@@ -158,11 +168,12 @@ const DemandView = ({ detail }: { detail: OrgDemandDetail }) => {
 
       <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_300px]">
         <div className="min-w-0">
+          <DemandFacts affectedPublic={draft.affectedPublic} meetingCadence={draft.meetingCadence} />
           <UnderlineTabs
             label="Sobre a demanda"
             value={activeTab}
             onChange={setTab}
-            className="mb-7"
+            className="mt-8 mb-7"
             options={[
               { value: 'demanda', label: 'Demanda' },
               ...(isSubmission ? [] : [{ value: 'perguntas' as const, label: 'Perguntas', count: detail.demand.questions.length }]),
@@ -173,6 +184,7 @@ const DemandView = ({ detail }: { detail: OrgDemandDetail }) => {
           {activeTab === 'demanda' && (
             <DemandContent
               {...draft}
+              facts={false}
               outcome={
                 isSubmission
                   ? { title: 'O que ajudaria ao fim do semestre', text: detail.submission.expectedOutcome }

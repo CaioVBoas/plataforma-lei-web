@@ -6,6 +6,8 @@ export const getOrgAccount = () => mockRequest(() => server.getAccount());
 
 export const updateOrgAccount = (input: OrgAccountInput) => mockRequest(() => server.updateAccount(input));
 
+export const markOrgTutorialSeen = () => mockRequest(() => server.markTutorialSeen());
+
 export const getOrgProfile = () => mockRequest(() => server.getProfile());
 
 export const updateOrgProfile = (input: OrgProfileInput) => mockRequest(() => server.updateProfile(input));

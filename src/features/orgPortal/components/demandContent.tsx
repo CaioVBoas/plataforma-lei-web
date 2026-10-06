@@ -24,18 +24,24 @@ interface DemandContentProps {
   references: Reference[];
   /** No pedido, o que a organização espera; no cardápio, o recorte que o L.E.I. escreveu. */
   outcome: { title: string; text: string };
+  /** Quem sente e reuniões em mini cards. No detalhe, eles sobem para o topo, acima das abas. */
+  facts?: boolean;
 }
 
+export const DemandFacts = ({ affectedPublic, meetingCadence }: Pick<DemandContentProps, 'affectedPublic' | 'meetingCadence'>) => (
+  <FactGrid
+    columns={2}
+    items={[
+      { label: 'Quem sente', value: affectedPublic || <Empty /> },
+      { label: 'Reuniões', value: meetingCadence || <Empty /> },
+    ]}
+  />
+);
+
 /** O que a organização escreveu, na mesma ordem em que o docente lê no detalhe da demanda. */
-export const DemandContent = ({ description, affectedPublic, meetingCadence, offers, constraints, skills, references, outcome }: DemandContentProps) => (
-  <div>
-    <FactGrid
-      columns={2}
-      items={[
-        { label: 'Quem sente', value: affectedPublic || <Empty /> },
-        { label: 'Reuniões', value: meetingCadence || <Empty /> },
-      ]}
-    />
+export const DemandContent = ({ description, affectedPublic, meetingCadence, offers, constraints, skills, references, outcome, facts = true }: DemandContentProps) => (
+  <div className="[&>section:first-child]:mt-0">
+    {facts && <DemandFacts affectedPublic={affectedPublic} meetingCadence={meetingCadence} />}
 
     <SubBlock title="Contexto">
       <p className="text-[15px] leading-relaxed whitespace-pre-line text-ink-2">{description || <Empty />}</p>

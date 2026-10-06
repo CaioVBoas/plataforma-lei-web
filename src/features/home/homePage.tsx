@@ -5,8 +5,9 @@ import { buttonClassName } from '@/components/ui/buttonStyles';
 import { EmptyState } from '@/components/ui/emptyState';
 import { cardGridClassName } from '@/components/ui/card';
 import { StepCard } from '@/components/ui/stepCard';
+import { TutorialInvite } from '@/components/ui/tutorialInvite';
 import { WelcomeHero } from '@/components/ui/welcomeHero';
-import { CloseIcon, PlusIcon, TrayIcon } from '@/components/ui/icons';
+import { PlusIcon, TrayIcon } from '@/components/ui/icons';
 import { Page, Section } from '@/components/ui/page';
 import { formatShortDate, isLinkWindowOpen, semesterWeek } from '@/domain/calendar';
 import { freeSlots } from '@/domain/disciplineRules';
@@ -27,31 +28,6 @@ import { paths } from '@/routes/paths';
 import { capitalize, pluralize } from '@/utils/format';
 
 const SUGGESTIONS_ON_HOME = 3;
-
-const TutorialInvite = () => {
-  const update = useUpdateAccount();
-  return (
-    <div className="mb-10 flex flex-wrap items-center gap-x-6 gap-y-3 rounded-lg bg-accent-soft px-5 py-4">
-      <div className="min-w-0 flex-[1_1_320px]">
-        <p className="text-[15px] font-medium text-ink">Primeira vez por aqui?</p>
-        <p className="mt-0.5 text-sm text-ink-2">Em dois minutos você entende como uma demanda vira projeto da sua turma.</p>
-      </div>
-      <div className="flex items-center gap-1">
-        <Link to={paths.guide} className={buttonClassName({ variant: 'primary', size: 'sm' })}>
-          Ver como funciona
-        </Link>
-        <button
-          type="button"
-          aria-label="Dispensar convite"
-          onClick={() => update.mutate({ tutorialSeen: true })}
-          className="flex size-8 items-center justify-center rounded-md text-ink-2 hover:bg-surface/60"
-        >
-          <CloseIcon size={14} />
-        </button>
-      </div>
-    </div>
-  );
-};
 
 interface NextStepsProps {
   agenda: AgendaItem[];
@@ -153,6 +129,7 @@ const HomeContent = ({ account, calendar }: { account: Account; calendar: Semest
   const { data: disciplines } = useCurrentDisciplines();
   const { data: demands } = useMenu();
   const firstName = account.name.split(' ')[0];
+  const update = useUpdateAccount();
 
   if (!agenda || !disciplines || !demands) {
     return (
@@ -182,7 +159,13 @@ const HomeContent = ({ account, calendar }: { account: Account; calendar: Semest
         />
       }
     >
-      {!account.tutorialSeen && <TutorialInvite />}
+      {!account.tutorialSeen && (
+        <TutorialInvite
+          to={paths.guide}
+          text="Em dois minutos você entende como uma demanda vira projeto da sua turma."
+          onDismiss={() => update.mutate({ tutorialSeen: true })}
+        />
+      )}
 
       {disciplines.length === 0 ? (
         <Section title="Comece pelas suas turmas">

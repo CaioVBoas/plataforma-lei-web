@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { buttonClassName, textLinkClassName } from '@/components/ui/buttonStyles';
+import { buttonClassName } from '@/components/ui/buttonStyles';
 import { PlusIcon } from '@/components/ui/icons';
 import { paths } from '@/routes/paths';
 import { cn } from '@/utils/cn';
@@ -17,10 +17,7 @@ export const SubmitDemandCallout = ({ draft, firstTime }: { draft?: OrgDemandSum
           {firstTime ? 'Conte o primeiro problema da sua organização' : 'Tem outro problema que uma turma pode resolver?'}
         </h2>
         <p className="mt-1.5 max-w-[60ch] text-sm leading-relaxed text-ink-2">
-          Quatro etapas curtas, sem precisar saber de tecnologia.{' '}
-          <Link to={paths.orgGuide} className={textLinkClassName}>
-            Como funciona
-          </Link>
+          Quatro etapas curtas, sem precisar saber de tecnologia. Dá para salvar rascunho e voltar depois.
         </p>
       </div>
 

@@ -7,6 +7,7 @@ import { EmptyState } from '@/components/ui/emptyState';
 import { ItemList } from '@/components/ui/itemList';
 import { Page, Section } from '@/components/ui/page';
 import { StepCard } from '@/components/ui/stepCard';
+import { TutorialInvite } from '@/components/ui/tutorialInvite';
 import { WelcomeHero } from '@/components/ui/welcomeHero';
 import { daysBetween, formatShortDate } from '@/domain/calendar';
 import { isOverdue, nextMilestone } from '@/domain/projectLifecycle';
@@ -17,7 +18,7 @@ import { paths } from '@/routes/paths';
 import { OrgDemandRow } from './components/orgDemandRow';
 import { SubmitDemandCallout } from './components/submitDemandCallout';
 import type { OrgDemandSummary, OrgProjectSummary } from './types';
-import { useOrgAccount, useOrgDemands, useOrgProfile, useOrgProjects } from './useOrgPortal';
+import { useMarkOrgTutorialSeen, useOrgAccount, useOrgDemands, useOrgProfile, useOrgProjects } from './useOrgPortal';
 import { ORG_FACING_MILESTONES, ORG_MILESTONE_COPY } from './utils/orgPresentation';
 
 const RECENT_ON_HOME = 4;
@@ -104,6 +105,7 @@ const OrgHomeContent = ({ account, organizationName, today }: { account: OrgAcco
   const { data: demands } = useOrgDemands();
   const { data: projects } = useOrgProjects();
   const firstName = account.name.split(' ')[0];
+  const markSeen = useMarkOrgTutorialSeen();
 
   if (!demands || !projects) {
     return (
@@ -133,7 +135,15 @@ const OrgHomeContent = ({ account, organizationName, today }: { account: OrgAcco
         />
       }
     >
-      <Section title="O que pede sua atenção" description="Ajustes pedidos pelo L.E.I., perguntas de docentes e as etapas dos projetos em que vocês participam.">
+      {!account.tutorialSeen && (
+        <TutorialInvite
+          to={paths.orgGuide}
+          text="Em dois minutos vocês entendem como uma demanda chega a uma turma do CIn."
+          onDismiss={() => markSeen.mutate()}
+        />
+      )}
+
+      <Section title="Próximos passos" description="Ajustes pedidos pelo L.E.I., perguntas de docentes e as etapas dos projetos em que vocês participam.">
         <NextSteps demands={demands} projects={projects} today={today} />
       </Section>
 

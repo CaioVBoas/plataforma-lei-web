@@ -81,6 +81,11 @@ export const updateAccount = (input: OrgAccountInput): OrgAccount => {
   return db.orgAccount;
 };
 
+export const markTutorialSeen = (): OrgAccount => {
+  db.orgAccount.tutorialSeen = true;
+  return db.orgAccount;
+};
+
 export const getProfile = (): OrgProfile => {
   const { contact, ...organization } = myOrganization();
   return { organization, contact };

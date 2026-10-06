@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { buttonClassName } from '@/components/ui/buttonStyles';
 import { ArrowRightIcon, ChatIcon, CheckIcon, FolderIcon, PlusIcon } from '@/components/ui/icons';
@@ -6,7 +7,7 @@ import { RESERVATION_DAYS } from '@/domain/reservation';
 import type { OrgDemandStage } from '@/domain/submission';
 import { Faq, Rules, Stages, StepTabs, type FaqItem, type GuideStep, type RuleGroup } from '@/features/guide/components/guideBlocks';
 import { paths } from '@/routes/paths';
-import { useOrgDemands } from './useOrgPortal';
+import { useMarkOrgTutorialSeen, useOrgAccount, useOrgDemands } from './useOrgPortal';
 import { ORG_MILESTONE_COPY } from './utils/orgPresentation';
 
 const goTo = (to: string, label: string) => (
@@ -116,6 +117,14 @@ const FAQ: FaqItem[] = [
 
 export const OrgGuidePage = () => {
   const journey = useJourney();
+  const { data: account } = useOrgAccount();
+  const { mutate: markSeen } = useMarkOrgTutorialSeen();
+
+  // Abrir o Como funciona já conta como visto: o convite some do Início.
+  useEffect(() => {
+    if (account && !account.tutorialSeen) markSeen();
+  }, [account, markSeen]);
+
   return (
     <Page title="Como funciona" subtitle="Vocês contam um problema real, o L.E.I. faz a triagem e uma turma do CIn trabalha nele durante o semestre.">
       <Section title="O caminho de uma demanda" description="Clique num número para ver o passo.">

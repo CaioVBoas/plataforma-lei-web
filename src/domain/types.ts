@@ -222,6 +222,8 @@ export interface OrgAccount {
   /** Cargo na organização. */
   position: string;
   phone: string;
+  /** Já abriu ou dispensou o Como funciona: o convite some do Início. */
+  tutorialSeen?: boolean;
 }
 
 /**
