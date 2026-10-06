@@ -68,33 +68,6 @@ export const SearchInput = ({ containerClassName, className, ...props }: SearchI
   </div>
 );
 
-interface FilterSelectProps<T extends string> {
-  label: string;
-  value: T;
-  options: { value: T; label: string }[];
-  onChange: (value: T) => void;
-  className?: string;
-}
-
-/** Filtro de lista no formato "Situação: Todas", com o rótulo dentro da caixa. */
-export const FilterSelect = <T extends string>({ label, value, options, onChange, className }: FilterSelectProps<T>) => (
-  <label className={cn('relative flex h-10 items-center rounded-md border border-line-strong bg-surface pr-8 pl-3 text-sm text-ink focus-within:border-accent', className)}>
-    <span className="shrink-0 text-ink-2">{label}:</span>
-    <select
-      value={value}
-      onChange={(event) => onChange(event.target.value as T)}
-      className="ml-1 min-w-0 flex-1 cursor-pointer appearance-none bg-transparent font-medium text-ink outline-none"
-    >
-      {options.map((option) => (
-        <option key={option.value} value={option.value}>
-          {option.label}
-        </option>
-      ))}
-    </select>
-    <ChevronDownIcon size={15} className="pointer-events-none absolute right-2.5 text-ink-3" />
-  </label>
-);
-
 interface FieldProps {
   label: string;
   htmlFor?: string;

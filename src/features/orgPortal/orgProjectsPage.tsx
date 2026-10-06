@@ -1,51 +1,82 @@
-import { useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { LoadingState } from '@/components/feedback/queryStates';
 import { buttonClassName } from '@/components/ui/buttonStyles';
+import { cardGridClassName } from '@/components/ui/card';
 import { EmptyState } from '@/components/ui/emptyState';
-import { FilterSelect, SearchInput } from '@/components/ui/formControls';
-import { GroupCard, GroupRow } from '@/components/ui/groupCard';
-import { CheckIcon, ClockIcon, FolderIcon } from '@/components/ui/icons';
+import { ArrowRightIcon } from '@/components/ui/icons';
+import { InfoBanner } from '@/components/ui/infoBanner';
 import { Page } from '@/components/ui/page';
 import { Tag } from '@/components/ui/tag';
-import { formatRelativeDays } from '@/domain/calendar';
+import { UnderlineTabs } from '@/components/ui/underlineTabs';
+import { formatRelativeDays, formatShortDate } from '@/domain/calendar';
 import { isOverdue, nextMilestone, projectStage, type ProjectStage } from '@/domain/projectLifecycle';
 import type { IsoDate } from '@/domain/types';
 import { useCalendar } from '@/features/calendar/useCalendar';
+import { MilestoneTrack } from '@/features/projects/shared/components/milestoneTrack';
 import { STAGE_COPY } from '@/features/projects/shared/utils/projectPresentation';
 import { paths } from '@/routes/paths';
-import { normalizeText, pluralize } from '@/utils/format';
+import { cn } from '@/utils/cn';
 import { SubmitDemandLink } from './components/submitDemandLink';
 import type { OrgProjectSummary } from './types';
 import { useOrgProjects } from './useOrgPortal';
-import { ORG_MILESTONE_COPY } from './utils/orgPresentation';
+import { ORG_FACING_MILESTONES, ORG_MILESTONE_COPY } from './utils/orgPresentation';
 
 type Filter = 'todos' | 'planejamento' | 'andamento' | 'concluidos';
 
-const GROUPS: { filter: Exclude<Filter, 'todos'>; stage: ProjectStage; title: string; subtitle: string; empty: string }[] = [
-  { filter: 'planejamento', stage: 'planning', title: 'Em planejamento', subtitle: 'O docente revisa o plano e combina a abertura com vocês', empty: 'Nenhum projeto começando agora.' },
-  { filter: 'andamento', stage: 'running', title: 'Em andamento', subtitle: 'A turma está trabalhando, com entrega parcial e final', empty: 'Nenhuma turma trabalhando com vocês agora.' },
-  { filter: 'concluidos', stage: 'done', title: 'Concluídos', subtitle: 'O que cada turma entregou', empty: 'Os projetos encerrados ficam aqui.' },
-];
+const FILTERS: Filter[] = ['todos', 'planejamento', 'andamento', 'concluidos'];
+const STAGE_BY_FILTER: Record<Exclude<Filter, 'todos'>, ProjectStage> = { planejamento: 'planning', andamento: 'running', concluidos: 'done' };
+const LABELS: Record<Filter, string> = { todos: 'Todos', planejamento: 'Em planejamento', andamento: 'Em andamento', concluidos: 'Concluídos' };
 
-const FILTERS: Filter[] = ['todos', ...GROUPS.map((group) => group.filter)];
+const HELP: Record<Filter, string> = {
+  todos: 'Cada projeto é uma turma do CIn trabalhando num problema de vocês durante um semestre. Todos passam pelas mesmas seis etapas.',
+  planejamento: 'O docente está revisando o plano e vai marcar a reunião de abertura com vocês.',
+  andamento: 'A turma está trabalhando. Vocês participam da entrega parcial e da entrega final.',
+  concluidos: 'Projetos que já terminaram, com o que ficou com vocês.',
+};
 
-/** A próxima etapa do lado da organização, em pílula: atrasada em laranja escuro, perto em azul. */
-const NextStepTag = ({ project, today }: { project: OrgProjectSummary; today: IsoDate }) => {
+/** Um projeto em cartão: estado, quem faz, o andamento em seis traços e o próximo passo em palavras simples. */
+const OrgProjectCard = ({ project, today }: { project: OrgProjectSummary; today: IsoDate }) => {
+  const stage = STAGE_COPY[projectStage(project.milestones)];
   const next = nextMilestone(project.milestones);
-  if (!next) {
-    return (
-      <Tag pill tone="positive" icon={<CheckIcon size={13} />}>
-        {STAGE_COPY.done.label}
-      </Tag>
-    );
-  }
-  const overdue = isOverdue(next, today);
+  const overdue = next ? isOverdue(next, today) : false;
+  const withYou = next ? ORG_FACING_MILESTONES.includes(next.id) : false;
+
   return (
-    <Tag pill tone={overdue ? 'caution' : 'accent'} icon={<ClockIcon size={13} />}>
-      {ORG_MILESTONE_COPY[next.id].title}, {overdue ? 'atrasada ' : ''}
-      {formatRelativeDays(today, next.dueAt)}
-    </Tag>
+    <article className="flex h-full min-w-0 flex-col rounded-lg border border-line bg-surface p-5">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <Tag pill tone={stage.tone}>
+          {stage.label}
+        </Tag>
+        {withYou && <span className="text-[13px] font-semibold text-accent">Com a participação de vocês</span>}
+      </div>
+      <h3 className="mt-3 text-[17px] leading-snug font-semibold tracking-[-0.01em] text-ink">{project.title}</h3>
+      <p className="mt-1 text-sm text-ink-2">
+        {project.disciplineName}, com {project.teacherName} · {project.semester}
+      </p>
+      <MilestoneTrack milestones={project.milestones} className="mt-4" />
+
+      <div className="mt-auto pt-5">
+        <p className="rounded-md bg-canvas px-3.5 py-2.5 text-sm leading-relaxed text-ink">
+          <span className="font-semibold">{next ? 'Próximo passo: ' : 'Resultado: '}</span>
+          {next ? (
+            <>
+              {ORG_MILESTONE_COPY[next.id].title},{' '}
+              <span className={cn(overdue && 'font-semibold text-caution')}>
+                {overdue ? 'atrasado, era para ' : 'até '}
+                {formatShortDate(next.dueAt)} ({formatRelativeDays(today, next.dueAt)})
+              </span>
+              .
+            </>
+          ) : (
+            (project.outcome?.summary ?? 'Projeto concluído.')
+          )}
+        </p>
+        <Link to={paths.orgProject(project.id)} className={cn(buttonClassName({ variant: 'secondary', fullWidth: true }), 'mt-3 h-11 text-[15px]')}>
+          Abrir o projeto
+          <ArrowRightIcon size={16} />
+        </Link>
+      </div>
+    </article>
   );
 };
 
@@ -56,7 +87,6 @@ export const OrgProjectsPage = () => {
   const { data: projects } = useOrgProjects();
   const { data: calendar } = useCalendar();
   const [searchParams, setSearchParams] = useSearchParams();
-  const [search, setSearch] = useState('');
 
   if (!projects || !calendar) {
     return (
@@ -80,72 +110,33 @@ export const OrgProjectsPage = () => {
 
   const requested = searchParams.get('estado') as Filter | null;
   const filter: Filter = requested && FILTERS.includes(requested) ? requested : 'todos';
-  const term = normalizeText(search.trim());
-  const matches = (project: OrgProjectSummary) =>
-    !term || normalizeText(`${project.title} ${project.disciplineName} ${project.teacherName}`).includes(term);
-  const groups = GROUPS.filter((group) => filter === 'todos' || group.filter === filter).map((group) => ({
-    ...group,
-    index: GROUPS.indexOf(group) + 1,
-    items: projects.filter((project) => projectStage(project.milestones) === group.stage && matches(project)),
-  }));
-  const found = groups.some((group) => group.items.length > 0);
+  const matches = (project: OrgProjectSummary, value: Filter) => value === 'todos' || projectStage(project.milestones) === STAGE_BY_FILTER[value];
+  const count = (value: Filter) => projects.filter((project) => matches(project, value)).length;
+  // Primeiro o que está em curso, depois os concluídos, do mais recente ao mais antigo.
+  const visible = projects
+    .filter((project) => matches(project, filter))
+    .sort((a, b) => Number(projectStage(a.milestones) === 'done') - Number(projectStage(b.milestones) === 'done') || b.semester.localeCompare(a.semester));
 
   return (
     <Page title={TITLE} subtitle={SUBTITLE}>
-      <div className="mb-5 flex flex-wrap gap-3">
-        <SearchInput
-          aria-label="Buscar projetos"
-          placeholder="Buscar projeto, disciplina ou docente"
-          value={search}
-          onChange={(event) => setSearch(event.target.value)}
-          containerClassName="min-w-0 flex-[1_1_320px]"
-          className="h-10 border-line-strong bg-surface"
-        />
-        <FilterSelect
-          label="Situação"
-          value={filter}
-          onChange={(next) => setSearchParams(next === 'todos' ? {} : { estado: next }, { replace: true })}
-          options={[{ value: 'todos', label: 'Todos' }, ...GROUPS.map((group) => ({ value: group.filter, label: group.title }))]}
-          className="w-full sm:w-[230px]"
-        />
-      </div>
-
-      {!found && term ? (
-        <EmptyState title="Nada encontrado" description={`Nenhum projeto com "${search.trim()}".`} />
-      ) : (
-        <div className="flex flex-col gap-4">
-          {groups.map((group) => (
-            <GroupCard
-              key={group.filter}
-              index={group.index}
-              title={group.title}
-              subtitle={group.subtitle}
-              status={group.items.length > 0 ? <Tag pill>{pluralize(group.items.length, 'projeto', 'projetos')}</Tag> : undefined}
-              defaultOpen={group.items.length > 0}
-            >
-              {group.items.length > 0 ? (
-                group.items.map((project) => (
-                  <GroupRow
-                    key={project.id}
-                    to={paths.orgProject(project.id)}
-                    label={project.title}
-                    icon={<FolderIcon size={17} />}
-                    title={project.title}
-                    meta={`${project.disciplineName} · ${project.teacherName} · ${project.semester}`}
-                    status={<NextStepTag project={project} today={calendar.today} />}
-                    action={
-                      <Link to={paths.orgProject(project.id)} className={buttonClassName({ variant: 'secondary', size: 'sm' })}>
-                        Abrir
-                      </Link>
-                    }
-                  />
-                ))
-              ) : (
-                <li className="px-4 py-4 text-sm text-ink-3 sm:px-6">{term ? 'Nada com essa busca neste grupo.' : group.empty}</li>
-              )}
-            </GroupCard>
+      <UnderlineTabs
+        label="Estado dos projetos"
+        value={filter}
+        onChange={(value) => setSearchParams(value === 'todos' ? {} : { estado: value }, { replace: true })}
+        options={FILTERS.map((value) => ({ value, label: LABELS[value], count: count(value) }))}
+        className="mb-4"
+      />
+      <InfoBanner className="mb-6">{HELP[filter]}</InfoBanner>
+      {visible.length > 0 ? (
+        <ul className={cardGridClassName}>
+          {visible.map((project) => (
+            <li key={project.id}>
+              <OrgProjectCard project={project} today={calendar.today} />
+            </li>
           ))}
-        </div>
+        </ul>
+      ) : (
+        <EmptyState title={`Nada em "${LABELS[filter]}"`} description="Nenhum projeto neste estado agora." />
       )}
     </Page>
   );

@@ -2,8 +2,7 @@ import { Suspense, useEffect, useState, type ReactNode } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import { LoadingState } from '@/components/feedback/queryStates';
 import { BrandSymbol } from '@/components/ui/brandMark';
-import { BreadcrumbContext, type PageCrumb } from '@/components/ui/breadcrumbContext';
-import { ChevronRightIcon, CloseIcon, MenuIcon, SidebarIcon } from '@/components/ui/icons';
+import { CloseIcon, MenuIcon, SidebarIcon } from '@/components/ui/icons';
 import { cn } from '@/utils/cn';
 import { Sidebar, type SidebarConfig } from './sidebar';
 
@@ -24,54 +23,18 @@ interface PortalLayoutProps {
   sidebar: SidebarConfig;
   /** Sino de avisos do perfil. */
   bell: ReactNode;
-  /** Menu da conta do perfil, no canto da barra superior. Fica de fora quando a conta está no pé da barra lateral. */
-  account?: ReactNode;
-  /**
-   * Desenho do portal da organização: caminho da página na barra superior
-   * (no lugar do "voltar") e fundo cinza claro com as telas em cartões brancos.
-   */
-  cards?: boolean;
+  /** Menu da conta do perfil. */
+  account: ReactNode;
 }
-
-/** Início › Demandas › Fila de consultas. O último item é a página atual, sem link. */
-const Breadcrumbs = ({ crumb, homePath }: { crumb: PageCrumb | null; homePath: string }) => {
-  const { pathname } = useLocation();
-  const items: { label: string; to?: string }[] = [{ label: 'Início', to: pathname === homePath ? undefined : homePath }];
-  if (crumb && pathname !== homePath) {
-    if (crumb.back && crumb.back.to !== homePath) items.push({ label: crumb.back.label, to: crumb.back.to });
-    items.push({ label: crumb.title });
-  }
-  return (
-    <nav aria-label="Caminho" className="hidden min-w-0 md:block">
-      <ol className="flex min-w-0 items-center gap-1.5 text-sm">
-        {items.map((item, index) => (
-          <li key={`${item.label}-${index}`} className="flex min-w-0 items-center gap-1.5">
-            {index > 0 && <ChevronRightIcon size={13} className="shrink-0 text-ink-3" />}
-            {item.to ? (
-              <Link to={item.to} className="truncate text-ink-2 hover:text-ink">
-                {item.label}
-              </Link>
-            ) : (
-              <span aria-current="page" className="truncate font-semibold text-ink">
-                {item.label}
-              </span>
-            )}
-          </li>
-        ))}
-      </ol>
-    </nav>
-  );
-};
 
 /**
  * Casca de todas as telas dos portais do docente e da organização: barra
  * lateral recolhível no desktop, gaveta no celular e a barra superior com avisos e conta.
  */
-export const PortalLayout = ({ sidebar, bell, account, cards }: PortalLayoutProps) => {
+export const PortalLayout = ({ sidebar, bell, account }: PortalLayoutProps) => {
   const { pathname } = useLocation();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(readCollapsed);
-  const [crumb, setCrumb] = useState<PageCrumb | null>(null);
   const closeDrawer = () => setDrawerOpen(false);
 
   const toggleCollapsed = () =>
@@ -90,7 +53,7 @@ export const PortalLayout = ({ sidebar, bell, account, cards }: PortalLayoutProp
   }, [pathname]);
 
   return (
-    <div className={cn('min-h-screen', cards ? 'bg-canvas' : 'bg-surface')}>
+    <div className="min-h-screen bg-surface">
       <aside
         className={cn(
           'fixed inset-y-0 left-0 z-30 hidden border-r border-line bg-surface transition-[width] duration-200 md:block',
@@ -130,31 +93,19 @@ export const PortalLayout = ({ sidebar, bell, account, cards }: PortalLayoutProp
           >
             <SidebarIcon size={20} />
           </button>
-          {cards && (
-            <>
-              <span aria-hidden="true" className="mx-1 hidden h-6 w-px bg-line md:block" />
-              <Breadcrumbs crumb={crumb} homePath={sidebar.homePath} />
-            </>
-          )}
 
           <div className="ml-auto flex items-center gap-1">
             {bell}
-            {account && (
-              <>
-                <span aria-hidden="true" className="mx-1 h-6 w-px bg-line" />
-                {account}
-              </>
-            )}
+            <span aria-hidden="true" className="mx-1 h-6 w-px bg-line" />
+            {account}
           </div>
         </header>
 
         <main>
           {/* Suspense aqui mantém a barra lateral na tela enquanto a próxima página carrega. */}
-          <BreadcrumbContext.Provider value={cards ? setCrumb : null}>
-            <Suspense fallback={<LoadingState />}>
-              <Outlet />
-            </Suspense>
-          </BreadcrumbContext.Provider>
+          <Suspense fallback={<LoadingState />}>
+            <Outlet />
+          </Suspense>
         </main>
       </div>
     </div>

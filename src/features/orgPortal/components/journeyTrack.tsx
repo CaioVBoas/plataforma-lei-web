@@ -4,40 +4,44 @@ import { cn } from '@/utils/cn';
 import { JOURNEY, journeyIndex } from '../utils/orgPresentation';
 
 /**
- * Os cinco passos de um pedido, do envio ao fim do projeto. Os feitos ganham o
- * check verde da linha das etapas; o atual fica em destaque, os próximos apagados.
+ * Os cinco passos de um pedido, numerados e ligados por um traço, como o
+ * caminho do Como funciona: feitos com check verde, o atual em petróleo com
+ * "Agora" embaixo, os próximos apagados. No celular fica só o passo atual escrito.
  */
-export const JourneyTrack = ({ stage, hideMobileLabel }: { stage: OrgDemandStage; /** O cabeçalho já escreve o passo atual. */ hideMobileLabel?: boolean }) => {
+export const JourneyTrack = ({ stage }: { stage: OrgDemandStage }) => {
   const current = journeyIndex(stage);
   const finished = stage === 'done';
 
   return (
-    <div>
-    <ol aria-label="Caminho da demanda" className="grid grid-cols-5 gap-1.5">
-      {JOURNEY.map((step, index) => {
-        const done = index < current || finished;
-        const isCurrent = index === current && !finished;
-        return (
-          <li key={step.label} aria-current={isCurrent ? 'step' : undefined} className="min-w-0">
-            <span className={cn('block h-1 rounded-full', done ? 'bg-positive' : isCurrent ? 'bg-brand' : 'bg-fill-strong')} />
-            <span
-              className={cn(
-                'mt-2 flex items-start gap-1 text-[12px] leading-snug',
-                done ? 'text-ink-2' : isCurrent ? 'font-semibold text-ink' : 'text-ink-3',
-                'max-sm:sr-only',
-              )}
-            >
-              {done && <CheckIcon size={12} className="mt-0.5 shrink-0 text-positive" />}
-              {step.label}
-            </span>
-          </li>
-        );
-      })}
-    </ol>
-      {/* No celular os cinco rótulos não cabem lado a lado: fica só o passo atual. */}
-      <p aria-hidden="true" className={cn('mt-2 text-[13px] text-ink sm:hidden', hideMobileLabel && 'hidden')}>
-        {finished ? 'Concluída' : `Passo ${current + 1} de ${JOURNEY.length}: ${JOURNEY[current].label}`}
+    <section aria-label="Onde a demanda está" className="rounded-lg border border-line bg-surface px-4 py-5 sm:px-6">
+      <p className="mb-4 text-[13px] font-semibold text-brand-strong">Onde a demanda está</p>
+      <ol className="relative flex justify-between gap-1">
+        <span aria-hidden="true" className="absolute top-4 right-[10%] left-[10%] h-px bg-line-strong" />
+        {JOURNEY.map((step, index) => {
+          const done = index < current || finished;
+          const isCurrent = index === current && !finished;
+          return (
+            <li key={step.label} aria-current={isCurrent ? 'step' : undefined} className="relative flex min-w-0 flex-1 flex-col items-center text-center">
+              <span
+                className={cn(
+                  'flex size-8 items-center justify-center rounded-full text-[13px] font-semibold ring-4 ring-surface tabular-nums',
+                  done ? 'bg-positive-soft text-positive' : isCurrent ? 'bg-brand text-white' : 'bg-fill text-ink-3',
+                )}
+              >
+                {done ? <CheckIcon size={14} /> : index + 1}
+                <span className="sr-only">{done ? ' feito' : isCurrent ? ' agora' : ' depois'}</span>
+              </span>
+              <span className={cn('mt-2 hidden text-[13px] leading-snug sm:block', isCurrent ? 'font-semibold text-ink' : done ? 'text-ink-2' : 'text-ink-3')}>
+                {step.label}
+              </span>
+              {isCurrent && <span className="mt-0.5 hidden text-[12px] font-semibold text-brand sm:block">Agora</span>}
+            </li>
+          );
+        })}
+      </ol>
+      <p className="mt-4 text-sm text-ink sm:hidden">
+        {finished ? 'Todos os passos feitos.' : `Passo ${current + 1} de ${JOURNEY.length}: ${JOURNEY[current].label}`}
       </p>
-    </div>
+    </section>
   );
 };

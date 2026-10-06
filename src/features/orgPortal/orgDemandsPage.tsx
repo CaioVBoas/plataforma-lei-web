@@ -1,45 +1,53 @@
 import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { LoadingState } from '@/components/feedback/queryStates';
+import { cardGridClassName } from '@/components/ui/card';
 import { EmptyState } from '@/components/ui/emptyState';
-import { FilterSelect, SearchInput } from '@/components/ui/formControls';
-import { GroupCard } from '@/components/ui/groupCard';
+import { SearchInput } from '@/components/ui/formControls';
+import { InfoBanner } from '@/components/ui/infoBanner';
 import { Page } from '@/components/ui/page';
-import { Tag } from '@/components/ui/tag';
-import type { OrgDemandsView } from '@/routes/paths';
-import { normalizeText, pluralize } from '@/utils/format';
-import { OrgDemandRow } from './components/orgDemandRow';
+import { UnderlineTabs } from '@/components/ui/underlineTabs';
+import type { OrgDemandsTab, OrgDemandsView } from '@/routes/paths';
+import { normalizeText } from '@/utils/format';
+import { OrgDemandCard } from './components/orgDemandCard';
 import { SubmitDemandLink } from './components/submitDemandLink';
 import type { OrgDemandSummary } from './types';
 import { useOrgDemands } from './useOrgPortal';
+import { demandGuidance } from './utils/demandGuidance';
 import { VIEW_LABELS, VIEW_STAGES } from './utils/orgPresentation';
 
 const VIEWS = Object.keys(VIEW_STAGES) as OrgDemandsView[];
+const TABS: OrgDemandsTab[] = ['vez', 'todas', ...VIEWS];
 
-/** O que cada grupo guarda, em uma linha, e o que dizer quando está vazio. */
-const GROUP_COPY: Record<OrgDemandsView, { subtitle: string; empty: string }> = {
-  preparo: { subtitle: 'Rascunhos, na triagem do L.E.I. ou com ajuste pedido', empty: 'Nenhum pedido em preparo.' },
-  cardapio: { subtitle: 'À vista dos docentes do CIn', empty: 'Quando o L.E.I. aprova uma demanda, ela aparece aqui.' },
-  projeto: { subtitle: 'Uma turma está trabalhando nelas', empty: 'Quando um docente leva uma demanda para a turma, ela aparece aqui.' },
-  concluidas: { subtitle: 'Projetos encerrados, com o que ficou com vocês', empty: 'Os projetos encerrados ficam aqui.' },
+const TAB_LABELS: Record<OrgDemandsTab, string> = { vez: 'Sua vez', todas: 'Todas', ...VIEW_LABELS };
+
+/** Uma frase por aba, logo abaixo dela: o que aparece aqui e por quê. */
+const TAB_HELP: Record<OrgDemandsTab, string> = {
+  vez: 'Só as demandas que esperam algo de vocês: terminar um rascunho, fazer um ajuste ou responder um docente.',
+  todas: 'Todas as demandas de vocês, da mais recente para a mais antiga.',
+  preparo: 'Rascunhos, demandas que o L.E.I. está lendo e as que voltaram com pedido de ajuste.',
+  cardapio: 'Demandas aprovadas. Os docentes do CIn já podem ver, perguntar e escolher uma para a turma.',
+  projeto: 'Uma turma está trabalhando nestas demandas neste semestre.',
+  concluidas: 'Projetos que já terminaram, com o que ficou com vocês.',
 };
 
-/** O resumo à direita do grupo: o que pede atenção primeiro, senão quantos há. */
-const groupStatus = (view: OrgDemandsView, demands: OrgDemandSummary[]) => {
-  const changes = demands.filter((demand) => demand.stage === 'needs-changes').length;
-  const questions = demands.reduce((sum, demand) => sum + demand.unanswered, 0);
-  if (view === 'preparo' && changes > 0) return <Tag pill tone="caution">{pluralize(changes, 'ajuste pedido', 'ajustes pedidos')}</Tag>;
-  if (questions > 0) return <Tag pill tone="accent">{pluralize(questions, 'pergunta sem resposta', 'perguntas sem resposta')}</Tag>;
-  return <Tag pill>{pluralize(demands.length, 'demanda', 'demandas')}</Tag>;
+const EMPTY: Record<OrgDemandsTab, string> = {
+  vez: 'Nada esperando por vocês agora. Quando o L.E.I. pedir um ajuste ou um docente perguntar algo, aparece aqui.',
+  todas: 'Nenhuma demanda ainda.',
+  preparo: 'Nenhum rascunho nem demanda na triagem.',
+  cardapio: 'Quando o L.E.I. aprova uma demanda, ela entra no cardápio e aparece aqui.',
+  projeto: 'Quando um docente leva uma demanda para a disciplina, ela vira projeto e aparece aqui.',
+  concluidas: 'Os projetos encerrados ficam aqui.',
 };
+
+const inTab = (demand: OrgDemandSummary, tab: OrgDemandsTab) =>
+  tab === 'todas' || (tab === 'vez' ? demandGuidance(demand).yourTurn : VIEW_STAGES[tab].includes(demand.stage));
 
 const TITLE = 'Demandas';
-const SUBTITLE = 'O que vocês pediram ao CIn e em que pé está cada pedido.';
+const SUBTITLE = 'Os problemas que vocês pediram para uma turma do CIn resolver, e em que pé está cada um.';
 
 export const OrgDemandsPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const requested = searchParams.get('ver') as OrgDemandsView | null;
-  const filter: OrgDemandsView | 'todas' = requested && VIEWS.includes(requested) ? requested : 'todas';
   const { data: demands } = useOrgDemands();
   const [search, setSearch] = useState('');
 
@@ -56,62 +64,56 @@ export const OrgDemandsPage = () => {
       <Page title={TITLE} subtitle={SUBTITLE}>
         <EmptyState
           title="Nenhuma demanda ainda"
-          description="Conte um problema real da sua organização. O L.E.I. ajuda a transformar em projeto para uma turma do CIn."
+          description="Contem um problema real da organização. O L.E.I. ajuda a transformar em projeto para uma turma do CIn."
           action={<SubmitDemandLink />}
         />
       </Page>
     );
   }
 
+  const count = (tab: OrgDemandsTab) => demands.filter((demand) => inTab(demand, tab)).length;
+  const requested = searchParams.get('ver') as OrgDemandsTab | null;
+  // Sem aba pedida, abre no que espera por vocês; se nada espera, em todas.
+  const tab: OrgDemandsTab = requested && TABS.includes(requested) ? requested : count('vez') > 0 ? 'vez' : 'todas';
   const term = normalizeText(search.trim());
-  const matches = (demand: OrgDemandSummary) => !term || normalizeText(`${demand.title} ${demand.problem}`).includes(term);
-  const groups = VIEWS.filter((view) => filter === 'todas' || view === filter).map((view) => ({
-    view,
-    items: demands.filter((demand) => VIEW_STAGES[view].includes(demand.stage) && matches(demand)),
-  }));
-  const found = groups.some((group) => group.items.length > 0);
+  // Quem busca pelo nome quer achar a demanda onde ela estiver: a busca vale para todas as abas.
+  const visible = term
+    ? demands.filter((demand) => normalizeText(`${demand.title} ${demand.problem}`).includes(term))
+    : demands.filter((demand) => inTab(demand, tab));
 
   return (
     <Page title={TITLE} subtitle={SUBTITLE} actions={<SubmitDemandLink />}>
-      <div className="mb-5 flex flex-wrap gap-3">
+      <div className="mb-4 flex flex-wrap items-end justify-between gap-x-6 gap-y-3 border-b border-line">
+        <UnderlineTabs
+          bordered={false}
+          label="Quais demandas mostrar"
+          value={tab}
+          onChange={(next) => setSearchParams({ ver: next }, { replace: true })}
+          options={TABS.map((key) => ({ value: key, label: TAB_LABELS[key], count: count(key) }))}
+        />
         <SearchInput
           aria-label="Buscar demandas"
-          placeholder="Buscar demanda"
+          placeholder="Buscar pelo nome"
           value={search}
           onChange={(event) => setSearch(event.target.value)}
-          containerClassName="min-w-0 flex-[1_1_320px]"
-          className="h-10 border-line-strong bg-surface"
-        />
-        <FilterSelect
-          label="Situação"
-          value={filter}
-          onChange={(next) => setSearchParams(next === 'todas' ? {} : { ver: next }, { replace: true })}
-          options={[{ value: 'todas', label: 'Todas' }, ...VIEWS.map((view) => ({ value: view, label: VIEW_LABELS[view] }))]}
-          className="w-full sm:w-[230px]"
+          containerClassName="mb-2 w-full sm:w-[260px]"
         />
       </div>
+      <InfoBanner className="mb-6">{term ? `Buscando "${search.trim()}" em todas as demandas.` : TAB_HELP[tab]}</InfoBanner>
 
-      {!found && term ? (
-        <EmptyState title="Nada encontrado" description={`Nenhuma demanda com "${search.trim()}".`} />
-      ) : (
-        <div className="flex flex-col gap-4">
-          {groups.map(({ view, items }) => (
-            <GroupCard
-              key={view}
-              index={VIEWS.indexOf(view) + 1}
-              title={VIEW_LABELS[view]}
-              subtitle={GROUP_COPY[view].subtitle}
-              status={items.length > 0 ? groupStatus(view, items) : undefined}
-              defaultOpen={items.length > 0}
-            >
-              {items.length > 0 ? (
-                items.map((demand) => <OrgDemandRow key={demand.id} demand={demand} />)
-              ) : (
-                <li className="px-4 py-4 text-sm text-ink-3 sm:px-6">{term ? 'Nada com essa busca neste grupo.' : GROUP_COPY[view].empty}</li>
-              )}
-            </GroupCard>
+      {visible.length > 0 ? (
+        <ul className={cardGridClassName}>
+          {visible.map((demand) => (
+            <li key={demand.id}>
+              <OrgDemandCard demand={demand} />
+            </li>
           ))}
-        </div>
+        </ul>
+      ) : (
+        <EmptyState
+          title={term ? 'Nada encontrado' : `Nada em "${TAB_LABELS[tab]}"`}
+          description={term ? `Nenhuma demanda com "${search.trim()}".` : EMPTY[tab]}
+        />
       )}
     </Page>
   );

@@ -4,7 +4,6 @@ import { LoadingState } from '@/components/feedback/queryStates';
 import { buttonClassName } from '@/components/ui/buttonStyles';
 import { cardGridClassName } from '@/components/ui/card';
 import { EmptyState } from '@/components/ui/emptyState';
-import { CardList } from '@/components/ui/groupCard';
 import { Page, Section } from '@/components/ui/page';
 import { StepCard } from '@/components/ui/stepCard';
 import { TutorialInvite } from '@/components/ui/tutorialInvite';
@@ -15,7 +14,7 @@ import type { IsoDate, OrgAccount } from '@/domain/types';
 import { useCalendar } from '@/features/calendar/useCalendar';
 import { milestoneDateLine } from '@/features/projects/shared/utils/projectPresentation';
 import { paths } from '@/routes/paths';
-import { OrgDemandRow } from './components/orgDemandRow';
+import { OrgDemandCard } from './components/orgDemandCard';
 import { SubmitDemandCallout } from './components/submitDemandCallout';
 import type { OrgDemandSummary, OrgProjectSummary } from './types';
 import { useMarkOrgTutorialSeen, useOrgAccount, useOrgDemands, useOrgProfile, useOrgProjects } from './useOrgPortal';
@@ -160,11 +159,13 @@ const OrgHomeContent = ({ account, organizationName, today }: { account: OrgAcco
             </Link>
           }
         >
-          <CardList>
+          <ul className={cardGridClassName}>
             {demands.slice(0, RECENT_ON_HOME).map((demand) => (
-              <OrgDemandRow key={demand.id} demand={demand} />
+              <li key={demand.id}>
+                <OrgDemandCard demand={demand} />
+              </li>
             ))}
-          </CardList>
+          </ul>
         </Section>
       )}
 
