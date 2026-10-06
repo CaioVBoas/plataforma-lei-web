@@ -81,7 +81,7 @@ export const Stages = ({ copy }: { copy: Record<MilestoneId, { title: string; de
   const [open, setOpen] = useState<MilestoneId>('plan');
 
   return (
-    <ol className="overflow-hidden rounded-lg border border-line">
+    <ol className="overflow-hidden rounded-lg border border-line bg-surface">
       {MILESTONE_ORDER.map((id, index) => {
         const current = id === open;
         const phase = PHASE_START[id];
@@ -125,7 +125,7 @@ export interface RuleGroup {
 }
 
 export const Rules = ({ groups }: { groups: RuleGroup[] }) => (
-  <ul className="grid overflow-hidden rounded-lg border border-line md:grid-cols-3">
+  <ul className="grid overflow-hidden rounded-lg border border-line bg-surface md:grid-cols-3">
     {groups.map((group) => (
       <li key={group.title} className="border-line p-6 not-first:border-t md:not-first:border-t-0 md:not-first:border-l">
         <span className="flex size-10 items-center justify-center rounded-md bg-brand text-white">{group.icon}</span>
@@ -148,7 +148,7 @@ export interface FaqItem {
 }
 
 export const Faq = ({ items }: { items: FaqItem[] }) => (
-  <div className="divide-y divide-line overflow-hidden rounded-lg border border-line">
+  <div className="divide-y divide-line overflow-hidden rounded-lg border border-line bg-surface">
     {items.map((item) => (
       <details key={item.question} className="group">
         <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-4 py-3.5 text-[15px] font-medium text-ink hover:bg-canvas [&::-webkit-details-marker]:hidden">

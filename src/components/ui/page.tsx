@@ -1,6 +1,7 @@
 import { useEffect, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { cn } from '@/utils/cn';
+import { usePageCrumb } from './breadcrumbContext';
 import { ChevronLeftIcon } from './icons';
 
 interface PageProps {
@@ -15,6 +16,8 @@ interface PageProps {
   back?: { to: string; label: string };
   /** Substitui o cabeçalho padrão por um bloco próprio, como a boas-vindas do Início. */
   hero?: ReactNode;
+  /** Sem cabeçalho: a tela traz o próprio, como o cartão de detalhe do portal da organização. */
+  bare?: boolean;
   actions?: ReactNode;
   children: ReactNode;
 }
@@ -23,21 +26,23 @@ interface PageProps {
 export const PAGE_FRAME = 'mx-auto w-full max-w-[1280px] px-4 pt-6 pb-20 sm:px-6 sm:pt-8 lg:px-8';
 
 /** Casca de toda tela do portal: voltar, título grande, subtítulo e ações à direita. */
-export const Page = ({ title, eyebrow, subtitle, meta, leading, back, hero, actions, children }: PageProps) => {
+export const Page = ({ title, eyebrow, subtitle, meta, leading, back, hero, bare, actions, children }: PageProps) => {
   useEffect(() => {
     document.title = `${title} · PLEI`;
   }, [title]);
+  // Com o caminho no topo (portal da organização), o "voltar" fica só no celular, onde o caminho não cabe.
+  const crumbOnTop = usePageCrumb(title, back);
 
   return (
     <div className={PAGE_FRAME}>
       {back && (
         // Voltar é navegação, não ação: texto cinza escuro, sem peso de botão.
-        <Link to={back.to} className="-ml-1.5 mb-4 inline-flex items-center gap-0.5 text-sm text-ink-2 hover:text-ink">
+        <Link to={back.to} className={cn('-ml-1.5 mb-4 inline-flex items-center gap-0.5 text-sm text-ink-2 hover:text-ink', crumbOnTop && 'md:hidden')}>
           <ChevronLeftIcon size={16} />
           {back.label}
         </Link>
       )}
-      {hero ? (
+      {bare ? null : hero ? (
         <div className="mb-10">{hero}</div>
       ) : (
       <header className="mb-10 flex flex-wrap items-end justify-between gap-x-6 gap-y-4">

@@ -72,7 +72,7 @@ export const ImageSettings = ({ organization }: { organization: Organization }) 
   const remove = (key: 'logo' | 'cover') => update.mutate({ [key]: '' }, { onSuccess: () => toast.show(key === 'logo' ? 'Logo removida.' : 'Capa removida.') });
 
   return (
-    <div className="mb-5 divide-y divide-line rounded-lg border border-line p-5 sm:p-6">
+    <div className="mb-5 divide-y divide-line rounded-lg border border-line bg-surface p-5 sm:p-6">
       <ImageRow
         label="Logo"
         hint="Aparece no lugar da inicial, nos cartões do cardápio e no perfil."

@@ -56,7 +56,7 @@ const ProfileForm = ({ profile }: { profile: OrgProfile }) => {
   };
 
   return (
-    <form onSubmit={save} className="@container rounded-lg border border-line p-5 sm:p-6">
+    <form onSubmit={save} className="@container rounded-lg border border-line bg-surface p-5 sm:p-6">
       <FormGroup title="Quem são vocês" hint="Aparece no perfil da organização e no detalhe de cada demanda.">
         <div className="flex flex-col gap-5">
           <div className="grid gap-5 sm:grid-cols-2">
@@ -133,7 +133,7 @@ const AccountForm = ({ account }: { account: OrgAccount }) => {
   };
 
   return (
-    <form onSubmit={save} className="rounded-lg border border-line p-5 sm:p-6">
+    <form onSubmit={save} className="rounded-lg border border-line bg-surface p-5 sm:p-6">
       <div className="grid gap-5 sm:grid-cols-2">
         <Field label="Nome" htmlFor="conta-org-nome">
           <Input id="conta-org-nome" value={name} onChange={(event) => setName(event.target.value)} autoComplete="name" />

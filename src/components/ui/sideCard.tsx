@@ -3,7 +3,7 @@ import { cn } from '@/utils/cn';
 
 /** Bloco da coluna lateral das telas de detalhe: título pequeno em petróleo e conteúdo em card branco. */
 export const SideCard = ({ title, className, children }: { title: string; className?: string; children: ReactNode }) => (
-  <section className={cn('rounded-lg border border-line p-5', className)}>
+  <section className={cn('rounded-lg border border-line bg-surface p-5', className)}>
     <h2 className="text-[13px] font-semibold text-brand-strong">{title}</h2>
     <div className="mt-3">{children}</div>
   </section>

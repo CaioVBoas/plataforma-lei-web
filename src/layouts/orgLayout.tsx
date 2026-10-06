@@ -1,5 +1,5 @@
 import { ArrowUpRightIcon, BuildingIcon, FolderIcon, HomeIcon, QuestionIcon, TrayIcon } from '@/components/ui/icons';
-import { useOrgAccount } from '@/features/orgPortal/useOrgPortal';
+import { useOrgAccount, useOrgProfile } from '@/features/orgPortal/useOrgPortal';
 import { useOrgNotifications } from '@/features/orgPortal/useOrgNotifications';
 import { paths } from '@/routes/paths';
 import { AccountMenu } from './accountMenu';
@@ -7,31 +7,58 @@ import { NotificationsBell } from './notificationsBell';
 import { PortalLayout } from './portalLayout';
 import type { SidebarConfig } from './sidebar';
 
-/** O caminho da organização: o que pede atenção, o que ela pediu e o que as turmas estão fazendo. */
-const SIDEBAR: SidebarConfig = {
-  label: 'Portal da organização',
-  homePath: paths.orgHome,
-  navigation: [
-    { to: paths.orgHome, label: 'Início', icon: <HomeIcon /> },
-    { to: paths.orgDemands(), label: 'Demandas', icon: <TrayIcon /> },
-    { to: paths.orgProjects, label: 'Projetos', icon: <FolderIcon /> },
-  ],
-  footer: [
-    { to: paths.landing, label: 'Portal do L.E.I.', icon: <ArrowUpRightIcon /> },
-    { to: paths.orgGuide, label: 'Como funciona', icon: <QuestionIcon /> },
-    { to: paths.orgProfile, label: 'Perfil da organização', icon: <BuildingIcon /> },
-  ],
-};
-
 const OrgBell = () => {
   const { notifications, pending } = useOrgNotifications();
   return <NotificationsBell notifications={notifications} pending={pending} allPath={paths.orgNotifications} />;
 };
 
-const OrgAccountMenu = () => {
+/** Quem está logado, no pé da barra: nome, a organização e o menu com perfil e sair. */
+const OrgAccountMenu = ({ collapsed }: { collapsed: boolean }) => {
   const { data: account } = useOrgAccount();
+  const { data: profile } = useOrgProfile();
   if (!account) return null;
-  return <AccountMenu name={account.name} email={account.email} accountPath={paths.orgProfile} accountLabel="Perfil da organização" />;
+  return (
+    <AccountMenu
+      inSidebar
+      collapsed={collapsed}
+      name={account.name}
+      email={account.email}
+      detail={profile?.organization.name}
+      accountPath={paths.orgProfile}
+      accountLabel="Perfil da organização"
+    />
+  );
 };
 
-export const OrgLayout = () => <PortalLayout sidebar={SIDEBAR} bell={<OrgBell />} account={<OrgAccountMenu />} />;
+/** O caminho da organização em três grupos: o trabalho do dia, a ajuda e o perfil. */
+const SIDEBAR: SidebarConfig = {
+  label: 'Portal da organização',
+  homePath: paths.orgHome,
+  subtitle: 'Portal da organização',
+  navigation: [],
+  sections: [
+    {
+      title: 'Demandas',
+      items: [
+        { to: paths.orgHome, label: 'Início', icon: <HomeIcon /> },
+        { to: paths.orgDemands(), label: 'Demandas', icon: <TrayIcon /> },
+        { to: paths.orgProjects, label: 'Projetos', icon: <FolderIcon /> },
+      ],
+    },
+    {
+      title: 'Ajuda',
+      items: [
+        { to: paths.orgGuide, label: 'Como funciona', icon: <QuestionIcon /> },
+        { to: paths.landing, label: 'Portal do L.E.I.', icon: <ArrowUpRightIcon /> },
+      ],
+    },
+    {
+      title: 'Configurar',
+      items: [{ to: paths.orgProfile, label: 'Perfil da organização', icon: <BuildingIcon /> }],
+    },
+  ],
+  footer: [],
+  user: (collapsed) => <OrgAccountMenu collapsed={collapsed} />,
+};
+
+export const OrgLayout = () => <PortalLayout cards sidebar={SIDEBAR} bell={<OrgBell />} />;

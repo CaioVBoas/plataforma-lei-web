@@ -37,7 +37,8 @@ export const paths = {
   /* Portal da organização. */
   orgHome: '/organizacao',
   orgNotifications: '/organizacao/avisos',
-  orgDemands: (view?: OrgDemandsView) => (view && view !== 'preparo' ? `/organizacao/demandas?ver=${view}` : '/organizacao/demandas'),
+  /** Sem filtro, a lista mostra todos os grupos, do rascunho à conclusão. */
+  orgDemands: (view?: OrgDemandsView) => (view ? `/organizacao/demandas?ver=${view}` : '/organizacao/demandas'),
   orgNewDemand: '/organizacao/demandas/nova',
   orgDemand: (id: string, tab?: OrgDemandTab) =>
     tab && tab !== 'demanda' ? `/organizacao/demandas/${id}?aba=${tab}` : `/organizacao/demandas/${id}`,

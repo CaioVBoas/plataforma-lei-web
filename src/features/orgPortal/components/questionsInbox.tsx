@@ -88,7 +88,7 @@ export const QuestionsInbox = ({ demand }: { demand: Demand }) => {
   const canAnswer = demand.status !== 'in-project';
 
   return (
-    <section aria-label="Perguntas dos docentes" className="overflow-hidden rounded-lg border border-line">
+    <section aria-label="Perguntas dos docentes" className="overflow-hidden rounded-lg border border-line bg-surface">
       <header className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 border-b border-line px-4 py-3">
         <p className="text-[15px] font-semibold text-ink">Perguntas dos docentes</p>
         {questions.length > 0 && (

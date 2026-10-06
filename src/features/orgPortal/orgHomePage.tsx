@@ -4,7 +4,7 @@ import { LoadingState } from '@/components/feedback/queryStates';
 import { buttonClassName } from '@/components/ui/buttonStyles';
 import { cardGridClassName } from '@/components/ui/card';
 import { EmptyState } from '@/components/ui/emptyState';
-import { ItemList } from '@/components/ui/itemList';
+import { CardList } from '@/components/ui/groupCard';
 import { Page, Section } from '@/components/ui/page';
 import { StepCard } from '@/components/ui/stepCard';
 import { TutorialInvite } from '@/components/ui/tutorialInvite';
@@ -160,11 +160,11 @@ const OrgHomeContent = ({ account, organizationName, today }: { account: OrgAcco
             </Link>
           }
         >
-          <ItemList>
+          <CardList>
             {demands.slice(0, RECENT_ON_HOME).map((demand) => (
               <OrgDemandRow key={demand.id} demand={demand} />
             ))}
-          </ItemList>
+          </CardList>
         </Section>
       )}
 

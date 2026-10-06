@@ -2,24 +2,35 @@ import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { LoadingState } from '@/components/feedback/queryStates';
 import { EmptyState } from '@/components/ui/emptyState';
-import { SearchInput } from '@/components/ui/formControls';
-import { ItemList } from '@/components/ui/itemList';
+import { FilterSelect, SearchInput } from '@/components/ui/formControls';
+import { GroupCard } from '@/components/ui/groupCard';
 import { Page } from '@/components/ui/page';
-import { UnderlineTabs } from '@/components/ui/underlineTabs';
+import { Tag } from '@/components/ui/tag';
 import type { OrgDemandsView } from '@/routes/paths';
-import { normalizeText } from '@/utils/format';
+import { normalizeText, pluralize } from '@/utils/format';
 import { OrgDemandRow } from './components/orgDemandRow';
 import { SubmitDemandLink } from './components/submitDemandLink';
+import type { OrgDemandSummary } from './types';
 import { useOrgDemands } from './useOrgPortal';
 import { VIEW_LABELS, VIEW_STAGES } from './utils/orgPresentation';
 
 const VIEWS = Object.keys(VIEW_STAGES) as OrgDemandsView[];
 
-const EMPTY: Record<OrgDemandsView, string> = {
-  preparo: 'Rascunhos, demandas na triagem do L.E.I. e as que voltaram com pedido de ajuste aparecem aqui.',
-  cardapio: 'Quando o L.E.I. aprova uma demanda, ela entra no cardápio e os docentes passam a ver.',
-  projeto: 'Quando um docente leva uma demanda para a disciplina, ela vira projeto e aparece aqui.',
-  concluidas: 'Os projetos encerrados ficam aqui, com o que a turma entregou.',
+/** O que cada grupo guarda, em uma linha, e o que dizer quando está vazio. */
+const GROUP_COPY: Record<OrgDemandsView, { subtitle: string; empty: string }> = {
+  preparo: { subtitle: 'Rascunhos, na triagem do L.E.I. ou com ajuste pedido', empty: 'Nenhum pedido em preparo.' },
+  cardapio: { subtitle: 'À vista dos docentes do CIn', empty: 'Quando o L.E.I. aprova uma demanda, ela aparece aqui.' },
+  projeto: { subtitle: 'Uma turma está trabalhando nelas', empty: 'Quando um docente leva uma demanda para a turma, ela aparece aqui.' },
+  concluidas: { subtitle: 'Projetos encerrados, com o que ficou com vocês', empty: 'Os projetos encerrados ficam aqui.' },
+};
+
+/** O resumo à direita do grupo: o que pede atenção primeiro, senão quantos há. */
+const groupStatus = (view: OrgDemandsView, demands: OrgDemandSummary[]) => {
+  const changes = demands.filter((demand) => demand.stage === 'needs-changes').length;
+  const questions = demands.reduce((sum, demand) => sum + demand.unanswered, 0);
+  if (view === 'preparo' && changes > 0) return <Tag pill tone="caution">{pluralize(changes, 'ajuste pedido', 'ajustes pedidos')}</Tag>;
+  if (questions > 0) return <Tag pill tone="accent">{pluralize(questions, 'pergunta sem resposta', 'perguntas sem resposta')}</Tag>;
+  return <Tag pill>{pluralize(demands.length, 'demanda', 'demandas')}</Tag>;
 };
 
 const TITLE = 'Demandas';
@@ -28,7 +39,7 @@ const SUBTITLE = 'O que vocês pediram ao CIn e em que pé está cada pedido.';
 export const OrgDemandsPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const requested = searchParams.get('ver') as OrgDemandsView | null;
-  const view: OrgDemandsView = requested && VIEWS.includes(requested) ? requested : 'preparo';
+  const filter: OrgDemandsView | 'todas' = requested && VIEWS.includes(requested) ? requested : 'todas';
   const { data: demands } = useOrgDemands();
   const [search, setSearch] = useState('');
 
@@ -40,50 +51,66 @@ export const OrgDemandsPage = () => {
     );
   }
 
-  const byView = Object.fromEntries(VIEWS.map((key) => [key, demands.filter((demand) => VIEW_STAGES[key].includes(demand.stage))])) as Record<
-    OrgDemandsView,
-    typeof demands
-  >;
+  if (demands.length === 0) {
+    return (
+      <Page title={TITLE} subtitle={SUBTITLE}>
+        <EmptyState
+          title="Nenhuma demanda ainda"
+          description="Conte um problema real da sua organização. O L.E.I. ajuda a transformar em projeto para uma turma do CIn."
+          action={<SubmitDemandLink />}
+        />
+      </Page>
+    );
+  }
+
   const term = normalizeText(search.trim());
-  const visible = byView[view].filter((demand) => !term || normalizeText(`${demand.title} ${demand.problem}`).includes(term));
+  const matches = (demand: OrgDemandSummary) => !term || normalizeText(`${demand.title} ${demand.problem}`).includes(term);
+  const groups = VIEWS.filter((view) => filter === 'todas' || view === filter).map((view) => ({
+    view,
+    items: demands.filter((demand) => VIEW_STAGES[view].includes(demand.stage) && matches(demand)),
+  }));
+  const found = groups.some((group) => group.items.length > 0);
 
   return (
     <Page title={TITLE} subtitle={SUBTITLE} actions={<SubmitDemandLink />}>
-      <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-3 border-b border-line">
-        <UnderlineTabs
-          bordered={false}
-          label="Quais demandas mostrar"
-          value={view}
-          onChange={(next) => setSearchParams(next === 'preparo' ? {} : { ver: next }, { replace: true })}
-          options={VIEWS.map((key) => ({ value: key, label: VIEW_LABELS[key], count: byView[key].length }))}
+      <div className="mb-5 flex flex-wrap gap-3">
+        <SearchInput
+          aria-label="Buscar demandas"
+          placeholder="Buscar demanda"
+          value={search}
+          onChange={(event) => setSearch(event.target.value)}
+          containerClassName="min-w-0 flex-[1_1_320px]"
+          className="h-10 border-line-strong bg-surface"
         />
-        {demands.length > 0 && (
-          <SearchInput
-            aria-label="Buscar demandas"
-            placeholder="Buscar demanda"
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
-            containerClassName="mb-2 w-full sm:w-[280px]"
-          />
-        )}
+        <FilterSelect
+          label="Situação"
+          value={filter}
+          onChange={(next) => setSearchParams(next === 'todas' ? {} : { ver: next }, { replace: true })}
+          options={[{ value: 'todas', label: 'Todas' }, ...VIEWS.map((view) => ({ value: view, label: VIEW_LABELS[view] }))]}
+          className="w-full sm:w-[230px]"
+        />
       </div>
-      {visible.length > 0 ? (
-        <ItemList flush>
-          {visible.map((demand) => (
-            <OrgDemandRow key={demand.id} demand={demand} />
-          ))}
-        </ItemList>
-      ) : term && byView[view].length > 0 ? (
-        <div className="mt-6">
-          <EmptyState title="Nada encontrado" description={`Nenhuma demanda com "${search.trim()}" em "${VIEW_LABELS[view]}".`} />
-        </div>
+
+      {!found && term ? (
+        <EmptyState title="Nada encontrado" description={`Nenhuma demanda com "${search.trim()}".`} />
       ) : (
-        <div className="mt-6">
-          <EmptyState
-            title={demands.length === 0 ? 'Nenhuma demanda ainda' : `Nada em "${VIEW_LABELS[view]}"`}
-            description={demands.length === 0 ? 'Conte um problema real da sua organização. O L.E.I. ajuda a transformar em projeto para uma turma do CIn.' : EMPTY[view]}
-            action={demands.length === 0 ? <SubmitDemandLink /> : undefined}
-          />
+        <div className="flex flex-col gap-4">
+          {groups.map(({ view, items }) => (
+            <GroupCard
+              key={view}
+              index={VIEWS.indexOf(view) + 1}
+              title={VIEW_LABELS[view]}
+              subtitle={GROUP_COPY[view].subtitle}
+              status={items.length > 0 ? groupStatus(view, items) : undefined}
+              defaultOpen={items.length > 0}
+            >
+              {items.length > 0 ? (
+                items.map((demand) => <OrgDemandRow key={demand.id} demand={demand} />)
+              ) : (
+                <li className="px-4 py-4 text-sm text-ink-3 sm:px-6">{term ? 'Nada com essa busca neste grupo.' : GROUP_COPY[view].empty}</li>
+              )}
+            </GroupCard>
+          ))}
         </div>
       )}
     </Page>

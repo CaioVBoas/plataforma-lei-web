@@ -99,7 +99,7 @@ export const DemandContent = ({ description, affectedPublic, meetingCadence, off
         <ul className="grid gap-3 sm:grid-cols-2">
           {references.map((reference) => (
             <li key={reference.name}>
-              <a href={reference.url} target="_blank" rel="noreferrer" className="flex h-full flex-col rounded-lg bg-canvas px-4 py-3.5 transition-colors duration-150 hover:bg-fill">
+              <a href={reference.url} target="_blank" rel="noreferrer" className="flex h-full flex-col rounded-lg border border-line bg-surface px-4 py-3.5 transition-colors duration-150 hover:border-line-strong">
                 <span className="flex items-center justify-between gap-3 text-[15px] font-medium text-ink">
                   {reference.name}
                   <ArrowUpRightIcon size={15} className="shrink-0 text-ink-3" />

@@ -7,7 +7,7 @@ import { JOURNEY, journeyIndex } from '../utils/orgPresentation';
  * Os cinco passos de um pedido, do envio ao fim do projeto. Os feitos ganham o
  * check verde da linha das etapas; o atual fica em destaque, os próximos apagados.
  */
-export const JourneyTrack = ({ stage }: { stage: OrgDemandStage }) => {
+export const JourneyTrack = ({ stage, hideMobileLabel }: { stage: OrgDemandStage; /** O cabeçalho já escreve o passo atual. */ hideMobileLabel?: boolean }) => {
   const current = journeyIndex(stage);
   const finished = stage === 'done';
 
@@ -35,7 +35,7 @@ export const JourneyTrack = ({ stage }: { stage: OrgDemandStage }) => {
       })}
     </ol>
       {/* No celular os cinco rótulos não cabem lado a lado: fica só o passo atual. */}
-      <p aria-hidden="true" className="mt-2 text-[13px] text-ink sm:hidden">
+      <p aria-hidden="true" className={cn('mt-2 text-[13px] text-ink sm:hidden', hideMobileLabel && 'hidden')}>
         {finished ? 'Concluída' : `Passo ${current + 1} de ${JOURNEY.length}: ${JOURNEY[current].label}`}
       </p>
     </div>

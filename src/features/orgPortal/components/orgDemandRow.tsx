@@ -1,55 +1,56 @@
-import { TrayIcon } from '@/components/ui/icons';
-import { AnchorIcon, Item } from '@/components/ui/itemList';
+import { Link } from 'react-router-dom';
+import { buttonClassName } from '@/components/ui/buttonStyles';
+import { GroupRow } from '@/components/ui/groupCard';
+import { CheckIcon, ClockIcon, FolderIcon, PencilIcon, TrayIcon } from '@/components/ui/icons';
 import { Tag } from '@/components/ui/tag';
-import { formatShortDate } from '@/domain/calendar';
-import { paths } from '@/routes/paths';
-import { pluralize } from '@/utils/format';
+import type { OrgDemandStage } from '@/domain/submission';
 import type { OrgDemandSummary } from '../types';
+import { demandAction, demandDateLine } from '../utils/demandRow';
 import { STAGE_COPY } from '../utils/orgPresentation';
 
-/** O que a data de cada estado quer dizer, para "24 ago 2026" nunca aparecer solto. */
-const dateLine = (demand: OrgDemandSummary) => {
-  const date = formatShortDate(demand.date);
-  switch (demand.stage) {
-    case 'draft':
-      return `Salvo em ${date}`;
-    case 'in-review':
-      return `Enviada em ${date}`;
-    case 'needs-changes':
-      return `Ajuste pedido em ${date}`;
-    case 'reserved':
-      return demand.reservation ? `${demand.reservation.teacherName}, até ${formatShortDate(demand.reservation.until)}` : `No cardápio desde ${date}`;
-    case 'open':
-      return `No cardápio desde ${date}`;
-    case 'done':
-      return `Projeto concluído, começou em ${date}`;
-    default:
-      return `Projeto desde ${date}`;
-  }
+const STAGE_ICON: Record<OrgDemandStage, typeof ClockIcon> = {
+  draft: PencilIcon,
+  'in-review': ClockIcon,
+  'needs-changes': PencilIcon,
+  open: TrayIcon,
+  reserved: ClockIcon,
+  'in-project': FolderIcon,
+  done: CheckIcon,
 };
 
-/** Uma demanda na lista: estado em tag, a data que importa para esse estado e as perguntas esperando. */
-export const OrgDemandRow = ({ demand }: { demand: OrgDemandSummary }) => {
+/** O ícone do estado, também usado no aviso da situação. */
+export const StageIcon = ({ stage, size = 17 }: { stage: OrgDemandStage; size?: number }) => {
+  const Icon = STAGE_ICON[stage];
+  return <Icon size={size} />;
+};
+
+/** O estado em pílula com ícone, como no cabeçalho da demanda. */
+export const StageTag = ({ demand }: { demand: Pick<OrgDemandSummary, 'stage'> }) => {
   const stage = STAGE_COPY[demand.stage];
+  const Icon = STAGE_ICON[demand.stage];
   return (
-    <Item
-      to={demand.archived && demand.projectId ? paths.orgProject(demand.projectId) : paths.orgDemand(demand.id)}
+    <Tag pill tone={stage.tone} icon={<Icon size={13} />}>
+      {stage.label}
+    </Tag>
+  );
+};
+
+/** Uma demanda numa lista em cartão (Início e Demandas): ícone, título, data, estado e ação. */
+export const OrgDemandRow = ({ demand }: { demand: OrgDemandSummary }) => {
+  const action = demandAction(demand);
+  return (
+    <GroupRow
+      to={action.rowTo}
       label={demand.title}
-      anchor={
-        <AnchorIcon>
-          <TrayIcon size={18} />
-        </AnchorIcon>
+      icon={<TrayIcon size={17} />}
+      title={demand.title}
+      meta={demandDateLine(demand)}
+      status={<StageTag demand={demand} />}
+      action={
+        <Link to={action.to} className={buttonClassName({ variant: action.primary ? 'primary' : 'secondary', size: 'sm' })}>
+          {action.label}
+        </Link>
       }
-    >
-      <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-        <p className="min-w-0 text-[15px] font-semibold text-ink">{demand.title}</p>
-        <Tag tone={stage.tone}>{stage.label}</Tag>
-      </div>
-      {demand.problem && <p className="mt-1 line-clamp-1 text-sm text-ink-2">{demand.problem}</p>}
-      <p className="mt-1 text-[13px] text-ink-3">
-        {dateLine(demand)}
-        {demand.unanswered > 0 && <span className="font-medium text-accent"> · {pluralize(demand.unanswered, 'pergunta sem resposta', 'perguntas sem resposta')}</span>}
-      </p>
-    </Item>
+    />
   );
 };

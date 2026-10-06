@@ -185,3 +185,31 @@ export const ImageIcon = (props: IconProps) => (
     <path d="M4 17.5l5-5 4 4 2.5-2.5 4.5 4.5" />
   </IconBase>
 );
+export const ClockIcon = (props: IconProps) => (
+  <IconBase {...props}>
+    <circle cx="12" cy="12" r="8.5" />
+    <path d="M12 7.5V12l3 2" />
+  </IconBase>
+);
+export const CalendarIcon = (props: IconProps) => (
+  <IconBase {...props}>
+    <rect x="4" y="5.5" width="16" height="14" rx="2" />
+    <path d="M4 10h16M8.5 3.5v4M15.5 3.5v4" />
+  </IconBase>
+);
+export const InfoIcon = (props: IconProps) => (
+  <IconBase {...props}>
+    <circle cx="12" cy="12" r="8.5" />
+    <path d="M12 11v5M12 8h.01" />
+  </IconBase>
+);
+export const PencilIcon = (props: IconProps) => (
+  <IconBase {...props}>
+    <path d="M14.5 5.5l4 4L9 19H5v-4l9.5-9.5zM12.5 7.5l4 4" />
+  </IconBase>
+);
+export const LayersIcon = (props: IconProps) => (
+  <IconBase {...props}>
+    <path d="M12 4l8.5 4.5L12 13 3.5 8.5 12 4zM3.5 12.5L12 17l8.5-4.5M3.5 16.5L12 21l8.5-4.5" />
+  </IconBase>
+);

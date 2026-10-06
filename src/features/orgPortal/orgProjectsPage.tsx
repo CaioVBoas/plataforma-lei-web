@@ -1,18 +1,20 @@
-import type { MouseEvent } from 'react';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { useState } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import { LoadingState } from '@/components/feedback/queryStates';
 import { buttonClassName } from '@/components/ui/buttonStyles';
 import { EmptyState } from '@/components/ui/emptyState';
+import { FilterSelect, SearchInput } from '@/components/ui/formControls';
+import { GroupCard, GroupRow } from '@/components/ui/groupCard';
+import { CheckIcon, ClockIcon, FolderIcon } from '@/components/ui/icons';
 import { Page } from '@/components/ui/page';
-import { StatTiles } from '@/components/ui/profileHeader';
-import { UnderlineTabs } from '@/components/ui/underlineTabs';
-import { formatRelativeDays, formatShortDate } from '@/domain/calendar';
+import { Tag } from '@/components/ui/tag';
+import { formatRelativeDays } from '@/domain/calendar';
 import { isOverdue, nextMilestone, projectStage, type ProjectStage } from '@/domain/projectLifecycle';
 import type { IsoDate } from '@/domain/types';
 import { useCalendar } from '@/features/calendar/useCalendar';
 import { STAGE_COPY } from '@/features/projects/shared/utils/projectPresentation';
 import { paths } from '@/routes/paths';
-import { cn } from '@/utils/cn';
+import { normalizeText, pluralize } from '@/utils/format';
 import { SubmitDemandLink } from './components/submitDemandLink';
 import type { OrgProjectSummary } from './types';
 import { useOrgProjects } from './useOrgPortal';
@@ -20,115 +22,32 @@ import { ORG_MILESTONE_COPY } from './utils/orgPresentation';
 
 type Filter = 'todos' | 'planejamento' | 'andamento' | 'concluidos';
 
-const FILTERS: Filter[] = ['todos', 'planejamento', 'andamento', 'concluidos'];
-const STAGE_BY_FILTER: Record<Exclude<Filter, 'todos'>, ProjectStage> = { planejamento: 'planning', andamento: 'running', concluidos: 'done' };
-const STAGE_ORDER: Record<ProjectStage, number> = { planning: 0, running: 1, done: 2 };
+const GROUPS: { filter: Exclude<Filter, 'todos'>; stage: ProjectStage; title: string; subtitle: string; empty: string }[] = [
+  { filter: 'planejamento', stage: 'planning', title: 'Em planejamento', subtitle: 'O docente revisa o plano e combina a abertura com vocês', empty: 'Nenhum projeto começando agora.' },
+  { filter: 'andamento', stage: 'running', title: 'Em andamento', subtitle: 'A turma está trabalhando, com entrega parcial e final', empty: 'Nenhuma turma trabalhando com vocês agora.' },
+  { filter: 'concluidos', stage: 'done', title: 'Concluídos', subtitle: 'O que cada turma entregou', empty: 'Os projetos encerrados ficam aqui.' },
+];
 
-interface Row {
-  project: OrgProjectSummary;
-  stage: ProjectStage;
-  next?: ReturnType<typeof nextMilestone>;
-  overdue: boolean;
-  /** O prazo da próxima etapa ou o dia do encerramento. */
-  date?: IsoDate;
-}
+const FILTERS: Filter[] = ['todos', ...GROUPS.map((group) => group.filter)];
 
-const toRows = (projects: OrgProjectSummary[], today: IsoDate): Row[] =>
-  projects
-    .map((project) => {
-      const next = nextMilestone(project.milestones);
-      return {
-        project,
-        stage: projectStage(project.milestones),
-        next,
-        overdue: next ? isOverdue(next, today) : false,
-        date: next ? next.dueAt : project.milestones.find((milestone) => milestone.id === 'closing')?.doneAt,
-      };
-    })
-    .sort((a, b) => STAGE_ORDER[a.stage] - STAGE_ORDER[b.stage] || (a.stage === 'done' ? -1 : 1) * (a.date ?? '').localeCompare(b.date ?? ''));
-
-const HEADER_CELL = 'px-3 pb-2.5 text-[11px] font-semibold tracking-[0.04em] text-ink-2 uppercase';
-
-/** Mesma tabela do portal do docente, com o docente no lugar da organização e as etapas contadas do lado de vocês. */
-const ProjectTableRow = ({ row, today }: { row: Row; today: IsoDate }) => {
-  const navigate = useNavigate();
-  const { project, next, overdue } = row;
-  const openFromRow = (event: MouseEvent<HTMLTableRowElement>) => {
-    if ((event.target as HTMLElement).closest('a, button')) return;
-    navigate(paths.orgProject(project.id));
-  };
-
+/** A próxima etapa do lado da organização, em pílula: atrasada em laranja escuro, perto em azul. */
+const NextStepTag = ({ project, today }: { project: OrgProjectSummary; today: IsoDate }) => {
+  const next = nextMilestone(project.milestones);
+  if (!next) {
+    return (
+      <Tag pill tone="positive" icon={<CheckIcon size={13} />}>
+        {STAGE_COPY.done.label}
+      </Tag>
+    );
+  }
+  const overdue = isOverdue(next, today);
   return (
-    <tr onClick={openFromRow} className="h-16 cursor-pointer transition-colors duration-150 hover:bg-canvas">
-      <td className="px-3 py-3">
-        <p className="line-clamp-2 text-sm font-medium text-ink">{project.title}</p>
-        <p className="mt-0.5 truncate text-xs text-ink-3">
-          {project.disciplineName} · {project.semester}
-        </p>
-      </td>
-      <td className="px-3 py-3">
-        <p className="line-clamp-2 text-sm text-ink">{project.teacherName}</p>
-      </td>
-      <td className="px-3 py-3">
-        {next ? (
-          <>
-            <p className="text-sm font-medium text-ink">{ORG_MILESTONE_COPY[next.id].title}</p>
-            <p className={cn('mt-0.5 text-xs', overdue ? 'text-caution' : 'text-ink-3')}>
-              {overdue ? 'atrasada ' : ''}
-              {formatRelativeDays(today, next.dueAt)}
-            </p>
-          </>
-        ) : (
-          <p className="text-sm font-medium text-ink">{STAGE_COPY.done.label}</p>
-        )}
-      </td>
-      <td className="px-3 py-3 text-right text-sm whitespace-nowrap text-ink-2 tabular-nums">{row.date && formatShortDate(row.date)}</td>
-      <td className="py-3 pr-1 pl-3 text-right">
-        <Link to={paths.orgProject(project.id)} className={buttonClassName({ variant: 'secondary' })}>
-          Abrir
-        </Link>
-      </td>
-    </tr>
+    <Tag pill tone={overdue ? 'caution' : 'accent'} icon={<ClockIcon size={13} />}>
+      {ORG_MILESTONE_COPY[next.id].title}, {overdue ? 'atrasada ' : ''}
+      {formatRelativeDays(today, next.dueAt)}
+    </Tag>
   );
 };
-
-const ProjectTable = ({ rows, today }: { rows: Row[]; today: IsoDate }) => (
-  <div className="relative overflow-x-auto">
-    <table className="w-full min-w-[720px] table-fixed border-collapse text-left">
-      <colgroup>
-        <col className="w-[40%]" />
-        <col className="w-[20%]" />
-        <col className="w-[22%]" />
-        <col className="w-[12%]" />
-        <col className="w-[96px]" />
-      </colgroup>
-      <thead>
-        <tr className="border-b border-line">
-          <th scope="col" className={HEADER_CELL}>
-            Projeto
-          </th>
-          <th scope="col" className={HEADER_CELL}>
-            Docente
-          </th>
-          <th scope="col" className={HEADER_CELL}>
-            Próxima etapa
-          </th>
-          <th scope="col" className={cn(HEADER_CELL, 'text-right')}>
-            Data
-          </th>
-          <th scope="col" className={HEADER_CELL}>
-            <span className="sr-only">Ações</span>
-          </th>
-        </tr>
-      </thead>
-      <tbody className="divide-y divide-line border-b border-line">
-        {rows.map((row) => (
-          <ProjectTableRow key={row.project.id} row={row} today={today} />
-        ))}
-      </tbody>
-    </table>
-  </div>
-);
 
 const TITLE = 'Projetos';
 const SUBTITLE = 'As turmas que trabalham, ou já trabalharam, nos problemas de vocês.';
@@ -137,6 +56,7 @@ export const OrgProjectsPage = () => {
   const { data: projects } = useOrgProjects();
   const { data: calendar } = useCalendar();
   const [searchParams, setSearchParams] = useSearchParams();
+  const [search, setSearch] = useState('');
 
   if (!projects || !calendar) {
     return (
@@ -160,40 +80,73 @@ export const OrgProjectsPage = () => {
 
   const requested = searchParams.get('estado') as Filter | null;
   const filter: Filter = requested && FILTERS.includes(requested) ? requested : 'todos';
-  const setFilter = (value: Filter) => setSearchParams(value === 'todos' ? {} : { estado: value }, { replace: true });
-  const rows = toRows(projects, calendar.today);
-  const matches = (row: Row, value: Filter) => value === 'todos' || row.stage === STAGE_BY_FILTER[value];
-  const count = (value: Filter) => rows.filter((row) => matches(row, value)).length;
-  const visible = rows.filter((row) => matches(row, filter));
-  // O prazo mais próximo entre todos, não o do primeiro da lista: a ordem agrupa por estado.
-  const nextDue = rows.flatMap((row) => (row.next ? [row.next.dueAt] : [])).sort()[0];
+  const term = normalizeText(search.trim());
+  const matches = (project: OrgProjectSummary) =>
+    !term || normalizeText(`${project.title} ${project.disciplineName} ${project.teacherName}`).includes(term);
+  const groups = GROUPS.filter((group) => filter === 'todos' || group.filter === filter).map((group) => ({
+    ...group,
+    index: GROUPS.indexOf(group) + 1,
+    items: projects.filter((project) => projectStage(project.milestones) === group.stage && matches(project)),
+  }));
+  const found = groups.some((group) => group.items.length > 0);
 
   return (
     <Page title={TITLE} subtitle={SUBTITLE}>
-      <div className="mb-8">
-        <StatTiles
-          items={[
-            { value: count('planejamento'), label: 'em planejamento' },
-            { value: count('andamento'), label: 'em andamento' },
-            { value: count('concluidos'), label: count('concluidos') === 1 ? 'concluído' : 'concluídos' },
-            { value: nextDue ? formatShortDate(nextDue) : '–', label: 'próximo prazo' },
-          ]}
+      <div className="mb-5 flex flex-wrap gap-3">
+        <SearchInput
+          aria-label="Buscar projetos"
+          placeholder="Buscar projeto, disciplina ou docente"
+          value={search}
+          onChange={(event) => setSearch(event.target.value)}
+          containerClassName="min-w-0 flex-[1_1_320px]"
+          className="h-10 border-line-strong bg-surface"
+        />
+        <FilterSelect
+          label="Situação"
+          value={filter}
+          onChange={(next) => setSearchParams(next === 'todos' ? {} : { estado: next }, { replace: true })}
+          options={[{ value: 'todos', label: 'Todos' }, ...GROUPS.map((group) => ({ value: group.filter, label: group.title }))]}
+          className="w-full sm:w-[230px]"
         />
       </div>
-      <UnderlineTabs
-        label="Estado dos projetos"
-        value={filter}
-        onChange={setFilter}
-        options={[
-          { value: 'todos', label: 'Todos', count: rows.length },
-          { value: 'planejamento', label: 'Em planejamento', count: count('planejamento') },
-          { value: 'andamento', label: 'Em andamento', count: count('andamento') },
-          { value: 'concluidos', label: 'Concluídos', count: count('concluidos') },
-        ]}
-      />
-      <div className="mt-4">
-        {visible.length > 0 ? <ProjectTable rows={visible} today={calendar.today} /> : <p className="py-6 text-sm text-ink-3">Nenhum projeto neste estado.</p>}
-      </div>
+
+      {!found && term ? (
+        <EmptyState title="Nada encontrado" description={`Nenhum projeto com "${search.trim()}".`} />
+      ) : (
+        <div className="flex flex-col gap-4">
+          {groups.map((group) => (
+            <GroupCard
+              key={group.filter}
+              index={group.index}
+              title={group.title}
+              subtitle={group.subtitle}
+              status={group.items.length > 0 ? <Tag pill>{pluralize(group.items.length, 'projeto', 'projetos')}</Tag> : undefined}
+              defaultOpen={group.items.length > 0}
+            >
+              {group.items.length > 0 ? (
+                group.items.map((project) => (
+                  <GroupRow
+                    key={project.id}
+                    to={paths.orgProject(project.id)}
+                    label={project.title}
+                    icon={<FolderIcon size={17} />}
+                    title={project.title}
+                    meta={`${project.disciplineName} · ${project.teacherName} · ${project.semester}`}
+                    status={<NextStepTag project={project} today={calendar.today} />}
+                    action={
+                      <Link to={paths.orgProject(project.id)} className={buttonClassName({ variant: 'secondary', size: 'sm' })}>
+                        Abrir
+                      </Link>
+                    }
+                  />
+                ))
+              ) : (
+                <li className="px-4 py-4 text-sm text-ink-3 sm:px-6">{term ? 'Nada com essa busca neste grupo.' : group.empty}</li>
+              )}
+            </GroupCard>
+          ))}
+        </div>
+      )}
     </Page>
   );
 };
