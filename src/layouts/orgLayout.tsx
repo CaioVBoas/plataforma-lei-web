@@ -1,4 +1,4 @@
-import { ArrowUpRightIcon, BuildingIcon, FolderIcon, HomeIcon, TrayIcon } from '@/components/ui/icons';
+import { ArrowUpRightIcon, BuildingIcon, FolderIcon, HomeIcon, QuestionIcon, TrayIcon } from '@/components/ui/icons';
 import { useOrgAccount } from '@/features/orgPortal/useOrgPortal';
 import { useOrgNotifications } from '@/features/orgPortal/useOrgNotifications';
 import { paths } from '@/routes/paths';
@@ -18,6 +18,7 @@ const SIDEBAR: SidebarConfig = {
   ],
   footer: [
     { to: paths.landing, label: 'Portal do L.E.I.', icon: <ArrowUpRightIcon /> },
+    { to: paths.orgGuide, label: 'Como funciona', icon: <QuestionIcon /> },
     { to: paths.orgProfile, label: 'Perfil da organização', icon: <BuildingIcon /> },
   ],
 };

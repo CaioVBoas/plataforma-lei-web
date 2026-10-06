@@ -16,7 +16,7 @@ export const OrganizationBrief = ({ organization, hasProject }: { organization: 
   return (
     <div className="rounded-lg border border-line p-5">
       <div className="flex items-center gap-3.5">
-        <Monogram name={organization.name} size="lg" />
+        <Monogram name={organization.name} logo={organization.logo} size="lg" />
         <div className="min-w-0">
           <p className="text-[13px] font-semibold text-brand-strong">{organization.type}</p>
           <p className="text-[19px] leading-tight font-bold text-ink">{organization.name}</p>

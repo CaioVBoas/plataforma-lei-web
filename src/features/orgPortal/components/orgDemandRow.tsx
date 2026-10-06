@@ -21,6 +21,8 @@ const dateLine = (demand: OrgDemandSummary) => {
       return demand.reservation ? `${demand.reservation.teacherName}, até ${formatShortDate(demand.reservation.until)}` : `No cardápio desde ${date}`;
     case 'open':
       return `No cardápio desde ${date}`;
+    case 'done':
+      return `Projeto concluído, começou em ${date}`;
     default:
       return `Projeto desde ${date}`;
   }
@@ -31,7 +33,7 @@ export const OrgDemandRow = ({ demand }: { demand: OrgDemandSummary }) => {
   const stage = STAGE_COPY[demand.stage];
   return (
     <Item
-      to={paths.orgDemand(demand.id)}
+      to={demand.archived && demand.projectId ? paths.orgProject(demand.projectId) : paths.orgDemand(demand.id)}
       label={demand.title}
       anchor={
         <AnchorIcon>

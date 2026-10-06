@@ -47,11 +47,11 @@ const OrganizationView = ({ detail }: { detail: OrganizationDetail }) => {
       back={{ to: paths.organizations, label: 'Organizações' }}
       hero={
         <ProfileHeader
-          avatar={<Monogram name={organization.name} size="xl" />}
+          avatar={<Monogram name={organization.name} logo={organization.logo} size="xl" />}
           eyebrow={organization.type}
           title={organization.name}
           meta={organization.location}
-          cover={organizationCover(organization.id)}
+          cover={organizationCover(organization.id, organization.cover)}
         />
       }
     >

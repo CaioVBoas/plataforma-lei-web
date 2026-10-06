@@ -16,7 +16,7 @@ import type { OrganizationSummary } from './types';
 const OrganizationCard = ({ organization }: { organization: OrganizationSummary }) => (
   <Link to={paths.organization(organization.id)} className={linkCardClassName}>
     <div className="flex items-start gap-3">
-      <Monogram name={organization.name} />
+      <Monogram name={organization.name} logo={organization.logo} />
       <div className="min-w-0 flex-1">
         <p className="truncate text-headline group-hover:text-accent">{organization.name}</p>
         <p className="mt-0.5 truncate text-[13px] text-ink-3">

@@ -1,6 +1,7 @@
 import { Link, useParams } from 'react-router-dom';
 import { QueryView } from '@/components/feedback/queryStates';
 import { buttonClassName, textLinkClassName } from '@/components/ui/buttonStyles';
+import { CoverBanner } from '@/components/ui/coverBanner';
 import { ArrowRightIcon } from '@/components/ui/icons';
 import { FactGrid, Page, Section } from '@/components/ui/page';
 import { SideCard, SideFact } from '@/components/ui/sideCard';
@@ -9,11 +10,12 @@ import { nextMilestone, projectStage } from '@/domain/projectLifecycle';
 import { useCalendar } from '@/features/calendar/useCalendar';
 import { MilestoneTimeline } from '@/features/projects/shared/components/milestoneTimeline';
 import { ADOPTION_COPY, milestoneDateLine, STAGE_COPY } from '@/features/projects/shared/utils/projectPresentation';
+import { demandCover } from '@/lib/covers';
 import { paths } from '@/routes/paths';
 import { cn } from '@/utils/cn';
 import { pluralize } from '@/utils/format';
 import type { OrgProjectDetail } from './types';
-import { useOrgProject } from './useOrgPortal';
+import { useOrgProfile, useOrgProject } from './useOrgPortal';
 import { ORG_MILESTONE_COPY } from './utils/orgPresentation';
 
 /**
@@ -23,6 +25,8 @@ import { ORG_MILESTONE_COPY } from './utils/orgPresentation';
 const ProjectView = ({ project, today }: { project: OrgProjectDetail; today: string }) => {
   const stage = STAGE_COPY[projectStage(project.milestones)];
   const next = nextMilestone(project.milestones);
+  const { data: profile } = useOrgProfile();
+  const cover = profile && demandCover(project.demandId, profile.organization.id, profile.organization.cover);
 
   return (
     <Page
@@ -31,6 +35,7 @@ const ProjectView = ({ project, today }: { project: OrgProjectDetail; today: str
       meta={<StatusLabel tone={stage.tone}>{stage.label}</StatusLabel>}
       back={{ to: paths.orgProjects, label: 'Projetos' }}
     >
+      {cover && <CoverBanner cover={cover} />}
       <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_300px]">
         <div className="min-w-0">
           <FactGrid

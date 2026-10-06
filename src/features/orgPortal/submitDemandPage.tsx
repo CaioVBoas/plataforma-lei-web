@@ -8,7 +8,7 @@ import { textLinkClassName } from '@/components/ui/buttonStyles';
 import { ArrowRightIcon, ChevronLeftIcon, SendIcon } from '@/components/ui/icons';
 import { Page } from '@/components/ui/page';
 import { canEditSubmission, EMPTY_DRAFT, missingForReview } from '@/domain/submission';
-import type { DemandSubmission } from '@/domain/types';
+import type { DemandSubmission, Organization } from '@/domain/types';
 import { paths } from '@/routes/paths';
 import { ClassStep, FormStepsNav, ProblemStep, WorkStep } from './components/demandFormSteps';
 import { DemandContent } from './components/demandContent';
@@ -29,10 +29,10 @@ const NEXT_STEPS = [
 
 interface SubmitFormProps {
   submission?: DemandSubmission;
-  organizationName: string;
+  organization: Organization;
 }
 
-const SubmitForm = ({ submission, organizationName }: SubmitFormProps) => {
+const SubmitForm = ({ submission, organization }: SubmitFormProps) => {
   const navigate = useNavigate();
   const toast = useToast();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -182,7 +182,7 @@ const SubmitForm = ({ submission, organizationName }: SubmitFormProps) => {
 
         <aside className="lg:sticky lg:top-20 lg:self-start">
           <p className="mb-2.5 text-[13px] font-semibold text-brand-strong">Como aparece no cardápio</p>
-          <DemandPreviewCard draft={draft} organizationName={organizationName} />
+          <DemandPreviewCard draft={draft} organization={organization} />
           <p className="mt-3 text-[13px] leading-relaxed text-ink-3">
             O docente abre o cartão e lê o resto. Dúvidas chegam como perguntas na demanda, e vocês respondem por aqui.
           </p>
@@ -196,7 +196,7 @@ const NewDemand = () => {
   const profile = useOrgProfile();
   return (
     <Page title="Submeter demanda" subtitle="Conte o problema como vocês vivem. O L.E.I. ajuda a transformar em projeto para uma turma." back={{ to: paths.orgDemands(), label: 'Demandas' }}>
-      <QueryView query={profile}>{({ organization }) => <SubmitForm organizationName={organization.name} />}</QueryView>
+      <QueryView query={profile}>{({ organization }) => <SubmitForm organization={organization} />}</QueryView>
     </Page>
   );
 };
@@ -220,7 +220,7 @@ const EditDemand = ({ id }: { id: string }) => {
       <QueryView query={detail}>
         {(data) =>
           data.kind === 'submission' && profile.data ? (
-            <SubmitForm key={data.submission.id} submission={data.submission} organizationName={profile.data.organization.name} />
+            <SubmitForm key={data.submission.id} submission={data.submission} organization={profile.data.organization} />
           ) : (
             <p className="text-sm text-ink-2">
               Não deu para abrir esta demanda.{' '}

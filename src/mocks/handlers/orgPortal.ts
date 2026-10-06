@@ -5,6 +5,7 @@ import type {
   OrgAccountInput,
   OrgDemandDetail,
   OrgDemandSummary,
+  OrgImagesInput,
   OrgProfile,
   OrgProfileInput,
   OrgProjectDetail,
@@ -94,6 +95,18 @@ export const updateProfile = (input: OrgProfileInput): OrgProfile => {
   return getProfile();
 };
 
+/** Logo e capa chegam como data URL de imagem; texto vazio tira a imagem. */
+export const updateImages = (input: OrgImagesInput): OrgProfile => {
+  const record = myOrganization();
+  for (const key of ['logo', 'cover'] as const) {
+    const value = input[key];
+    if (value === undefined) continue;
+    if (value && !value.startsWith('data:image/')) throw new RuleError('Envie uma imagem.');
+    record[key] = value || undefined;
+  }
+  return getProfile();
+};
+
 const projectOfDemand = (demandId: string) => db.projects.find((project) => project.demandId === demandId);
 
 /**
@@ -136,10 +149,26 @@ const summarizeDemand = (demand: Demand): OrgDemandSummary => {
   };
 };
 
-export const listDemands = (): OrgDemandSummary[] =>
-  [...db.submissions.filter(isMine).map(summarizeSubmission), ...db.demands.filter(isMine).map(summarizeDemand)].sort((a, b) =>
-    b.date.localeCompare(a.date),
-  );
+/** Projeto antigo cuja demanda já saiu da plataforma: continua na lista como concluída, levando ao projeto. */
+const summarizeArchived = (project: Project): OrgDemandSummary => ({
+  id: project.demandId,
+  title: project.title,
+  problem: project.outcome?.summary ?? '',
+  stage: 'done',
+  date: project.createdAt,
+  unanswered: 0,
+  projectId: project.id,
+  archived: true,
+});
+
+export const listDemands = (): OrgDemandSummary[] => {
+  const archived = db.projects.filter((project) => isMine(project) && !db.demands.some((demand) => demand.id === project.demandId));
+  return [
+    ...db.submissions.filter(isMine).map(summarizeSubmission),
+    ...db.demands.filter(isMine).map(summarizeDemand),
+    ...archived.map(summarizeArchived),
+  ].sort((a, b) => b.date.localeCompare(a.date));
+};
 
 const findMySubmission = (id: string) => {
   const submission = db.submissions.find((candidate) => candidate.id === id && isMine(candidate));
@@ -154,11 +183,17 @@ const findMyDemand = (id: string) => {
 };
 
 /** A organização vê a própria demanda sem o que é do docente: indicação do L.E.I. e aviso de liberação. */
-const forOrganization = ({ invitation: _invitation, ...demand }: Demand): Demand => ({ ...demand, watching: false });
+const forOrganization = ({ invitation: _invitation, ...demand }: Demand): Demand => ({
+  ...demand,
+  organization: { ...demand.organization, logo: myOrganization().logo },
+  watching: false,
+});
 
 export const getDemand = (id: string): OrgDemandDetail => {
   const submission = db.submissions.find((candidate) => candidate.id === id && isMine(candidate));
-  if (submission) return { kind: 'submission', stage: submission.stage, submission };
+  if (submission) {
+    return { kind: 'submission', stage: submission.stage, submission: { ...submission, organization: { ...submission.organization, logo: myOrganization().logo } } };
+  }
 
   const demand = findMyDemand(id);
   const project = projectOfDemand(id);

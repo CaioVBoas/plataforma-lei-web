@@ -25,14 +25,6 @@ const RECENT_ON_HOME = 4;
 /** Etapa com a organização entra nos próximos passos quando falta até isso. */
 const MILESTONE_AHEAD_DAYS = 21;
 
-/** O caminho de uma demanda, contado para quem nunca participou de extensão. */
-const HOW_IT_WORKS = [
-  { title: 'Vocês contam o problema', text: 'Quem sente, como é hoje e o que já ajudaria. Sem precisar saber de tecnologia.' },
-  { title: 'O L.E.I. faz a triagem', text: 'Lê, pede ajuste se precisar e indica as competências. Aprovada, entra no cardápio.' },
-  { title: 'Um docente leva para a turma', text: 'Ele pode perguntar antes de decidir. Ao levar, vocês recebem o contato dele.' },
-  { title: 'A turma trabalha com vocês', text: 'Durante o semestre, com reunião de abertura, entrega parcial e entrega final.' },
-];
-
 interface NextStepsProps {
   demands: OrgDemandSummary[];
   projects: OrgProjectSummary[];
@@ -141,11 +133,13 @@ const OrgHomeContent = ({ account, organizationName, today }: { account: OrgAcco
         />
       }
     >
-      <SubmitDemandCallout draft={demands.find((demand) => demand.stage === 'draft')} firstTime={demands.length === 0} />
-
       <Section title="O que pede sua atenção" description="Ajustes pedidos pelo L.E.I., perguntas de docentes e as etapas dos projetos em que vocês participam.">
         <NextSteps demands={demands} projects={projects} today={today} />
       </Section>
+
+      <div className="mt-10">
+        <SubmitDemandCallout draft={demands.find((demand) => demand.stage === 'draft')} firstTime={demands.length === 0} />
+      </div>
 
       {demands.length > 0 && (
         <Section
@@ -164,19 +158,6 @@ const OrgHomeContent = ({ account, organizationName, today }: { account: OrgAcco
         </Section>
       )}
 
-      <Section title="Como uma demanda chega a uma turma">
-        <ol className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {HOW_IT_WORKS.map((step, index) => (
-            <li key={step.title} className="rounded-lg border border-fact-line bg-fact px-4 py-4">
-              <span aria-hidden="true" className="flex size-7 items-center justify-center rounded-full bg-monogram text-[13px] font-semibold text-monogram-ink">
-                {index + 1}
-              </span>
-              <p className="mt-3 text-[15px] font-semibold text-ink">{step.title}</p>
-              <p className="mt-1 text-[13px] leading-relaxed text-ink-2">{step.text}</p>
-            </li>
-          ))}
-        </ol>
-      </Section>
     </Page>
   );
 };

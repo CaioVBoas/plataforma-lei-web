@@ -45,6 +45,7 @@ export const paths = {
   orgProjects: '/organizacao/projetos',
   orgProject: (id: string) => `/organizacao/projetos/${id}`,
   orgProfile: '/organizacao/perfil',
+  orgGuide: '/organizacao/como-funciona',
 } as const;
 
 /** Onde cada perfil cai depois de entrar. */

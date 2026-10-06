@@ -47,8 +47,10 @@ export interface Cover {
 const cover = (folder: string, id: string, covers: Record<string, string>): Cover | undefined =>
   covers[id] ? { src: covers[id], credit: COVER_CREDITS[`${folder}/${id}`] } : undefined;
 
-export const organizationCover = (organizationId: string) => cover('organizacoes', organizationId, ORGANIZATION_COVERS);
+/** A capa que a organização enviou ou, na falta, a do acervo. A dela não pede crédito. */
+export const organizationCover = (organizationId: string, uploaded?: string): Cover | undefined =>
+  uploaded ? { src: uploaded } : cover('organizacoes', organizationId, ORGANIZATION_COVERS);
 
-/** A foto da própria demanda ou, na falta, a da organização que a publicou. */
-export const demandCover = (demandId: string, organizationId: string) =>
-  cover('demandas', demandId, DEMAND_COVERS) ?? organizationCover(organizationId);
+/** A foto da própria demanda ou, na falta, a da organização que a publicou (a enviada por ela vem antes da do acervo). */
+export const demandCover = (demandId: string, organizationId: string, uploadedOrganizationCover?: string) =>
+  cover('demandas', demandId, DEMAND_COVERS) ?? organizationCover(organizationId, uploadedOrganizationCover);

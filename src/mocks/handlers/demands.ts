@@ -18,10 +18,16 @@ const expireReservations = () => {
 
 const findDemand = (id: string) => findOrThrow(db.demands, id, 'Demanda não encontrada.');
 
+/** A logo é da organização e pode mudar a qualquer hora: entra na demanda na hora de ler. */
+const withLogo = (demand: Demand): Demand => {
+  const logo = db.organizations.find((organization) => organization.id === demand.organization.id)?.logo;
+  return logo ? { ...demand, organization: { ...demand.organization, logo } } : demand;
+};
+
 /** O cardápio mostra o que está aberto e o que está reservado; o que virou projeto sai (regra 3). */
 export const listMenu = (): Demand[] => {
   expireReservations();
-  return db.demands.filter((demand) => demand.status !== 'in-project');
+  return db.demands.filter((demand) => demand.status !== 'in-project').map(withLogo);
 };
 
 export const getDemand = (id: string): DemandDetail => {
@@ -34,7 +40,7 @@ export const getDemand = (id: string): DemandDetail => {
   }
 
   const { contact: _contact, ...organization } = findOrThrow(db.organizations, demand.organization.id, 'Organização não encontrada.');
-  return { demand, organization, projectId: project?.id };
+  return { demand: withLogo(demand), organization, projectId: project?.id };
 };
 
 export const reserveDemand = (id: string): Demand => {

@@ -17,6 +17,19 @@ export const useUpdateOrgProfile = () => {
   return useMutation({ mutationFn: orgPortalApi.updateOrgProfile, onSuccess: (profile) => queryClient.setQueryData(queryKeys.orgProfile, profile) });
 };
 
+/** A logo e a capa aparecem também para os docentes: a lista e a página das organizações recarregam. */
+export const useUpdateOrgImages = () => {
+  const queryClient = useQueryClient();
+  const invalidate = useInvalidateQueries();
+  return useMutation({
+    mutationFn: orgPortalApi.updateOrgImages,
+    onSuccess: (profile) => {
+      queryClient.setQueryData(queryKeys.orgProfile, profile);
+      invalidate([queryKeys.organizations]);
+    },
+  });
+};
+
 export const useOrgDemands = () => useQuery({ queryKey: queryKeys.orgDemands, queryFn: orgPortalApi.getOrgDemands });
 
 export const useOrgDemand = (id: string) => useQuery({ queryKey: queryKeys.orgDemand(id), queryFn: () => orgPortalApi.getOrgDemand(id) });

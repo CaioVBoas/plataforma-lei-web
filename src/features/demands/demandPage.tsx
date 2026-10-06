@@ -40,7 +40,7 @@ const DemandView = ({ detail, disciplines, calendar }: { detail: DemandDetail; d
   const matches = rankDisciplines(demand, disciplines);
   const best = matches[0];
   const scope = SCOPE_COPY[demand.scopeFit];
-  const cover = demandCover(demand.id, organization.id);
+  const cover = demandCover(demand.id, organization.id, organization.cover);
 
   return (
     <Page

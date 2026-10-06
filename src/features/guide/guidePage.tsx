@@ -1,12 +1,11 @@
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { buttonClassName } from '@/components/ui/buttonStyles';
-import { ArrowRightIcon, BookmarkIcon, CheckIcon, ChevronDownIcon, FolderIcon, TrayIcon } from '@/components/ui/icons';
+import { ArrowRightIcon, BookmarkIcon, CheckIcon, FolderIcon, TrayIcon } from '@/components/ui/icons';
 import { Page, Section } from '@/components/ui/page';
 import { formatShortDate } from '@/domain/calendar';
-import { MILESTONE_ORDER, projectStage } from '@/domain/projectLifecycle';
+import { projectStage } from '@/domain/projectLifecycle';
 import { isMyReservation, MAX_ACTIVE_RESERVATIONS, RESERVATION_DAYS } from '@/domain/reservation';
-import type { MilestoneId } from '@/domain/types';
 import { useAccount, useUpdateAccount } from '@/features/account/useAccount';
 import { useCalendar } from '@/features/calendar/useCalendar';
 import { useMenu } from '@/features/demands/useDemands';
@@ -14,62 +13,7 @@ import { useCurrentDisciplines } from '@/features/disciplines/useDisciplines';
 import { useProjects } from '@/features/projects/shared/hooks/useProjects';
 import { MILESTONE_COPY } from '@/features/projects/shared/utils/projectPresentation';
 import { paths } from '@/routes/paths';
-import { cn } from '@/utils/cn';
-
-interface Step {
-  title: string;
-  text: string;
-  /** Rótulo pequeno à direita do texto: prazo ou atalho. */
-  aside?: ReactNode;
-  done?: boolean;
-}
-
-/**
- * Passos numa linha, ligados por um traço. Clicar num passo mostra a frase
- * dele embaixo. É o caminho do docente, do cadastro ao encerramento.
- */
-const StepTabs = ({ label, steps }: { label: string; steps: Step[] }) => {
-  const [active, setActive] = useState(0);
-  const step = steps[active];
-
-  return (
-    <div>
-      <ol aria-label={label} className="relative flex justify-between gap-2">
-        <span aria-hidden="true" className="absolute top-4 right-[5%] left-[5%] h-px bg-line-strong" />
-        {steps.map((item, index) => {
-          const current = index === active;
-          return (
-            <li key={item.title} className="relative flex min-w-0 flex-1 justify-center">
-              <button
-                type="button"
-                onClick={() => setActive(index)}
-                aria-current={current ? 'step' : undefined}
-                className="flex min-w-0 flex-col items-center gap-2 text-center"
-              >
-                <span
-                  className={cn(
-                    'flex size-8 items-center justify-center rounded-full text-[13px] font-semibold tabular-nums ring-4 ring-surface transition-colors',
-                    current ? 'bg-brand text-white' : item.done ? 'bg-positive-soft text-positive' : 'bg-fill text-ink-2 hover:bg-fill-strong',
-                  )}
-                >
-                  {item.done && !current ? <CheckIcon size={14} /> : index + 1}
-                </span>
-                <span className={cn('hidden text-[13px] leading-snug sm:block', current ? 'font-semibold text-ink' : 'text-ink-2')}>{item.title}</span>
-              </button>
-            </li>
-          );
-        })}
-      </ol>
-      <div aria-live="polite" className="mt-6 flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2 border-t border-line pt-5">
-        <div className="min-w-0 flex-[1_1_420px]">
-          <p className="text-[17px] font-semibold text-ink">{step.title}</p>
-          <p className="mt-1 text-[15px] leading-relaxed text-ink-2">{step.text}</p>
-        </div>
-        {step.aside}
-      </div>
-    </div>
-  );
-};
+import { Faq, Rules, Stages, StepTabs, type FaqItem, type GuideStep, type RuleGroup } from './components/guideBlocks';
 
 const goTo = (to: string, label: string) => (
   <Link to={to} className={buttonClassName({ variant: 'plain', size: 'sm' })}>
@@ -79,7 +23,7 @@ const goTo = (to: string, label: string) => (
 );
 
 /** O caminho do docente, marcando o que ele já fez a partir dos dados dele. */
-const useJourney = (): Step[] => {
+const useJourney = (): GuideStep[] => {
   const { data: disciplines = [] } = useCurrentDisciplines();
   const { data: menu = [] } = useMenu();
   const { data: projects = [] } = useProjects();
@@ -116,63 +60,7 @@ const useJourney = (): Step[] => {
   ];
 };
 
-const MILESTONE_TIMING: Record<MilestoneId, string> = {
-  plan: 'Primeira semana',
-  kickoff: 'Até duas semanas',
-  sigaa: 'Até o prazo de vinculação',
-  midterm: 'Meio do semestre',
-  final: 'Última semana de aula',
-  closing: 'Fim do semestre',
-};
-
-/** Em que fase o projeto fica em cada etapa, dito uma vez em cada troca. */
-const PHASE_START: Partial<Record<MilestoneId, string>> = { plan: 'Planejamento', midterm: 'Em andamento', closing: 'Concluído' };
-
-/**
- * As seis etapas de cima para baixo. Clicar numa abre o que acontece nela;
- * as outras ficam fechadas, só com o título e o prazo.
- */
-const Stages = () => {
-  const [open, setOpen] = useState<MilestoneId>('plan');
-
-  return (
-    <ol className="overflow-hidden rounded-lg border border-line">
-      {MILESTONE_ORDER.map((id, index) => {
-        const current = id === open;
-        const phase = PHASE_START[id];
-        return (
-          <li key={id} className="border-t border-line first:border-t-0">
-            {phase && <p className="bg-canvas px-5 py-1.5 text-[12px] font-semibold text-ink-2">{phase}</p>}
-            <button
-              type="button"
-              onClick={() => setOpen(id)}
-              aria-expanded={current}
-              className={cn('flex w-full items-start gap-4 px-5 py-4 text-left transition-colors', current ? 'bg-surface' : 'hover:bg-canvas')}
-            >
-              <span
-                className={cn(
-                  'flex size-8 shrink-0 items-center justify-center rounded-full text-[13px] font-semibold tabular-nums transition-colors',
-                  current ? 'bg-brand text-white' : 'bg-fill text-ink-2',
-                )}
-              >
-                {index + 1}
-              </span>
-              <span className="min-w-0 flex-1 pt-1">
-                <span className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-0.5">
-                  <span className={cn('text-[15px] text-ink', current ? 'font-semibold' : 'font-medium')}>{MILESTONE_COPY[id].title}</span>
-                  <span className={cn('text-[13px]', current ? 'font-medium text-brand-strong' : 'text-ink-3')}>{MILESTONE_TIMING[id]}</span>
-                </span>
-                {current && <span className="mt-1.5 block text-sm leading-relaxed text-ink-2 animate-fade-in">{MILESTONE_COPY[id].description}</span>}
-              </span>
-            </button>
-          </li>
-        );
-      })}
-    </ol>
-  );
-};
-
-const RULE_GROUPS: { icon: ReactNode; title: string; rules: string[] }[] = [
+const RULE_GROUPS: RuleGroup[] = [
   {
     icon: <BookmarkIcon size={20} />,
     title: 'Reserva',
@@ -202,26 +90,7 @@ const RULE_GROUPS: { icon: ReactNode; title: string; rules: string[] }[] = [
   },
 ];
 
-/** As regras no mesmo desenho da faixa de perfis do portal: um cartão, três colunas. */
-const Rules = () => (
-  <ul className="grid overflow-hidden rounded-lg border border-line md:grid-cols-3">
-    {RULE_GROUPS.map((group) => (
-      <li key={group.title} className="border-line p-6 not-first:border-t md:not-first:border-t-0 md:not-first:border-l">
-        <span className="flex size-10 items-center justify-center rounded-md bg-brand text-white">{group.icon}</span>
-        <p className="mt-4 text-[17px] font-semibold text-ink">{group.title}</p>
-        <ul className="mt-2 space-y-2">
-          {group.rules.map((rule) => (
-            <li key={rule} className="text-sm leading-relaxed text-ink-2">
-              {rule}
-            </li>
-          ))}
-        </ul>
-      </li>
-    ))}
-  </ul>
-);
-
-const FAQ: { question: string; answer: ReactNode }[] = [
+const FAQ: FaqItem[] = [
   {
     question: 'Para que serve reservar?',
     answer:
@@ -265,20 +134,6 @@ const FAQ: { question: string; answer: ReactNode }[] = [
   },
 ];
 
-const Faq = () => (
-  <div className="divide-y divide-line overflow-hidden rounded-lg border border-line">
-    {FAQ.map((item) => (
-      <details key={item.question} className="group">
-        <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-4 py-3.5 text-[15px] font-medium text-ink hover:bg-canvas [&::-webkit-details-marker]:hidden">
-          {item.question}
-          <ChevronDownIcon size={15} className="shrink-0 text-ink-3 transition-transform group-open:rotate-180" />
-        </summary>
-        <p className="px-4 pb-4 text-sm leading-relaxed text-ink-2">{item.answer}</p>
-      </details>
-    ))}
-  </div>
-);
-
 const Journey = () => <StepTabs label="Seu caminho" steps={useJourney()} />;
 
 export const GuidePage = () => {
@@ -301,15 +156,15 @@ export const GuidePage = () => {
         title="As seis etapas do projeto"
         description={`Clique numa etapa para ver o que acontece nela.${calendar ? ` Em ${calendar.id}, o prazo para levar e registrar é ${formatShortDate(calendar.linkDeadline)}.` : ''}`}
       >
-        <Stages />
+        <Stages copy={MILESTONE_COPY} />
       </Section>
 
       <Section title="Regras">
-        <Rules />
+        <Rules groups={RULE_GROUPS} />
       </Section>
 
       <Section title="Perguntas frequentes">
-        <Faq />
+        <Faq items={FAQ} />
       </Section>
 
       <div className="mt-14 flex flex-wrap items-center justify-between gap-4 border-t border-line pt-8">

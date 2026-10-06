@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { QueryView } from '@/components/feedback/queryStates';
 import { useToast } from '@/components/feedback/toastContext';
 import { Button } from '@/components/ui/button';
+import { CoverBanner } from '@/components/ui/coverBanner';
 import { buttonClassName, textLinkClassName } from '@/components/ui/buttonStyles';
 import { ArrowRightIcon } from '@/components/ui/icons';
 import { Modal } from '@/components/ui/modal';
@@ -14,6 +15,7 @@ import { formatShortDate } from '@/domain/calendar';
 import { canDeleteSubmission, canEditSubmission, unansweredQuestions } from '@/domain/submission';
 import type { DemandSubmission } from '@/domain/types';
 import { useTabParam } from '@/hooks/useTabParam';
+import { demandCover } from '@/lib/covers';
 import { paths } from '@/routes/paths';
 import { cn } from '@/utils/cn';
 import { pluralize } from '@/utils/format';
@@ -23,7 +25,7 @@ import { JourneyTrack } from './components/journeyTrack';
 import { QuestionsInbox } from './components/questionsInbox';
 import { ReviewNote } from './components/reviewNote';
 import type { OrgDemandDetail } from './types';
-import { useDeleteDraft, useOrgDemand } from './useOrgPortal';
+import { useDeleteDraft, useOrgDemand, useOrgProfile } from './useOrgPortal';
 import { STAGE_COPY } from './utils/orgPresentation';
 
 const TABS = ['demanda', 'perguntas', 'cardapio'] as const;
@@ -140,13 +142,15 @@ const DemandView = ({ detail }: { detail: OrgDemandDetail }) => {
   const title = isSubmission ? detail.submission.title || 'Demanda sem nome' : detail.demand.title;
   const problem = isSubmission ? detail.submission.problem : detail.demand.problem;
   const draft = isSubmission ? detail.submission : detail.demand;
-  const organizationName = draft.organization.name;
+  const { data: profile } = useOrgProfile();
+  const cover = demandCover(isSubmission ? detail.submission.id : detail.demand.id, draft.organization.id, profile?.organization.cover);
   const previewDraft = isSubmission ? detail.submission : { ...detail.demand, expectedOutcome: detail.demand.scopeNote };
   // Perguntas só existem depois de publicada; antes disso a aba não aparece.
   const activeTab = isSubmission && tab === 'perguntas' ? 'demanda' : tab;
 
   return (
     <Page title={title} eyebrow={<Tag tone={stage.tone}>{stage.label}</Tag>} subtitle={problem} back={{ to: paths.orgDemands(), label: 'Demandas' }}>
+      {cover && <CoverBanner cover={cover} />}
       <div className="mb-10">
         <JourneyTrack stage={detail.stage} />
       </div>
@@ -186,7 +190,7 @@ const DemandView = ({ detail }: { detail: OrgDemandDetail }) => {
                   ? 'Assim o cartão vai aparecer para os docentes quando a demanda entrar no cardápio.'
                   : 'Assim o cartão aparece para os docentes. Cada um vê também qual turma dele combina com a demanda.'}
               </p>
-              <DemandPreviewCard draft={previewDraft} organizationName={organizationName} />
+              <DemandPreviewCard draft={previewDraft} organization={draft.organization} />
             </div>
           )}
         </div>
