@@ -11,15 +11,16 @@ import type { SidebarConfig } from './sidebar';
 const SIDEBAR: SidebarConfig = {
   label: 'Portal da organização',
   homePath: paths.orgHome,
+  large: true,
   navigation: [
-    { to: paths.orgHome, label: 'Início', icon: <HomeIcon /> },
-    { to: paths.orgDemands(), label: 'Demandas', icon: <TrayIcon /> },
-    { to: paths.orgProjects, label: 'Projetos', icon: <FolderIcon /> },
+    { to: paths.orgHome, label: 'Início', icon: <HomeIcon size={20} /> },
+    { to: paths.orgDemands(), label: 'Demandas', icon: <TrayIcon size={20} /> },
+    { to: paths.orgProjects, label: 'Projetos', icon: <FolderIcon size={20} /> },
   ],
   footer: [
-    { to: paths.landing, label: 'Portal do L.E.I.', icon: <ArrowUpRightIcon /> },
-    { to: paths.orgGuide, label: 'Como funciona', icon: <QuestionIcon /> },
-    { to: paths.orgProfile, label: 'Perfil da organização', icon: <BuildingIcon /> },
+    { to: paths.landing, label: 'Portal do L.E.I.', icon: <ArrowUpRightIcon size={20} /> },
+    { to: paths.orgGuide, label: 'Como funciona', icon: <QuestionIcon size={20} /> },
+    { to: paths.orgProfile, label: 'Perfil da organização', icon: <BuildingIcon size={20} /> },
   ],
 };
 

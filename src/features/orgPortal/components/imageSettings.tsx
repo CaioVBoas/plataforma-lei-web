@@ -38,8 +38,8 @@ const ImageRow = ({ label, hint, preview, hasImage, pending, onChoose, onRemove 
       </div>
       <div className="flex shrink-0 items-center gap-2">
         <input ref={inputRef} type="file" accept="image/*" className="sr-only" tabIndex={-1} aria-hidden="true" onChange={choose} />
-        <Button variant="secondary" size="sm" disabled={pending} onClick={() => inputRef.current?.click()}>
-          <ImageIcon size={15} />
+        <Button variant="secondary" disabled={pending} onClick={() => inputRef.current?.click()}>
+          <ImageIcon size={18} />
           {hasImage ? `Trocar ${label.toLowerCase()}` : `Enviar ${label.toLowerCase()}`}
         </Button>
         {hasImage && (

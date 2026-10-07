@@ -95,8 +95,8 @@ const ProjectView = ({ project, today }: { project: OrgProjectDetail; today: str
               {project.teacherPhone && <SideFact label="Telefone">{project.teacherPhone}</SideFact>}
               {project.coTeachers.length > 0 && <SideFact label="Divide a disciplina com">{project.coTeachers.join(', ')}</SideFact>}
             </dl>
-            <a href={`mailto:${project.teacherEmail}`} className={cn(buttonClassName({ variant: 'primary', fullWidth: true }), 'mt-4')}>
-              <MailIcon size={15} />
+            <a href={`mailto:${project.teacherEmail}`} className={cn(buttonClassName({ variant: 'primary', size: 'xl', fullWidth: true }), 'mt-4')}>
+              <MailIcon size={20} />
               Escrever ao docente
             </a>
           </SideCard>

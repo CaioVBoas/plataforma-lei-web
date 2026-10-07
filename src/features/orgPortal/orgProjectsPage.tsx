@@ -3,11 +3,11 @@ import { LoadingState } from '@/components/feedback/queryStates';
 import { buttonClassName } from '@/components/ui/buttonStyles';
 import { cardGridClassName } from '@/components/ui/card';
 import { EmptyState } from '@/components/ui/emptyState';
-import { ArrowRightIcon } from '@/components/ui/icons';
+import { ChoiceBar } from '@/components/ui/choiceBar';
+import { CalendarIcon, CheckIcon, FolderIcon, ListIcon, PencilIcon } from '@/components/ui/icons';
 import { InfoBanner } from '@/components/ui/infoBanner';
 import { Page } from '@/components/ui/page';
 import { Tag } from '@/components/ui/tag';
-import { UnderlineTabs } from '@/components/ui/underlineTabs';
 import { formatRelativeDays, formatShortDate } from '@/domain/calendar';
 import { isOverdue, nextMilestone, projectStage, type ProjectStage } from '@/domain/projectLifecycle';
 import type { IsoDate } from '@/domain/types';
@@ -26,6 +26,7 @@ type Filter = 'todos' | 'planejamento' | 'andamento' | 'concluidos';
 const FILTERS: Filter[] = ['todos', 'planejamento', 'andamento', 'concluidos'];
 const STAGE_BY_FILTER: Record<Exclude<Filter, 'todos'>, ProjectStage> = { planejamento: 'planning', andamento: 'running', concluidos: 'done' };
 const LABELS: Record<Filter, string> = { todos: 'Todos', planejamento: 'Em planejamento', andamento: 'Em andamento', concluidos: 'Concluídos' };
+const ICONS: Record<Filter, typeof ListIcon> = { todos: ListIcon, planejamento: PencilIcon, andamento: CalendarIcon, concluidos: CheckIcon };
 
 const HELP: Record<Filter, string> = {
   todos: 'Cada projeto é uma turma do CIn trabalhando num problema de vocês durante um semestre. Todos passam pelas mesmas seis etapas.',
@@ -71,9 +72,9 @@ const OrgProjectCard = ({ project, today }: { project: OrgProjectSummary; today:
             (project.outcome?.summary ?? 'Projeto concluído.')
           )}
         </p>
-        <Link to={paths.orgProject(project.id)} className={cn(buttonClassName({ variant: 'secondary', fullWidth: true }), 'mt-3 h-11 text-[15px]')}>
+        <Link to={paths.orgProject(project.id)} className={cn(buttonClassName({ variant: 'secondary', size: 'xl', fullWidth: true }), 'mt-3')}>
+          <FolderIcon size={20} />
           Abrir o projeto
-          <ArrowRightIcon size={16} />
         </Link>
       </div>
     </article>
@@ -119,11 +120,14 @@ export const OrgProjectsPage = () => {
 
   return (
     <Page title={TITLE} subtitle={SUBTITLE}>
-      <UnderlineTabs
+      <ChoiceBar
         label="Estado dos projetos"
         value={filter}
         onChange={(value) => setSearchParams(value === 'todos' ? {} : { estado: value }, { replace: true })}
-        options={FILTERS.map((value) => ({ value, label: LABELS[value], count: count(value) }))}
+        options={FILTERS.map((value) => {
+          const Icon = ICONS[value];
+          return { value, label: LABELS[value], icon: <Icon size={20} />, count: count(value) };
+        })}
         className="mb-4"
       />
       <InfoBanner className="mb-6">{HELP[filter]}</InfoBanner>

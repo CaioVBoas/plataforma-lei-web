@@ -2,8 +2,8 @@ import { useState, type FormEvent } from 'react';
 import { QueryView } from '@/components/feedback/queryStates';
 import { useToast } from '@/components/feedback/toastContext';
 import { Button } from '@/components/ui/button';
-import { Field, FormGroup, Input, Select, Textarea } from '@/components/ui/formControls';
-import { CheckIcon, LogoutIcon } from '@/components/ui/icons';
+import { Field, FormGroup, Input, Textarea } from '@/components/ui/formControls';
+import { LogoutIcon, SaveIcon } from '@/components/ui/icons';
 import { Monogram } from '@/components/ui/monogram';
 import { Page, Section } from '@/components/ui/page';
 import { ProfileHeader } from '@/components/ui/profileHeader';
@@ -11,9 +11,10 @@ import type { OrgAccount } from '@/domain/types';
 import { useLogout } from '@/features/auth/useAuth';
 import { organizationCover } from '@/lib/covers';
 import { ImageSettings } from './components/imageSettings';
+import { OrgTypePicker } from './components/orgTypePicker';
 import type { OrgProfile, OrgProfileInput } from './types';
 import { useOrgAccount, useOrgProfile, useUpdateOrgAccount, useUpdateOrgProfile } from './useOrgPortal';
-import { MEETING_SUGGESTIONS, ORGANIZATION_TYPES } from './utils/orgPresentation';
+import { MEETING_SUGGESTIONS } from './utils/orgPresentation';
 
 const SaveBar = ({ pending, error }: { pending: boolean; error: Error | null }) => (
   <div className="mt-6 flex flex-wrap items-center justify-end gap-3">
@@ -22,8 +23,8 @@ const SaveBar = ({ pending, error }: { pending: boolean; error: Error | null }) 
         {error.message}
       </p>
     )}
-    <Button variant="primary" type="submit" disabled={pending}>
-      <CheckIcon size={15} />
+    <Button variant="primary" size="xl" type="submit" disabled={pending}>
+      <SaveIcon size={20} />
       {pending ? 'Salvando' : 'Salvar'}
     </Button>
   </div>
@@ -47,8 +48,6 @@ const ProfileForm = ({ profile }: { profile: OrgProfile }) => {
   const [input, setInput] = useState(() => toInput(profile));
   const set = (patch: Partial<OrgProfileInput>) => setInput((current) => ({ ...current, ...patch }));
   const setContact = (patch: Partial<OrgProfileInput['contact']>) => setInput((current) => ({ ...current, contact: { ...current.contact, ...patch } }));
-  // Tipo cadastrado fora da lista (vindo de antes) continua escolhível.
-  const types = ORGANIZATION_TYPES.includes(input.type) ? ORGANIZATION_TYPES : [input.type, ...ORGANIZATION_TYPES];
 
   const save = (event: FormEvent) => {
     event.preventDefault();
@@ -59,20 +58,13 @@ const ProfileForm = ({ profile }: { profile: OrgProfile }) => {
     <form onSubmit={save} className="@container rounded-lg border border-line bg-surface p-5 sm:p-6">
       <FormGroup title="Quem são vocês" hint="Aparece no perfil da organização e no detalhe de cada demanda.">
         <div className="flex flex-col gap-5">
-          <div className="grid gap-5 sm:grid-cols-2">
-            <Field label="Tipo" htmlFor="perfil-tipo">
-              <Select id="perfil-tipo" value={input.type} onChange={(event) => set({ type: event.target.value })}>
-                {types.map((type) => (
-                  <option key={type} value={type}>
-                    {type}
-                  </option>
-                ))}
-              </Select>
-            </Field>
-            <Field label="Onde atuam" htmlFor="perfil-local">
-              <Input id="perfil-local" value={input.location} onChange={(event) => set({ location: event.target.value })} placeholder="Ex.: Várzea, Recife" />
-            </Field>
+          <div>
+            <p className="mb-1.5 text-sm font-medium text-ink">Tipo</p>
+            <OrgTypePicker value={input.type} onChange={(type) => set({ type })} />
           </div>
+          <Field label="Onde atuam" htmlFor="perfil-local">
+            <Input id="perfil-local" value={input.location} onChange={(event) => set({ location: event.target.value })} placeholder="Ex.: Várzea, Recife" />
+          </Field>
           <Field label="Sobre" htmlFor="perfil-sobre" hint="O que a organização faz, em duas ou três frases.">
             <Textarea id="perfil-sobre" rows={4} value={input.about} onChange={(event) => set({ about: event.target.value })} />
           </Field>
@@ -191,8 +183,8 @@ export const OrgProfilePage = () => {
         <QueryView query={accountQuery}>{(account) => <AccountForm account={account} />}</QueryView>
       </Section>
       <Section title="Sessão">
-        <Button variant="secondary" onClick={logout}>
-          <LogoutIcon size={16} />
+        <Button variant="secondary" size="xl" onClick={logout}>
+          <LogoutIcon size={20} />
           Sair
         </Button>
       </Section>

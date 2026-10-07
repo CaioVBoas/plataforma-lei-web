@@ -10,17 +10,20 @@ interface NavItemProps {
   label: string;
   active: boolean;
   collapsed?: boolean;
+  /** Alvo e texto maiores, para quem tem pouca prática com o mouse. */
+  large?: boolean;
   onNavigate?: () => void;
 }
 
-const NavItem = ({ to, icon, label, active, collapsed, onNavigate }: NavItemProps) => (
+const NavItem = ({ to, icon, label, active, collapsed, large, onNavigate }: NavItemProps) => (
   <Link
     to={to}
     onClick={onNavigate}
     aria-current={active ? 'page' : undefined}
     title={collapsed ? label : undefined}
     className={cn(
-      'flex h-9 items-center gap-2.5 rounded-lg text-sm transition-colors duration-150',
+      'flex items-center gap-2.5 rounded-lg transition-colors duration-150',
+      large ? 'h-11 text-[15px]' : 'h-9 text-sm',
       collapsed ? 'justify-center' : 'px-3',
       active ? 'bg-brand font-semibold text-white' : 'text-ink-2 hover:bg-brand-50 hover:text-brand-strong',
     )}
@@ -46,6 +49,8 @@ export interface SidebarConfig {
   navigation: NavEntry[];
   /** Links de apoio no pé da barra. O portal público nunca aparece como ativo. */
   footer: NavEntry[];
+  /** Itens maiores, com ícone de 20px. */
+  large?: boolean;
 }
 
 interface SidebarProps extends SidebarConfig {
@@ -54,7 +59,7 @@ interface SidebarProps extends SidebarConfig {
   onNavigate?: () => void;
 }
 
-export const Sidebar = ({ label, homePath, navigation, footer, collapsed, onNavigate }: SidebarProps) => {
+export const Sidebar = ({ label, homePath, navigation, footer, large, collapsed, onNavigate }: SidebarProps) => {
   const { pathname } = useLocation();
 
   return (
@@ -65,13 +70,13 @@ export const Sidebar = ({ label, homePath, navigation, footer, collapsed, onNavi
 
       <nav aria-label={label} className="flex flex-col gap-0.5">
         {navigation.map((item) => (
-          <NavItem key={item.to} {...item} active={isActive(pathname, item.to, homePath)} collapsed={collapsed} onNavigate={onNavigate} />
+          <NavItem key={item.to} {...item} active={isActive(pathname, item.to, homePath)} collapsed={collapsed} large={large} onNavigate={onNavigate} />
         ))}
       </nav>
 
       <div className="mt-auto flex flex-col gap-0.5 border-t border-line pt-3">
         {footer.map((item) => (
-          <NavItem key={item.to} {...item} active={item.to !== paths.landing && isActive(pathname, item.to, homePath)} collapsed={collapsed} onNavigate={onNavigate} />
+          <NavItem key={item.to} {...item} active={item.to !== paths.landing && isActive(pathname, item.to, homePath)} collapsed={collapsed} large={large} onNavigate={onNavigate} />
         ))}
       </div>
     </div>

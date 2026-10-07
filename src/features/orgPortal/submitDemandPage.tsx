@@ -5,7 +5,7 @@ import { LoadingState, QueryView } from '@/components/feedback/queryStates';
 import { useToast } from '@/components/feedback/toastContext';
 import { Button } from '@/components/ui/button';
 import { textLinkClassName } from '@/components/ui/buttonStyles';
-import { ArrowRightIcon, ChevronLeftIcon, SendIcon } from '@/components/ui/icons';
+import { ArrowLeftIcon, ArrowRightIcon, SaveIcon, SendIcon } from '@/components/ui/icons';
 import { Page } from '@/components/ui/page';
 import { canEditSubmission, EMPTY_DRAFT, missingForReview } from '@/domain/submission';
 import type { DemandSubmission, Organization } from '@/domain/types';
@@ -155,24 +155,25 @@ const SubmitForm = ({ submission, organization }: SubmitFormProps) => {
           <div className="mt-10 flex flex-wrap items-center justify-between gap-3 border-t border-line pt-5">
             <div>
               {step > 0 && (
-                <Button variant="secondary" onClick={() => goTo(step - 1)}>
-                  <ChevronLeftIcon size={15} />
+                <Button variant="secondary" size="xl" onClick={() => goTo(step - 1)}>
+                  <ArrowLeftIcon size={20} />
                   Voltar
                 </Button>
               )}
             </div>
             <div className="flex flex-wrap items-center gap-2">
-              <Button variant="plain" onClick={saveDraft} disabled={busy || (!isDirty && Boolean(submission))}>
-                {save.isPending ? 'Salvando' : 'Salvar rascunho'}
+              <Button variant="secondary" size="xl" onClick={saveDraft} disabled={busy || (!isDirty && Boolean(submission))}>
+                <SaveIcon size={20} />
+                {save.isPending ? 'Guardando' : 'Guardar e continuar depois'}
               </Button>
               {step < LAST_STEP ? (
-                <Button variant="primary" onClick={next} disabled={busy}>
+                <Button variant="primary" size="xl" onClick={next} disabled={busy}>
                   Continuar
-                  <ArrowRightIcon size={15} />
+                  <ArrowRightIcon size={20} />
                 </Button>
               ) : (
-                <Button variant="primary" onClick={send} disabled={busy || missing.length > 0}>
-                  <SendIcon size={15} />
+                <Button variant="primary" size="xl" onClick={send} disabled={busy || missing.length > 0}>
+                  <SendIcon size={20} />
                   {submit.isPending ? 'Enviando' : submission?.stage === 'needs-changes' ? 'Reenviar para a triagem' : 'Enviar para a triagem'}
                 </Button>
               )}

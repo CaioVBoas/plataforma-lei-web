@@ -16,7 +16,6 @@ import type { DemandSubmission } from '@/domain/types';
 import { useTabParam } from '@/hooks/useTabParam';
 import { demandCover } from '@/lib/covers';
 import { paths } from '@/routes/paths';
-import { cn } from '@/utils/cn';
 import { DemandContent, DemandFacts } from './components/demandContent';
 import { DemandPreviewCard } from './components/demandPreviewCard';
 import { JourneyTrack } from './components/journeyTrack';
@@ -130,15 +129,15 @@ const StatusPanel = ({ detail }: { detail: OrgDemandDetail }) => {
   let action: ReactNode = null;
   if (editable && isSubmission) {
     action = (
-      <Link to={paths.orgEditDemand(detail.submission.id)} className={cn(buttonClassName({ variant: 'primary', fullWidth: true }), 'h-11 text-[15px]')}>
-        <PencilIcon size={16} />
+      <Link to={paths.orgEditDemand(detail.submission.id)} className={buttonClassName({ variant: 'primary', size: 'xl', fullWidth: true })}>
+        <PencilIcon size={20} />
         {detail.submission.stage === 'needs-changes' ? 'Fazer o ajuste' : 'Continuar escrevendo'}
       </Link>
     );
   } else if (unanswered > 0 && !isSubmission) {
     action = (
-      <Link to={paths.orgDemand(detail.demand.id, 'perguntas')} className={cn(buttonClassName({ variant: 'primary', fullWidth: true }), 'h-11 text-[15px]')}>
-        <ChatIcon size={16} />
+      <Link to={paths.orgDemand(detail.demand.id, 'perguntas')} className={buttonClassName({ variant: 'primary', size: 'xl', fullWidth: true })}>
+        <ChatIcon size={20} />
         {unanswered === 1 ? 'Responder a pergunta' : `Responder ${unanswered} perguntas`}
       </Link>
     );

@@ -1,11 +1,11 @@
 import { Link } from 'react-router-dom';
 import { buttonClassName } from '@/components/ui/buttonStyles';
-import { ArrowRightIcon, CheckIcon, ClockIcon, FolderIcon, PencilIcon, TrayIcon } from '@/components/ui/icons';
+import { ChatIcon, CheckIcon, ClockIcon, EyeIcon, FolderIcon, PencilIcon, TrayIcon } from '@/components/ui/icons';
 import { Tag } from '@/components/ui/tag';
 import type { OrgDemandStage } from '@/domain/submission';
 import { cn } from '@/utils/cn';
 import type { OrgDemandSummary } from '../types';
-import { demandGuidance } from '../utils/demandGuidance';
+import { demandGuidance, type DemandGuidance } from '../utils/demandGuidance';
 import { STAGE_COPY } from '../utils/orgPresentation';
 
 const STAGE_ICON: Record<OrgDemandStage, typeof ClockIcon> = {
@@ -15,6 +15,14 @@ const STAGE_ICON: Record<OrgDemandStage, typeof ClockIcon> = {
   open: TrayIcon,
   reserved: ClockIcon,
   'in-project': FolderIcon,
+  done: CheckIcon,
+};
+
+const ACTION_ICON: Record<DemandGuidance['action']['icon'], typeof ClockIcon> = {
+  write: PencilIcon,
+  answer: ChatIcon,
+  see: EyeIcon,
+  follow: FolderIcon,
   done: CheckIcon,
 };
 
@@ -36,6 +44,7 @@ export const StageTag = ({ stage }: { stage: OrgDemandStage }) => {
  */
 export const OrgDemandCard = ({ demand }: { demand: OrgDemandSummary }) => {
   const guidance = demandGuidance(demand);
+  const ActionIcon = ACTION_ICON[guidance.action.icon];
 
   return (
     <article
@@ -59,10 +68,10 @@ export const OrgDemandCard = ({ demand }: { demand: OrgDemandSummary }) => {
         </p>
         <Link
           to={guidance.action.to}
-          className={cn(buttonClassName({ variant: guidance.yourTurn ? 'primary' : 'secondary', fullWidth: true }), 'mt-3 h-11 text-[15px]')}
+          className={cn(buttonClassName({ variant: guidance.yourTurn ? 'primary' : 'secondary', size: 'xl', fullWidth: true }), 'mt-3')}
         >
+          <ActionIcon size={20} />
           {guidance.action.label}
-          <ArrowRightIcon size={16} />
         </Link>
       </div>
     </article>

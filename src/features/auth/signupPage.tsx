@@ -5,7 +5,8 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import { buttonClassName, textLinkClassName } from '@/components/ui/buttonStyles';
-import { Field, Input, Select } from '@/components/ui/formControls';
+import { Field, Input } from '@/components/ui/formControls';
+import { OrgTypePicker } from '@/features/orgPortal/components/orgTypePicker';
 import { ORGANIZATION_TYPES } from '@/features/orgPortal/utils/orgPresentation';
 import { ArrowRightIcon } from '@/components/ui/icons';
 import { paths } from '@/routes/paths';
@@ -92,6 +93,8 @@ const OrganizationSignup = () => {
   const {
     register,
     handleSubmit,
+    watch,
+    setValue,
     formState: { errors },
   } = useForm<OrgSignupValues>({
     resolver: zodResolver(orgSignupSchema),
@@ -105,20 +108,13 @@ const OrganizationSignup = () => {
       <Field label="Nome da organização" htmlFor="signup-org-name" error={errors.organizationName?.message}>
         <Input id="signup-org-name" autoComplete="organization" autoFocus {...register('organizationName')} />
       </Field>
-      <div className="grid gap-4 sm:grid-cols-2">
-        <Field label="Tipo" htmlFor="signup-org-type">
-          <Select id="signup-org-type" {...register('organizationType')}>
-            {ORGANIZATION_TYPES.map((type) => (
-              <option key={type} value={type}>
-                {type}
-              </option>
-            ))}
-          </Select>
-        </Field>
-        <Field label="Onde atua" htmlFor="signup-org-location" error={errors.location?.message}>
-          <Input id="signup-org-location" placeholder="Ex.: Várzea, Recife" {...register('location')} />
-        </Field>
+      <div>
+        <p className="mb-1.5 text-sm font-medium text-ink">Tipo</p>
+        <OrgTypePicker compact value={watch('organizationType')} onChange={(type) => setValue('organizationType', type)} />
       </div>
+      <Field label="Onde atua" htmlFor="signup-org-location" error={errors.location?.message}>
+        <Input id="signup-org-location" placeholder="Ex.: Várzea, Recife" {...register('location')} />
+      </Field>
       <div className="grid gap-4 sm:grid-cols-2">
         <Field label="Seu nome" htmlFor="signup-org-person" error={errors.name?.message}>
           <Input id="signup-org-person" autoComplete="name" {...register('name')} />

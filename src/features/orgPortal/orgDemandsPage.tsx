@@ -6,7 +6,9 @@ import { EmptyState } from '@/components/ui/emptyState';
 import { SearchInput } from '@/components/ui/formControls';
 import { InfoBanner } from '@/components/ui/infoBanner';
 import { Page } from '@/components/ui/page';
-import { UnderlineTabs } from '@/components/ui/underlineTabs';
+import { ChoiceBar } from '@/components/ui/choiceBar';
+import { Hint } from '@/components/ui/hint';
+import { BellIcon, CheckIcon, FolderIcon, ListIcon, PencilIcon, TrayIcon } from '@/components/ui/icons';
 import type { OrgDemandsTab, OrgDemandsView } from '@/routes/paths';
 import { normalizeText } from '@/utils/format';
 import { OrgDemandCard } from './components/orgDemandCard';
@@ -20,6 +22,15 @@ const VIEWS = Object.keys(VIEW_STAGES) as OrgDemandsView[];
 const TABS: OrgDemandsTab[] = ['vez', 'todas', ...VIEWS];
 
 const TAB_LABELS: Record<OrgDemandsTab, string> = { vez: 'Sua vez', todas: 'Todas', ...VIEW_LABELS };
+
+const TAB_ICONS: Record<OrgDemandsTab, typeof BellIcon> = {
+  vez: BellIcon,
+  todas: ListIcon,
+  preparo: PencilIcon,
+  cardapio: TrayIcon,
+  projeto: FolderIcon,
+  concluidas: CheckIcon,
+};
 
 /** Uma frase por aba, logo abaixo dela: o que aparece aqui e por quê. */
 const TAB_HELP: Record<OrgDemandsTab, string> = {
@@ -83,21 +94,26 @@ export const OrgDemandsPage = () => {
 
   return (
     <Page title={TITLE} subtitle={SUBTITLE} actions={<SubmitDemandLink />}>
-      <div className="mb-4 flex flex-wrap items-end justify-between gap-x-6 gap-y-3 border-b border-line">
-        <UnderlineTabs
-          bordered={false}
-          label="Quais demandas mostrar"
-          value={tab}
-          onChange={(next) => setSearchParams({ ver: next }, { replace: true })}
-          options={TABS.map((key) => ({ value: key, label: TAB_LABELS[key], count: count(key) }))}
-        />
+      <ChoiceBar
+        label="Quais demandas mostrar"
+        value={tab}
+        onChange={(next) => setSearchParams({ ver: next }, { replace: true })}
+        options={TABS.map((key) => {
+          const Icon = TAB_ICONS[key];
+          return { value: key, label: TAB_LABELS[key], icon: <Icon size={20} />, count: count(key) };
+        })}
+        className="mb-4"
+      />
+      <div className="mb-4 flex flex-wrap items-center gap-x-5 gap-y-2">
         <SearchInput
           aria-label="Buscar demandas"
-          placeholder="Buscar pelo nome"
+          placeholder="Buscar pelo nome da demanda"
           value={search}
           onChange={(event) => setSearch(event.target.value)}
-          containerClassName="mb-2 w-full sm:w-[260px]"
+          containerClassName="w-full sm:w-[340px]"
+          className="h-11 border-line-strong bg-surface text-[15px]"
         />
+        <Hint>Digite uma palavra do nome. A busca procura em todas as demandas.</Hint>
       </div>
       <InfoBanner className="mb-6">{term ? `Buscando "${search.trim()}" em todas as demandas.` : TAB_HELP[tab]}</InfoBanner>
 
