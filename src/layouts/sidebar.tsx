@@ -53,11 +53,17 @@ export interface NavEntry {
 /** O Início da organização é o prefixo de todas as rotas dela, então só vale como ativo na própria página. */
 const isActive = (pathname: string, to: string, homePath: string) => (to === homePath ? pathname === to : pathname.startsWith(to));
 
+/** Um grupo da barra, com o nome em caixa alta e uma linha separando do grupo de cima. */
+export interface NavSection {
+  title: string;
+  items: NavEntry[];
+}
+
 export interface SidebarConfig {
   /** Nome acessível da navegação principal. */
   label: string;
   homePath: string;
-  navigation: NavEntry[];
+  navigation: NavSection[];
   /** Links de apoio no pé da barra. O portal público nunca aparece como ativo. */
   footer: NavEntry[];
   /** Itens maiores, com ícone de 20px. */
@@ -79,9 +85,23 @@ export const Sidebar = ({ label, homePath, navigation, footer, large, collapsed,
         {collapsed ? <BrandSymbol /> : <BrandMark />}
       </Link>
 
-      <nav aria-label={label} className="flex flex-col gap-0.5">
-        {navigation.map((item) => (
-          <NavItem key={item.to} {...item} active={isActive(pathname, item.to, homePath)} collapsed={collapsed} large={large} onNavigate={onNavigate} />
+      <nav aria-label={label} className="flex flex-col">
+        {navigation.map((section, index) => (
+          <div
+            key={section.title}
+            role="group"
+            aria-label={section.title}
+            className={cn('flex flex-col gap-0.5', index > 0 && 'mt-4 border-t border-line pt-4')}
+          >
+            {collapsed ? null : (
+              <p aria-hidden="true" className="mb-1.5 px-3 text-[12px] font-semibold tracking-[0.06em] text-ink-3 uppercase">
+                {section.title}
+              </p>
+            )}
+            {section.items.map((item) => (
+              <NavItem key={item.to} {...item} active={isActive(pathname, item.to, homePath)} collapsed={collapsed} large={large} onNavigate={onNavigate} />
+            ))}
+          </div>
         ))}
       </nav>
 

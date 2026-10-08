@@ -1,10 +1,13 @@
+import { useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { LoadingState } from '@/components/feedback/queryStates';
 import { buttonClassName } from '@/components/ui/buttonStyles';
 import { cardGridClassName } from '@/components/ui/card';
 import { EmptyState } from '@/components/ui/emptyState';
+import { FilterDropdown } from '@/components/ui/filterDropdown';
+import { SearchInput } from '@/components/ui/formControls';
 import { ChoiceBar } from '@/components/ui/choiceBar';
-import { CalendarIcon, CheckIcon, FolderIcon, ListIcon, PencilIcon } from '@/components/ui/icons';
+import { BookIcon, CalendarIcon, CheckIcon, FolderIcon, ListIcon, PencilIcon, UserIcon } from '@/components/ui/icons';
 import { InfoBanner } from '@/components/ui/infoBanner';
 import { Page } from '@/components/ui/page';
 import { Tag } from '@/components/ui/tag';
@@ -16,6 +19,7 @@ import { MilestoneTrack } from '@/features/projects/shared/components/milestoneT
 import { STAGE_COPY } from '@/features/projects/shared/utils/projectPresentation';
 import { paths } from '@/routes/paths';
 import { cn } from '@/utils/cn';
+import { normalizeText } from '@/utils/format';
 import { SubmitDemandLink } from './components/submitDemandLink';
 import type { OrgProjectSummary } from './types';
 import { useOrgProjects } from './useOrgPortal';
@@ -88,6 +92,7 @@ export const OrgProjectsPage = () => {
   const { data: projects } = useOrgProjects();
   const { data: calendar } = useCalendar();
   const [searchParams, setSearchParams] = useSearchParams();
+  const [search, setSearch] = useState('');
 
   if (!projects || !calendar) {
     return (
@@ -114,8 +119,30 @@ export const OrgProjectsPage = () => {
   const matches = (project: OrgProjectSummary, value: Filter) => value === 'todos' || projectStage(project.milestones) === STAGE_BY_FILTER[value];
   const count = (value: Filter) => projects.filter((project) => matches(project, value)).length;
   // Primeiro o que está em curso, depois os concluídos, do mais recente ao mais antigo.
+  const param = (key: string) => searchParams.get(key) ?? 'todos';
+  const setParam = (key: string, value: string) =>
+    setSearchParams(
+      (current) => {
+        const next = new URLSearchParams(current);
+        if (value === 'todos') next.delete(key);
+        else next.set(key, value);
+        return next;
+      },
+      { replace: true },
+    );
+  const discipline = param('disciplina');
+  const teacher = param('docente');
+  const semester = param('semestre');
+  const uniq = (values: string[]) => [...new Set(values)].sort((a, b) => a.localeCompare(b));
+  const term = normalizeText(search.trim());
+  const passesRow = (project: OrgProjectSummary) =>
+    (discipline === 'todos' || project.disciplineName === discipline) &&
+    (teacher === 'todos' || project.teacherName === teacher) &&
+    (semester === 'todos' || project.semester === semester) &&
+    (!term || normalizeText(`${project.title} ${project.disciplineName} ${project.teacherName}`).includes(term));
+  const filtering = discipline !== 'todos' || teacher !== 'todos' || semester !== 'todos' || Boolean(term);
   const visible = projects
-    .filter((project) => matches(project, filter))
+    .filter((project) => matches(project, filter) && passesRow(project))
     .sort((a, b) => Number(projectStage(a.milestones) === 'done') - Number(projectStage(b.milestones) === 'done') || b.semester.localeCompare(a.semester));
 
   return (
@@ -123,13 +150,61 @@ export const OrgProjectsPage = () => {
       <ChoiceBar
         label="Estado dos projetos"
         value={filter}
-        onChange={(value) => setSearchParams(value === 'todos' ? {} : { estado: value }, { replace: true })}
+        onChange={(value) => setParam('estado', value)}
         options={FILTERS.map((value) => {
           const Icon = ICONS[value];
           return { value, label: LABELS[value], icon: <Icon size={20} />, count: count(value) };
         })}
         className="mb-4"
       />
+      <div role="search" aria-label="Filtrar projetos" className="mb-4 grid gap-2.5 sm:flex sm:flex-wrap sm:items-center">
+        <SearchInput
+          aria-label="Buscar projetos"
+          placeholder="Buscar projeto"
+          value={search}
+          onChange={(event) => setSearch(event.target.value)}
+          containerClassName="sm:w-[16rem]"
+          className="h-11 border-line-strong! bg-surface text-[15px]"
+        />
+        <FilterDropdown
+          label="Disciplina"
+          icon={<BookIcon size={18} />}
+          value={discipline}
+          onChange={(value) => setParam('disciplina', value)}
+          options={[{ value: 'todos', label: 'Todas' }, ...uniq(projects.map((project) => project.disciplineName)).map((name) => ({ value: name, label: name }))]}
+        />
+        <FilterDropdown
+          label="Docente"
+          icon={<UserIcon size={18} />}
+          value={teacher}
+          onChange={(value) => setParam('docente', value)}
+          options={[{ value: 'todos', label: 'Todos' }, ...uniq(projects.map((project) => project.teacherName)).map((name) => ({ value: name, label: name }))]}
+        />
+        <FilterDropdown
+          label="Semestre"
+          icon={<CalendarIcon size={18} />}
+          value={semester}
+          onChange={(value) => setParam('semestre', value)}
+          options={[
+            { value: 'todos', label: 'Todos' },
+            ...uniq(projects.map((project) => project.semester))
+              .reverse()
+              .map((value) => ({ value, label: value })),
+          ]}
+        />
+        {filtering && (
+          <button
+            type="button"
+            onClick={() => {
+              setSearch('');
+              setSearchParams(filter === 'todos' ? {} : { estado: filter }, { replace: true });
+            }}
+            className="inline-flex min-h-11 items-center justify-center rounded-lg px-3 text-[15px] font-medium text-accent hover:bg-accent-soft"
+          >
+            Limpar filtros
+          </button>
+        )}
+      </div>
       <InfoBanner className="mb-6">{HELP[filter]}</InfoBanner>
       {visible.length > 0 ? (
         <ul className={cardGridClassName}>
@@ -140,7 +215,10 @@ export const OrgProjectsPage = () => {
           ))}
         </ul>
       ) : (
-        <EmptyState title={`Nada em "${LABELS[filter]}"`} description="Nenhum projeto neste estado agora." />
+        <EmptyState
+          title={filtering ? 'Nada com esses filtros' : `Nada em "${LABELS[filter]}"`}
+          description={filtering ? 'Mude ou limpe os filtros para ver outros projetos.' : 'Nenhum projeto neste estado agora.'}
+        />
       )}
     </Page>
   );

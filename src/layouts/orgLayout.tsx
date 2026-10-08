@@ -33,16 +33,26 @@ export const OrgLayout = () => {
     homePath: paths.orgHome,
     large: true,
     navigation: [
-      { to: paths.orgHome, label: 'Início', icon: <HomeIcon size={20} /> },
-      { to: paths.orgDemands(), label: 'Demandas', icon: <TrayIcon size={20} /> },
-      { to: paths.orgQuestions(), label: 'Perguntas', icon: <ChatIcon size={20} />, badge: questions || undefined },
-      { to: paths.orgProjects, label: 'Projetos', icon: <FolderIcon size={20} /> },
-      { to: paths.orgNotifications, label: 'Avisos', icon: <BellIcon size={20} />, badge: pending || undefined },
+      {
+        title: 'Demandas',
+        items: [
+          { to: paths.orgHome, label: 'Início', icon: <HomeIcon size={20} /> },
+          { to: paths.orgDemands(), label: 'Demandas', icon: <TrayIcon size={20} /> },
+          { to: paths.orgQuestions(), label: 'Perguntas', icon: <ChatIcon size={20} />, badge: questions || undefined },
+          { to: paths.orgProjects, label: 'Projetos', icon: <FolderIcon size={20} /> },
+        ],
+      },
+      {
+        title: 'Conta',
+        items: [
+          { to: paths.orgNotifications, label: 'Avisos', icon: <BellIcon size={20} />, badge: pending || undefined },
+          { to: paths.orgProfile, label: 'Perfil da organização', icon: <BuildingIcon size={20} /> },
+        ],
+      },
     ],
     footer: [
-      { to: paths.landing, label: 'Portal do L.E.I.', icon: <ArrowUpRightIcon size={20} /> },
       { to: paths.orgGuide, label: 'Como funciona', icon: <QuestionIcon size={20} /> },
-      { to: paths.orgProfile, label: 'Perfil da organização', icon: <BuildingIcon size={20} /> },
+      { to: paths.landing, label: 'Portal do L.E.I.', icon: <ArrowUpRightIcon size={20} /> },
     ],
   };
 

@@ -12,16 +12,26 @@ const SIDEBAR: SidebarConfig = {
   label: 'Portal do docente',
   homePath: paths.home,
   navigation: [
-    { to: paths.home, label: 'Início', icon: <HomeIcon /> },
-    { to: paths.menu, label: 'Cardápio', icon: <TrayIcon /> },
-    { to: paths.projects, label: 'Projetos', icon: <FolderIcon /> },
-    { to: paths.disciplines, label: 'Disciplinas', icon: <BookIcon /> },
-    { to: paths.organizations, label: 'Organizações', icon: <BuildingIcon /> },
+    {
+      title: 'Projetos de extensão',
+      items: [
+        { to: paths.home, label: 'Início', icon: <HomeIcon /> },
+        { to: paths.menu, label: 'Cardápio', icon: <TrayIcon /> },
+        { to: paths.projects, label: 'Projetos', icon: <FolderIcon /> },
+      ],
+    },
+    {
+      title: 'Turmas e parceiros',
+      items: [
+        { to: paths.disciplines, label: 'Disciplinas', icon: <BookIcon /> },
+        { to: paths.organizations, label: 'Organizações', icon: <BuildingIcon /> },
+      ],
+    },
+    { title: 'Conta', items: [{ to: paths.account, label: 'Minha conta', icon: <UserIcon /> }] },
   ],
   footer: [
-    { to: paths.landing, label: 'Portal do L.E.I.', icon: <ArrowUpRightIcon /> },
     { to: paths.guide, label: 'Como funciona', icon: <QuestionIcon /> },
-    { to: paths.account, label: 'Minha conta', icon: <UserIcon /> },
+    { to: paths.landing, label: 'Portal do L.E.I.', icon: <ArrowUpRightIcon /> },
   ],
 };
 

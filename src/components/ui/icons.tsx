@@ -268,3 +268,8 @@ export const UndoIcon = (props: IconProps) => (
     <path d="M9 14L4.5 9.5 9 5M4.5 9.5H14a5.5 5.5 0 010 11h-3" />
   </IconBase>
 );
+export const DoubleCheckIcon = (props: IconProps) => (
+  <IconBase {...props}>
+    <path d="M2.5 12.5l4 4L14 9M10.5 15.5l1 1L21 7" />
+  </IconBase>
+);
