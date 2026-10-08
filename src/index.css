@@ -10,7 +10,13 @@
  * Tecnológico nas ações e Laranja Social só na reserva.
  */
 @theme {
-  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  /*
+   * A mesma pilha do WhatsApp Web: a fonte do próprio sistema, que a pessoa já
+   * lê todo dia. Segoe UI no Windows, Helvetica Neue no Mac, Ubuntu ou Cantarell
+   * no Linux. Nomes e títulos em semibold; mensagens e texto em regular.
+   */
+  --font-sans: "Segoe UI", "Helvetica Neue", Helvetica, "Lucida Grande", Arial, Ubuntu, Cantarell, "Fira Sans", sans-serif;
+  --font-mono: Consolas, "Lucida Console", "Courier New", monospace;
 
   /*
    * Identidade: Verde Petróleo. Marca, fatos, monogramas e "onde estou"
