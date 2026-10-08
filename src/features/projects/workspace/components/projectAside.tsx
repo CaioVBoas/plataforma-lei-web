@@ -67,7 +67,7 @@ const TeamCard = ({ project }: { project: Project }) => {
       {discipline && (
         <>
           <div className="mt-3 rounded-md border border-fact-line bg-fact p-3">
-            <div className="flex items-center justify-between gap-3">
+            <div className="flex flex-wrap items-center justify-between gap-3">
               <span className="text-[13px] font-semibold text-fact-label">Equipes</span>
               {done ? (
                 <span className="text-sm font-medium text-ink">{pluralize(project.teams, 'equipe', 'equipes')}</span>

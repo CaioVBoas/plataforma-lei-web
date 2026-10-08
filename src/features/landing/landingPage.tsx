@@ -1,5 +1,6 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
+import { AccessibilityMenu } from '@/components/ui/accessibilityMenu';
 import { BrandMark } from '@/components/ui/brandMark';
 import { buttonClassName } from '@/components/ui/buttonStyles';
 import { PhotoCreditLine } from '@/components/ui/photoCredit';
@@ -25,6 +26,7 @@ const PublicHeader = () => {
           <BrandMark />
         </Link>
         <nav aria-label="Acesso" className="ml-auto flex items-center gap-5">
+          <AccessibilityMenu />
           <a href="#sobre" className="hidden text-sm text-ink-2 hover:text-ink sm:block">
             Sobre
           </a>

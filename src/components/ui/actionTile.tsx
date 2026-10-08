@@ -38,9 +38,9 @@ export const ActionTile = ({ to, icon, title, text, tone = 'brand', badge }: Act
       </span>
       {badge && <span className="rounded-full bg-accent px-2.5 py-1 text-[13px] font-semibold text-white">{badge}</span>}
     </div>
-    <p className="mt-4 flex items-center gap-2 text-[18px] leading-snug font-semibold text-ink group-hover:text-accent">
+    <p className="mt-4 text-[18px] leading-snug font-semibold text-ink group-hover:text-accent">
       {title}
-      <ArrowRightIcon size={18} className="shrink-0 transition-transform group-hover:translate-x-0.5" />
+      <ArrowRightIcon size={18} className="ml-1.5 inline-block align-[-3px]" />
     </p>
     <p className="mt-1 text-[15px] leading-relaxed text-ink-2">{text}</p>
   </Link>

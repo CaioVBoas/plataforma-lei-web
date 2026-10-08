@@ -14,6 +14,7 @@ import { useProjects } from '@/features/projects/shared/hooks/useProjects';
 import { MILESTONE_COPY } from '@/features/projects/shared/utils/projectPresentation';
 import { paths } from '@/routes/paths';
 import { Faq, Rules, Stages, StepTabs, type FaqItem, type GuideStep, type RuleGroup } from './components/guideBlocks';
+import { LeiContact } from './components/leiContact';
 
 const goTo = (to: string, label: string) => (
   <Link to={to} className={buttonClassName({ variant: 'plain', size: 'sm' })}>
@@ -166,6 +167,8 @@ export const GuidePage = () => {
       <Section title="Perguntas frequentes">
         <Faq items={FAQ} />
       </Section>
+
+      <LeiContact />
 
       <div className="mt-14 flex flex-wrap items-center justify-between gap-4 border-t border-line pt-8">
         <p className="text-[15px] font-medium text-ink">Pronto para escolher a primeira demanda?</p>

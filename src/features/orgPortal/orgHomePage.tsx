@@ -1,7 +1,7 @@
 import heroPhoto from '@/assets/portal/capa/ponte-capibaribe.webp';
 import { LoadingState } from '@/components/feedback/queryStates';
 import { ActionTile } from '@/components/ui/actionTile';
-import { cardGridClassName } from '@/components/ui/card';
+import { cardGridClassName, tileGridClassName } from '@/components/ui/card';
 import { EmptyState } from '@/components/ui/emptyState';
 import { BellIcon, FolderIcon, PencilIcon, PlusIcon, TrayIcon } from '@/components/ui/icons';
 import { Page, Section } from '@/components/ui/page';
@@ -88,7 +88,7 @@ const OrgHomeContent = ({ account, organizationName, today }: { account: OrgAcco
       )}
 
       <Section title="O que vocês querem fazer?">
-        <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <ul className={tileGridClassName}>
           <li>
             <ActionTile
               to={draft ? paths.orgEditDemand(draft.id) : paths.orgNewDemand}

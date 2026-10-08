@@ -70,7 +70,7 @@ const ProjectView = ({ project, today }: { project: OrgProjectDetail; today: str
         )
       )}
 
-      <div className="mt-10 grid gap-8 lg:grid-cols-[minmax(0,1fr)_300px]">
+      <div className="mt-10 grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_300px]">
         <div className="min-w-0">
           <h2 className="text-headline">Etapas</h2>
           <p className="mt-1 mb-6 text-sm text-ink-2">As mesmas seis etapas de todo projeto. O docente registra cada uma; vocês acompanham por aqui.</p>

@@ -16,7 +16,7 @@ export const Stepper = ({ label, value, min, max, onChange, formatValue = String
     <button type="button" aria-label={`Diminuir ${label}`} disabled={value <= min} onClick={() => onChange(value - 1)} className={STEP_BUTTON}>
       <MinusIcon size={14} />
     </button>
-    <output aria-live="polite" className="min-w-[88px] text-center text-sm font-medium tabular-nums">
+    <output aria-live="polite" className="min-w-[5.9rem] text-center text-sm font-medium tabular-nums">
       {formatValue(value)}
     </output>
     <button type="button" aria-label={`Aumentar ${label}`} disabled={value >= max} onClick={() => onChange(value + 1)} className={STEP_BUTTON}>

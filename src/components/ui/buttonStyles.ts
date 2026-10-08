@@ -26,17 +26,18 @@ const VARIANT_CLASSES: Record<ButtonVariant, string> = {
 };
 
 const SIZE_CLASSES: Record<ButtonSize, string> = {
-  sm: 'h-8 gap-1.5 px-3 text-[13px]',
-  md: 'h-9 gap-1.5 px-4 text-sm',
-  lg: 'h-11 gap-1.5 px-5 text-[15px]',
+  sm: 'h-8 gap-1.5 whitespace-nowrap px-3 text-[13px]',
+  md: 'h-9 gap-1.5 whitespace-nowrap px-4 text-sm',
+  lg: 'h-11 gap-1.5 whitespace-nowrap px-5 text-[15px]',
   /** Para quem tem pouca prática: alvo grande, texto de 16px e ícone de 20px ao lado. */
-  xl: 'h-12 gap-2.5 px-6 text-base font-semibold',
+  /** Com texto grande, o rótulo quebra em duas linhas em vez de sair da tela. */
+  xl: 'min-h-12 gap-2.5 px-6 py-2 text-center text-base leading-tight font-semibold',
 };
 
 /** Exposto para que links de navegação tenham a mesma aparência dos botões. */
 export const buttonClassName = ({ variant = 'secondary', size = 'md', fullWidth }: ButtonStyleOptions = {}) =>
   cn(
-    'inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium',
+    'inline-flex items-center justify-center rounded-md font-medium',
     'transition-colors duration-150 disabled:pointer-events-none disabled:opacity-40',
     VARIANT_CLASSES[variant],
     SIZE_CLASSES[size],

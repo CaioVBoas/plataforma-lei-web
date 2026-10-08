@@ -6,6 +6,7 @@ import { Page, Section } from '@/components/ui/page';
 import { RESERVATION_DAYS } from '@/domain/reservation';
 import type { OrgDemandStage } from '@/domain/submission';
 import { Faq, Rules, Stages, StepTabs, type FaqItem, type GuideStep, type RuleGroup } from '@/features/guide/components/guideBlocks';
+import { LeiContact } from '@/features/guide/components/leiContact';
 import { paths } from '@/routes/paths';
 import { useMarkOrgTutorialSeen, useOrgAccount, useOrgDemands } from './useOrgPortal';
 import { ORG_MILESTONE_COPY } from './utils/orgPresentation';
@@ -142,6 +143,8 @@ export const OrgGuidePage = () => {
       <Section title="Perguntas frequentes">
         <Faq items={FAQ} />
       </Section>
+
+      <LeiContact />
 
       <div className="mt-14 flex flex-wrap items-center justify-between gap-4 border-t border-line pt-8">
         <p className="text-[15px] font-medium text-ink">Tem um problema que uma turma pode resolver?</p>

@@ -48,6 +48,8 @@ export const paths = {
   orgProjects: '/organizacao/projetos',
   orgProject: (id: string) => `/organizacao/projetos/${id}`,
   orgProfile: '/organizacao/perfil',
+  /** Todas as perguntas dos docentes, de todas as demandas, num lugar só. */
+  orgQuestions: (view?: 'respondidas') => (view ? `/organizacao/perguntas?ver=${view}` : '/organizacao/perguntas'),
   orgGuide: '/organizacao/como-funciona',
 } as const;
 

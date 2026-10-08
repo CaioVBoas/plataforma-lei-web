@@ -245,3 +245,26 @@ export const HandIcon = (props: IconProps) => (
     <path d="M8 13V5.5a1.5 1.5 0 013 0V11M11 10V4a1.5 1.5 0 013 0v6M14 10V5.5a1.5 1.5 0 013 0V14a6 6 0 01-6 6h-.5a6 6 0 01-4.6-2.2L4 15.2a1.6 1.6 0 012.4-2.1L8 14.5" />
   </IconBase>
 );
+export const AccessibilityIcon = (props: IconProps) => (
+  <IconBase {...props}>
+    <circle cx="12" cy="4.8" r="1.8" />
+    <path d="M4.5 8.5c2.4.8 4.9 1.2 7.5 1.2s5.1-.4 7.5-1.2M12 9.7v4.3M12 14l-3 6.5M12 14l3 6.5" />
+  </IconBase>
+);
+export const ZoomInIcon = (props: IconProps) => (
+  <IconBase {...props}>
+    <circle cx="10.5" cy="10.5" r="6.5" />
+    <path d="M15.5 15.5L20 20M10.5 7.5v6M7.5 10.5h6" />
+  </IconBase>
+);
+export const ZoomOutIcon = (props: IconProps) => (
+  <IconBase {...props}>
+    <circle cx="10.5" cy="10.5" r="6.5" />
+    <path d="M15.5 15.5L20 20M7.5 10.5h6" />
+  </IconBase>
+);
+export const UndoIcon = (props: IconProps) => (
+  <IconBase {...props}>
+    <path d="M9 14L4.5 9.5 9 5M4.5 9.5H14a5.5 5.5 0 010 11h-3" />
+  </IconBase>
+);

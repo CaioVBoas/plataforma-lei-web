@@ -53,6 +53,8 @@ export const useDeleteDraft = () => useOrgMutation(orgPortalApi.deleteDraft);
 
 export const useAnswerQuestion = () => useOrgMutation(orgPortalApi.answerQuestion);
 
+export const useOrgQuestions = () => useQuery({ queryKey: queryKeys.orgQuestions, queryFn: orgPortalApi.getOrgQuestions });
+
 export const useOrgProjects = () => useQuery({ queryKey: queryKeys.orgProjects, queryFn: orgPortalApi.getOrgProjects });
 
 export const useOrgProject = (id: string) => useQuery({ queryKey: queryKeys.orgProject(id), queryFn: () => orgPortalApi.getOrgProject(id) });

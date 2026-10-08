@@ -290,6 +290,13 @@ export const answerQuestion = ({ demandId, questionId, text }: { demandId: strin
   return forOrganization(demand);
 };
 
+/** As demandas publicadas que já receberam perguntas, primeiro as que esperam resposta. */
+export const listQuestionDemands = (): Demand[] =>
+  db.demands
+    .filter((demand) => isMine(demand) && demand.questions.length > 0)
+    .map(forOrganization)
+    .sort((a, b) => unansweredQuestions(b).length - unansweredQuestions(a).length);
+
 export const listProjects = (): OrgProjectSummary[] =>
   db.projects
     .filter(isMine)

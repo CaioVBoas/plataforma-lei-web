@@ -205,7 +205,7 @@ const DemandView = ({ detail }: { detail: OrgDemandDetail }) => {
       </div>
       {isSubmission && detail.submission.stage === 'needs-changes' && detail.submission.review && <ReviewNote review={detail.submission.review} />}
 
-      <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_300px]">
+      <div className="grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,1fr)_300px]">
         <div className="min-w-0">
           <DemandFacts affectedPublic={draft.affectedPublic} meetingCadence={draft.meetingCadence} />
           <UnderlineTabs

@@ -110,7 +110,7 @@ export const OrgDemandsPage = () => {
           placeholder="Buscar pelo nome da demanda"
           value={search}
           onChange={(event) => setSearch(event.target.value)}
-          containerClassName="w-full sm:w-[340px]"
+          containerClassName="w-full sm:w-[24rem]"
           className="h-11 border-line-strong bg-surface text-[15px]"
         />
         <Hint>Digite uma palavra do nome. A busca procura em todas as demandas.</Hint>

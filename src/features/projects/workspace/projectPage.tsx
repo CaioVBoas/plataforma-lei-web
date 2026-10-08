@@ -83,7 +83,7 @@ const ProjectView = ({ project, calendar }: { project: Project; calendar: Semest
       <MilestoneTrack milestones={project.milestones} className="mb-5" />
       <NextStepCard project={project} today={calendar.today} onAct={act} />
 
-      <div className="mt-10 grid gap-8 lg:grid-cols-[minmax(0,1fr)_300px]">
+      <div className="mt-10 grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_300px]">
         <div className="min-w-0">
           <div ref={tabContentRef} className="mb-7 scroll-mt-20">
             <UnderlineTabs label="Seções do projeto" value={tab} options={TABS} onChange={changeTab} />

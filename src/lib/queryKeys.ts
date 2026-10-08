@@ -20,6 +20,7 @@ export const queryKeys = {
   orgProfile: ['org', 'profile'],
   orgDemands: ['org', 'demands'],
   orgDemand: (id: string) => ['org', 'demand', id],
+  orgQuestions: ['org', 'questions'],
   orgProjects: ['org', 'projects'],
   orgProject: (id: string) => ['org', 'project', id],
 } as const;

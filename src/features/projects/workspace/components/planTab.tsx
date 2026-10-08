@@ -71,30 +71,33 @@ const WorkloadTable = ({ project }: { project: Project }) => {
     <div className="mt-10">
       <h3 className="text-[15px] font-semibold text-ink">Carga horária</h3>
       <p className="mt-1 text-[13px] text-ink-3">Distribuição sugerida entre as atividades. Vai para o campo de carga horária do SIGAA.</p>
-      <table className="mt-3 w-full overflow-hidden rounded-lg border border-line text-sm">
-        <thead className="bg-canvas text-left text-[13px] text-ink-2">
-          <tr>
-            <th className="px-4 py-2.5 font-medium">Atividade</th>
-            <th className="px-4 py-2.5 font-medium">Quem</th>
-            <th className="px-4 py-2.5 text-right font-medium">Horas</th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-line">
-          {project.workload.map((row) => (
-            <tr key={row.activity}>
-              <td className="px-4 py-2.5">{row.activity}</td>
-              <td className="px-4 py-2.5 text-ink-2">{row.participants}</td>
-              <td className="px-4 py-2.5 text-right tabular-nums">{row.hours}</td>
+      {/* Com texto grande, a tabela rola dentro do próprio quadro em vez de alargar a página. */}
+      <div className="relative mt-3 overflow-x-auto">
+        <table className="w-full overflow-hidden rounded-lg border border-line text-sm">
+          <thead className="bg-canvas text-left text-[13px] text-ink-2">
+            <tr>
+              <th className="px-4 py-2.5 font-medium">Atividade</th>
+              <th className="px-4 py-2.5 font-medium">Quem</th>
+              <th className="px-4 py-2.5 text-right font-medium">Horas</th>
             </tr>
-          ))}
-          <tr className="font-medium">
-            <td className="px-4 py-2.5" colSpan={2}>
-              Total
-            </td>
-            <td className="px-4 py-2.5 text-right tabular-nums">{total}</td>
-          </tr>
-        </tbody>
-      </table>
+          </thead>
+          <tbody className="divide-y divide-line">
+            {project.workload.map((row) => (
+              <tr key={row.activity}>
+                <td className="px-4 py-2.5">{row.activity}</td>
+                <td className="px-4 py-2.5 text-ink-2">{row.participants}</td>
+                <td className="px-4 py-2.5 text-right tabular-nums">{row.hours}</td>
+              </tr>
+            ))}
+            <tr className="font-medium">
+              <td className="px-4 py-2.5" colSpan={2}>
+                Total
+              </td>
+              <td className="px-4 py-2.5 text-right tabular-nums">{total}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };

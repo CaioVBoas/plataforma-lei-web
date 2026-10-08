@@ -12,10 +12,12 @@ interface NavItemProps {
   collapsed?: boolean;
   /** Alvo e texto maiores, para quem tem pouca prática com o mouse. */
   large?: boolean;
+  /** Quantos itens esperam por quem está logado, em número ao lado do nome. */
+  badge?: number;
   onNavigate?: () => void;
 }
 
-const NavItem = ({ to, icon, label, active, collapsed, large, onNavigate }: NavItemProps) => (
+const NavItem = ({ to, icon, label, active, collapsed, large, badge, onNavigate }: NavItemProps) => (
   <Link
     to={to}
     onClick={onNavigate}
@@ -29,7 +31,15 @@ const NavItem = ({ to, icon, label, active, collapsed, large, onNavigate }: NavI
     )}
   >
     <span className={active ? 'text-white' : 'text-ink-3'}>{icon}</span>
-    <span className={collapsed ? 'sr-only' : 'min-w-0 flex-1 truncate'}>{label}</span>
+    <span className={collapsed ? 'sr-only' : 'min-w-0 flex-1 truncate'}>
+      {label}
+      {badge ? <span className="sr-only">, {badge} esperando</span> : null}
+    </span>
+    {badge && !collapsed ? (
+      <span aria-hidden="true" className={cn('min-w-6 rounded-full px-1.5 text-center text-[13px] font-semibold tabular-nums', active ? 'bg-white text-brand-strong' : 'bg-accent text-white')}>
+        {badge}
+      </span>
+    ) : null}
   </Link>
 );
 
@@ -37,6 +47,7 @@ export interface NavEntry {
   to: string;
   label: string;
   icon: ReactNode;
+  badge?: number;
 }
 
 /** O Início da organização é o prefixo de todas as rotas dela, então só vale como ativo na própria página. */

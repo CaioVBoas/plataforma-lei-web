@@ -138,6 +138,35 @@
   color: var(--color-ink);
 }
 
+/*
+ * "Botões e campos maiores", do perfil de acessibilidade: alvo de 48px em
+ * botões e campos, ícones 20% maiores e o foco bem visível.
+ */
+:root[data-scale='big'] .top-label {
+  display: none;
+}
+
+:root[data-ui='large'] {
+  & :is(a, button).inline-flex,
+  & input:not([type='checkbox'], [type='radio'], [type='file']),
+  & select {
+    min-height: 3rem;
+  }
+  & :is(a, button).inline-flex {
+    padding-inline: max(1.1rem, 1em);
+  }
+  & textarea {
+    min-height: 7rem;
+  }
+  & svg[stroke='currentColor'] {
+    zoom: 1.2;
+  }
+  & :focus-visible {
+    outline: 3px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+}
+
 @layer base {
   html,
   body {
@@ -149,6 +178,14 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
+  }
+
+  /* Com texto grande, uma palavra longa num título quebra com hífen em vez de passar da tela. */
+  h1,
+  h2,
+  h3 {
+    overflow-wrap: anywhere;
+    hyphens: auto;
   }
 
   button {
