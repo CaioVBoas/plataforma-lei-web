@@ -3,12 +3,13 @@ import { useSearchParams } from 'react-router-dom';
 import { LoadingState } from '@/components/feedback/queryStates';
 import { cardGridClassName } from '@/components/ui/card';
 import { EmptyState } from '@/components/ui/emptyState';
+import { FilterDropdown } from '@/components/ui/filterDropdown';
 import { SearchInput } from '@/components/ui/formControls';
-import { InfoBanner } from '@/components/ui/infoBanner';
-import { Page } from '@/components/ui/page';
-import { ChoiceBar } from '@/components/ui/choiceBar';
-import { Hint } from '@/components/ui/hint';
 import { BellIcon, CheckIcon, FolderIcon, ListIcon, PencilIcon, TrayIcon } from '@/components/ui/icons';
+import { InfoBanner } from '@/components/ui/infoBanner';
+import { MonthPicker } from '@/components/ui/monthPicker';
+import { Page } from '@/components/ui/page';
+import { useCalendar } from '@/features/calendar/useCalendar';
 import type { OrgDemandsTab, OrgDemandsView } from '@/routes/paths';
 import { normalizeText } from '@/utils/format';
 import { OrgDemandCard } from './components/orgDemandCard';
@@ -60,6 +61,7 @@ const SUBTITLE = 'Os problemas que vocês pediram para uma turma do CIn resolver
 export const OrgDemandsPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const { data: demands } = useOrgDemands();
+  const { data: calendar } = useCalendar();
   const [search, setSearch] = useState('');
 
   if (!demands) {
@@ -84,36 +86,60 @@ export const OrgDemandsPage = () => {
 
   const count = (tab: OrgDemandsTab) => demands.filter((demand) => inTab(demand, tab)).length;
   const requested = searchParams.get('ver') as OrgDemandsTab | null;
-  // Sem aba pedida, abre no que espera por vocês; se nada espera, em todas.
+  // Sem escolha, abre no que espera por vocês; se nada espera, em todas.
   const tab: OrgDemandsTab = requested && TABS.includes(requested) ? requested : count('vez') > 0 ? 'vez' : 'todas';
+  const month = searchParams.get('mes') ?? '';
+  const months = [...new Set(demands.map((demand) => demand.date.slice(0, 7)))].sort();
   const term = normalizeText(search.trim());
-  // Quem busca pelo nome quer achar a demanda onde ela estiver: a busca vale para todas as abas.
+  const inMonth = (demand: OrgDemandSummary) => !month || demand.date.startsWith(month);
+  // Quem busca pelo nome quer achar a demanda onde ela estiver: a busca procura em todas as situações.
   const visible = term
-    ? demands.filter((demand) => normalizeText(`${demand.title} ${demand.problem}`).includes(term))
-    : demands.filter((demand) => inTab(demand, tab));
+    ? demands.filter((demand) => inMonth(demand) && normalizeText(`${demand.title} ${demand.problem}`).includes(term))
+    : demands.filter((demand) => inMonth(demand) && inTab(demand, tab));
+  const filtering = Boolean(requested) || Boolean(month) || Boolean(term);
+  const setParam = (key: string, value: string) =>
+    setSearchParams(
+      (current) => {
+        const next = new URLSearchParams(current);
+        if (value) next.set(key, value);
+        else next.delete(key);
+        return next;
+      },
+      { replace: true },
+    );
+  const TabIcon = TAB_ICONS[tab];
 
   return (
     <Page title={TITLE} subtitle={SUBTITLE} actions={<SubmitDemandLink />}>
-      <ChoiceBar
-        label="Quais demandas mostrar"
-        value={tab}
-        onChange={(next) => setSearchParams({ ver: next }, { replace: true })}
-        options={TABS.map((key) => {
-          const Icon = TAB_ICONS[key];
-          return { value: key, label: TAB_LABELS[key], icon: <Icon size={20} />, count: count(key) };
-        })}
-        className="mb-4"
-      />
-      <div className="mb-4 flex flex-wrap items-center gap-x-5 gap-y-2">
+      <div role="search" aria-label="Filtrar demandas" className="mb-4 grid gap-2.5 sm:flex sm:flex-wrap sm:items-center">
         <SearchInput
           aria-label="Buscar demandas"
           placeholder="Buscar pelo nome da demanda"
           value={search}
           onChange={(event) => setSearch(event.target.value)}
-          containerClassName="w-full sm:w-[24rem]"
+          containerClassName="sm:w-[18rem]"
           className="h-11 border-line-strong! bg-surface text-[15px]"
         />
-        <Hint>Digite uma palavra do nome. A busca procura em todas as demandas.</Hint>
+        <FilterDropdown
+          label="Mostrar"
+          icon={<TabIcon size={18} />}
+          value={tab}
+          onChange={(next) => setParam('ver', next)}
+          options={TABS.map((key) => ({ value: key, label: TAB_LABELS[key], count: count(key) }))}
+        />
+        <MonthPicker label="Mês" value={month} onChange={(value) => setParam('mes', value)} available={months} current={calendar?.today.slice(0, 7) ?? ''} />
+        {filtering && (
+          <button
+            type="button"
+            onClick={() => {
+              setSearch('');
+              setSearchParams({}, { replace: true });
+            }}
+            className="inline-flex min-h-11 items-center justify-center rounded-lg px-3 text-[15px] font-medium text-accent hover:bg-accent-soft"
+          >
+            Limpar filtros
+          </button>
+        )}
       </div>
       <InfoBanner className="mb-6">{term ? `Buscando "${search.trim()}" em todas as demandas.` : TAB_HELP[tab]}</InfoBanner>
 
@@ -127,8 +153,8 @@ export const OrgDemandsPage = () => {
         </ul>
       ) : (
         <EmptyState
-          title={term ? 'Nada encontrado' : `Nada em "${TAB_LABELS[tab]}"`}
-          description={term ? `Nenhuma demanda com "${search.trim()}".` : EMPTY[tab]}
+          title={term ? 'Nada encontrado' : month ? 'Nada neste mês' : `Nada em "${TAB_LABELS[tab]}"`}
+          description={term ? `Nenhuma demanda com "${search.trim()}".` : month ? 'Escolha outro mês ou limpe os filtros.' : EMPTY[tab]}
         />
       )}
     </Page>
