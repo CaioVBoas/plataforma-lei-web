@@ -52,7 +52,7 @@ const DemandView = ({ detail, disciplines, calendar }: { detail: DemandDetail; d
       {cover && <CoverBanner cover={cover} />}
       {demand.invitation && !detail.projectId && <InvitationNote invitation={demand.invitation} />}
 
-      <div className="grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,1fr)_300px]">
+      <div className="grid grid-cols-1 gap-10 lg:gap-12 lg:grid-cols-[minmax(0,1fr)_300px]">
         <div className="min-w-0">
           <FactGrid
             columns={2}

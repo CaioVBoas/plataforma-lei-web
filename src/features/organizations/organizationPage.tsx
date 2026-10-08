@@ -55,7 +55,7 @@ const OrganizationView = ({ detail }: { detail: OrganizationDetail }) => {
         />
       }
     >
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_300px]">
+      <div className="grid grid-cols-1 gap-10 lg:gap-12 lg:grid-cols-[minmax(0,1fr)_300px]">
         <div className="min-w-0">
           <h2 className="text-headline">Sobre</h2>
           <p className="mt-2 text-[15px] leading-relaxed text-ink-2">{organization.about}</p>
@@ -85,7 +85,7 @@ const OrganizationView = ({ detail }: { detail: OrganizationDetail }) => {
           )}
         </div>
 
-        <aside className="flex flex-col gap-4 lg:sticky lg:top-20 lg:self-start">
+        <aside className="flex flex-col gap-5 lg:sticky lg:top-20 lg:self-start">
           <SideCard title="Parceria com o CIn">
             <dl className="grid grid-cols-3 gap-2 text-center">
               {[

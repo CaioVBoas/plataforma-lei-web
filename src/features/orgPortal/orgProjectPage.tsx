@@ -70,14 +70,14 @@ const ProjectView = ({ project, today }: { project: OrgProjectDetail; today: str
         )
       )}
 
-      <div className="mt-10 grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_300px]">
+      <div className="mt-10 grid grid-cols-1 gap-10 lg:gap-12 lg:grid-cols-[minmax(0,1fr)_300px]">
         <div className="min-w-0">
           <h2 className="text-headline">Etapas</h2>
           <p className="mt-1 mb-6 text-sm text-ink-2">As mesmas seis etapas de todo projeto. O docente registra cada uma; vocês acompanham por aqui.</p>
           <MilestoneTimeline milestones={project.milestones} today={today} copy={ORG_MILESTONE_COPY} />
         </div>
 
-        <aside className="flex flex-col gap-4 lg:sticky lg:top-20 lg:self-start">
+        <aside className="flex flex-col gap-5 lg:sticky lg:top-20 lg:self-start">
           <SideCard title="Turma no projeto">
             <dl>
               <SideFact label="Disciplina">{project.disciplineName}</SideFact>

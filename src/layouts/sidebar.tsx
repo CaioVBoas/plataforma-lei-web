@@ -91,10 +91,10 @@ export const Sidebar = ({ label, homePath, navigation, footer, large, collapsed,
             key={section.title}
             role="group"
             aria-label={section.title}
-            className={cn('flex flex-col gap-0.5', index > 0 && 'mt-4 border-t border-line pt-4')}
+            className={cn('flex flex-col gap-1', index > 0 && 'mt-5 border-t border-line pt-5')}
           >
             {collapsed ? null : (
-              <p aria-hidden="true" className="mb-1.5 px-3 text-[12px] font-semibold tracking-[0.06em] text-ink-3 uppercase">
+              <p aria-hidden="true" className="mb-2 px-3 text-[12px] font-semibold tracking-[0.06em] text-ink-3 uppercase">
                 {section.title}
               </p>
             )}
@@ -105,7 +105,7 @@ export const Sidebar = ({ label, homePath, navigation, footer, large, collapsed,
         ))}
       </nav>
 
-      <div className="mt-auto flex flex-col gap-0.5 border-t border-line pt-3">
+      <div className="mt-auto flex flex-col gap-1 border-t border-line pt-4">
         {footer.map((item) => (
           <NavItem key={item.to} {...item} active={item.to !== paths.landing && isActive(pathname, item.to, homePath)} collapsed={collapsed} large={large} onNavigate={onNavigate} />
         ))}

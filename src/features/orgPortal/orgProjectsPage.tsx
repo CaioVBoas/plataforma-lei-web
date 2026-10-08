@@ -6,7 +6,6 @@ import { cardGridClassName } from '@/components/ui/card';
 import { EmptyState } from '@/components/ui/emptyState';
 import { FilterDropdown } from '@/components/ui/filterDropdown';
 import { SearchInput } from '@/components/ui/formControls';
-import { ChoiceBar } from '@/components/ui/choiceBar';
 import { BookIcon, CalendarIcon, CheckIcon, FolderIcon, ListIcon, PencilIcon, UserIcon } from '@/components/ui/icons';
 import { InfoBanner } from '@/components/ui/infoBanner';
 import { Page } from '@/components/ui/page';
@@ -47,7 +46,7 @@ const OrgProjectCard = ({ project, today }: { project: OrgProjectSummary; today:
   const withYou = next ? ORG_FACING_MILESTONES.includes(next.id) : false;
 
   return (
-    <article className="flex h-full min-w-0 flex-col rounded-lg border border-line bg-surface p-5">
+    <article className="flex h-full min-w-0 flex-col rounded-lg border border-line bg-surface p-6">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <Tag pill tone={stage.tone}>
           {stage.label}
@@ -140,24 +139,16 @@ export const OrgProjectsPage = () => {
     (teacher === 'todos' || project.teacherName === teacher) &&
     (semester === 'todos' || project.semester === semester) &&
     (!term || normalizeText(`${project.title} ${project.disciplineName} ${project.teacherName}`).includes(term));
-  const filtering = discipline !== 'todos' || teacher !== 'todos' || semester !== 'todos' || Boolean(term);
+  const narrowing = discipline !== 'todos' || teacher !== 'todos' || semester !== 'todos' || Boolean(term);
+  const filtering = narrowing || filter !== 'todos';
+  const FilterIcon = ICONS[filter];
   const visible = projects
     .filter((project) => matches(project, filter) && passesRow(project))
     .sort((a, b) => Number(projectStage(a.milestones) === 'done') - Number(projectStage(b.milestones) === 'done') || b.semester.localeCompare(a.semester));
 
   return (
     <Page title={TITLE} subtitle={SUBTITLE}>
-      <ChoiceBar
-        label="Estado dos projetos"
-        value={filter}
-        onChange={(value) => setParam('estado', value)}
-        options={FILTERS.map((value) => {
-          const Icon = ICONS[value];
-          return { value, label: LABELS[value], icon: <Icon size={20} />, count: count(value) };
-        })}
-        className="mb-4"
-      />
-      <div role="search" aria-label="Filtrar projetos" className="mb-4 grid gap-2.5 sm:flex sm:flex-wrap sm:items-center">
+      <div role="search" aria-label="Filtrar projetos" className="mb-5 grid gap-3 sm:flex sm:flex-wrap sm:items-center">
         <SearchInput
           aria-label="Buscar projetos"
           placeholder="Buscar projeto"
@@ -165,6 +156,13 @@ export const OrgProjectsPage = () => {
           onChange={(event) => setSearch(event.target.value)}
           containerClassName="sm:w-[16rem]"
           className="h-11 border-line-strong! bg-surface text-[15px]"
+        />
+        <FilterDropdown
+          label="Mostrar"
+          icon={<FilterIcon size={18} />}
+          value={filter}
+          onChange={(value) => setParam('estado', value)}
+          options={FILTERS.map((value) => ({ value, label: LABELS[value], count: count(value) }))}
         />
         <FilterDropdown
           label="Disciplina"
@@ -197,7 +195,7 @@ export const OrgProjectsPage = () => {
             type="button"
             onClick={() => {
               setSearch('');
-              setSearchParams(filter === 'todos' ? {} : { estado: filter }, { replace: true });
+              setSearchParams({}, { replace: true });
             }}
             className="inline-flex min-h-11 items-center justify-center rounded-lg px-3 text-[15px] font-medium text-accent hover:bg-accent-soft"
           >
@@ -205,7 +203,7 @@ export const OrgProjectsPage = () => {
           </button>
         )}
       </div>
-      <InfoBanner className="mb-6">{HELP[filter]}</InfoBanner>
+      <InfoBanner className="mb-8">{HELP[filter]}</InfoBanner>
       {visible.length > 0 ? (
         <ul className={cardGridClassName}>
           {visible.map((project) => (
@@ -216,8 +214,8 @@ export const OrgProjectsPage = () => {
         </ul>
       ) : (
         <EmptyState
-          title={filtering ? 'Nada com esses filtros' : `Nada em "${LABELS[filter]}"`}
-          description={filtering ? 'Mude ou limpe os filtros para ver outros projetos.' : 'Nenhum projeto neste estado agora.'}
+          title={narrowing ? 'Nada com esses filtros' : `Nada em "${LABELS[filter]}"`}
+          description={narrowing ? 'Mude ou limpe os filtros para ver outros projetos.' : 'Nenhum projeto neste estado agora.'}
         />
       )}
     </Page>

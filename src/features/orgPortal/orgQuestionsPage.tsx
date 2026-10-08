@@ -151,7 +151,7 @@ export const OrgQuestionsPage = () => {
 
   return (
     <Page title={TITLE} subtitle={SUBTITLE}>
-      <div role="search" aria-label="Filtrar perguntas" className="mb-5 grid gap-2.5 sm:flex sm:flex-wrap sm:items-center">
+      <div role="search" aria-label="Filtrar perguntas" className="mb-5 grid gap-3 sm:flex sm:flex-wrap sm:items-center">
         <SearchInput
           aria-label="Buscar nas perguntas"
           placeholder="Buscar nas perguntas"
@@ -212,68 +212,71 @@ export const OrgQuestionsPage = () => {
           }
         />
       ) : (
-        <div className="grid gap-5 lg:grid-cols-[minmax(20rem,26rem)_minmax(0,1fr)]">
-          <nav aria-label="Conversas" className={cn('self-start overflow-hidden rounded-xl border border-line bg-surface', open && 'max-lg:hidden')}>
-            <p className="border-b border-line px-4 py-3 text-[15px] font-semibold text-ink">Conversas</p>
-            {waitingList.length > 0 && (
-              <ConversationGroup title={`Esperando resposta · ${waitingList.length}`}>
-                {waitingList.map((conversation) => (
-                  <ConversationItem
-                    key={conversation.demand.id}
-                    conversation={conversation}
-                    selected={shown?.demand.id === conversation.demand.id}
-                    onSelect={() => setParam('conversa', conversation.demand.id)}
-                  />
-                ))}
-              </ConversationGroup>
-            )}
-            {answeredList.length > 0 && (
-              <ConversationGroup title={`Já respondidas · ${answeredList.length}`}>
-                {answeredList.map((conversation) => (
-                  <ConversationItem
-                    key={conversation.demand.id}
-                    conversation={conversation}
-                    selected={shown?.demand.id === conversation.demand.id}
-                    onSelect={() => setParam('conversa', conversation.demand.id)}
-                  />
-                ))}
-              </ConversationGroup>
-            )}
-          </nav>
-
-          {shown && (
-            <div className={cn('min-w-0', !open && 'max-lg:hidden')}>
-              {open && (
-                <button
-                  type="button"
-                  onClick={() => setParam('conversa', '')}
-                  className="mb-3 inline-flex min-h-11 items-center gap-2 rounded-lg px-2 text-[15px] font-medium text-ink-2 hover:bg-fill lg:hidden"
-                >
-                  <ArrowLeftIcon size={20} />
-                  Voltar às conversas
-                </button>
+        <div className="@container">
+          {/* Lado a lado só quando cabe de fato: com texto grande e zoom, uma conversa por vez. */}
+          <div className="grid gap-6 @min-[52rem]:grid-cols-[minmax(20rem,26rem)_minmax(0,1fr)]">
+            <nav aria-label="Conversas" className={cn('self-start overflow-hidden rounded-xl border border-line bg-surface', open && '@max-[52rem]:hidden')}>
+              <p className="border-b border-line px-4 py-3 text-[15px] font-semibold text-ink">Conversas</p>
+              {waitingList.length > 0 && (
+                <ConversationGroup title={`Esperando resposta · ${waitingList.length}`}>
+                  {waitingList.map((conversation) => (
+                    <ConversationItem
+                      key={conversation.demand.id}
+                      conversation={conversation}
+                      selected={shown?.demand.id === conversation.demand.id}
+                      onSelect={() => setParam('conversa', conversation.demand.id)}
+                    />
+                  ))}
+                </ConversationGroup>
               )}
-              <QuestionsInbox
-                key={shown.demand.id}
-                demand={shown.demand}
-                questions={shown.questions}
-                header={
-                  <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line px-4 py-3">
-                    <div className="min-w-0">
-                      <h2 className="text-headline">{shown.demand.title}</h2>
-                      <div className="mt-1">
-                        <StageTag stage={shown.demand.status === 'reserved' ? 'reserved' : shown.demand.status === 'open' ? 'open' : 'in-project'} />
+              {answeredList.length > 0 && (
+                <ConversationGroup title={`Já respondidas · ${answeredList.length}`}>
+                  {answeredList.map((conversation) => (
+                    <ConversationItem
+                      key={conversation.demand.id}
+                      conversation={conversation}
+                      selected={shown?.demand.id === conversation.demand.id}
+                      onSelect={() => setParam('conversa', conversation.demand.id)}
+                    />
+                  ))}
+                </ConversationGroup>
+              )}
+            </nav>
+
+            {shown && (
+              <div className={cn('min-w-0', !open && '@max-[52rem]:hidden')}>
+                {open && (
+                  <button
+                    type="button"
+                    onClick={() => setParam('conversa', '')}
+                    className="mb-3 inline-flex min-h-11 items-center gap-2 rounded-lg px-2 text-[15px] font-medium text-ink-2 hover:bg-fill @min-[52rem]:hidden"
+                  >
+                    <ArrowLeftIcon size={20} />
+                    Voltar às conversas
+                  </button>
+                )}
+                <QuestionsInbox
+                  key={shown.demand.id}
+                  demand={shown.demand}
+                  questions={shown.questions}
+                  header={
+                    <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line px-4 py-3">
+                      <div className="min-w-0">
+                        <h2 className="text-headline">{shown.demand.title}</h2>
+                        <div className="mt-1">
+                          <StageTag stage={shown.demand.status === 'reserved' ? 'reserved' : shown.demand.status === 'open' ? 'open' : 'in-project'} />
+                        </div>
                       </div>
+                      <Link to={paths.orgDemand(shown.demand.id)} className={buttonClassName({ variant: 'secondary' })}>
+                        <EyeIcon size={18} />
+                        Ver a demanda
+                      </Link>
                     </div>
-                    <Link to={paths.orgDemand(shown.demand.id)} className={buttonClassName({ variant: 'secondary' })}>
-                      <EyeIcon size={18} />
-                      Ver a demanda
-                    </Link>
-                  </div>
-                }
-              />
-            </div>
-          )}
+                  }
+                />
+              </div>
+            )}
+          </div>
         </div>
       )}
     </Page>

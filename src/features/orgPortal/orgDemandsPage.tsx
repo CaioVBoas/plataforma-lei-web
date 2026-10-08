@@ -111,7 +111,7 @@ export const OrgDemandsPage = () => {
 
   return (
     <Page title={TITLE} subtitle={SUBTITLE} actions={<SubmitDemandLink />}>
-      <div role="search" aria-label="Filtrar demandas" className="mb-4 grid gap-2.5 sm:flex sm:flex-wrap sm:items-center">
+      <div role="search" aria-label="Filtrar demandas" className="mb-5 grid gap-3 sm:flex sm:flex-wrap sm:items-center">
         <SearchInput
           aria-label="Buscar demandas"
           placeholder="Buscar pelo nome da demanda"
@@ -141,7 +141,7 @@ export const OrgDemandsPage = () => {
           </button>
         )}
       </div>
-      <InfoBanner className="mb-6">{term ? `Buscando "${search.trim()}" em todas as demandas.` : TAB_HELP[tab]}</InfoBanner>
+      <InfoBanner className="mb-8">{term ? `Buscando "${search.trim()}" em todas as demandas.` : TAB_HELP[tab]}</InfoBanner>
 
       {visible.length > 0 ? (
         <ul className={cardGridClassName}>

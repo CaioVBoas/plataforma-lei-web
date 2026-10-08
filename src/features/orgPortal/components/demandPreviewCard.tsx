@@ -17,7 +17,7 @@ export const DemandPreviewCard = ({ draft, organization }: { draft: DemandDraft;
   ];
 
   return (
-    <div aria-label="Prévia do cartão no cardápio" className="flex min-w-0 flex-col rounded-lg border border-line bg-surface p-5">
+    <div aria-label="Prévia do cartão no cardápio" className="flex min-w-0 flex-col rounded-lg border border-line bg-surface p-6">
       <div className="flex min-h-6 flex-wrap items-center justify-between gap-x-3 gap-y-1.5">
         <div className="flex min-w-0 items-center gap-2.5">
           <Monogram name={organization.name} logo={organization.logo} size="sm" />

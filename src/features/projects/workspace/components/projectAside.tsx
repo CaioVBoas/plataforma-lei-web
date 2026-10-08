@@ -139,7 +139,7 @@ const ContactCard = ({ project }: { project: Project }) => {
 };
 
 export const ProjectAside = ({ project }: { project: Project }) => (
-  <aside className="flex flex-col gap-4 lg:sticky lg:top-20 lg:self-start">
+  <aside className="flex flex-col gap-5 lg:sticky lg:top-20 lg:self-start">
     <TeamCard project={project} />
     <ContactCard project={project} />
   </aside>

@@ -100,7 +100,7 @@ const SubmitForm = ({ submission, organization }: SubmitFormProps) => {
     <>
       {submission?.review && submission.stage === 'needs-changes' && <ReviewNote review={submission.review} />}
 
-      <div className="grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,1fr)_320px]">
+      <div className="grid grid-cols-1 gap-10 lg:gap-12 lg:grid-cols-[minmax(0,1fr)_320px]">
         <form onSubmit={(event) => event.preventDefault()} noValidate className="min-w-0 rounded-xl border border-line bg-surface p-5 sm:p-8">
           <FormStepsNav step={step} onChange={goTo} />
           <h2 className="mt-8 mb-6 text-title">{FORM_STEPS[step]}</h2>
@@ -130,7 +130,7 @@ const SubmitForm = ({ submission, organization }: SubmitFormProps) => {
                 {...draft}
                 outcome={{ title: 'O que ajudaria ao fim do semestre', text: draft.expectedOutcome }}
               />
-              <section className="mt-10 rounded-lg border border-line bg-surface p-5">
+              <section className="mt-10 rounded-lg border border-line bg-surface p-6">
                 <h3 className="text-[15px] font-semibold text-ink">Depois de enviar</h3>
                 <ol className="mt-3 space-y-2.5">
                   {NEXT_STEPS.map((text, index) => (
