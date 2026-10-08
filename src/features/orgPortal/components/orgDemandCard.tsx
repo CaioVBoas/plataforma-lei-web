@@ -50,7 +50,7 @@ export const OrgDemandCard = ({ demand }: { demand: OrgDemandSummary }) => {
   return (
     <article
       className={cn(
-        'relative flex h-full min-w-0 flex-col rounded-lg border border-line bg-surface p-6 transition-[border-color,box-shadow] duration-150 hover:border-line-strong hover:shadow-[0_2px_8px_rgba(10,50,50,0.08)]',
+        'relative flex h-full min-w-0 flex-col rounded-lg border border-line bg-surface p-6 transition sm:p-7-[border-color,box-shadow] duration-150 hover:border-line-strong hover:shadow-[0_2px_8px_rgba(10,50,50,0.08)]',
       )}
     >
       <div className="flex min-h-6 flex-wrap items-center justify-between gap-2">
@@ -58,17 +58,17 @@ export const OrgDemandCard = ({ demand }: { demand: OrgDemandSummary }) => {
         {guidance.yourTurn && <span className="text-[13px] font-semibold text-accent">Sua vez</span>}
       </div>
 
-      <h3 className="mt-3 text-[17px] leading-snug font-semibold tracking-[-0.01em] text-ink">{demand.title}</h3>
-      {demand.problem && <p className="mt-1.5 line-clamp-2 text-sm leading-relaxed text-ink-2">{demand.problem}</p>}
+      <h3 className="mt-4 text-[17px] leading-snug font-semibold tracking-[-0.01em] text-ink">{demand.title}</h3>
+      {demand.problem && <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-ink-2">{demand.problem}</p>}
 
-      <div className="mt-auto pt-5">
-        <p className="rounded-md bg-canvas px-3.5 py-2.5 text-sm leading-relaxed text-ink">
+      <div className="mt-auto pt-6">
+        <p className="rounded-md bg-canvas px-4 py-3.5 text-sm leading-relaxed text-ink">
           <span className="font-semibold">Agora: </span>
           {guidance.now}
         </p>
         <Link
           to={guidance.action.to}
-          className={cn(buttonClassName({ variant: guidance.yourTurn ? 'primary' : 'secondary', size: 'xl', fullWidth: true }), 'mt-3')}
+          className={cn(buttonClassName({ variant: guidance.yourTurn ? 'primary' : 'secondary', size: 'xl', fullWidth: true }), 'mt-4')}
         >
           <ActionIcon size={20} />
           {guidance.action.label}

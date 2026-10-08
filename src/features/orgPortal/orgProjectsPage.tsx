@@ -46,21 +46,21 @@ const OrgProjectCard = ({ project, today }: { project: OrgProjectSummary; today:
   const withYou = next ? ORG_FACING_MILESTONES.includes(next.id) : false;
 
   return (
-    <article className="flex h-full min-w-0 flex-col rounded-lg border border-line bg-surface p-6">
+    <article className="flex h-full min-w-0 flex-col rounded-lg border border-line bg-surface p-6 sm:p-7">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <Tag pill tone={stage.tone}>
           {stage.label}
         </Tag>
         {withYou && <span className="text-[13px] font-semibold text-accent">Com a participação de vocês</span>}
       </div>
-      <h3 className="mt-3 text-[17px] leading-snug font-semibold tracking-[-0.01em] text-ink">{project.title}</h3>
-      <p className="mt-1 text-sm text-ink-2">
+      <h3 className="mt-4 text-[17px] leading-snug font-semibold tracking-[-0.01em] text-ink">{project.title}</h3>
+      <p className="mt-1.5 text-sm text-ink-2">
         {project.disciplineName}, com {project.teacherName} · {project.semester}
       </p>
-      <MilestoneTrack milestones={project.milestones} className="mt-4" />
+      <MilestoneTrack milestones={project.milestones} className="mt-5" />
 
-      <div className="mt-auto pt-5">
-        <p className="rounded-md bg-canvas px-3.5 py-2.5 text-sm leading-relaxed text-ink">
+      <div className="mt-auto pt-6">
+        <p className="rounded-md bg-canvas px-4 py-3.5 text-sm leading-relaxed text-ink">
           <span className="font-semibold">{next ? 'Próximo passo: ' : 'Resultado: '}</span>
           {next ? (
             <>
@@ -75,7 +75,7 @@ const OrgProjectCard = ({ project, today }: { project: OrgProjectSummary; today:
             (project.outcome?.summary ?? 'Projeto concluído.')
           )}
         </p>
-        <Link to={paths.orgProject(project.id)} className={cn(buttonClassName({ variant: 'secondary', size: 'xl', fullWidth: true }), 'mt-3')}>
+        <Link to={paths.orgProject(project.id)} className={cn(buttonClassName({ variant: 'secondary', size: 'xl', fullWidth: true }), 'mt-4')}>
           <FolderIcon size={20} />
           Abrir o projeto
         </Link>
