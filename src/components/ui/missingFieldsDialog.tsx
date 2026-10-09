@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Button } from './button';
 import { DialogIcon } from './confirmDialog';
 import { ArrowRightIcon, CheckIcon, InfoIcon } from './icons';
@@ -19,10 +20,30 @@ interface MissingFieldsDialogProps {
 }
 
 /**
+ * Desligado por enquanto: a borda vermelha e a mensagem embaixo de cada campo,
+ * com o bloqueio de avançar, já dizem o que falta. Desligado, o aviso não abre
+ * e só leva o cursor ao primeiro campo a corrigir. Para voltar, troque para true.
+ */
+const DIALOG_ENABLED = false;
+
+/** Sem a janela: põe o cursor no primeiro campo (trocando de etapa, se precisar) e fecha. */
+const FocusFirstProblem = ({ items, onClose }: MissingFieldsDialogProps) => {
+  useEffect(() => {
+    onClose();
+    items[0]?.onGo?.();
+    // Roda uma vez por tentativa: cada tentativa monta o componente de novo.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  return null;
+};
+
+/**
  * O aviso antes de avançar ou salvar com campo obrigatório vazio ou errado:
  * a lista do que falta, como corrigir e um botão que leva até cada campo.
  */
-export const MissingFieldsDialog = ({ title = 'Falta preencher', description = 'Preencha o que está abaixo para continuar.', items, onClose }: MissingFieldsDialogProps) => {
+export const MissingFieldsDialog = (props: MissingFieldsDialogProps) => (DIALOG_ENABLED ? <MissingFieldsModal {...props} /> : <FocusFirstProblem {...props} />);
+
+const MissingFieldsModal = ({ title = 'Falta preencher', description = 'Preencha o que está abaixo para continuar.', items, onClose }: MissingFieldsDialogProps) => {
   const first = items[0];
   return (
     <Modal
