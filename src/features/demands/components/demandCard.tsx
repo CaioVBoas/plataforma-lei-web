@@ -38,7 +38,7 @@ export const DemandCard = ({ demand, best, today }: DemandCardProps) => {
       <div className="flex min-h-6 flex-wrap items-center justify-between gap-x-3 gap-y-1.5">
         <div className="flex min-w-0 items-center gap-2.5">
           <Monogram name={demand.organization.name} logo={demand.organization.logo} size="sm" />
-          <p className="truncate text-[13px] font-semibold text-ink-2">{demand.organization.name}</p>
+          <p className="truncate text-small font-semibold text-ink-2">{demand.organization.name}</p>
         </div>
         {reservation ? (
           <Tag tone={takenByOther ? 'neutral' : 'reserve'}>{reservation}</Tag>
@@ -49,15 +49,15 @@ export const DemandCard = ({ demand, best, today }: DemandCardProps) => {
         )}
       </div>
 
-      <p className="mt-3 text-[17px] leading-snug font-semibold tracking-[-0.01em] text-ink group-hover:text-accent">{demand.title}</p>
-      <p className="mt-1.5 line-clamp-2 flex-1 text-sm leading-relaxed text-ink-2">{demand.problem}</p>
+      <p className="mt-3 text-h4 font-semibold text-ink group-hover:text-accent">{demand.title}</p>
+      <p className="mt-1.5 line-clamp-2 flex-1 text-small text-ink-2">{demand.problem}</p>
 
       <div className="mt-5 border-t border-line pt-4">
         <div className="flex items-center justify-between gap-3">
-          <p className={cn('min-w-0 truncate text-sm', match.tone === 'accent' ? 'font-medium text-ink' : 'text-ink-3')}>{match.label}</p>
+          <p className={cn('min-w-0 truncate text-small', match.tone === 'accent' ? 'font-medium text-ink' : 'text-ink-3')}>{match.label}</p>
           {best && <CoverageMeter covered={best.covered.length} total={demand.skills.length} fits={best.fits} />}
         </div>
-        <p className="mt-1 truncate text-[13px] text-ink-3">
+        <p className="mt-1 truncate text-small text-ink-3">
           {best && `${best.covered.length} de ${demand.skills.length} competências · `}
           <span className={scope.tone === 'caution' ? 'text-caution' : undefined}>{facts[0]}</span>
           {facts.length > 1 && ` · ${facts.slice(1).join(' · ')}`}

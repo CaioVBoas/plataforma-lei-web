@@ -28,7 +28,7 @@ const TABS = ['problema', 'competencias', 'perguntas', 'inspiracao', 'organizaca
 
 const SubBlock = ({ title, children }: { title: string; children: ReactNode }) => (
   <section className="mt-8">
-    <h3 className="mb-2.5 text-[15px] font-semibold text-ink">{title}</h3>
+    <h3 className="mb-2.5 text-body font-semibold text-ink">{title}</h3>
     {children}
   </section>
 );
@@ -52,7 +52,7 @@ const DemandView = ({ detail, disciplines, calendar }: { detail: DemandDetail; d
       {cover && <CoverBanner cover={cover} />}
       {demand.invitation && !detail.projectId && <InvitationNote invitation={demand.invitation} />}
 
-      <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_300px]">
+      <div className="grid grid-cols-1 gap-10 lg:gap-12 lg:grid-cols-[minmax(0,1fr)_300px]">
         <div className="min-w-0">
           <FactGrid
             columns={2}
@@ -80,10 +80,10 @@ const DemandView = ({ detail, disciplines, calendar }: { detail: DemandDetail; d
 
           {tab === 'problema' && (
             <>
-              <p className="text-[15px] leading-relaxed text-ink-2">{demand.description}</p>
+              <p className="text-body text-ink-2">{demand.description}</p>
 
               <SubBlock title="O que a organização oferece">
-                <ul className="space-y-2 text-[15px] text-ink-2">
+                <ul className="space-y-2 text-body text-ink-2">
                   {demand.offers.map((offer) => (
                     <li key={offer} className="flex gap-2.5">
                       <span aria-hidden="true" className="mt-2.5 size-1 shrink-0 rounded-full bg-ink-3" />
@@ -94,15 +94,15 @@ const DemandView = ({ detail, disciplines, calendar }: { detail: DemandDetail; d
               </SubBlock>
 
               <SubBlock title="O que cabe no semestre">
-                <p className="text-[15px] leading-relaxed text-ink-2">{demand.scopeNote}</p>
-                <p className="mt-2 text-[15px] leading-relaxed text-ink-2">{SEMESTER_DELIVERY}</p>
+                <p className="text-body text-ink-2">{demand.scopeNote}</p>
+                <p className="mt-2 text-body text-ink-2">{SEMESTER_DELIVERY}</p>
               </SubBlock>
 
               {demand.constraints.length > 0 && (
                 <SubBlock title="Antes de aceitar">
                   <ul className="space-y-2">
                     {demand.constraints.map((constraint) => (
-                      <li key={constraint} className="text-[15px] leading-relaxed text-ink-2">
+                      <li key={constraint} className="text-body text-ink-2">
                         <span className="font-medium text-ink">{CONSTRAINT_COPY[constraint].label}.</span> {CONSTRAINT_COPY[constraint].detail}
                       </li>
                     ))}
@@ -118,8 +118,8 @@ const DemandView = ({ detail, disciplines, calendar }: { detail: DemandDetail; d
 
           {tab === 'inspiracao' && (
             <>
-              <p className="mb-4 text-sm text-ink-2">Soluções parecidas que já existem. A turma não precisa começar do zero.</p>
-              <ul className="grid gap-3 sm:grid-cols-2">
+              <p className="mb-4 text-small text-ink-2">Soluções parecidas que já existem. A turma não precisa começar do zero.</p>
+              <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 {demand.references.map((reference) => (
                   <li key={reference.name}>
                     <a
@@ -128,11 +128,11 @@ const DemandView = ({ detail, disciplines, calendar }: { detail: DemandDetail; d
                       rel="noreferrer"
                       className="flex h-full flex-col rounded-lg bg-canvas px-4 py-3.5 transition-colors duration-150 hover:bg-fill"
                     >
-                      <span className="flex items-center justify-between gap-3 text-[15px] font-medium text-ink">
+                      <span className="flex items-center justify-between gap-3 text-body font-medium text-ink">
                         {reference.name}
-                        <ArrowUpRightIcon size={15} className="shrink-0 text-ink-3" />
+                        <ArrowUpRightIcon size={16} className="shrink-0 text-ink-3" />
                       </span>
-                      <span className="mt-1 text-[13px] leading-relaxed text-ink-2">{reference.description}</span>
+                      <span className="mt-1 text-small text-ink-2">{reference.description}</span>
                     </a>
                   </li>
                 ))}

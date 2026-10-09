@@ -1,10 +1,10 @@
-import { useId } from 'react';
+import { useId, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { QueryView } from '@/components/feedback/queryStates';
 import { useToast } from '@/components/feedback/toastContext';
 import { Button } from '@/components/ui/button';
 import { cardGridClassName } from '@/components/ui/card';
-import { CheckIcon } from '@/components/ui/icons';
+import { CheckIcon, TrashIcon } from '@/components/ui/icons';
 import { ItemList } from '@/components/ui/itemList';
 import { FactGrid, Page, Section } from '@/components/ui/page';
 import { ProfileHeader } from '@/components/ui/profileHeader';
@@ -23,8 +23,9 @@ import { useDiscipline, useRemoveDiscipline, useUpdateDiscipline } from './useDi
 import type { DisciplineWithUsage } from './types';
 import { LEVEL_COPY, slotsLabel } from './utils/disciplinePresentation';
 import { matchingDemands } from './utils/matchingDemands';
+import { ConfirmDialog } from '@/components/ui/confirmDialog';
 
-const Empty = ({ children }: { children: string }) => <p className="text-sm text-ink-3">{children}</p>;
+const Empty = ({ children }: { children: string }) => <p className="text-small text-ink-3">{children}</p>;
 
 const DisciplineProjects = ({ discipline }: { discipline: DisciplineWithUsage }) => {
   const { data: projects = [] } = useProjects();
@@ -67,6 +68,7 @@ const DisciplineSettings = ({ discipline }: { discipline: DisciplineWithUsage })
   const navigate = useNavigate();
   const update = useUpdateDiscipline();
   const remove = useRemoveDiscipline();
+  const [confirmingRemove, setConfirmingRemove] = useState(false);
 
   const removeDiscipline = () =>
     remove.mutate(discipline.id, {
@@ -87,24 +89,39 @@ const DisciplineSettings = ({ discipline }: { discipline: DisciplineWithUsage })
           onSubmit={(input) => update.mutate({ id: discipline.id, input }, { onSuccess: () => toast.show('Disciplina atualizada.') })}
         />
         {update.isError && (
-          <p role="alert" className="mt-4 text-sm text-critical">
+          <p role="alert" className="mt-4 text-small text-critical">
             {update.error.message}
           </p>
         )}
       </div>
       <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line bg-canvas px-5 py-3.5 sm:px-6">
         {discipline.activeProjects === 0 ? (
-          <Button variant="destructive" size="sm" onClick={removeDiscipline}>
+          <Button variant="destructive" size="sm" onClick={() => setConfirmingRemove(true)}>
+            <TrashIcon size={16} />
             Remover disciplina
           </Button>
         ) : (
-          <span className="text-[13px] text-ink-3">Com projeto em curso, a disciplina não pode ser removida.</span>
+          <span className="text-small text-ink-3">Com projeto em curso, a disciplina não pode ser removida.</span>
         )}
         <Button variant="primary" type="submit" form={formId} disabled={update.isPending}>
-          <CheckIcon size={15} />
+          <CheckIcon size={16} />
           Salvar alterações
         </Button>
       </div>
+      {confirmingRemove && (
+        <ConfirmDialog
+          icon={<TrashIcon size={26} />}
+          title={`Remover ${discipline.name}?`}
+          description="A disciplina sai da sua lista e deixa de receber indicações. Os projetos já encerrados continuam no histórico."
+          confirmLabel="Sim, remover"
+          confirmIcon={<TrashIcon size={20} />}
+          cancelLabel="Não, manter"
+          pending={remove.isPending}
+          pendingLabel="Removendo"
+          onConfirm={removeDiscipline}
+          onClose={() => setConfirmingRemove(false)}
+        />
+      )}
     </div>
   );
 };
@@ -125,7 +142,7 @@ const DisciplineView = ({ discipline }: { discipline: DisciplineWithUsage }) => 
       hero={
         <ProfileHeader
           avatar={
-            <span className="flex size-[72px] items-center justify-center rounded-lg bg-monogram text-[13px] font-bold text-monogram-ink tabular-nums">
+            <span className="flex size-[72px] items-center justify-center rounded-lg bg-monogram text-small font-semibold text-monogram-ink tabular-nums">
               {discipline.code || discipline.name.charAt(0)}
             </span>
           }

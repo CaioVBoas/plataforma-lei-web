@@ -101,7 +101,7 @@ const Suggestions = ({ demands, disciplines, today }: { demands: Demand[]; disci
     .slice(0, SUGGESTIONS_ON_HOME);
 
   if (fitting.length === 0) {
-    return <p className="text-sm text-ink-2">Nenhuma demanda aberta combina com uma turma com vaga agora.</p>;
+    return <p className="text-small text-ink-2">Nenhuma demanda aberta combina com uma turma com vaga agora.</p>;
   }
 
   return (
@@ -174,7 +174,7 @@ const HomeContent = ({ account, calendar }: { account: Account; calendar: Semest
             description="É o que a turma trabalha que decide quais demandas combinam com ela. Leva um minuto."
             action={
               <Link to={paths.newDiscipline} className={buttonClassName({ variant: 'primary' })}>
-                <PlusIcon size={15} />
+                <PlusIcon size={16} />
                 Cadastrar disciplina
               </Link>
             }
@@ -196,7 +196,7 @@ const HomeContent = ({ account, calendar }: { account: Account; calendar: Semest
               title="No cardápio para suas turmas"
               aside={
                 <Link to={paths.menu} className={buttonClassName({ variant: 'secondary', size: 'sm' })}>
-                  <TrayIcon size={15} />
+                  <TrayIcon size={16} />
                   Abrir o cardápio
                 </Link>
               }

@@ -5,6 +5,14 @@ import { useLocation } from 'react-router-dom';
 export const useScrollToHash = () => {
   const { hash } = useLocation();
   useEffect(() => {
-    if (hash) document.getElementById(decodeURIComponent(hash.slice(1)))?.scrollIntoView();
+    if (!hash) return;
+    // Um hash digitado à mão, como "#%", não decodifica: aí vale o texto literal.
+    let id = hash.slice(1);
+    try {
+      id = decodeURIComponent(id);
+    } catch {
+      /* fica o literal */
+    }
+    document.getElementById(id)?.scrollIntoView();
   }, [hash]);
 };

@@ -17,7 +17,7 @@ export interface PhotoCredit {
 export const PhotoCreditLine = ({ credit, onDark, className }: { credit: PhotoCredit; onDark?: boolean; className?: string }) => {
   const link = cn('underline-offset-2 hover:underline', onDark ? 'hover:text-white' : 'hover:text-ink-2');
   return (
-    <p className={cn('text-[11px] leading-snug', onDark ? 'text-white/70' : 'text-ink-3', className)}>
+    <p className={cn('text-caption', onDark ? 'text-white/70' : 'text-ink-3', className)}>
       Foto:{' '}
       <a href={credit.sourceUrl} target="_blank" rel="noreferrer" className={link}>
         {credit.author}, {credit.source}

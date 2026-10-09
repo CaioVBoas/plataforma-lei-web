@@ -18,6 +18,7 @@ import { paths } from '@/routes/paths';
 import { normalizeText } from '@/utils/format';
 import { DemandCard } from './components/demandCard';
 import { useMenu } from './useDemands';
+import { WarningNote } from '@/components/ui/warningNote';
 
 type Scope = 'turmas' | 'reservas' | 'todas';
 
@@ -95,7 +96,7 @@ export const MenuPage = () => {
           description="O cardápio mostra as demandas que combinam com o que suas turmas trabalham."
           action={
             <Link to={paths.newDiscipline} className={buttonClassName({ variant: 'primary' })}>
-              <PlusIcon size={15} />
+              <PlusIcon size={16} />
               Cadastrar disciplina
             </Link>
           }
@@ -119,9 +120,9 @@ export const MenuPage = () => {
   return (
     <Page title={TITLE} subtitle={SUBTITLE}>
       {!isLinkWindowOpen(calendar) && (
-        <p className="mb-6 rounded-lg bg-caution-soft px-4 py-3 text-sm text-caution">
-          O prazo para levar demandas para as turmas de {calendar.id} terminou em {formatShortDate(calendar.linkDeadline)}. Você ainda pode explorar e reservar.
-        </p>
+        <WarningNote title={`O prazo para levar demandas às turmas de ${calendar.id} terminou em ${formatShortDate(calendar.linkDeadline)}`} className="mb-6">
+          Você ainda pode explorar e reservar.
+        </WarningNote>
       )}
 
       <div className="mb-3 flex flex-wrap items-end justify-between gap-x-6 gap-y-3 border-b border-line">
@@ -144,7 +145,7 @@ export const MenuPage = () => {
           containerClassName="mb-2 w-full sm:w-[280px]"
         />
       </div>
-      <p className="mb-6 text-[13px] text-ink-2">
+      <p className="mb-6 text-small text-ink-2">
         Você tem {byScope.reservas.length} de {MAX_ACTIVE_RESERVATIONS} reservas. Cada uma guarda a demanda por {RESERVATION_DAYS} dias enquanto você decide.
       </p>
 

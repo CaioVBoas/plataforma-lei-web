@@ -12,7 +12,7 @@ import { useNotifications } from './useNotifications';
 
 const NotificationGroup = ({ title, items }: { title: string; items: PortalNotification[] }) => (
   <Section title={title} compact>
-    <ul className="-mx-3 divide-y divide-line">
+    <ul className="divide-y divide-line rounded-lg border border-line bg-surface px-3">
       {items.map((item) => (
         <li key={item.id}>
           <NotificationItem item={item} />

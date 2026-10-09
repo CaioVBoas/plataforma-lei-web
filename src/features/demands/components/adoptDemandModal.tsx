@@ -2,7 +2,7 @@ import { useId, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/components/feedback/toastContext';
 import { Button } from '@/components/ui/button';
-import { PlusIcon } from '@/components/ui/icons';
+import { ArrowLeftIcon, ArrowRightIcon, CloseIcon, FolderIcon, PlusIcon } from '@/components/ui/icons';
 import { Tag } from '@/components/ui/tag';
 import { Modal } from '@/components/ui/modal';
 import { Stepper } from '@/components/ui/stepper';
@@ -18,6 +18,8 @@ import { useAdoptDemand } from '@/features/projects/shared/hooks/useAdoptDemand'
 import { paths } from '@/routes/paths';
 import { cn } from '@/utils/cn';
 import { joinWithAnd, pluralize } from '@/utils/format';
+import { DialogActions } from '@/components/ui/confirmDialog';
+import { WarningNote } from '@/components/ui/warningNote';
 
 const DEFAULT_TEAMS = 2;
 
@@ -46,10 +48,10 @@ const DisciplineOption = ({ match, demand, selected, name, onSelect }: Disciplin
       <input type="radio" name={name} checked={selected} disabled={full} onChange={onSelect} className="mt-1 accent-accent" />
       <span className="min-w-0 flex-1">
         <span className="flex flex-wrap items-center gap-2">
-          <span className="text-[15px] font-medium text-ink">{discipline.name}</span>
+          <span className="text-body font-medium text-ink">{discipline.name}</span>
           {!full && !match.fits && <Tag tone="caution">Não combina</Tag>}
         </span>
-        <span className="mt-0.5 block text-[13px] text-ink-2">
+        <span className="mt-0.5 block text-small text-ink-2">
           Cobre {match.covered.length} de {demand.skills.length} competências ·{' '}
           {match.aboveLevel ? `Acima do ${LEVEL_COPY[discipline.level].label.toLowerCase()}` : slotsLabel(discipline)}
         </span>
@@ -61,8 +63,8 @@ const DisciplineOption = ({ match, demand, selected, name, onSelect }: Disciplin
 /** O que muda depois de confirmar. Dito antes, para a decisão não ter surpresa. */
 const WhatHappensNext = ({ demand, calendar }: { demand: Demand; calendar: SemesterCalendar }) => (
   <div className="mt-6 rounded-md bg-canvas px-4 py-3.5">
-    <p className="text-[13px] font-medium text-ink">Depois de confirmar</p>
-    <ol className="mt-2 list-decimal space-y-1 pl-4 text-[13px] leading-relaxed text-ink-2">
+    <p className="text-small font-medium text-ink">Depois de confirmar</p>
+    <ol className="mt-2 list-decimal space-y-1 pl-4 text-small text-ink-2">
       <li>O projeto é criado com o plano já escrito para você revisar.</li>
       <li>{demand.organization.name} recebe o aviso e o contato do ponto focal aparece no projeto.</li>
       <li>Você tem até {formatShortDate(calendar.linkDeadline)} para registrar no SIGAA. Até lá, pode desistir.</li>
@@ -119,14 +121,16 @@ export const AdoptDemandModal = ({ demand, disciplines, calendar, onClose }: Ado
         size="lg"
         onClose={onClose}
         footer={
-          <>
-            <Button variant="secondary" onClick={() => (disciplines.length > 0 ? setCreating(false) : onClose())}>
+          <DialogActions>
+            <Button variant="secondary" size="xl" fullWidth onClick={() => (disciplines.length > 0 ? setCreating(false) : onClose())}>
+              {disciplines.length > 0 ? <ArrowLeftIcon size={20} /> : <CloseIcon size={20} />}
               {disciplines.length > 0 ? 'Voltar' : 'Cancelar'}
             </Button>
-            <Button variant="primary" type="submit" form={formId} disabled={createDiscipline.isPending}>
+            <Button variant="primary" size="xl" fullWidth type="submit" form={formId} disabled={createDiscipline.isPending}>
+              <ArrowRightIcon size={20} />
               Cadastrar e continuar
             </Button>
-          </>
+          </DialogActions>
         }
       >
         <DisciplineForm
@@ -142,7 +146,7 @@ export const AdoptDemandModal = ({ demand, disciplines, calendar, onClose }: Ado
           }
         />
         {createDiscipline.isError && (
-          <p role="alert" className="mt-4 text-sm text-critical">
+          <p role="alert" className="mt-4 text-small text-critical">
             {createDiscipline.error.message}
           </p>
         )}
@@ -156,18 +160,20 @@ export const AdoptDemandModal = ({ demand, disciplines, calendar, onClose }: Ado
       description={`${demand.title}, de ${demand.organization.name}.`}
       onClose={onClose}
       footer={
-        <>
-          <Button variant="secondary" onClick={onClose}>
+        <DialogActions>
+          <Button variant="secondary" size="xl" fullWidth onClick={onClose}>
+            <CloseIcon size={20} />
             Cancelar
           </Button>
-          <Button variant="primary" disabled={!selected || (needsAck && !acknowledged) || adopt.isPending} onClick={confirm}>
+          <Button variant="primary" size="xl" fullWidth disabled={!selected || (needsAck && !acknowledged) || adopt.isPending} onClick={confirm}>
+            <FolderIcon size={20} />
             Criar projeto
           </Button>
-        </>
+        </DialogActions>
       }
     >
       <fieldset>
-        <legend className="mb-2 text-[13px] font-medium text-ink-2">Qual turma</legend>
+        <legend className="mb-2 text-small font-medium text-ink-2">Qual turma</legend>
         <div className="flex flex-col gap-2">
           {ranked.map((match) => (
             <DisciplineOption
@@ -184,34 +190,33 @@ export const AdoptDemandModal = ({ demand, disciplines, calendar, onClose }: Ado
           ))}
         </div>
         {!firstAvailable && (
-          <p className="mt-2.5 text-[13px] text-caution">Nenhuma turma pode receber esta demanda: estão sem vaga ou abaixo do nível pedido. Ajuste uma disciplina ou cadastre outra.</p>
+          <p className="mt-2.5 text-small text-caution">Nenhuma turma pode receber esta demanda: estão sem vaga ou abaixo do nível pedido. Ajuste uma disciplina ou cadastre outra.</p>
         )}
         <Button size="sm" className="mt-3" onClick={() => setCreating(true)}>
-          <PlusIcon size={14} />
+          <PlusIcon size={16} />
           Cadastrar outra disciplina
         </Button>
       </fieldset>
 
       {needsAck && selectedMatch && (
-        <div role="alert" className="mt-5 rounded-md bg-caution-soft px-4 py-3.5">
-          <p className="text-sm font-medium text-caution">Esta demanda não serve para {selectedMatch.discipline.name}</p>
-          <p className="mt-1 text-[13px] leading-relaxed text-ink-2">
+        <WarningNote role="alert" title={`Esta demanda não serve para ${selectedMatch.discipline.name}`} className="mt-5">
+          <p className="text-small text-ink-2">
             A turma cobre {selectedMatch.covered.length} de {demand.skills.length} competências pedidas
             {selectedMatch.missing.length > 0 && ` e não trabalha ${joinWithAnd(selectedMatch.missing)}`}. Dá para levar, mas o resultado com a organização fica
             por sua conta.
           </p>
-          <label className="mt-3 flex cursor-pointer items-start gap-2.5 text-[13px] text-ink">
+          <label className="mt-3 flex cursor-pointer items-start gap-2.5 text-small text-ink">
             <input type="checkbox" checked={acknowledged} onChange={(event) => setAcknowledged(event.target.checked)} className="mt-0.5 accent-accent" />
             Entendo e quero levar para esta turma mesmo assim.
           </label>
-        </div>
+        </WarningNote>
       )}
 
       {selected && (
         <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
           <div>
-            <p className="text-[13px] font-medium text-ink-2">Equipes neste projeto</p>
-            <p className="text-[13px] text-ink-3">A turma forma até {pluralize(teamLimit, 'equipe', 'equipes')}.</p>
+            <p className="text-small font-medium text-ink-2">Equipes neste projeto</p>
+            <p className="text-small text-ink-3">A turma forma até {pluralize(teamLimit, 'equipe', 'equipes')}.</p>
           </div>
           <Stepper
             label="equipes"
@@ -227,7 +232,7 @@ export const AdoptDemandModal = ({ demand, disciplines, calendar, onClose }: Ado
       <WhatHappensNext demand={demand} calendar={calendar} />
 
       {adopt.isError && (
-        <p role="alert" className="mt-4 text-sm text-critical">
+        <p role="alert" className="mt-4 text-small text-critical">
           {adopt.error.message}
         </p>
       )}

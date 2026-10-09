@@ -1,7 +1,7 @@
 import { cn } from '@/utils/cn';
 
-export type ButtonVariant = 'primary' | 'secondary' | 'plain' | 'destructive' | 'onDark' | 'onDarkOutline';
-export type ButtonSize = 'sm' | 'md' | 'lg';
+export type ButtonVariant = 'primary' | 'secondary' | 'plain' | 'destructive' | 'danger' | 'onDark' | 'onDarkOutline';
+export type ButtonSize = 'sm' | 'md' | 'lg' | 'xl';
 
 export interface ButtonStyleOptions {
   variant?: ButtonVariant;
@@ -14,6 +14,7 @@ export interface ButtonStyleOptions {
  * secondary: ação real de apoio, com borda fina sobre fundo branco. No máximo duas por item.
  * plain: ação terciária, só texto em azul.
  * destructive: desfazer ou remover, só texto em vermelho.
+ * danger: o "sim, excluir" dentro da confirmação, em vermelho cheio.
  * onDark e onDarkOutline: só sobre blocos petróleo do portal público, em branco cheio ou contorno claro.
  */
 const VARIANT_CLASSES: Record<ButtonVariant, string> = {
@@ -21,20 +22,24 @@ const VARIANT_CLASSES: Record<ButtonVariant, string> = {
   secondary: 'border border-line-strong bg-surface text-ink hover:bg-canvas',
   plain: 'bg-transparent text-accent hover:bg-accent-soft',
   destructive: 'bg-transparent text-critical hover:bg-critical-soft',
+  danger: 'bg-critical-strong text-white hover:brightness-110',
   onDark: 'bg-surface text-brand-strong hover:bg-brand-50',
   onDarkOutline: 'border border-brand-300 bg-transparent text-white hover:bg-brand-700',
 };
 
 const SIZE_CLASSES: Record<ButtonSize, string> = {
-  sm: 'h-8 px-3 text-[13px]',
-  md: 'h-9 px-4 text-sm',
-  lg: 'h-11 px-5 text-[15px]',
+  sm: 'h-8 gap-1.5 whitespace-nowrap px-3 text-label',
+  md: 'h-9 gap-1.5 whitespace-nowrap px-4 text-label',
+  lg: 'h-11 gap-1.5 whitespace-nowrap px-5 text-body',
+  /** Para quem tem pouca prática: alvo grande, texto de 16px e ícone de 20px ao lado. */
+  /** Com texto grande, o rótulo quebra em duas linhas em vez de sair da tela. */
+  xl: 'min-h-12 gap-2.5 px-6 py-2 text-center text-body font-semibold',
 };
 
 /** Exposto para que links de navegação tenham a mesma aparência dos botões. */
 export const buttonClassName = ({ variant = 'secondary', size = 'md', fullWidth }: ButtonStyleOptions = {}) =>
   cn(
-    'inline-flex items-center justify-center gap-1.5 whitespace-nowrap rounded-md font-medium',
+    'inline-flex items-center justify-center rounded-md font-medium',
     'transition-colors duration-150 disabled:pointer-events-none disabled:opacity-40',
     VARIANT_CLASSES[variant],
     SIZE_CLASSES[size],

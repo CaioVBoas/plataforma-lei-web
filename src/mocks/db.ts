@@ -26,6 +26,17 @@ export const db = {
   orgAccount: structuredClone(ORG_ACCOUNT),
   /** Pedidos das organizações que ainda não entraram no cardápio. */
   submissions: structuredClone(SUBMISSIONS),
+  /**
+   * Senha e exclusão de conta de cada portal. Na demonstração qualquer senha
+   * entra, até alguém trocar a senha: daí só a nova serve. Conta excluída não
+   * entra mais com aquele e-mail.
+   */
+  access: {
+    docente: { password: null as string | null, deletedEmail: null as string | null },
+    organizacao: { password: null as string | null, deletedEmail: null as string | null },
+  },
+  /** Códigos de confirmação enviados por e-mail (cadastro e nova senha), por finalidade, perfil e e-mail. */
+  codes: {} as Record<string, { code: string; sentAt: number; expiresAt: number; attempts: number }>,
 };
 
 export class NotFoundError extends Error {

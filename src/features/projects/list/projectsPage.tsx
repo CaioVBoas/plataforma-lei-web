@@ -1,5 +1,5 @@
 import type { MouseEvent } from 'react';
-import { TrayIcon } from '@/components/ui/icons';
+import { FolderIcon, TrayIcon } from '@/components/ui/icons';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { ErrorState, LoadingState } from '@/components/feedback/queryStates';
 import { useToast } from '@/components/feedback/toastContext';
@@ -38,7 +38,7 @@ const planText = (project: Project) => project.plan.map((section) => `${section.
 const nextStep = ({ next, overdue }: ProjectListItem, today: IsoDate) =>
   next && { title: MILESTONE_COPY[next.id].title, when: `${overdue ? 'atrasada ' : ''}${formatRelativeDays(today, next.dueAt)}` };
 
-const HEADER_CELL = 'px-3 pb-2.5 text-[11px] font-semibold tracking-[0.04em] text-ink-2 uppercase';
+const HEADER_CELL = 'px-3 pb-2.5 text-overline text-ink-2';
 
 const ProjectTableRow = ({ item, today }: { item: ProjectListItem; today: IsoDate }) => {
   const navigate = useNavigate();
@@ -58,26 +58,27 @@ const ProjectTableRow = ({ item, today }: { item: ProjectListItem; today: IsoDat
   return (
     <tr onClick={openFromRow} className="h-16 cursor-pointer transition-colors duration-150 hover:bg-canvas">
       <td className="px-3 py-3">
-        <p className="line-clamp-2 text-sm font-medium text-ink">{project.title}</p>
-        <p className="mt-0.5 truncate text-xs text-ink-3">{project.organization.name}</p>
+        <p className="line-clamp-2 text-small font-medium text-ink">{project.title}</p>
+        <p className="mt-0.5 truncate text-caption text-ink-3">{project.organization.name}</p>
       </td>
       <td className="px-3 py-3">
-        <p className="line-clamp-2 text-sm text-ink">{project.disciplineName}</p>
+        <p className="line-clamp-2 text-small text-ink">{project.disciplineName}</p>
       </td>
       <td className="px-3 py-3">
         {step ? (
           <>
-            <p className="text-sm font-medium text-ink">{step.title}</p>
-            <p className={cn('mt-0.5 text-xs', item.overdue ? 'text-caution' : 'text-ink-3')}>{step.when}</p>
+            <p className="text-small font-medium text-ink">{step.title}</p>
+            <p className={cn('mt-0.5 text-caption', item.overdue ? 'text-caution' : 'text-ink-3')}>{step.when}</p>
           </>
         ) : (
-          <p className="text-sm font-medium text-ink">{STAGE_COPY.done.label}</p>
+          <p className="text-small font-medium text-ink">{STAGE_COPY.done.label}</p>
         )}
       </td>
-      <td className="px-3 py-3 text-right text-sm whitespace-nowrap text-ink-2 tabular-nums">{item.date && formatShortDate(item.date)}</td>
+      <td className="px-3 py-3 text-right text-small whitespace-nowrap text-ink-2 tabular-nums">{item.date && formatShortDate(item.date)}</td>
       <td className="py-3 pr-1 pl-3">
         <div className="flex items-center justify-end gap-1">
           <Link to={paths.project(project.id)} className={buttonClassName({ variant: 'secondary' })}>
+            <FolderIcon size={16} />
             Abrir
           </Link>
           <ActionMenu
@@ -161,7 +162,8 @@ const ProjectsView = () => {
   const count = (value: Filter) => items.filter((item) => matchesFilter(item, value)).length;
   const visible = items.filter((item) => matchesFilter(item, filter));
 
-  const nextDue = items.find((item) => item.next)?.date;
+  // O prazo mais próximo entre todos, não o do primeiro da lista: a ordem agrupa por estado.
+  const nextDue = items.flatMap((item) => (item.next ? [item.next.dueAt] : [])).sort()[0];
 
   return (
     <>
@@ -189,7 +191,7 @@ const ProjectsView = () => {
       />
 
       {overdueCount > 0 && filter !== 'atrasados' && (
-        <p className="mt-4 text-sm text-ink-2">
+        <p className="mt-4 text-small text-ink-2">
           {overdueCount === 1 ? '1 projeto atrasado, ' : `${pluralize(overdueCount, 'projeto atrasado', 'projetos atrasados')}, `}
           <button type="button" onClick={() => setFilter('atrasados')} className={textLinkClassName}>
             {overdueCount === 1 ? 'ver qual' : 'ver quais'}
@@ -199,7 +201,7 @@ const ProjectsView = () => {
       )}
 
       <div className="mt-4">
-        {visible.length > 0 ? <ProjectTable items={visible} today={today} /> : <p className="py-6 text-sm text-ink-3">Nenhum projeto neste estado.</p>}
+        {visible.length > 0 ? <ProjectTable items={visible} today={today} /> : <p className="py-6 text-small text-ink-3">Nenhum projeto neste estado.</p>}
       </div>
     </>
   );

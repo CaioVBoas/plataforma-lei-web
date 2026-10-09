@@ -5,6 +5,8 @@ import type { UserRole } from '@/features/auth/types';
 export type ProjectTab = 'etapas' | 'plano' | 'demanda';
 export type DemandTab = 'problema' | 'competencias' | 'perguntas' | 'inspiracao' | 'organizacao';
 export type OrgDemandTab = 'demanda' | 'perguntas' | 'cardapio';
+/** Abas da lista de demandas da organização. "vez" junta o que espera algo de vocês. */
+export type OrgDemandsTab = 'vez' | 'todas' | OrgDemandsView;
 export type OrgDemandsView = 'preparo' | 'cardapio' | 'projeto' | 'concluidas';
 
 export const paths = {
@@ -37,7 +39,8 @@ export const paths = {
   /* Portal da organização. */
   orgHome: '/organizacao',
   orgNotifications: '/organizacao/avisos',
-  orgDemands: (view?: OrgDemandsView) => (view && view !== 'preparo' ? `/organizacao/demandas?ver=${view}` : '/organizacao/demandas'),
+  /** Sem aba, a lista abre em "Sua vez" quando há algo esperando, senão em "Todas". */
+  orgDemands: (tab?: OrgDemandsTab) => (tab ? `/organizacao/demandas?ver=${tab}` : '/organizacao/demandas'),
   orgNewDemand: '/organizacao/demandas/nova',
   orgDemand: (id: string, tab?: OrgDemandTab) =>
     tab && tab !== 'demanda' ? `/organizacao/demandas/${id}?aba=${tab}` : `/organizacao/demandas/${id}`,
@@ -45,6 +48,8 @@ export const paths = {
   orgProjects: '/organizacao/projetos',
   orgProject: (id: string) => `/organizacao/projetos/${id}`,
   orgProfile: '/organizacao/perfil',
+  /** Todas as perguntas dos docentes, de todas as demandas, num lugar só. */
+  orgQuestions: (view?: 'respondidas') => (view ? `/organizacao/perguntas?ver=${view}` : '/organizacao/perguntas'),
   orgGuide: '/organizacao/como-funciona',
 } as const;
 

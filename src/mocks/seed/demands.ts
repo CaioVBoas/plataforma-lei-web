@@ -1,8 +1,8 @@
 import type { Demand } from '@/domain/types';
 
 /**
- * Demandas reais já triadas pelo L.E.I. Na demonstração, a do HC está
- * reservada pela docente, a da Várzea por um colega, e as duas últimas já
+ * Demandas reais já triadas pelo L.E.I. Na demonstração, a fila do HC está
+ * reservada pela docente (a farmácia do HC está livre, com conversa), a da Várzea por um colega, e as duas últimas já
  * viraram projetos dela, por isso estão fora do cardápio.
  */
 export const DEMANDS: Demand[] = [
@@ -31,6 +31,7 @@ export const DEMANDS: Demand[] = [
     ],
     questions: [],
     invitation: {
+      to: 'paola.accioly@ufpe.br',
       from: 'Kiev Santos da Gama, L.E.I.',
       message: 'O NASE procurou o CIn para organizar a fila de atendimento. Pensei na sua turma de Desenvolvimento de Software: ela cobre quase tudo o que eles pedem.',
       sentAt: '2026-08-23',
@@ -66,19 +67,114 @@ export const DEMANDS: Demand[] = [
         teacherName: 'Luiz Morais',
         mine: false,
         askedAt: '2026-08-19',
+        askedTime: '10:12',
         text: 'A distribuição precisa considerar o perfil de cada médico ou só a especialidade?',
-        answer: {
-          text: 'Perfil e agenda. Alguns médicos só atendem retorno e outros só primeira consulta. Hoje essa regra está na cabeça da equipe, não em sistema.',
-          answeredAt: '2026-08-20',
-          by: 'Renata Vasconcelos, Hospital das Clínicas',
-        },
+        replies: [
+          {
+            id: 'hc-q1-r1',
+            text: 'Perfil e agenda. Alguns médicos só atendem retorno e outros só primeira consulta. Hoje essa regra está na cabeça da equipe, não em sistema.',
+            at: '2026-08-20',
+            time: '09:05',
+            by: 'Renata Vasconcelos, Hospital das Clínicas',
+          },
+          {
+            id: 'hc-q1-r2',
+            text: 'Se ajudar, temos a escala de julho dos 38 médicos da regulação. Dá para a turma ver como a regra funciona na prática.',
+            at: '2026-08-20',
+            time: '09:08',
+            by: 'Renata Vasconcelos, Hospital das Clínicas',
+          },
+        ],
       },
       {
         id: 'hc-q2',
+        teacherName: 'Luiz Morais',
+        mine: false,
+        askedAt: '2026-08-20',
+        askedTime: '14:31',
+        text: 'A escala ajuda muito. Ela pode ir para a turma já na primeira semana, ou só depois da reunião de abertura?',
+        replies: [
+          {
+            id: 'hc-q2-r1',
+            text: 'Pode ir na primeira semana. Mando a planilha anonimizada no dia em que o docente confirmar a turma.',
+            at: '2026-08-21',
+            time: '08:40',
+            by: 'Renata Vasconcelos, Hospital das Clínicas',
+          },
+        ],
+      },
+      {
+        id: 'hc-q3',
+        teacherName: 'Fernanda Lins',
+        mine: false,
+        askedAt: '2026-08-22',
+        askedTime: '16:05',
+        text: 'Os pedidos do interior chegam em papel ou já vêm pelo SISREG? Isso muda bastante o que a turma consegue entregar.',
+        replies: [],
+      },
+      {
+        id: 'hc-q4',
         teacherName: 'Paola Accioly',
         mine: true,
         askedAt: '2026-08-23',
+        askedTime: '11:20',
         text: 'A turma pode trabalhar com o recorte de três meses fora do hospital, ou os dados só podem ser abertos na central?',
+        replies: [],
+      },
+    ],
+  },
+  {
+    id: 'hc-farmacia',
+    organization: { id: 'hospital-das-clinicas', name: 'Hospital das Clínicas', type: 'Órgão público' },
+    title: 'Fila da farmácia de alto custo',
+    problem: 'Pacientes voltam para casa sem o remédio de alto custo porque o estoque só é conferido na hora da retirada.',
+    description:
+      'A farmácia de alto custo atende cerca de 900 pacientes por mês. O estoque é conferido em planilha no fim do dia, e o paciente só descobre que o remédio acabou quando chega ao balcão, muitas vezes depois de viajar do interior. A equipe quer avisar antes e organizar a retirada por horário.',
+    affectedPublic: 'Cerca de 900 pacientes por mês e os 6 farmacêuticos do setor',
+    skills: ['Banco de dados', 'Desenvolvimento web', 'Interação humano computador'],
+    level: 'intermediate',
+    constraints: ['sensitive-data'],
+    scopeFit: 'fits',
+    scopeNote: 'Cabe em um semestre se o aviso ao paciente começar por SMS ou WhatsApp, sem integrar ao prontuário.',
+    meetingCadence: 'Reunião semanal de 30 minutos, por vídeo',
+    offers: ['Planilha de estoque de 2025, anonimizada', 'Acompanhamento de um dia de atendimento na farmácia'],
+    publishedAt: '2026-08-10',
+    status: 'open',
+    watching: false,
+    references: [{ name: 'Hórus', description: 'Sistema público de gestão da assistência farmacêutica.', url: 'https://www.gov.br/saude' }],
+    questions: [
+      {
+        id: 'hc-farmacia-q1',
+        teacherName: 'Ricardo Teixeira',
+        mine: false,
+        askedAt: '2026-08-12',
+        askedTime: '15:40',
+        text: 'O estoque é controlado por lote e validade, ou só pela quantidade de caixas?',
+        replies: [
+          {
+            id: 'hc-farmacia-q1-r1',
+            text: 'Por lote e validade. Cada remédio tem de dois a cinco lotes ao mesmo tempo.',
+            at: '2026-08-13',
+            time: '10:02',
+            by: 'Renata Vasconcelos, Hospital das Clínicas',
+          },
+          {
+            id: 'hc-farmacia-q1-r2',
+            text: 'Esqueci de dizer: os lotes que vencem em menos de 30 dias saem primeiro. Essa é a regra que mais dá erro hoje.',
+            at: '2026-08-13',
+            time: '10:15',
+            by: 'Renata Vasconcelos, Hospital das Clínicas',
+          },
+        ],
+      },
+      {
+        id: 'hc-farmacia-q2',
+        teacherName: 'Ana Cláudia Ribeiro',
+        mine: false,
+        askedAt: '2026-08-21',
+        askedTime: '09:15',
+        text: 'Os estudantes poderiam acompanhar um dia de atendimento no balcão? Ajudaria muito na pesquisa com os pacientes.',
+        replies: [],
       },
     ],
   },
@@ -136,12 +232,17 @@ export const DEMANDS: Demand[] = [
         teacherName: 'Paola Accioly',
         mine: true,
         askedAt: '2026-08-18',
+        askedTime: '13:47',
         text: 'Dá para a turma acompanhar os agentes em campo mais de uma vez no semestre?',
-        answer: {
-          text: 'Sim. Podemos receber a turma em duas rondas, uma no começo e outra perto da entrega, sempre com um agente da regional junto.',
-          answeredAt: '2026-08-21',
-          by: 'Coordenação de Fiscalização, Prefeitura do Recife',
-        },
+        replies: [
+          {
+            id: 'recife-q1-r1',
+            text: 'Sim. Podemos receber a turma em duas rondas, uma no começo e outra perto da entrega, sempre com um agente da regional junto.',
+            at: '2026-08-21',
+            time: '11:30',
+            by: 'Coordenação de Fiscalização, Prefeitura do Recife',
+          },
+        ],
       },
     ],
   },

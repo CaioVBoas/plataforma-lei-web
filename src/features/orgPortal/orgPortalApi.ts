@@ -26,6 +26,8 @@ export const deleteDraft = (id: string) => mockRequest(() => server.deleteDraft(
 
 export const answerQuestion = (payload: { demandId: string; questionId: string; text: string }) => mockRequest(() => server.answerQuestion(payload));
 
+export const getOrgQuestions = () => mockRequest(() => server.listQuestionDemands());
+
 export const getOrgProjects = () => mockRequest(() => server.listProjects());
 
 export const getOrgProject = (id: string) => mockRequest(() => server.getProject(id));

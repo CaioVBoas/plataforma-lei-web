@@ -6,7 +6,7 @@ import { paths } from '@/routes/paths';
 /** A ação principal do portal da organização, no Início, na lista e nos vazios. */
 export const SubmitDemandLink = ({ variant = 'primary', size }: { variant?: 'primary' | 'secondary'; size?: ButtonSize }) => (
   <Link to={paths.orgNewDemand} className={buttonClassName({ variant, size })}>
-    <PlusIcon size={15} />
+    <PlusIcon size={16} />
     Submeter demanda
   </Link>
 );

@@ -31,10 +31,12 @@ interface ModalProps {
   footer: ReactNode;
   children?: ReactNode;
   size?: 'md' | 'lg';
+  /** Ícone grande ao lado do título, que já diz o tipo da pergunta (excluir, enviar, aviso). */
+  icon?: ReactNode;
 }
 
 /** Janela centralizada para confirmar uma decisão sem sair da tela atual. */
-export const Modal = ({ title, description, onClose, footer, children, size = 'md' }: ModalProps) => {
+export const Modal = ({ title, description, onClose, footer, children, size = 'md', icon }: ModalProps) => {
   const titleId = useId();
   useModalBehavior(onClose);
 
@@ -46,18 +48,20 @@ export const Modal = ({ title, description, onClose, footer, children, size = 'm
         aria-modal="true"
         aria-labelledby={titleId}
         className={cn(
-          'relative flex max-h-full w-full flex-col overflow-hidden rounded-lg bg-surface shadow-sheet animate-sheet-in',
+          'relative flex max-h-full w-full flex-col overflow-hidden rounded-xl bg-surface shadow-sheet animate-sheet-in',
           size === 'md' ? 'max-w-[480px]' : 'max-w-[600px]',
         )}
       >
-        <header className="px-6 pt-6">
-          <h2 id={titleId} className="text-headline">
+        {/* Uma coluna só: ícone, título, texto, conteúdo e botões começam na mesma linha, com 28px de respiro em volta. */}
+        <header className="px-7 pt-7">
+          {icon && <div className="mb-4">{icon}</div>}
+          <h2 id={titleId} className="text-h4">
             {title}
           </h2>
-          {description && <div className="mt-1.5 text-sm leading-relaxed text-ink-2">{description}</div>}
+          {description && <div className="mt-2 text-body text-ink-2">{description}</div>}
         </header>
-        {children && <div className="overflow-y-auto px-6 pt-5 pb-1">{children}</div>}
-        <footer className="flex flex-wrap items-center justify-end gap-2 px-6 pt-6 pb-5">{footer}</footer>
+        {children && <div className="overflow-y-auto px-7 pt-5">{children}</div>}
+        <footer className="flex flex-wrap items-center justify-end gap-3 px-7 pt-7 pb-7">{footer}</footer>
       </section>
     </div>,
     document.body,

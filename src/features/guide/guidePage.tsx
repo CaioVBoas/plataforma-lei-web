@@ -14,11 +14,12 @@ import { useProjects } from '@/features/projects/shared/hooks/useProjects';
 import { MILESTONE_COPY } from '@/features/projects/shared/utils/projectPresentation';
 import { paths } from '@/routes/paths';
 import { Faq, Rules, Stages, StepTabs, type FaqItem, type GuideStep, type RuleGroup } from './components/guideBlocks';
+import { LeiContact } from './components/leiContact';
 
 const goTo = (to: string, label: string) => (
   <Link to={to} className={buttonClassName({ variant: 'plain', size: 'sm' })}>
     {label}
-    <ArrowRightIcon size={14} />
+    <ArrowRightIcon size={16} />
   </Link>
 );
 
@@ -167,8 +168,10 @@ export const GuidePage = () => {
         <Faq items={FAQ} />
       </Section>
 
+      <LeiContact />
+
       <div className="mt-14 flex flex-wrap items-center justify-between gap-4 border-t border-line pt-8">
-        <p className="text-[15px] font-medium text-ink">Pronto para escolher a primeira demanda?</p>
+        <p className="text-body font-medium text-ink">Pronto para escolher a primeira demanda?</p>
         <Link to={paths.menu} className={buttonClassName({ variant: 'primary' })}>
           <TrayIcon size={16} />
           Abrir o cardápio

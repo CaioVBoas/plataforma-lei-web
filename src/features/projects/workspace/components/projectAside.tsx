@@ -3,7 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useToast } from '@/components/feedback/toastContext';
 import { Button } from '@/components/ui/button';
 import { textLinkClassName } from '@/components/ui/buttonStyles';
-import { Modal } from '@/components/ui/modal';
+import { ConfirmDialog } from '@/components/ui/confirmDialog';
+import { UndoIcon } from '@/components/ui/icons';
 import { Monogram } from '@/components/ui/monogram';
 import { SideCard, SideFact } from '@/components/ui/sideCard';
 import { Stepper } from '@/components/ui/stepper';
@@ -30,20 +31,18 @@ const WithdrawModal = ({ project, onClose }: { project: Project; onClose: () => 
     });
 
   return (
-    <Modal
+    <ConfirmDialog
+      icon={<UndoIcon size={26} />}
       title="Desistir deste projeto?"
       description={`A demanda volta para o cardápio e ${project.organization.name} recebe o aviso. O plano e as anotações deste projeto são apagados.`}
+      confirmLabel="Sim, desistir"
+      confirmIcon={<UndoIcon size={20} />}
+      cancelLabel="Não, continuar"
+      pending={withdraw.isPending}
+      pendingLabel="Desistindo"
+      error={withdraw.error?.message}
+      onConfirm={confirm}
       onClose={onClose}
-      footer={
-        <>
-          <Button variant="secondary" onClick={onClose}>
-            Continuar com o projeto
-          </Button>
-          <Button variant="destructive" disabled={withdraw.isPending} onClick={confirm}>
-            Desistir
-          </Button>
-        </>
-      }
     />
   );
 };
@@ -61,16 +60,16 @@ const TeamCard = ({ project }: { project: Project }) => {
 
   return (
     <SideCard title="Turma no projeto">
-      <Link to={paths.discipline(project.disciplineId)} className="text-[15px] font-semibold text-ink hover:text-brand-strong">
+      <Link to={paths.discipline(project.disciplineId)} className="text-body font-semibold text-ink hover:text-brand-strong">
         {project.disciplineName}
       </Link>
       {discipline && (
         <>
           <div className="mt-3 rounded-md border border-fact-line bg-fact p-3">
-            <div className="flex items-center justify-between gap-3">
-              <span className="text-[13px] font-semibold text-fact-label">Equipes</span>
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <span className="text-small font-semibold text-fact-label">Equipes</span>
               {done ? (
-                <span className="text-sm font-medium text-ink">{pluralize(project.teams, 'equipe', 'equipes')}</span>
+                <span className="text-small font-medium text-ink">{pluralize(project.teams, 'equipe', 'equipes')}</span>
               ) : (
                 <Stepper
                   label="equipes"
@@ -82,7 +81,7 @@ const TeamCard = ({ project }: { project: Project }) => {
                 />
               )}
             </div>
-            <p className="mt-2.5 text-[13px] leading-relaxed text-ink-2">
+            <p className="mt-2.5 text-small text-ink-2">
               <span className="font-semibold text-brand-strong tabular-nums">
                 {students} de {discipline.students}
               </span>{' '}
@@ -95,9 +94,10 @@ const TeamCard = ({ project }: { project: Project }) => {
       {canWithdraw(project) && (
         <div className="mt-4 border-t border-line pt-3">
           <Button variant="destructive" size="sm" className="-ml-3" onClick={() => setWithdrawing(true)}>
+            <UndoIcon size={16} />
             Desistir do projeto
           </Button>
-          <p className="mt-1 text-[12px] leading-relaxed text-ink-3">Possível até o registro no SIGAA. A demanda volta para o cardápio.</p>
+          <p className="mt-1 text-caption text-ink-3">Possível até o registro no SIGAA. A demanda volta para o cardápio.</p>
         </div>
       )}
 
@@ -116,14 +116,14 @@ const ContactCard = ({ project }: { project: Project }) => {
       <Link to={paths.organization(organization.id)} className="group mb-4 flex items-center gap-3">
         <Monogram name={organization.name} />
         <span className="min-w-0">
-          <span className="block truncate text-[15px] font-semibold text-ink group-hover:text-brand-strong">{organization.name}</span>
-          <span className="block truncate text-[12px] text-ink-3">{organization.type}</span>
+          <span className="block truncate text-body font-semibold text-ink group-hover:text-brand-strong">{organization.name}</span>
+          <span className="block truncate text-caption text-ink-3">{organization.type}</span>
         </span>
       </Link>
       <dl>
         <SideFact label="Ponto focal">
           {contact.focalName}
-          <span className="block text-[13px] text-ink-2">{contact.focalRole}</span>
+          <span className="block text-small text-ink-2">{contact.focalRole}</span>
         </SideFact>
         <SideFact label="E-mail">
           <a href={`mailto:${contact.email}`} className={textLinkClassName}>
@@ -139,7 +139,7 @@ const ContactCard = ({ project }: { project: Project }) => {
 };
 
 export const ProjectAside = ({ project }: { project: Project }) => (
-  <aside className="flex flex-col gap-4 lg:sticky lg:top-20 lg:self-start">
+  <aside className="flex flex-col gap-5 lg:sticky lg:top-20 lg:self-start">
     <TeamCard project={project} />
     <ContactCard project={project} />
   </aside>

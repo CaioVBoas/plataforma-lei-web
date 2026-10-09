@@ -1,9 +1,9 @@
-import type { ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { useToast } from '@/components/feedback/toastContext';
 import { Button } from '@/components/ui/button';
 import { buttonClassName } from '@/components/ui/buttonStyles';
-import { ArrowRightIcon, BellIcon, BookmarkIcon, CheckIcon, FolderIcon } from '@/components/ui/icons';
+import { ArrowRightIcon, BellIcon, BookmarkIcon, CheckIcon, FolderIcon, UndoIcon } from '@/components/ui/icons';
 import { formatShortDate, isLinkWindowOpen } from '@/domain/calendar';
 import { freeSlots } from '@/domain/disciplineRules';
 import type { DisciplineMatch } from '@/domain/matching';
@@ -17,6 +17,7 @@ import { cn } from '@/utils/cn';
 import { useReleaseReservation, useReserveDemand, useToggleWatch } from '../useDemands';
 import type { DemandDetail } from '../types';
 import { daysLeftLabel } from '../utils/demandPresentation';
+import { ConfirmDialog } from '@/components/ui/confirmDialog';
 
 const Panel = ({ tone = 'default', children }: { tone?: 'default' | 'reserve'; children: ReactNode }) => (
   <div className={cn('rounded-lg border p-5', tone === 'reserve' ? 'border-reserve-dot/40 bg-surface' : 'border-line')}>{children}</div>
@@ -25,7 +26,7 @@ const Panel = ({ tone = 'default', children }: { tone?: 'default' | 'reserve'; c
 /** O estado da demanda no topo do painel, como tag: livre, reservada, em projeto. */
 const Eyebrow = ({ children, tone = 'neutral' }: { children: ReactNode; tone?: StatusTone }) => <Tag tone={tone}>{children}</Tag>;
 
-const Fine = ({ children }: { children: ReactNode }) => <p className="mt-3 text-[13px] leading-relaxed text-ink-3">{children}</p>;
+const Fine = ({ children }: { children: ReactNode }) => <p className="mt-3 text-small text-ink-3">{children}</p>;
 
 interface DecisionPanelProps {
   detail: DemandDetail;
@@ -43,6 +44,7 @@ export const DecisionPanel = ({ detail, best, calendar, hasDisciplines, onAdopt 
   const toast = useToast();
   const reserve = useReserveDemand();
   const release = useReleaseReservation();
+  const [releasing, setReleasing] = useState(false);
   const watch = useToggleWatch();
   const { demand } = detail;
   const failed = [reserve, release, watch].find((mutation) => mutation.isError)?.error;
@@ -50,8 +52,8 @@ export const DecisionPanel = ({ detail, best, calendar, hasDisciplines, onAdopt 
   if (detail.projectId) {
     return (
       <Panel>
-        <p className="text-headline">Esta demanda é um projeto seu</p>
-        <p className="mt-1 text-sm text-ink-2">Acompanhe as etapas e o plano no projeto.</p>
+        <p className="text-h4">Esta demanda é um projeto seu</p>
+        <p className="mt-1 text-small text-ink-2">Acompanhe as etapas e o plano no projeto.</p>
         <Link to={paths.project(detail.projectId)} className={cn(buttonClassName({ variant: 'primary', fullWidth: true }), 'mt-4')}>
           <FolderIcon size={16} />
           Abrir projeto
@@ -61,7 +63,7 @@ export const DecisionPanel = ({ detail, best, calendar, hasDisciplines, onAdopt 
   }
 
   const error = failed && (
-    <p role="alert" className="mt-3 text-[13px] text-critical">
+    <p role="alert" className="mt-3 text-small text-critical">
       {failed.message}
     </p>
   );
@@ -71,21 +73,38 @@ export const DecisionPanel = ({ detail, best, calendar, hasDisciplines, onAdopt 
     return (
       <Panel tone="reserve">
         <Eyebrow tone="reserve">Sua reserva, {daysLeftLabel(demand.reservation.until, calendar.today)}</Eyebrow>
-        <p className="mt-2.5 text-headline">Guardada para você até {formatShortDate(demand.reservation.until)}</p>
-        <p className="mt-1 text-sm text-ink-2">Ninguém mais consegue levar esta demanda enquanto a reserva valer.</p>
+        <p className="mt-2.5 text-h4">Guardada para você até {formatShortDate(demand.reservation.until)}</p>
+        <p className="mt-1 text-small text-ink-2">Ninguém mais consegue levar esta demanda enquanto a reserva valer.</p>
         <Button variant="primary" size="lg" fullWidth className="mt-5" disabled={!windowOpen} onClick={onAdopt}>
           Levar para uma disciplina
           <ArrowRightIcon size={16} />
         </Button>
-        <Button
-          variant="secondary"
-          fullWidth
-          className="mt-2"
-          disabled={release.isPending}
-          onClick={() => release.mutate(demand.id, { onSuccess: () => toast.show('Reserva liberada. A demanda voltou para o cardápio.') })}
-        >
+        <Button variant="secondary" fullWidth className="mt-2" disabled={release.isPending} onClick={() => setReleasing(true)}>
+          <UndoIcon size={16} />
           Liberar reserva
         </Button>
+        {releasing && (
+          <ConfirmDialog
+            icon={<UndoIcon size={26} />}
+            title="Liberar a reserva?"
+            description="A demanda volta para o cardápio e outro docente pode reservar. Se mudar de ideia, você precisa reservar de novo, se ela ainda estiver livre."
+            confirmLabel="Sim, liberar"
+            confirmIcon={<UndoIcon size={20} />}
+            cancelLabel="Não, manter"
+            pending={release.isPending}
+            pendingLabel="Liberando"
+            error={release.error?.message}
+            onConfirm={() =>
+              release.mutate(demand.id, {
+                onSuccess: () => {
+                  setReleasing(false);
+                  toast.show('Reserva liberada. A demanda voltou para o cardápio.');
+                },
+              })
+            }
+            onClose={() => setReleasing(false)}
+          />
+        )}
         {!windowOpen && <Fine>O prazo de {calendar.id} para levar demandas terminou em {formatShortDate(calendar.linkDeadline)}.</Fine>}
         {error}
       </Panel>
@@ -96,14 +115,14 @@ export const DecisionPanel = ({ detail, best, calendar, hasDisciplines, onAdopt 
     return (
       <Panel>
         <Eyebrow>Reservada</Eyebrow>
-        <p className="mt-2.5 text-headline">{demand.reservation.teacherName} está avaliando esta demanda</p>
-        <p className="mt-1 text-sm text-ink-2">
+        <p className="mt-2.5 text-h4">{demand.reservation.teacherName} está avaliando esta demanda</p>
+        <p className="mt-1 text-small text-ink-2">
           A reserva vale até {formatShortDate(demand.reservation.until)}. Se não virar projeto, a demanda volta para o cardápio.
         </p>
         <Button variant="secondary" size="lg" fullWidth className="mt-5" disabled={watch.isPending} onClick={() => watch.mutate(demand.id)}>
           {demand.watching ? (
             <>
-              <CheckIcon size={15} />
+              <CheckIcon size={16} />
               Aviso ligado
             </>
           ) : (
@@ -128,7 +147,7 @@ export const DecisionPanel = ({ detail, best, calendar, hasDisciplines, onAdopt 
   return (
     <Panel>
       <Eyebrow tone="positive">Livre no cardápio</Eyebrow>
-      <p className="mt-2.5 text-headline">
+      <p className="mt-2.5 text-h4">
         {!hasDisciplines
           ? 'Nenhuma turma cadastrada ainda'
           : best?.fits
@@ -138,7 +157,7 @@ export const DecisionPanel = ({ detail, best, calendar, hasDisciplines, onAdopt 
               : 'Não combina com suas turmas'}
       </p>
       {best && hasDisciplines && (
-        <p className="mt-1 text-sm text-ink-2">
+        <p className="mt-1 text-small text-ink-2">
           {best.aboveLevel && !best.fits
             ? `A turma cobre ${best.covered.length} de ${demand.skills.length} competências, mas a demanda pede mais do que a altura do curso dela.`
             : `Cobre ${best.covered.length} de ${demand.skills.length} competências pedidas${anySlot ? '.' : ', mas a turma está sem vaga.'}`}

@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { useToast } from '@/components/feedback/toastContext';
 import { Button } from '@/components/ui/button';
 import { AutoResizeTextarea } from '@/components/ui/formControls';
-import { CopyIcon } from '@/components/ui/icons';
+import { CheckIcon, CopyIcon } from '@/components/ui/icons';
+import { ConfirmDialog } from '@/components/ui/confirmDialog';
 import { formatShortDate } from '@/domain/calendar';
 import { emptyPlanSections, isPlanLocked, nextMilestone } from '@/domain/projectLifecycle';
 import type { IsoDate, PlanSection, Project } from '@/domain/types';
@@ -33,27 +34,27 @@ const PlanSectionField = ({ projectId, index, section, locked }: SectionProps) =
   return (
     <div className="border-t border-line py-6 first:border-t-0 first:pt-0">
       <div className="mb-2 flex items-baseline justify-between gap-4">
-        <label htmlFor={fieldId} className="text-[15px] font-semibold text-ink">
+        <label htmlFor={fieldId} className="text-body font-semibold text-ink">
           {section.title}
         </label>
-        <button type="button" onClick={() => copy('section', text)} className="inline-flex items-center gap-1 text-[13px] text-accent hover:text-accent-hover">
-          <CopyIcon size={14} />
+        <button type="button" onClick={() => copy('section', text)} className="inline-flex items-center gap-1 text-small text-accent hover:text-accent-hover">
+          <CopyIcon size={16} />
           {copiedKey === 'section' ? 'Copiado' : 'Copiar'}
         </button>
       </div>
       {locked ? (
-        <p id={fieldId} className="text-[15px] leading-relaxed whitespace-pre-line text-ink-2">
+        <p id={fieldId} className="text-body whitespace-pre-line text-ink-2">
           {section.text}
         </p>
       ) : (
         <>
           <AutoResizeTextarea id={fieldId} value={text} onChange={(event) => setText(event.target.value)} onBlur={save} aria-invalid={overLimit} />
-          <p className={cn('mt-1.5 text-right text-xs tabular-nums', overLimit ? 'text-critical' : 'text-ink-3')}>
+          <p className={cn('mt-1.5 text-right text-caption tabular-nums', overLimit ? 'text-critical' : 'text-ink-3')}>
             {text.length} de {section.limit} caracteres
             {update.isPending && ' · salvando'}
           </p>
           {update.isError && (
-            <p role="alert" className="mt-1 text-[13px] text-critical">
+            <p role="alert" className="mt-1 text-small text-critical">
               {update.error.message}
             </p>
           )}
@@ -69,32 +70,35 @@ const WorkloadTable = ({ project }: { project: Project }) => {
 
   return (
     <div className="mt-10">
-      <h3 className="text-[15px] font-semibold text-ink">Carga horária</h3>
-      <p className="mt-1 text-[13px] text-ink-3">Distribuição sugerida entre as atividades. Vai para o campo de carga horária do SIGAA.</p>
-      <table className="mt-3 w-full overflow-hidden rounded-lg border border-line text-sm">
-        <thead className="bg-canvas text-left text-[13px] text-ink-2">
-          <tr>
-            <th className="px-4 py-2.5 font-medium">Atividade</th>
-            <th className="px-4 py-2.5 font-medium">Quem</th>
-            <th className="px-4 py-2.5 text-right font-medium">Horas</th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-line">
-          {project.workload.map((row) => (
-            <tr key={row.activity}>
-              <td className="px-4 py-2.5">{row.activity}</td>
-              <td className="px-4 py-2.5 text-ink-2">{row.participants}</td>
-              <td className="px-4 py-2.5 text-right tabular-nums">{row.hours}</td>
+      <h3 className="text-body font-semibold text-ink">Carga horária</h3>
+      <p className="mt-1 text-small text-ink-3">Distribuição sugerida entre as atividades. Vai para o campo de carga horária do SIGAA.</p>
+      {/* Com texto grande, a tabela rola dentro do próprio quadro em vez de alargar a página. */}
+      <div className="relative mt-3 overflow-x-auto">
+        <table className="w-full overflow-hidden rounded-lg border border-line text-small">
+          <thead className="bg-canvas text-left text-small text-ink-2">
+            <tr>
+              <th className="px-4 py-2.5 font-medium">Atividade</th>
+              <th className="px-4 py-2.5 font-medium">Quem</th>
+              <th className="px-4 py-2.5 text-right font-medium">Horas</th>
             </tr>
-          ))}
-          <tr className="font-medium">
-            <td className="px-4 py-2.5" colSpan={2}>
-              Total
-            </td>
-            <td className="px-4 py-2.5 text-right tabular-nums">{total}</td>
-          </tr>
-        </tbody>
-      </table>
+          </thead>
+          <tbody className="divide-y divide-line">
+            {project.workload.map((row) => (
+              <tr key={row.activity}>
+                <td className="px-4 py-2.5">{row.activity}</td>
+                <td className="px-4 py-2.5 text-ink-2">{row.participants}</td>
+                <td className="px-4 py-2.5 text-right tabular-nums">{row.hours}</td>
+              </tr>
+            ))}
+            <tr className="font-medium">
+              <td className="px-4 py-2.5" colSpan={2}>
+                Total
+              </td>
+              <td className="px-4 py-2.5 text-right tabular-nums">{total}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };
@@ -108,15 +112,21 @@ export const PlanTab = ({ project, today }: { project: Project; today: IsoDate }
   const empty = emptyPlanSections(project);
   const registeredAt = project.milestones.find((milestone) => milestone.id === 'sigaa')?.doneAt;
 
+  const [confirming, setConfirming] = useState(false);
   const confirm = () =>
     complete.mutate(
       { projectId: project.id, milestoneId: 'plan', doneAt: today },
-      { onSuccess: () => toast.show(MILESTONE_COPY.plan.doneMessage) },
+      {
+        onSuccess: () => {
+          setConfirming(false);
+          toast.show(MILESTONE_COPY.plan.doneMessage);
+        },
+      },
     );
 
   return (
     <div>
-      <p className="mb-8 text-sm leading-relaxed text-ink-2">
+      <p className="mb-8 text-small text-ink-2">
         {locked && registeredAt
           ? `Registrado no SIGAA em ${formatShortDate(registeredAt)}${project.sigaaCode ? ` com o código ${project.sigaaCode}` : ''}. Este é o texto oficial e não muda mais por aqui.`
           : 'Este é o texto que vai para o SIGAA, já com os limites de cada campo. As mudanças são salvas quando você sai do campo.'}
@@ -130,13 +140,30 @@ export const PlanTab = ({ project, today }: { project: Project; today: IsoDate }
 
       {awaitingConfirmation && (
         <div className="sticky bottom-4 mt-10 flex flex-wrap items-center justify-between gap-4 rounded-lg border border-line bg-surface/95 p-4 shadow-popover backdrop-blur-md">
-          <p className="min-w-0 flex-[1_1_300px] text-sm text-ink-2">
+          <p className="min-w-0 flex-[1_1_300px] text-small text-ink-2">
             {empty.length > 0 ? `Falta preencher ${joinWithAnd(empty.map((section) => section.title))}.` : 'Tudo certo? Confirme para seguir para a reunião de abertura.'}
           </p>
-          <Button variant="primary" disabled={empty.length > 0 || complete.isPending} onClick={confirm}>
+          <Button variant="primary" disabled={empty.length > 0 || complete.isPending} onClick={() => setConfirming(true)}>
+            <CheckIcon size={16} />
             Confirmar plano
           </Button>
         </div>
+      )}
+      {confirming && (
+        <ConfirmDialog
+          tone="action"
+          icon={<CheckIcon size={26} />}
+          title="Confirmar o plano?"
+          description="A etapa Revisar o plano fica concluída e o próximo passo vira a reunião de abertura. Dá para ajustar o texto até o registro no SIGAA."
+          confirmLabel="Sim, confirmar"
+          confirmIcon={<CheckIcon size={20} />}
+          cancelLabel="Revisar mais"
+          pending={complete.isPending}
+          pendingLabel="Confirmando"
+          error={complete.error?.message}
+          onConfirm={confirm}
+          onClose={() => setConfirming(false)}
+        />
       )}
     </div>
   );
