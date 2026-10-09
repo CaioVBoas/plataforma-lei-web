@@ -108,7 +108,7 @@ export const ImageSettings = ({ organization }: { organization: Organization }) 
           description={removing === 'logo' ? 'No lugar dela volta a inicial da organização. Dá para enviar outra depois.' : 'No lugar dela volta o fundo petróleo. Dá para enviar outra depois.'}
           confirmLabel="Sim, remover"
           confirmIcon={<TrashIcon size={20} />}
-          cancelLabel="Manter"
+          cancelLabel="Não, manter"
           pending={update.isPending}
           pendingLabel="Removendo"
           onConfirm={() => remove(removing)}

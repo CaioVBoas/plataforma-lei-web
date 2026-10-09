@@ -6,6 +6,8 @@ import { useCalendar } from '@/features/calendar/useCalendar';
 import { useCreateDiscipline } from '../useDisciplines';
 import type { DisciplineWithUsage } from '../types';
 import { DisciplineForm } from './disciplineForm';
+import { DialogActions } from '@/components/ui/confirmDialog';
+import { CheckIcon, CloseIcon } from '@/components/ui/icons';
 
 interface NewDisciplineModalProps {
   onClose: () => void;
@@ -25,14 +27,16 @@ export const NewDisciplineModal = ({ onClose, onCreated }: NewDisciplineModalPro
       size="lg"
       onClose={onClose}
       footer={
-        <>
-          <Button variant="secondary" onClick={onClose}>
+        <DialogActions>
+          <Button variant="secondary" size="xl" fullWidth onClick={onClose}>
+            <CloseIcon size={20} />
             Cancelar
           </Button>
-          <Button variant="primary" type="submit" form={formId} disabled={create.isPending}>
+          <Button variant="primary" size="xl" fullWidth type="submit" form={formId} disabled={create.isPending}>
+            <CheckIcon size={20} />
             Cadastrar
           </Button>
-        </>
+        </DialogActions>
       }
     >
       <DisciplineForm

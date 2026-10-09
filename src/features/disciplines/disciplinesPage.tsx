@@ -91,7 +91,7 @@ const DisciplineItem = ({ discipline, matches, projects }: DisciplineItemProps) 
         description="A disciplina sai da sua lista e deixa de receber indicações. Os projetos já encerrados continuam no histórico."
         confirmLabel="Sim, remover"
         confirmIcon={<TrashIcon size={20} />}
-        cancelLabel="Manter"
+        cancelLabel="Não, manter"
         pending={remove.isPending}
         pendingLabel="Removendo"
         onConfirm={() =>

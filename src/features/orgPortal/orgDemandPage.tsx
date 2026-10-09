@@ -46,7 +46,7 @@ const DeleteDraft = ({ submission }: { submission: DemandSubmission }) => {
           description={`"${submission.title}" ainda não foi enviado ao L.E.I. Excluído, o texto não volta.`}
           confirmLabel="Sim, excluir"
           confirmIcon={<TrashIcon size={20} />}
-          cancelLabel="Manter o rascunho"
+          cancelLabel="Não, manter"
           pending={remove.isPending}
           pendingLabel="Excluindo"
           error={remove.error?.message}

@@ -20,6 +20,7 @@ import { DemandPreviewCard } from './components/demandPreviewCard';
 import { ReviewNote } from './components/reviewNote';
 import { useOrgDemand, useOrgProfile, useSaveDraft, useSubmitForReview } from './useOrgPortal';
 import { demandFormSchema, FIELD_COPY, FORM_STEPS, STEP_FIELDS, stepOf, toDraft, toFormValues, type DemandFormValues } from './utils/demandForm';
+import { WarningNote } from '@/components/ui/warningNote';
 
 const LAST_STEP = FORM_STEPS.length - 1;
 const ALL_FIELDS = STEP_FIELDS.flat();
@@ -167,14 +168,13 @@ const SubmitForm = ({ submission, organization }: SubmitFormProps) => {
           {step === LAST_STEP && (
             <div>
               {missing.length > 0 ? (
-                <div className="mb-8 rounded-lg bg-caution-soft px-5 py-4">
-                  <p className="text-body font-semibold text-caution">Falta preencher antes de enviar</p>
-                  <ul className="mt-2 space-y-1 text-small text-ink">
+                <WarningNote title="Falta preencher antes de enviar" className="mb-8">
+                  <ul className="space-y-1">
                     {missing.map((label) => (
                       <li key={label}>{label}</li>
                     ))}
                   </ul>
-                </div>
+                </WarningNote>
               ) : (
                 <p className="mb-8 rounded-lg bg-accent-soft px-5 py-4 text-body text-ink">
                   Tudo preenchido. Confira abaixo e envie.

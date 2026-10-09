@@ -37,7 +37,7 @@ const WithdrawModal = ({ project, onClose }: { project: Project; onClose: () => 
       description={`A demanda volta para o cardápio e ${project.organization.name} recebe o aviso. O plano e as anotações deste projeto são apagados.`}
       confirmLabel="Sim, desistir"
       confirmIcon={<UndoIcon size={20} />}
-      cancelLabel="Continuar com o projeto"
+      cancelLabel="Não, continuar"
       pending={withdraw.isPending}
       pendingLabel="Desistindo"
       error={withdraw.error?.message}

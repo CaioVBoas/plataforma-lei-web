@@ -38,6 +38,7 @@ export const MissingFieldsDialog = ({ title = 'Falta preencher', description = '
         <Button
           variant="primary"
           size="xl"
+          fullWidth
           onClick={() => {
             onClose();
             first?.onGo?.();
@@ -48,12 +49,12 @@ export const MissingFieldsDialog = ({ title = 'Falta preencher', description = '
         </Button>
       }
     >
-      <ul className="flex flex-col gap-2">
+      <ul className="flex flex-col gap-2.5">
         {items.map((item) => (
-          <li key={item.label} className="flex flex-wrap items-center gap-x-3 gap-y-1 rounded-lg bg-caution-soft px-4 py-3">
+          <li key={item.label} className="flex flex-wrap items-center gap-x-3 gap-y-2 rounded-lg border border-line border-l-4 border-l-caution bg-surface py-3 pr-3 pl-4">
             <div className="min-w-0 flex-[1_1_200px]">
               <p className="text-body font-semibold text-ink">{item.label}</p>
-              <p className="text-small text-ink-2">{item.fix}</p>
+              <p className="mt-0.5 text-small text-ink-2">{item.fix}</p>
             </div>
             {item.onGo && (
               <button
@@ -62,7 +63,7 @@ export const MissingFieldsDialog = ({ title = 'Falta preencher', description = '
                   onClose();
                   item.onGo?.();
                 }}
-                className="inline-flex min-h-10 items-center gap-1.5 rounded-md px-2.5 text-small font-semibold text-accent hover:bg-surface"
+                className="inline-flex min-h-10 shrink-0 items-center gap-1.5 rounded-md px-2.5 text-small font-semibold text-accent hover:bg-accent-soft"
               >
                 Ir para o campo
                 <ArrowRightIcon size={16} />

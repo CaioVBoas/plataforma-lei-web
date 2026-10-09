@@ -5,7 +5,7 @@ import { Field, Input } from '@/components/ui/formControls';
 import { CloseIcon, LockIcon, LogoutIcon, MailIcon, SaveIcon, TrashIcon } from '@/components/ui/icons';
 import { Modal } from '@/components/ui/modal';
 import { PasswordRules } from '@/components/ui/passwordRules';
-import { DialogIcon } from '@/components/ui/confirmDialog';
+import { DialogActions, DialogIcon } from '@/components/ui/confirmDialog';
 import { useLogout } from '@/features/auth/useAuth';
 import type { AccessRole } from '../accessApi';
 import { useChangePassword, useDeleteAccount } from '../useAccess';
@@ -101,16 +101,16 @@ const DeleteAccountModal = ({ role, email, consequence, onClose }: { role: Acces
         </DialogIcon>
       }
       footer={
-        <>
-          <Button variant="secondary" size="xl" onClick={onClose}>
+        <DialogActions>
+          <Button variant="secondary" size="xl" fullWidth onClick={onClose}>
             <CloseIcon size={20} />
-            Cancelar
+            Não, manter
           </Button>
-          <Button variant="danger" size="xl" type="submit" form="excluir-conta" disabled={remove.isPending}>
+          <Button variant="danger" size="xl" fullWidth type="submit" form="excluir-conta" disabled={remove.isPending}>
             <TrashIcon size={20} />
             {remove.isPending ? 'Excluindo' : 'Excluir para sempre'}
           </Button>
-        </>
+        </DialogActions>
       }
     >
       <form id="excluir-conta" onSubmit={confirm} noValidate>

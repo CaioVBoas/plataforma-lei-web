@@ -2,7 +2,7 @@ import { useId, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/components/feedback/toastContext';
 import { Button } from '@/components/ui/button';
-import { PlusIcon } from '@/components/ui/icons';
+import { ArrowLeftIcon, ArrowRightIcon, CloseIcon, FolderIcon, PlusIcon } from '@/components/ui/icons';
 import { Tag } from '@/components/ui/tag';
 import { Modal } from '@/components/ui/modal';
 import { Stepper } from '@/components/ui/stepper';
@@ -18,6 +18,8 @@ import { useAdoptDemand } from '@/features/projects/shared/hooks/useAdoptDemand'
 import { paths } from '@/routes/paths';
 import { cn } from '@/utils/cn';
 import { joinWithAnd, pluralize } from '@/utils/format';
+import { DialogActions } from '@/components/ui/confirmDialog';
+import { WarningNote } from '@/components/ui/warningNote';
 
 const DEFAULT_TEAMS = 2;
 
@@ -119,14 +121,16 @@ export const AdoptDemandModal = ({ demand, disciplines, calendar, onClose }: Ado
         size="lg"
         onClose={onClose}
         footer={
-          <>
-            <Button variant="secondary" onClick={() => (disciplines.length > 0 ? setCreating(false) : onClose())}>
+          <DialogActions>
+            <Button variant="secondary" size="xl" fullWidth onClick={() => (disciplines.length > 0 ? setCreating(false) : onClose())}>
+              {disciplines.length > 0 ? <ArrowLeftIcon size={20} /> : <CloseIcon size={20} />}
               {disciplines.length > 0 ? 'Voltar' : 'Cancelar'}
             </Button>
-            <Button variant="primary" type="submit" form={formId} disabled={createDiscipline.isPending}>
+            <Button variant="primary" size="xl" fullWidth type="submit" form={formId} disabled={createDiscipline.isPending}>
+              <ArrowRightIcon size={20} />
               Cadastrar e continuar
             </Button>
-          </>
+          </DialogActions>
         }
       >
         <DisciplineForm
@@ -156,14 +160,16 @@ export const AdoptDemandModal = ({ demand, disciplines, calendar, onClose }: Ado
       description={`${demand.title}, de ${demand.organization.name}.`}
       onClose={onClose}
       footer={
-        <>
-          <Button variant="secondary" onClick={onClose}>
+        <DialogActions>
+          <Button variant="secondary" size="xl" fullWidth onClick={onClose}>
+            <CloseIcon size={20} />
             Cancelar
           </Button>
-          <Button variant="primary" disabled={!selected || (needsAck && !acknowledged) || adopt.isPending} onClick={confirm}>
+          <Button variant="primary" size="xl" fullWidth disabled={!selected || (needsAck && !acknowledged) || adopt.isPending} onClick={confirm}>
+            <FolderIcon size={20} />
             Criar projeto
           </Button>
-        </>
+        </DialogActions>
       }
     >
       <fieldset>
@@ -193,9 +199,8 @@ export const AdoptDemandModal = ({ demand, disciplines, calendar, onClose }: Ado
       </fieldset>
 
       {needsAck && selectedMatch && (
-        <div role="alert" className="mt-5 rounded-md bg-caution-soft px-4 py-3.5">
-          <p className="text-small font-medium text-caution">Esta demanda não serve para {selectedMatch.discipline.name}</p>
-          <p className="mt-1 text-small text-ink-2">
+        <WarningNote role="alert" title={`Esta demanda não serve para ${selectedMatch.discipline.name}`} className="mt-5">
+          <p className="text-small text-ink-2">
             A turma cobre {selectedMatch.covered.length} de {demand.skills.length} competências pedidas
             {selectedMatch.missing.length > 0 && ` e não trabalha ${joinWithAnd(selectedMatch.missing)}`}. Dá para levar, mas o resultado com a organização fica
             por sua conta.
@@ -204,7 +209,7 @@ export const AdoptDemandModal = ({ demand, disciplines, calendar, onClose }: Ado
             <input type="checkbox" checked={acknowledged} onChange={(event) => setAcknowledged(event.target.checked)} className="mt-0.5 accent-accent" />
             Entendo e quero levar para esta turma mesmo assim.
           </label>
-        </div>
+        </WarningNote>
       )}
 
       {selected && (

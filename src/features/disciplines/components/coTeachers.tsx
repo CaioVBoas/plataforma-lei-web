@@ -87,7 +87,7 @@ export const CoTeachers = ({ discipline }: { discipline: DisciplineWithUsage }) 
           description="A pessoa deixa de ver os projetos desta disciplina. Dá para convidar de novo depois."
           confirmLabel="Sim, tirar"
           confirmIcon={<TrashIcon size={20} />}
-          cancelLabel="Manter"
+          cancelLabel="Não, manter"
           pending={remove.isPending}
           pendingLabel="Tirando"
           onConfirm={() =>

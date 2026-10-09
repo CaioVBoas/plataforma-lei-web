@@ -54,7 +54,7 @@ const PhotoActions = ({ account }: { account: Account }) => {
           description="No lugar dela voltam as suas iniciais. Dá para enviar outra depois."
           confirmLabel="Sim, remover"
           confirmIcon={<TrashIcon size={20} />}
-          cancelLabel="Manter"
+          cancelLabel="Não, manter"
           pending={update.isPending}
           pendingLabel="Removendo"
           onConfirm={() => update.mutate({ photo: '' }, { onSuccess: () => toast.show('Foto removida.'), onSettled: () => setConfirmingRemove(false) })}
