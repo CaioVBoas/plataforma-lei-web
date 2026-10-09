@@ -101,12 +101,12 @@
   --color-line: #e0e5e6;
   --color-line-strong: #ccd3d4;
 
-  /* Ação: Azul Tecnológico do Design System, no tom 600 para não gritar. */
-  --color-accent: #1a42c2;
-  --color-accent-hover: #16349a;
-  --color-accent-soft: #eef3ff;
+  /* Ação: Azul Inverno, um azul mais calmo e menos violeta, que ainda passa AA com texto branco (6:1). */
+  --color-accent: #2a64ad;
+  --color-accent-hover: #1f5290;
+  --color-accent-soft: #edf3fa;
   /* Azul legível sobre o fundo escuro do aviso. */
-  --color-accent-on-dark: #86a4ff;
+  --color-accent-on-dark: #8fb4e3;
 
   /* Reserva: Laranja Social do Design System, exclusivo da reserva. */
   --color-reserve: #a63d10;
@@ -127,7 +127,7 @@
 
   --shadow-popover: 0 8px 24px rgba(0, 0, 0, 0.12), 0 0 0 0.5px rgba(0, 0, 0, 0.08);
   --shadow-sheet: 0 20px 60px rgba(0, 0, 0, 0.18), 0 0 0 0.5px rgba(0, 0, 0, 0.08);
-  --shadow-focus: 0 0 0 3px rgba(26, 66, 194, 0.3);
+  --shadow-focus: 0 0 0 3px rgba(42, 100, 173, 0.3);
 
   --ease-standard: cubic-bezier(0.25, 0.1, 0.25, 1);
 
@@ -194,9 +194,9 @@
   --color-line: #2a3234;
   --color-line-strong: #3c4648;
 
-  --color-accent: #4d72f0;
-  --color-accent-hover: #6b8cff;
-  --color-accent-soft: #1a2445;
+  --color-accent: #3d75b8;
+  --color-accent-hover: #5287c7;
+  --color-accent-soft: #16222f;
 
   --color-reserve: #ff9a66;
   --color-reserve-soft: #3a2216;
@@ -210,7 +210,7 @@
 
   --shadow-popover: 0 8px 24px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.06);
   --shadow-sheet: 0 20px 60px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.06);
-  --shadow-focus: 0 0 0 3px rgba(107, 140, 255, 0.45);
+  --shadow-focus: 0 0 0 3px rgba(143, 180, 227, 0.45);
 }
 
 /* Overline: além do degrau da escala, sempre em caixa alta. */
