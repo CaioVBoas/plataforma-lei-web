@@ -1,7 +1,8 @@
-import { useRef, type ChangeEvent, type ReactNode } from 'react';
+import { useRef, useState, type ChangeEvent, type ReactNode } from 'react';
 import { useToast } from '@/components/feedback/toastContext';
 import { Button } from '@/components/ui/button';
-import { ImageIcon } from '@/components/ui/icons';
+import { ImageIcon, TrashIcon } from '@/components/ui/icons';
+import { ConfirmDialog } from '@/components/ui/confirmDialog';
 import { Monogram } from '@/components/ui/monogram';
 import type { Organization } from '@/domain/types';
 import { organizationCover } from '@/lib/covers';
@@ -44,6 +45,7 @@ const ImageRow = ({ label, hint, preview, hasImage, pending, onChoose, onRemove 
         </Button>
         {hasImage && (
           <Button variant="destructive" size="sm" disabled={pending} onClick={onRemove}>
+            <TrashIcon size={16} />
             Remover
           </Button>
         )}
@@ -69,7 +71,9 @@ export const ImageSettings = ({ organization }: { organization: Organization }) 
       toast.show(error instanceof Error ? error.message : 'Não deu para usar esta imagem.');
     }
   };
-  const remove = (key: 'logo' | 'cover') => update.mutate({ [key]: '' }, { onSuccess: () => toast.show(key === 'logo' ? 'Logo removida.' : 'Capa removida.') });
+  const [removing, setRemoving] = useState<'logo' | 'cover' | null>(null);
+  const remove = (key: 'logo' | 'cover') =>
+    update.mutate({ [key]: '' }, { onSuccess: () => toast.show(key === 'logo' ? 'Logo removida.' : 'Capa removida.'), onSettled: () => setRemoving(null) });
 
   return (
     <div className="mb-5 divide-y divide-line rounded-lg border border-line bg-surface p-6 sm:p-6">
@@ -80,7 +84,7 @@ export const ImageSettings = ({ organization }: { organization: Organization }) 
         hasImage={Boolean(organization.logo)}
         pending={update.isPending}
         onChoose={(file) => send('logo', file)}
-        onRemove={() => remove('logo')}
+        onRemove={() => setRemoving('logo')}
       />
       <ImageRow
         label="Capa"
@@ -95,8 +99,22 @@ export const ImageSettings = ({ organization }: { organization: Organization }) 
         hasImage={Boolean(organization.cover)}
         pending={update.isPending}
         onChoose={(file) => send('cover', file)}
-        onRemove={() => remove('cover')}
+        onRemove={() => setRemoving('cover')}
       />
+      {removing && (
+        <ConfirmDialog
+          icon={<TrashIcon size={26} />}
+          title={removing === 'logo' ? 'Remover a logo?' : 'Remover a capa?'}
+          description={removing === 'logo' ? 'No lugar dela volta a inicial da organização. Dá para enviar outra depois.' : 'No lugar dela volta o fundo petróleo. Dá para enviar outra depois.'}
+          confirmLabel="Sim, remover"
+          confirmIcon={<TrashIcon size={20} />}
+          cancelLabel="Manter"
+          pending={update.isPending}
+          pendingLabel="Removendo"
+          onConfirm={() => remove(removing)}
+          onClose={() => setRemoving(null)}
+        />
+      )}
     </div>
   );
 };

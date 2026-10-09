@@ -9,7 +9,8 @@ import {
   type TextareaHTMLAttributes,
 } from 'react';
 import { cn } from '@/utils/cn';
-import { ChevronDownIcon, SearchIcon } from './icons';
+import { HelpTip } from './helpTip';
+import { ChevronDownIcon, InfoIcon, SearchIcon } from './icons';
 
 const FIELD_CLASSES =
   'w-full rounded-md border border-line-strong bg-surface text-ink placeholder:text-ink-3 transition-[border-color,box-shadow] duration-150 focus:border-accent';
@@ -73,19 +74,31 @@ interface FieldProps {
   htmlFor?: string;
   hint?: ReactNode;
   error?: string;
+  /** Mostra "Obrigatório" ao lado do rótulo, para a pessoa saber antes de tentar avançar. */
+  required?: boolean;
+  /** Explicação curta no "?" ao lado do rótulo, para o que pode gerar dúvida. */
+  help?: string;
   className?: string;
   children: ReactNode;
 }
 
-/** Rótulo sempre visível acima do campo: placeholder nunca faz papel de label. */
-export const Field = ({ label, htmlFor, hint, error, className, children }: FieldProps) => (
-  <div className={className}>
-    <label htmlFor={htmlFor} className="mb-1.5 block text-small font-medium text-ink-2">
-      {label}
-    </label>
+/**
+ * Rótulo sempre visível acima do campo: placeholder nunca faz papel de label.
+ * Com erro, a borda fica vermelha e a mensagem diz o que corrigir.
+ */
+export const Field = ({ label, htmlFor, hint, error, required, help, className, children }: FieldProps) => (
+  <div className={cn(className, error && '[&_input]:border-critical! [&_select]:border-critical! [&_textarea]:border-critical!')}>
+    <div className="mb-1.5 flex flex-wrap items-center gap-x-1.5">
+      <label htmlFor={htmlFor} className="text-small font-medium text-ink-2">
+        {label}
+      </label>
+      {required && <span className="text-caption font-medium text-ink-3">Obrigatório</span>}
+      {help && <HelpTip label={label} text={help} />}
+    </div>
     {children}
     {error ? (
-      <p role="alert" className="mt-1.5 text-small text-critical">
+      <p role="alert" className="mt-1.5 flex items-start gap-1.5 text-small font-medium text-critical">
+        <InfoIcon size={16} className="mt-0.5 shrink-0" />
         {error}
       </p>
     ) : (

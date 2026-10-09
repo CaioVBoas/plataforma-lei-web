@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Field, FormGroup, Input, Textarea } from '@/components/ui/formControls';
 import { CloseIcon, PencilIcon, SaveIcon } from '@/components/ui/icons';
 import { InfoList } from '@/components/ui/infoList';
+import { MissingFieldsDialog, type MissingItem } from '@/components/ui/missingFieldsDialog';
 import { Monogram } from '@/components/ui/monogram';
 import { Page, Section } from '@/components/ui/page';
 import { ProfileHeader } from '@/components/ui/profileHeader';
@@ -49,7 +50,7 @@ const toInput = ({ organization, contact }: OrgProfile): OrgProfileInput => ({
 const GROUPS = {
   who: { title: 'Quem são vocês', hint: 'Aparece no perfil da organização e no detalhe de cada demanda.' },
   how: { title: 'Como trabalham com a turma', hint: 'O docente lê isso para saber se a rotina de vocês cabe na da disciplina.' },
-  focal: { title: 'Ponto focal', hint: 'Quem fala com o docente. O contato só aparece para quem levou uma demanda de vocês para a turma.' },
+  focal: { title: 'Ponto focal', hint: 'Quem fala com o docente. Só quem leva a demanda vê o contato.' },
   you: { title: 'Quem usa esta conta', hint: 'Seu nome e cargo aparecem nas respostas às perguntas dos docentes.' },
 };
 
@@ -100,6 +101,19 @@ const ProfileView = ({ profile, account }: { profile: OrgProfile; account: OrgAc
   );
 };
 
+const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+/** O que impede salvar, campo a campo, com o jeito de corrigir. */
+const profileErrors = (input: OrgProfileInput, you: { name: string }) => {
+  const errors: Partial<Record<'focalName' | 'focalEmail' | 'youName', string>> = {};
+  if (!input.contact.focalName.trim()) errors.focalName = 'Escreva o nome de quem fala com o docente.';
+  if (!EMAIL.test(input.contact.email.trim())) errors.focalEmail = 'Confira o e-mail: ele precisa ter @ e um ponto. Ex.: nome@organizacao.org.br';
+  if (!you.name.trim()) errors.youName = 'Escreva o seu nome.';
+  return errors;
+};
+
+const FIELD_LABELS = { focalName: { label: 'Nome do ponto focal', id: 'perfil-focal-nome' }, focalEmail: { label: 'E-mail do ponto focal', id: 'perfil-focal-email' }, youName: { label: 'Seu nome', id: 'conta-org-nome' } } as const;
+
 /** O mesmo perfil com os campos abertos, depois de "Editar perfil". Salvar ou cancelar volta para a leitura. */
 const ProfileForm = ({ profile, account, onClose }: { profile: OrgProfile; account: OrgAccount; onClose: () => void }) => {
   const toast = useToast();
@@ -108,6 +122,13 @@ const ProfileForm = ({ profile, account, onClose }: { profile: OrgProfile; accou
   const [input, setInput] = useState(() => toInput(profile));
   const [you, setYou] = useState({ name: account.name, position: account.position, phone: account.phone });
   const [error, setError] = useState<Error | null>(null);
+  // O erro aparece enquanto a pessoa mexe no campo (ou ao tentar salvar) e some assim que fica certo. Não espera o campo perder
+  // o foco: o erro surgindo no clique empurraria o botão Salvar para longe do mouse.
+  const [touched, setTouched] = useState<Partial<Record<keyof typeof FIELD_LABELS, boolean>>>({});
+  const [problems, setProblems] = useState<MissingItem[] | null>(null);
+  const errors = profileErrors(input, you);
+  const shown = (field: keyof typeof FIELD_LABELS) => (touched[field] ? errors[field] : undefined);
+  const touch = (field: keyof typeof FIELD_LABELS) => () => setTouched((current) => ({ ...current, [field]: true }));
   const set = (patch: Partial<OrgProfileInput>) => setInput((current) => ({ ...current, ...patch }));
   const setContact = (patch: Partial<OrgProfileInput['contact']>) => setInput((current) => ({ ...current, contact: { ...current.contact, ...patch } }));
   const pending = updateProfile.isPending || updateAccount.isPending;
@@ -115,6 +136,12 @@ const ProfileForm = ({ profile, account, onClose }: { profile: OrgProfile; accou
   const save = async (event: FormEvent) => {
     event.preventDefault();
     setError(null);
+    const invalid = (Object.keys(errors) as (keyof typeof FIELD_LABELS)[]).filter((field) => errors[field]);
+    if (invalid.length > 0) {
+      setTouched({ focalName: true, focalEmail: true, youName: true });
+      setProblems(invalid.map((field) => ({ label: FIELD_LABELS[field].label, fix: errors[field] ?? '', onGo: () => document.getElementById(FIELD_LABELS[field].id)?.focus() })));
+      return;
+    }
     try {
       await Promise.all([updateProfile.mutateAsync(input), updateAccount.mutateAsync(you)]);
       toast.show('Perfil salvo. Os docentes já veem a versão nova.');
@@ -125,7 +152,7 @@ const ProfileForm = ({ profile, account, onClose }: { profile: OrgProfile; accou
   };
 
   return (
-    <form onSubmit={save} aria-label="Editar perfil" className="@container rounded-lg border border-accent bg-surface p-6 sm:p-7">
+    <form onSubmit={save} noValidate aria-label="Editar perfil" className="@container rounded-lg border border-accent bg-surface p-6 sm:p-7">
       <FormGroup {...GROUPS.who}>
         <div className="flex flex-col gap-5">
           <div>
@@ -154,7 +181,7 @@ const ProfileForm = ({ profile, account, onClose }: { profile: OrgProfile; accou
           <Field label="Reuniões" htmlFor="perfil-reunioes" hint={`Ex.: ${MEETING_SUGGESTIONS[1]}`}>
             <Input id="perfil-reunioes" value={input.meetingCadence} onChange={(event) => set({ meetingCadence: event.target.value })} />
           </Field>
-          <Field label="Visita da turma" htmlFor="perfil-visita" hint="Se a turma pode ir até vocês, e com quanta antecedência.">
+          <Field label="Visita da turma" htmlFor="perfil-visita" help="Se a turma pode ir até vocês e com quanta antecedência precisa marcar." hint="Ex.: Recebe a turma com agendamento de duas semanas.">
             <Input id="perfil-visita" value={input.onSiteVisit} onChange={(event) => set({ onSiteVisit: event.target.value })} />
           </Field>
         </div>
@@ -162,16 +189,31 @@ const ProfileForm = ({ profile, account, onClose }: { profile: OrgProfile; accou
 
       <FormGroup {...GROUPS.focal}>
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-          <Field label="Nome" htmlFor="perfil-focal-nome">
-            <Input id="perfil-focal-nome" value={input.contact.focalName} onChange={(event) => setContact({ focalName: event.target.value })} />
+          <Field label="Nome" htmlFor="perfil-focal-nome" required error={shown('focalName')}>
+            <Input
+              id="perfil-focal-nome"
+              value={input.contact.focalName}
+              onChange={(event) => {
+                touch('focalName')();
+                setContact({ focalName: event.target.value });
+              }}
+            />
           </Field>
           <Field label="Cargo" htmlFor="perfil-focal-cargo">
             <Input id="perfil-focal-cargo" value={input.contact.focalRole} onChange={(event) => setContact({ focalRole: event.target.value })} />
           </Field>
-          <Field label="E-mail" htmlFor="perfil-focal-email">
-            <Input id="perfil-focal-email" type="email" value={input.contact.email} onChange={(event) => setContact({ email: event.target.value })} />
+          <Field label="E-mail" htmlFor="perfil-focal-email" required error={shown('focalEmail')}>
+            <Input
+              id="perfil-focal-email"
+              type="email"
+              value={input.contact.email}
+              onChange={(event) => {
+                touch('focalEmail')();
+                setContact({ email: event.target.value });
+              }}
+            />
           </Field>
-          <Field label="Melhor canal" htmlFor="perfil-focal-canal">
+          <Field label="Melhor canal" htmlFor="perfil-focal-canal" help="Como o docente fala com vocês mais rápido: e-mail, telefone ou WhatsApp.">
             <Input id="perfil-focal-canal" value={input.contact.channel} onChange={(event) => setContact({ channel: event.target.value })} placeholder="Ex.: E-mail e telefone" />
           </Field>
         </div>
@@ -179,8 +221,16 @@ const ProfileForm = ({ profile, account, onClose }: { profile: OrgProfile; accou
 
       <FormGroup {...GROUPS.you}>
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-          <Field label="Seu nome" htmlFor="conta-org-nome">
-            <Input id="conta-org-nome" value={you.name} onChange={(event) => setYou({ ...you, name: event.target.value })} autoComplete="name" />
+          <Field label="Seu nome" htmlFor="conta-org-nome" required error={shown('youName')}>
+            <Input
+              id="conta-org-nome"
+              value={you.name}
+              onChange={(event) => {
+                touch('youName')();
+                setYou({ ...you, name: event.target.value });
+              }}
+              autoComplete="name"
+            />
           </Field>
           <Field label="Seu cargo" htmlFor="conta-org-cargo">
             <Input id="conta-org-cargo" value={you.position} onChange={(event) => setYou({ ...you, position: event.target.value })} />
@@ -192,6 +242,7 @@ const ProfileForm = ({ profile, account, onClose }: { profile: OrgProfile; accou
       </FormGroup>
 
       <EditBar pending={pending} error={error} onCancel={onClose} />
+      {problems && <MissingFieldsDialog description="Para salvar o perfil, corrija o que está abaixo." items={problems} onClose={() => setProblems(null)} />}
     </form>
   );
 };

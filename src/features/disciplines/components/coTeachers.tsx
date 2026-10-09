@@ -1,5 +1,6 @@
 import { useId, useState, type FormEvent, type ReactNode } from 'react';
-import { MailIcon } from '@/components/ui/icons';
+import { MailIcon, TrashIcon } from '@/components/ui/icons';
+import { ConfirmDialog } from '@/components/ui/confirmDialog';
 import { useToast } from '@/components/feedback/toastContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/formControls';
@@ -32,6 +33,7 @@ export const CoTeachers = ({ discipline }: { discipline: DisciplineWithUsage }) 
   const invite = useInviteCoTeacher();
   const remove = useRemoveCoTeacher();
   const [email, setEmail] = useState('');
+  const [removing, setRemoving] = useState<{ email: string; name: string } | null>(null);
 
   const submit = (event: FormEvent) => {
     event.preventDefault();
@@ -67,7 +69,7 @@ export const CoTeachers = ({ discipline }: { discipline: DisciplineWithUsage }) 
                       {
                         label: 'Tirar da disciplina',
                         destructive: true,
-                        onSelect: () => remove.mutate({ id: discipline.id, email: teacher.email }, { onSuccess: () => toast.show('Colega retirado da disciplina.') }),
+                        onSelect: () => setRemoving({ email: teacher.email, name: teacher.name ?? teacher.email }),
                       },
                     ]}
                   />
@@ -78,8 +80,31 @@ export const CoTeachers = ({ discipline }: { discipline: DisciplineWithUsage }) 
         ))}
       </ul>
 
+      {removing && (
+        <ConfirmDialog
+          icon={<TrashIcon size={26} />}
+          title={`Tirar ${removing.name} da disciplina?`}
+          description="A pessoa deixa de ver os projetos desta disciplina. Dá para convidar de novo depois."
+          confirmLabel="Sim, tirar"
+          confirmIcon={<TrashIcon size={20} />}
+          cancelLabel="Manter"
+          pending={remove.isPending}
+          pendingLabel="Tirando"
+          onConfirm={() =>
+            remove.mutate(
+              { id: discipline.id, email: removing.email },
+              {
+                onSuccess: () => toast.show('Colega retirado da disciplina.'),
+                onSettled: () => setRemoving(null),
+              },
+            )
+          }
+          onClose={() => setRemoving(null)}
+        />
+      )}
+
       {discipline.isCurrent && (
-        <form onSubmit={submit} className="mt-6">
+        <form onSubmit={submit} noValidate className="mt-6">
           <label htmlFor={fieldId} className="mb-1.5 block text-small font-medium text-ink-2">
             Divide a disciplina com alguém?
           </label>

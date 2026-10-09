@@ -31,10 +31,12 @@ interface ModalProps {
   footer: ReactNode;
   children?: ReactNode;
   size?: 'md' | 'lg';
+  /** Ícone grande ao lado do título, que já diz o tipo da pergunta (excluir, enviar, aviso). */
+  icon?: ReactNode;
 }
 
 /** Janela centralizada para confirmar uma decisão sem sair da tela atual. */
-export const Modal = ({ title, description, onClose, footer, children, size = 'md' }: ModalProps) => {
+export const Modal = ({ title, description, onClose, footer, children, size = 'md', icon }: ModalProps) => {
   const titleId = useId();
   useModalBehavior(onClose);
 
@@ -50,11 +52,14 @@ export const Modal = ({ title, description, onClose, footer, children, size = 'm
           size === 'md' ? 'max-w-[480px]' : 'max-w-[600px]',
         )}
       >
-        <header className="px-6 pt-6">
-          <h2 id={titleId} className="text-h4">
-            {title}
-          </h2>
-          {description && <div className="mt-1.5 text-small text-ink-2">{description}</div>}
+        <header className={cn('px-6 pt-6', Boolean(icon) && 'flex items-start gap-4')}>
+          {icon}
+          <div className="min-w-0">
+            <h2 id={titleId} className="text-h4">
+              {title}
+            </h2>
+            {description && <div className="mt-1.5 text-body text-ink-2">{description}</div>}
+          </div>
         </header>
         {children && <div className="overflow-y-auto px-6 pt-5 pb-1">{children}</div>}
         <footer className="flex flex-wrap items-center justify-end gap-2 px-6 pt-6 pb-5">{footer}</footer>

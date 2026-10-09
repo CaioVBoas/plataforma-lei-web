@@ -4,6 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Field, Input } from '@/components/ui/formControls';
 import { CloseIcon, LockIcon, LogoutIcon, MailIcon, SaveIcon, TrashIcon } from '@/components/ui/icons';
 import { Modal } from '@/components/ui/modal';
+import { PasswordRules } from '@/components/ui/passwordRules';
+import { DialogIcon } from '@/components/ui/confirmDialog';
 import { useLogout } from '@/features/auth/useAuth';
 import type { AccessRole } from '../accessApi';
 import { useChangePassword, useDeleteAccount } from '../useAccess';
@@ -51,13 +53,14 @@ const PasswordForm = ({ role, onDone }: { role: AccessRole; onDone: () => void }
         <Field label="Senha atual" htmlFor={`${role}-senha-atual`}>
           <Input id={`${role}-senha-atual`} type="password" value={current} onChange={(event) => setCurrent(event.target.value)} autoComplete="current-password" />
         </Field>
-        <Field label="Senha nova" htmlFor={`${role}-senha-nova`} hint="Pelo menos 8 caracteres.">
+        <Field label="Senha nova" htmlFor={`${role}-senha-nova`}>
           <Input id={`${role}-senha-nova`} type="password" value={next} onChange={(event) => setNext(event.target.value)} autoComplete="new-password" />
         </Field>
         <Field label="Repita a senha nova" htmlFor={`${role}-senha-confirma`}>
           <Input id={`${role}-senha-confirma`} type="password" value={confirm} onChange={(event) => setConfirm(event.target.value)} autoComplete="new-password" />
         </Field>
       </div>
+      <PasswordRules password={next} confirm={confirm} />
       <div className="mt-5 flex flex-wrap items-center justify-end gap-3">
         {change.error && (
           <p role="alert" className="mr-auto text-small text-critical">
@@ -92,20 +95,25 @@ const DeleteAccountModal = ({ role, email, consequence, onClose }: { role: Acces
       title="Excluir a conta?"
       description={consequence}
       onClose={onClose}
+      icon={
+        <DialogIcon tone="danger">
+          <TrashIcon size={26} />
+        </DialogIcon>
+      }
       footer={
         <>
           <Button variant="secondary" size="xl" onClick={onClose}>
             <CloseIcon size={20} />
             Cancelar
           </Button>
-          <Button variant="destructive" size="xl" type="submit" form="excluir-conta" disabled={remove.isPending} className="border border-critical">
+          <Button variant="danger" size="xl" type="submit" form="excluir-conta" disabled={remove.isPending}>
             <TrashIcon size={20} />
             {remove.isPending ? 'Excluindo' : 'Excluir para sempre'}
           </Button>
         </>
       }
     >
-      <form id="excluir-conta" onSubmit={confirm}>
+      <form id="excluir-conta" onSubmit={confirm} noValidate>
         <Field label={`Para confirmar, digite o e-mail da conta: ${email}`} htmlFor="excluir-email" error={remove.error?.message}>
           <Input id="excluir-email" type="email" value={typed} onChange={(event) => setTyped(event.target.value)} autoComplete="off" autoFocus />
         </Field>

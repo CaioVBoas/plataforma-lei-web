@@ -3,7 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useToast } from '@/components/feedback/toastContext';
 import { Button } from '@/components/ui/button';
 import { textLinkClassName } from '@/components/ui/buttonStyles';
-import { Modal } from '@/components/ui/modal';
+import { ConfirmDialog } from '@/components/ui/confirmDialog';
+import { UndoIcon } from '@/components/ui/icons';
 import { Monogram } from '@/components/ui/monogram';
 import { SideCard, SideFact } from '@/components/ui/sideCard';
 import { Stepper } from '@/components/ui/stepper';
@@ -30,20 +31,18 @@ const WithdrawModal = ({ project, onClose }: { project: Project; onClose: () => 
     });
 
   return (
-    <Modal
+    <ConfirmDialog
+      icon={<UndoIcon size={26} />}
       title="Desistir deste projeto?"
       description={`A demanda volta para o cardápio e ${project.organization.name} recebe o aviso. O plano e as anotações deste projeto são apagados.`}
+      confirmLabel="Sim, desistir"
+      confirmIcon={<UndoIcon size={20} />}
+      cancelLabel="Continuar com o projeto"
+      pending={withdraw.isPending}
+      pendingLabel="Desistindo"
+      error={withdraw.error?.message}
+      onConfirm={confirm}
       onClose={onClose}
-      footer={
-        <>
-          <Button variant="secondary" onClick={onClose}>
-            Continuar com o projeto
-          </Button>
-          <Button variant="destructive" disabled={withdraw.isPending} onClick={confirm}>
-            Desistir
-          </Button>
-        </>
-      }
     />
   );
 };
@@ -95,6 +94,7 @@ const TeamCard = ({ project }: { project: Project }) => {
       {canWithdraw(project) && (
         <div className="mt-4 border-t border-line pt-3">
           <Button variant="destructive" size="sm" className="-ml-3" onClick={() => setWithdrawing(true)}>
+            <UndoIcon size={16} />
             Desistir do projeto
           </Button>
           <p className="mt-1 text-caption text-ink-3">Possível até o registro no SIGAA. A demanda volta para o cardápio.</p>

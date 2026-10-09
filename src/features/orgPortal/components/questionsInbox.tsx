@@ -205,7 +205,7 @@ export const QuestionsInbox = ({ demand, questions = demand.questions, header }:
         <p className="flex items-center gap-2 border-t border-line bg-surface px-4 py-3 text-small text-ink-2">
           <DoubleCheckIcon size={20} className="shrink-0 text-brand" />
           {canAnswer
-            ? 'Todas as perguntas foram respondidas. A resposta fica na demanda, para todos os docentes que a abrirem.'
+            ? 'Tudo respondido. Os docentes veem a resposta na demanda.'
             : 'A demanda virou projeto. Agora a conversa é direto com o docente, pelo contato do projeto.'}
         </p>
       )}

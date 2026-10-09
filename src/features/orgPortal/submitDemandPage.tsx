@@ -1,9 +1,13 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm, useWatch } from 'react-hook-form';
+import { useState } from 'react';
+import { useForm, useWatch, type Path } from 'react-hook-form';
 import { Link, Navigate, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { LoadingState, QueryView } from '@/components/feedback/queryStates';
 import { useToast } from '@/components/feedback/toastContext';
 import { Button } from '@/components/ui/button';
+import { ConfirmDialog } from '@/components/ui/confirmDialog';
+import { MissingFieldsDialog, type MissingItem } from '@/components/ui/missingFieldsDialog';
+import { visibleError } from '@/utils/formProblems';
 import { textLinkClassName } from '@/components/ui/buttonStyles';
 import { ArrowLeftIcon, ArrowRightIcon, SaveIcon, SendIcon } from '@/components/ui/icons';
 import { Page } from '@/components/ui/page';
@@ -15,16 +19,30 @@ import { DemandContent } from './components/demandContent';
 import { DemandPreviewCard } from './components/demandPreviewCard';
 import { ReviewNote } from './components/reviewNote';
 import { useOrgDemand, useOrgProfile, useSaveDraft, useSubmitForReview } from './useOrgPortal';
-import { demandFormSchema, FORM_STEPS, STEP_FIELDS, toDraft, toFormValues, type DemandFormValues } from './utils/demandForm';
+import { demandFormSchema, FIELD_COPY, FORM_STEPS, STEP_FIELDS, stepOf, toDraft, toFormValues, type DemandFormValues } from './utils/demandForm';
 
 const LAST_STEP = FORM_STEPS.length - 1;
+const ALL_FIELDS = STEP_FIELDS.flat();
+
+/** A primeira mensagem de erro de um campo, também dentro de listas (ofertas, referências). */
+const firstMessage = (error: unknown): string | undefined => {
+  if (!error || typeof error !== 'object') return undefined;
+  const record = error as Record<string, unknown>;
+  if (typeof record.message === 'string' && record.message) return record.message;
+  for (const [key, value] of Object.entries(record)) {
+    if (key === 'ref') continue;
+    const message = firstMessage(value);
+    if (message) return message;
+  }
+  return undefined;
+};
 
 /** O que acontece depois do envio, dito antes de enviar para ninguém esperar um sistema pronto na semana seguinte. */
 const NEXT_STEPS = [
-  'O L.E.I. lê a demanda. Se faltar alguma coisa, pede um ajuste por aqui.',
-  'Aprovada, ela entra no cardápio e os docentes do CIn passam a ver.',
-  'Um docente pode reservar por até 7 dias, perguntar o que precisar e levar para uma disciplina.',
-  'Vocês recebem o contato do docente e marcam a reunião de abertura com a turma.',
+  'O L.E.I. lê e, se faltar algo, pede um ajuste.',
+  'Aprovada, entra no cardápio dos docentes.',
+  'Um docente reserva, pergunta o que precisar e leva para a turma.',
+  'Vocês recebem o contato e marcam a primeira reunião.',
 ];
 
 interface SubmitFormProps {
@@ -48,9 +66,20 @@ const SubmitForm = ({ submission, organization }: SubmitFormProps) => {
     trigger,
     setValue,
     getValues,
+    getFieldState,
+    setFocus,
     formState: { errors, isDirty },
-  } = useForm<DemandFormValues>({ resolver: zodResolver(demandFormSchema), defaultValues: toFormValues(submission ?? EMPTY_DRAFT) });
+    // Confere a cada letra: erro de tamanho ou de link aparece na hora; o "falta preencher" espera o Continuar.
+  } = useForm<DemandFormValues>({ mode: 'onChange', resolver: zodResolver(demandFormSchema), defaultValues: toFormValues(submission ?? EMPTY_DRAFT) });
+  const [problems, setProblems] = useState<MissingItem[] | null>(null);
+  const [confirming, setConfirming] = useState(false);
+  const [attempted, setAttempted] = useState<number[]>([]);
   const values = useWatch({ control }) as DemandFormValues;
+  const attemptedHere = attempted.includes(step) || attempted.includes(LAST_STEP);
+  // Antes de tentar avançar, só aparecem os erros de campos já escritos.
+  const shownErrors = Object.fromEntries(
+    Object.entries(errors).filter(([field, error]) => visibleError(firstMessage(error), values[field as keyof DemandFormValues], attemptedHere)),
+  ) as typeof errors;
   const draft = toDraft(values);
   const missing = missingForReview(draft);
   const busy = save.isPending || submit.isPending;
@@ -61,8 +90,27 @@ const SubmitForm = ({ submission, organization }: SubmitFormProps) => {
     window.scrollTo(0, 0);
   };
 
+  /** Leva até o campo, trocando de etapa se precisar. */
+  const focusField = (field: keyof DemandFormValues) => {
+    const target = stepOf(field);
+    if (target >= 0 && target !== step) goTo(target);
+    window.setTimeout(() => setFocus(FIELD_COPY[field].focus as Path<DemandFormValues>), 60);
+  };
+
+  /** Confere os campos e devolve o que falta, com o conserto de cada um. */
+  const check = async (fields: (keyof DemandFormValues)[]) => {
+    await trigger(fields);
+    return fields.flatMap((field) => {
+      const message = firstMessage(getFieldState(field).error);
+      return message ? [{ label: FIELD_COPY[field].label, fix: message, onGo: () => focusField(field) }] : [];
+    });
+  };
+
   const next = async () => {
-    if (await trigger(STEP_FIELDS[step])) goTo(Math.min(step + 1, LAST_STEP));
+    setAttempted((current) => [...current, step]);
+    const found = await check(STEP_FIELDS[step]);
+    if (found.length > 0) setProblems(found);
+    else goTo(Math.min(step + 1, LAST_STEP));
   };
 
   const saveDraft = () =>
@@ -75,6 +123,14 @@ const SubmitForm = ({ submission, organization }: SubmitFormProps) => {
         },
       },
     );
+
+  /** Enviar pergunta antes: depois do envio o texto fica com o L.E.I. até a resposta. */
+  const askToSend = async () => {
+    setAttempted((current) => [...current, LAST_STEP]);
+    const found = await check(ALL_FIELDS);
+    if (found.length > 0) setProblems(found);
+    else setConfirming(true);
+  };
 
   const send = handleSubmit(
     (formValues) =>
@@ -105,9 +161,9 @@ const SubmitForm = ({ submission, organization }: SubmitFormProps) => {
           <FormStepsNav step={step} onChange={goTo} />
           <h2 className="mt-8 mb-6 text-h2">{FORM_STEPS[step]}</h2>
 
-          {step === 0 && <ProblemStep register={register} control={control} errors={errors} values={values} />}
-          {step === 1 && <ClassStep register={register} control={control} errors={errors} values={values} />}
-          {step === 2 && <WorkStep register={register} control={control} errors={errors} values={values} setValue={setValue} />}
+          {step === 0 && <ProblemStep register={register} control={control} errors={shownErrors} values={values} />}
+          {step === 1 && <ClassStep register={register} control={control} errors={shownErrors} values={values} />}
+          {step === 2 && <WorkStep register={register} control={control} errors={shownErrors} values={values} setValue={setValue} />}
           {step === LAST_STEP && (
             <div>
               {missing.length > 0 ? (
@@ -121,7 +177,7 @@ const SubmitForm = ({ submission, organization }: SubmitFormProps) => {
                 </div>
               ) : (
                 <p className="mb-8 rounded-lg bg-accent-soft px-5 py-4 text-body text-ink">
-                  Tudo preenchido. Confira o texto abaixo como o docente vai ler e envie para a triagem.
+                  Tudo preenchido. Confira abaixo e envie.
                 </p>
               )}
               <p className="text-h4 font-semibold text-ink">{draft.title || 'Demanda sem nome'}</p>
@@ -172,7 +228,7 @@ const SubmitForm = ({ submission, organization }: SubmitFormProps) => {
                   <ArrowRightIcon size={20} />
                 </Button>
               ) : (
-                <Button variant="primary" size="xl" onClick={send} disabled={busy || missing.length > 0}>
+                <Button variant="primary" size="xl" onClick={askToSend} disabled={busy}>
                   <SendIcon size={20} />
                   {submit.isPending ? 'Enviando' : submission?.stage === 'needs-changes' ? 'Reenviar para a triagem' : 'Enviar para a triagem'}
                 </Button>
@@ -181,11 +237,35 @@ const SubmitForm = ({ submission, organization }: SubmitFormProps) => {
           </div>
         </form>
 
+        {problems && (
+          <MissingFieldsDialog
+            description={step < LAST_STEP ? 'Para seguir para a próxima etapa, preencha o que está abaixo.' : 'Antes de enviar, preencha o que está abaixo.'}
+            items={problems}
+            onClose={() => setProblems(null)}
+          />
+        )}
+        {confirming && (
+          <ConfirmDialog
+            tone="action"
+            icon={<SendIcon size={26} />}
+            title="Enviar para o L.E.I.?"
+            description="O L.E.I. lê em alguns dias. Enquanto isso, vocês não editam o texto. Se faltar algo, ele pede um ajuste por aqui."
+            confirmLabel={submission?.stage === 'needs-changes' ? 'Sim, reenviar' : 'Sim, enviar'}
+            confirmIcon={<SendIcon size={20} />}
+            cancelLabel="Revisar mais"
+            pending={submit.isPending}
+            pendingLabel="Enviando"
+            error={submit.error?.message}
+            onConfirm={() => void send()}
+            onClose={() => setConfirming(false)}
+          />
+        )}
+
         <aside className="lg:sticky lg:top-20 lg:self-start">
           <p className="mb-2.5 text-small font-semibold text-brand-strong">Como aparece no cardápio</p>
           <DemandPreviewCard draft={draft} organization={organization} />
           <p className="mt-3 text-small text-ink-3">
-            O docente abre o cartão e lê o resto. Dúvidas chegam como perguntas na demanda, e vocês respondem por aqui.
+            É assim que o docente vê. As dúvidas dele chegam em Perguntas.
           </p>
         </aside>
       </div>
@@ -196,7 +276,7 @@ const SubmitForm = ({ submission, organization }: SubmitFormProps) => {
 const NewDemand = () => {
   const profile = useOrgProfile();
   return (
-    <Page title="Submeter demanda" subtitle="Conte o problema como vocês vivem. O L.E.I. ajuda a transformar em projeto para uma turma." back={{ to: paths.orgDemands(), label: 'Demandas' }}>
+    <Page title="Submeter demanda" subtitle="Conte o problema do jeito que vocês vivem. São quatro etapas curtas." back={{ to: paths.orgDemands(), label: 'Demandas' }}>
       <QueryView query={profile}>{({ organization }) => <SubmitForm organization={organization} />}</QueryView>
     </Page>
   );

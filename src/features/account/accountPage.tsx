@@ -1,6 +1,8 @@
 import { useRef, useState, type ChangeEvent, type FormEvent } from 'react';
-import { CloseIcon, PencilIcon, SaveIcon, UserIcon } from '@/components/ui/icons';
+import { CloseIcon, PencilIcon, SaveIcon, TrashIcon, UserIcon } from '@/components/ui/icons';
+import { ConfirmDialog } from '@/components/ui/confirmDialog';
 import { InfoList } from '@/components/ui/infoList';
+import { MissingFieldsDialog, type MissingItem } from '@/components/ui/missingFieldsDialog';
 import { Avatar } from '@/components/ui/avatar';
 import { QueryView } from '@/components/feedback/queryStates';
 import { useToast } from '@/components/feedback/toastContext';
@@ -18,6 +20,7 @@ const PhotoActions = ({ account }: { account: Account }) => {
   const toast = useToast();
   const update = useUpdateAccount();
   const inputRef = useRef<HTMLInputElement>(null);
+  const [confirmingRemove, setConfirmingRemove] = useState(false);
 
   const choose = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -39,9 +42,24 @@ const PhotoActions = ({ account }: { account: Account }) => {
         {account.photo ? 'Trocar foto' : 'Adicionar foto'}
       </Button>
       {account.photo && (
-        <Button variant="destructive" size="sm" disabled={update.isPending} onClick={() => update.mutate({ photo: '' }, { onSuccess: () => toast.show('Foto removida.') })}>
+        <Button variant="destructive" size="sm" disabled={update.isPending} onClick={() => setConfirmingRemove(true)}>
+          <TrashIcon size={16} />
           Remover
         </Button>
+      )}
+      {confirmingRemove && (
+        <ConfirmDialog
+          icon={<TrashIcon size={26} />}
+          title="Remover a foto?"
+          description="No lugar dela voltam as suas iniciais. Dá para enviar outra depois."
+          confirmLabel="Sim, remover"
+          confirmIcon={<TrashIcon size={20} />}
+          cancelLabel="Manter"
+          pending={update.isPending}
+          pendingLabel="Removendo"
+          onConfirm={() => update.mutate({ photo: '' }, { onSuccess: () => toast.show('Foto removida.'), onSettled: () => setConfirmingRemove(false) })}
+          onClose={() => setConfirmingRemove(false)}
+        />
       )}
     </>
   );
@@ -71,9 +89,20 @@ const AccountForm = ({ account, onClose }: { account: Account; onClose: () => vo
   const [name, setName] = useState(account.name);
   const [department, setDepartment] = useState(account.department);
   const [phone, setPhone] = useState(account.phone);
+  const [touched, setTouched] = useState({ name: false, department: false });
+  const [problems, setProblems] = useState<MissingItem[] | null>(null);
+  const errors = { name: name.trim() ? undefined : 'Escreva seu nome.', department: department.trim() ? undefined : 'Escreva seu departamento. Ex.: Centro de Informática.' };
 
   const save = (event: FormEvent) => {
     event.preventDefault();
+    const found: MissingItem[] = [];
+    if (errors.name) found.push({ label: 'Nome', fix: errors.name, onGo: () => document.getElementById('conta-nome')?.focus() });
+    if (errors.department) found.push({ label: 'Departamento', fix: errors.department, onGo: () => document.getElementById('conta-departamento')?.focus() });
+    if (found.length > 0) {
+      setTouched({ name: true, department: true });
+      setProblems(found);
+      return;
+    }
     update.mutate(
       { name, department, phone },
       {
@@ -86,7 +115,7 @@ const AccountForm = ({ account, onClose }: { account: Account; onClose: () => vo
   };
 
   return (
-    <form onSubmit={save} aria-label="Editar perfil" className="@container rounded-lg border border-accent bg-surface p-6 sm:p-7">
+    <form onSubmit={save} noValidate aria-label="Editar perfil" className="@container rounded-lg border border-accent bg-surface p-6 sm:p-7">
       <FormGroup {...DATA_GROUP}>
         <div className="flex flex-col gap-5">
           <div>
@@ -97,13 +126,28 @@ const AccountForm = ({ account, onClose }: { account: Account; onClose: () => vo
             </div>
           </div>
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-            <Field label="Nome" htmlFor="conta-nome">
-              <Input id="conta-nome" value={name} onChange={(event) => setName(event.target.value)} autoComplete="name" />
+            <Field label="Nome" htmlFor="conta-nome" required error={touched.name ? errors.name : undefined}>
+              <Input
+                id="conta-nome"
+                value={name}
+                onChange={(event) => {
+                  setTouched({ ...touched, name: true });
+                  setName(event.target.value);
+                }}
+                autoComplete="name"
+              />
             </Field>
-            <Field label="Departamento" htmlFor="conta-departamento">
-              <Input id="conta-departamento" value={department} onChange={(event) => setDepartment(event.target.value)} />
+            <Field label="Departamento" htmlFor="conta-departamento" required error={touched.department ? errors.department : undefined}>
+              <Input
+                id="conta-departamento"
+                value={department}
+                onChange={(event) => {
+                  setTouched({ ...touched, department: true });
+                  setDepartment(event.target.value);
+                }}
+              />
             </Field>
-            <Field label="Telefone, opcional" htmlFor="conta-telefone">
+            <Field label="Telefone, opcional" htmlFor="conta-telefone" help="As organizações só veem o telefone nos projetos que você faz com elas.">
               <Input id="conta-telefone" type="tel" value={phone} onChange={(event) => setPhone(event.target.value)} placeholder="(81) 90000-0000" autoComplete="tel" />
             </Field>
           </div>
@@ -124,6 +168,7 @@ const AccountForm = ({ account, onClose }: { account: Account; onClose: () => vo
           {update.isPending ? 'Salvando' : 'Salvar alterações'}
         </Button>
       </div>
+      {problems && <MissingFieldsDialog description="Para salvar, corrija o que está abaixo." items={problems} onClose={() => setProblems(null)} />}
     </form>
   );
 };

@@ -32,10 +32,10 @@ const LABELS: Record<Filter, string> = { todos: 'Todos', planejamento: 'Em plane
 const ICONS: Record<Filter, typeof ListIcon> = { todos: ListIcon, planejamento: PencilIcon, andamento: CalendarIcon, concluidos: CheckIcon };
 
 const HELP: Record<Filter, string> = {
-  todos: 'Cada projeto é uma turma do CIn trabalhando num problema de vocês durante um semestre. Todos passam pelas mesmas seis etapas.',
-  planejamento: 'O docente está revisando o plano e vai marcar a reunião de abertura com vocês.',
-  andamento: 'A turma está trabalhando. Vocês participam da entrega parcial e da entrega final.',
-  concluidos: 'Projetos que já terminaram, com o que ficou com vocês.',
+  todos: 'Cada projeto é uma turma trabalhando num problema de vocês. São seis etapas.',
+  planejamento: 'O docente revisa o plano e marca a primeira reunião.',
+  andamento: 'A turma trabalha. Vocês veem as duas entregas.',
+  concluidos: 'Já terminaram. Veja o que ficou com vocês.',
 };
 
 /** Um projeto em cartão: estado, quem faz, o andamento em seis traços e o próximo passo em palavras simples. */
@@ -106,7 +106,7 @@ export const OrgProjectsPage = () => {
       <Page title={TITLE} subtitle={SUBTITLE}>
         <EmptyState
           title="Nenhum projeto ainda"
-          description="Quando um docente levar uma demanda de vocês para uma disciplina, o projeto aparece aqui, com as etapas e o contato do docente."
+          description="Quando um docente levar uma demanda de vocês para a turma, o projeto aparece aqui."
           action={<SubmitDemandLink />}
         />
       </Page>

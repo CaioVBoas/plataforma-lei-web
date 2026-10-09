@@ -5,8 +5,8 @@ import { useToast } from '@/components/feedback/toastContext';
 import { Button } from '@/components/ui/button';
 import { CoverBanner } from '@/components/ui/coverBanner';
 import { buttonClassName, textLinkClassName } from '@/components/ui/buttonStyles';
-import { ArrowRightIcon, ChatIcon, PencilIcon } from '@/components/ui/icons';
-import { Modal } from '@/components/ui/modal';
+import { ConfirmDialog } from '@/components/ui/confirmDialog';
+import { ArrowRightIcon, ChatIcon, PencilIcon, TrashIcon } from '@/components/ui/icons';
 import { Page } from '@/components/ui/page';
 import { SideCard } from '@/components/ui/sideCard';
 import { UnderlineTabs } from '@/components/ui/underlineTabs';
@@ -36,34 +36,29 @@ const DeleteDraft = ({ submission }: { submission: DemandSubmission }) => {
   return (
     <>
       <Button variant="destructive" size="sm" onClick={() => setConfirming(true)}>
+        <TrashIcon size={16} />
         Excluir rascunho
       </Button>
       {confirming && (
-        <Modal
+        <ConfirmDialog
+          icon={<TrashIcon size={26} />}
           title="Excluir o rascunho?"
           description={`"${submission.title}" ainda não foi enviado ao L.E.I. Excluído, o texto não volta.`}
-          onClose={() => setConfirming(false)}
-          footer={
-            <>
-              <Button variant="secondary" onClick={() => setConfirming(false)}>
-                Manter
-              </Button>
-              <Button
-                variant="primary"
-                disabled={remove.isPending}
-                onClick={() =>
-                  remove.mutate(submission.id, {
-                    onSuccess: () => {
-                      toast.show('Rascunho excluído.');
-                      navigate(paths.orgDemands(), { replace: true });
-                    },
-                  })
-                }
-              >
-                Excluir
-              </Button>
-            </>
+          confirmLabel="Sim, excluir"
+          confirmIcon={<TrashIcon size={20} />}
+          cancelLabel="Manter o rascunho"
+          pending={remove.isPending}
+          pendingLabel="Excluindo"
+          error={remove.error?.message}
+          onConfirm={() =>
+            remove.mutate(submission.id, {
+              onSuccess: () => {
+                toast.show('Rascunho excluído.');
+                navigate(paths.orgDemands(), { replace: true });
+              },
+            })
           }
+          onClose={() => setConfirming(false)}
         />
       )}
     </>
@@ -76,7 +71,7 @@ const NEXT: Record<OrgDemandDetail['stage'], string> = {
   draft: 'Depois de enviar, o L.E.I. lê e responde por aqui.',
   'in-review': 'Se estiver tudo certo, a demanda entra no cardápio e os docentes passam a ver.',
   'needs-changes': 'Depois de reenviar, o L.E.I. lê de novo.',
-  open: 'Quando um docente escolher a demanda, vocês recebem o contato dele e combinam a primeira reunião.',
+  open: 'Quando um docente escolher, vocês recebem o contato dele.',
   reserved: 'Se o docente levar para a turma, a demanda vira projeto e vocês recebem o contato dele.',
   'in-project': 'Vocês participam da reunião de abertura, da entrega parcial e da entrega final.',
   done: 'O resultado fica no perfil de vocês, para a próxima turma não começar do zero.',
@@ -239,7 +234,7 @@ const DemandView = ({ detail }: { detail: OrgDemandDetail }) => {
               <p className="mb-4 text-small text-ink-2">
                 {isSubmission
                   ? 'Assim o cartão vai aparecer para os docentes quando a demanda entrar no cardápio.'
-                  : 'Assim o cartão aparece para os docentes. Cada um vê também qual turma dele combina com a demanda.'}
+                  : 'É assim que os docentes veem o cartão.'}
               </p>
               <DemandPreviewCard draft={previewDraft} organization={draft.organization} />
             </div>

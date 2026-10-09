@@ -82,7 +82,7 @@ const ConversationGroup = ({ title, children }: { title: string; children: React
 );
 
 const TITLE = 'Perguntas dos docentes';
-const SUBTITLE = 'As conversas com os docentes sobre cada demanda, num lugar só. Toque numa conversa para ler e responder.';
+const SUBTITLE = 'Toque numa conversa para ler e responder.';
 
 /**
  * A caixa de perguntas da organização, no desenho do WhatsApp: a lista de
@@ -208,7 +208,7 @@ export const OrgQuestionsPage = () => {
           description={
             filtering
               ? 'Mude ou limpe os filtros para ver outras conversas.'
-              : 'Quando um docente perguntar algo sobre uma demanda de vocês, a conversa aparece aqui e no sino de avisos.'
+              : 'Quando um docente perguntar algo, a conversa aparece aqui.'
           }
         />
       ) : (

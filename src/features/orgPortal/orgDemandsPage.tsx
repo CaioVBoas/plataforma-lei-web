@@ -35,16 +35,16 @@ const TAB_ICONS: Record<OrgDemandsTab, typeof BellIcon> = {
 
 /** Uma frase por aba, logo abaixo dela: o que aparece aqui e por quê. */
 const TAB_HELP: Record<OrgDemandsTab, string> = {
-  vez: 'Só as demandas que esperam algo de vocês: terminar um rascunho, fazer um ajuste ou responder um docente.',
-  todas: 'Todas as demandas de vocês, da mais recente para a mais antiga.',
-  preparo: 'Rascunhos, demandas que o L.E.I. está lendo e as que voltaram com pedido de ajuste.',
-  cardapio: 'Demandas aprovadas. Os docentes do CIn já podem ver, perguntar e escolher uma para a turma.',
-  projeto: 'Uma turma está trabalhando nestas demandas neste semestre.',
-  concluidas: 'Projetos que já terminaram, com o que ficou com vocês.',
+  vez: 'O que espera por vocês: rascunho, ajuste ou pergunta.',
+  todas: 'Todas, da mais nova para a mais antiga.',
+  preparo: 'Rascunhos, em leitura no L.E.I. e com ajuste pedido.',
+  cardapio: 'Aprovadas. Os docentes já podem ver e escolher.',
+  projeto: 'Uma turma está trabalhando nelas agora.',
+  concluidas: 'Já terminaram. Veja o que ficou com vocês.',
 };
 
 const EMPTY: Record<OrgDemandsTab, string> = {
-  vez: 'Nada esperando por vocês agora. Quando o L.E.I. pedir um ajuste ou um docente perguntar algo, aparece aqui.',
+  vez: 'Tudo em dia. Quando algo precisar de vocês, aparece aqui.',
   todas: 'Nenhuma demanda ainda.',
   preparo: 'Nenhum rascunho nem demanda na triagem.',
   cardapio: 'Quando o L.E.I. aprova uma demanda, ela entra no cardápio e aparece aqui.',
@@ -77,7 +77,7 @@ export const OrgDemandsPage = () => {
       <Page title={TITLE} subtitle={SUBTITLE}>
         <EmptyState
           title="Nenhuma demanda ainda"
-          description="Contem um problema real da organização. O L.E.I. ajuda a transformar em projeto para uma turma do CIn."
+          description="Contem um problema e uma turma do CIn ajuda a resolver."
           action={<SubmitDemandLink />}
         />
       </Page>

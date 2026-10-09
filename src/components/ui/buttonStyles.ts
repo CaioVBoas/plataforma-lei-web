@@ -1,6 +1,6 @@
 import { cn } from '@/utils/cn';
 
-export type ButtonVariant = 'primary' | 'secondary' | 'plain' | 'destructive' | 'onDark' | 'onDarkOutline';
+export type ButtonVariant = 'primary' | 'secondary' | 'plain' | 'destructive' | 'danger' | 'onDark' | 'onDarkOutline';
 export type ButtonSize = 'sm' | 'md' | 'lg' | 'xl';
 
 export interface ButtonStyleOptions {
@@ -14,6 +14,7 @@ export interface ButtonStyleOptions {
  * secondary: ação real de apoio, com borda fina sobre fundo branco. No máximo duas por item.
  * plain: ação terciária, só texto em azul.
  * destructive: desfazer ou remover, só texto em vermelho.
+ * danger: o "sim, excluir" dentro da confirmação, em vermelho cheio.
  * onDark e onDarkOutline: só sobre blocos petróleo do portal público, em branco cheio ou contorno claro.
  */
 const VARIANT_CLASSES: Record<ButtonVariant, string> = {
@@ -21,6 +22,7 @@ const VARIANT_CLASSES: Record<ButtonVariant, string> = {
   secondary: 'border border-line-strong bg-surface text-ink hover:bg-canvas',
   plain: 'bg-transparent text-accent hover:bg-accent-soft',
   destructive: 'bg-transparent text-critical hover:bg-critical-soft',
+  danger: 'bg-critical-strong text-white hover:brightness-110',
   onDark: 'bg-surface text-brand-strong hover:bg-brand-50',
   onDarkOutline: 'border border-brand-300 bg-transparent text-white hover:bg-brand-700',
 };
