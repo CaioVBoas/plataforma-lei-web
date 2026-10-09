@@ -58,6 +58,11 @@ const ICONS = {
   ZoomOut: 'magnifier-zoom-out',
   Undo: 'undo-left-round',
   DoubleCheck: 'check-read',
+  Sun: 'sun-2',
+  Moon: 'moon',
+  Monitor: 'monitor',
+  Lock: 'lock-keyhole-minimalistic',
+  Trash: 'trash-bin-minimalistic',
 };
 const STYLES = { linear: 'linear', bold: 'bold', duotone: 'bold-duotone' };
 

@@ -15,6 +15,7 @@ import type {
 } from '@/features/orgPortal/types';
 import { normalizeText } from '@/utils/format';
 import { db, findOrThrow, NotFoundError, RuleError } from '../db';
+import { checkLogin, resetAccess } from './access';
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -33,6 +34,7 @@ const isMine = (item: { organization: { id: string } }) => item.organization.id 
 export const login = ({ email, password }: LoginPayload) => {
   if (!EMAIL.test(email.trim())) throw new RuleError('Informe um e-mail válido.');
   if (!password) throw new RuleError('Informe sua senha.');
+  checkLogin('organizacao', email, password);
   return ORG_DEMO_TOKEN;
 };
 
@@ -70,6 +72,7 @@ export const signup = (payload: OrgSignupPayload) => {
     contact: { focalName: name, focalRole: payload.position.trim(), email, channel: 'E-mail' },
   });
   db.orgAccount = { organizationId: id, name, email, position: payload.position.trim(), phone: '' };
+  resetAccess('organizacao', email, payload.password);
   return ORG_DEMO_TOKEN;
 };
 

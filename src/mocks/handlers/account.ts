@@ -1,14 +1,16 @@
 import type { Account } from '@/domain/types';
 import type { LoginPayload, SignupPayload } from '@/features/auth/types';
 import { db, RuleError } from '../db';
+import { checkLogin, resetAccess } from './access';
 
 const INSTITUTIONAL_EMAIL = /@(cin\.)?ufpe\.br$/i;
 
 export const DEMO_TOKEN = 'demo-token';
 
 /** Qualquer e-mail institucional entra na conta de demonstração. */
-export const login = ({ email }: LoginPayload) => {
+export const login = ({ email, password }: LoginPayload) => {
   if (!INSTITUTIONAL_EMAIL.test(email.trim())) throw new RuleError('Use seu e-mail @ufpe.br ou @cin.ufpe.br.');
+  checkLogin('docente', email, password);
   return DEMO_TOKEN;
 };
 
@@ -20,6 +22,7 @@ export const signup = ({ name, email, department, password }: SignupPayload) => 
   if (password.length < 8) throw new RuleError('A senha precisa de pelo menos 8 caracteres.');
   // Conta nova: nada da conta anterior (foto, telefone) passa para ela.
   db.account = { name: name.trim(), email: email.trim().toLowerCase(), department: department.trim(), phone: '', tutorialSeen: false };
+  resetAccess('docente', email, password);
   return DEMO_TOKEN;
 };
 

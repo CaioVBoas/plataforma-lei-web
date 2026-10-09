@@ -12,7 +12,12 @@ export interface AccessibilityPrefs {
   zoom: number;
   /** Botões, campos e ícones maiores. */
   large: boolean;
+  /** Claro, escuro ou automático (segue o aparelho). */
+  theme: ThemeChoice;
 }
+
+export type ThemeChoice = 'claro' | 'escuro' | 'automatico';
+export const THEMES: ThemeChoice[] = ['claro', 'escuro', 'automatico'];
 
 export const TEXT_SCALES = [0.9, 1, 1.15, 1.3, 1.5];
 export const ZOOM_STEPS = [90, 100, 110, 125, 150];
@@ -21,7 +26,7 @@ const ROOT_PX = 16;
 const KEY = 'plei.acessibilidade';
 const EVENT = 'plei:acessibilidade';
 
-export const DEFAULT_PREFS: AccessibilityPrefs = { text: 1, zoom: 100, large: false };
+export const DEFAULT_PREFS: AccessibilityPrefs = { text: 1, zoom: 100, large: false, theme: 'claro' };
 
 const clampIndex = (value: unknown, length: number, fallback: number) =>
   typeof value === 'number' && Number.isInteger(value) && value >= 0 && value < length ? value : fallback;
@@ -35,6 +40,7 @@ const read = (): AccessibilityPrefs => {
       text: clampIndex(parsed.text, TEXT_SCALES.length, DEFAULT_PREFS.text),
       zoom: ZOOM_STEPS.includes(parsed.zoom as number) ? (parsed.zoom as number) : DEFAULT_PREFS.zoom,
       large: parsed.large === true,
+      theme: THEMES.includes(parsed.theme as ThemeChoice) ? (parsed.theme as ThemeChoice) : DEFAULT_PREFS.theme,
     };
   } catch {
     return DEFAULT_PREFS;
@@ -55,6 +61,12 @@ export const zoomAvailable = () => typeof window !== 'undefined' && window.inner
 /** Quanto a tela está ampliada no total: a barra de cima esconde os rótulos quando passa de 1,3. */
 export const effectiveScale = (prefs: AccessibilityPrefs) => TEXT_SCALES[prefs.text] * (zoomAvailable() ? prefs.zoom / 100 : 1);
 
+const darkQuery = () => (typeof window !== 'undefined' && window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null);
+
+/** O tema que vale agora: no automático, o do aparelho. */
+export const resolvedTheme = (prefs: AccessibilityPrefs): 'claro' | 'escuro' =>
+  prefs.theme === 'automatico' ? (darkQuery()?.matches ? 'escuro' : 'claro') : prefs.theme;
+
 /** Aplica na página: texto pela raiz, zoom pela página toda e "maiores" por um atributo que o CSS lê. */
 export const applyAccessibility = (prefs: AccessibilityPrefs = current) => {
   const root = document.documentElement;
@@ -65,6 +77,8 @@ export const applyAccessibility = (prefs: AccessibilityPrefs = current) => {
   // Tela muito ampliada: a barra de cima fica só com os ícones (que mantêm o nome para leitor de tela).
   if (effectiveScale(prefs) > 1.3) root.dataset.scale = 'big';
   else delete root.dataset.scale;
+  // O CSS troca as cores pelos tokens do modo escuro quando o atributo está na raiz.
+  root.dataset.theme = resolvedTheme(prefs) === 'escuro' ? 'dark' : 'light';
 };
 
 export const setAccessibility = (patch: Partial<AccessibilityPrefs>) => {
@@ -80,6 +94,11 @@ export const setAccessibility = (patch: Partial<AccessibilityPrefs>) => {
 
 // Girar o tablet ou mudar a janela de tamanho liga ou desliga o zoom.
 if (typeof window !== 'undefined') window.addEventListener('resize', () => applyAccessibility());
+// No automático, o tema acompanha o aparelho quando ele muda de claro para escuro.
+darkQuery()?.addEventListener('change', () => {
+  applyAccessibility();
+  window.dispatchEvent(new Event(EVENT));
+});
 
 const subscribe = (onChange: () => void) => {
   window.addEventListener(EVENT, onChange);
@@ -93,4 +112,4 @@ const subscribe = (onChange: () => void) => {
 export const useAccessibility = () => useSyncExternalStore(subscribe, () => current, () => DEFAULT_PREFS);
 
 export const isDefaultAccessibility = (prefs: AccessibilityPrefs) =>
-  prefs.text === DEFAULT_PREFS.text && prefs.zoom === DEFAULT_PREFS.zoom && prefs.large === DEFAULT_PREFS.large;
+  prefs.text === DEFAULT_PREFS.text && prefs.zoom === DEFAULT_PREFS.zoom && prefs.large === DEFAULT_PREFS.large && prefs.theme === DEFAULT_PREFS.theme;

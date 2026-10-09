@@ -1,8 +1,15 @@
-import { DEFAULT_PREFS, isDefaultAccessibility, setAccessibility, TEXT_SCALES, useAccessibility, ZOOM_STEPS, zoomAvailable } from '@/lib/accessibility';
+import { DEFAULT_PREFS, isDefaultAccessibility, setAccessibility, TEXT_SCALES, THEMES, useAccessibility, ZOOM_STEPS, zoomAvailable, type ThemeChoice } from '@/lib/accessibility';
 import { cn } from '@/utils/cn';
-import { HandIcon, UndoIcon, ZoomInIcon, ZoomOutIcon } from './icons';
+import { HandIcon, MonitorIcon, MoonIcon, SunIcon, UndoIcon, ZoomInIcon, ZoomOutIcon } from './icons';
+import { withIconVariant } from './iconVariant';
 
 const TEXT_LABELS = ['Texto pequeno', 'Texto normal', 'Texto grande', 'Texto maior', 'Texto muito grande'];
+const THEME_COPY: Record<ThemeChoice, { label: string; icon: typeof SunIcon }> = {
+  claro: { label: 'Claro', icon: SunIcon },
+  escuro: { label: 'Escuro', icon: MoonIcon },
+  automatico: { label: 'Automático', icon: MonitorIcon },
+};
+
 /** Os cinco "A" crescem como o texto que eles escolhem. */
 const A_SIZES = ['text-small', 'text-body', 'text-h4', 'text-h3', 'text-h2'];
 
@@ -12,8 +19,8 @@ const ON = 'bg-surface font-semibold text-ink shadow-[0_1px_3px_rgba(10,50,50,0.
 const OFF = 'text-ink-2 hover:bg-surface/60 hover:text-ink';
 
 /**
- * O perfil de acessibilidade: tamanho do texto, zoom da tela e componentes
- * maiores. Vale para o portal inteiro, na hora, e fica guardado neste navegador.
+ * O perfil de acessibilidade: tamanho do texto, zoom da tela, componentes
+ * maiores e a aparência (claro, escuro ou automático, que segue o aparelho). Vale para o portal inteiro, na hora, e fica guardado neste navegador.
  */
 export const AccessibilityPanel = () => {
   const prefs = useAccessibility();
@@ -102,6 +109,32 @@ export const AccessibilityPanel = () => {
             </button>
           ))}
         </div>
+      </div>
+
+      <div>
+        <p id="a11y-aparencia" className="mb-1.5 text-small font-medium text-ink">
+          Aparência
+        </p>
+        <div role="radiogroup" aria-labelledby="a11y-aparencia" className={GROUP}>
+          {THEMES.map((theme) => {
+            const { label, icon: Icon } = THEME_COPY[theme];
+            const selected = prefs.theme === theme;
+            return (
+              <button
+                key={theme}
+                type="button"
+                role="radio"
+                aria-checked={selected}
+                onClick={() => setAccessibility({ theme })}
+                className={cn(OPTION, 'flex-col gap-1 py-1.5 text-small', selected ? ON : OFF)}
+              >
+                {withIconVariant(<Icon size={20} />, selected)}
+                {label}
+              </button>
+            );
+          })}
+        </div>
+        {prefs.theme === 'automatico' && <p className="mt-1.5 text-caption text-ink-3">Segue o aparelho: escuro à noite ou quando ele estiver no modo escuro.</p>}
       </div>
 
       {!isDefaultAccessibility(prefs) && (

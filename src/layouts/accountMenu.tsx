@@ -1,5 +1,4 @@
 import { useNavigate } from 'react-router-dom';
-import { AccessibilityPanel } from '@/components/ui/accessibilityPanel';
 import { Avatar } from '@/components/ui/avatar';
 import { ChevronDownIcon, LogoutIcon, UserIcon } from '@/components/ui/icons';
 import { useLogout } from '@/features/auth/useAuth';
@@ -17,7 +16,7 @@ interface AccountMenuProps {
   accountLabel: string;
 }
 
-/** A conta fica no canto da barra superior: quem está logado, a página da conta e sair. */
+/** A conta fica no canto da barra superior: quem está logado, a página da conta e sair. A acessibilidade tem o próprio botão na barra. */
 export const AccountMenu = ({ name, email, photo, accountPath, accountLabel }: AccountMenuProps) => {
   const navigate = useNavigate();
   const logout = useLogout();
@@ -44,14 +43,10 @@ export const AccountMenu = ({ name, email, photo, accountPath, accountLabel }: A
       </button>
 
       {open && (
-        <div role="dialog" aria-label={`Conta de ${name}`} className="fixed inset-x-3 top-16 z-40 max-h-[calc(100dvh-5rem)] overflow-y-auto rounded-md bg-surface p-1 shadow-popover animate-fade-in sm:absolute sm:inset-x-auto sm:top-12 sm:right-0 sm:w-[21rem]">
+        <div role="dialog" aria-label={`Conta de ${name}`} className="fixed inset-x-3 top-16 z-40 max-h-[calc(100dvh-5rem)] overflow-y-auto rounded-md bg-surface p-1 shadow-popover animate-fade-in sm:absolute sm:inset-x-auto sm:top-12 sm:right-0 sm:w-[18rem]">
           <div className="px-2.5 pt-2 pb-2.5">
             <p className="truncate text-small font-semibold text-ink">{name}</p>
             <p className="truncate text-caption text-ink-3">{email}</p>
-          </div>
-          <div className="mb-1 h-px bg-line" />
-          <div className="px-2.5 pt-2 pb-3">
-            <AccessibilityPanel />
           </div>
           <div className="mb-1 h-px bg-line" />
           <button type="button" className={cn(MENU_ITEM, 'text-ink hover:bg-brand-50 hover:text-brand-strong')} onClick={goToAccount}>

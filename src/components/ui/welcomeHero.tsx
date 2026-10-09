@@ -17,14 +17,14 @@ export const WelcomeHero = ({ photo, title, line, stats }: WelcomeHeroProps) => 
     <div className="relative flex flex-wrap items-end justify-between gap-6">
       <div className="min-w-0 flex-[1_1_360px]">
         <h1 className="text-h1">{title}</h1>
-        <p className="mt-2 max-w-[58ch] text-body text-brand-100">{line}</p>
+        <p className="mt-2 max-w-[58ch] text-body text-white/85">{line}</p>
       </div>
       <dl className="grid w-full auto-cols-fr grid-flow-col gap-2.5 sm:flex sm:w-auto">
         {stats.map((stat) => (
           <div key={stat.label} className="min-w-0 rounded-md sm:min-w-[104px] bg-white/12 px-4 py-3 backdrop-blur-sm">
             <dt className="sr-only">{stat.label}</dt>
             <dd className="text-h3 tabular-nums">{stat.value}</dd>
-            <dd className="mt-1.5 text-caption text-brand-100">{stat.label}</dd>
+            <dd className="mt-1.5 text-caption text-white/85">{stat.label}</dd>
           </div>
         ))}
       </dl>

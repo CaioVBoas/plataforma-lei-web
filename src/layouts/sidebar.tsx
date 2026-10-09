@@ -38,7 +38,7 @@ const NavItem = ({ to, icon, label, active, collapsed, large, badge, onNavigate 
       {badge ? <span className="sr-only">, {badge} esperando</span> : null}
     </span>
     {badge && !collapsed ? (
-      <span aria-hidden="true" className={cn('min-w-6 rounded-full px-1.5 text-center text-small font-semibold tabular-nums', active ? 'bg-white text-brand-strong' : 'bg-accent text-white')}>
+      <span aria-hidden="true" className={cn('min-w-6 rounded-full px-1.5 text-center text-small font-semibold tabular-nums', active ? 'bg-white text-brand-800' : 'bg-accent text-white')}>
         {badge}
       </span>
     ) : null}

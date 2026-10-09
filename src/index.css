@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* dark: vale quando o perfil de acessibilidade pôs o modo escuro na raiz. */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
 /*
  * Tokens visuais do portal. Toda cor, fonte, raio e movimento sai daqui;
  * componentes nunca usam hex solto.
@@ -152,6 +155,62 @@
     from { opacity: 0; transform: translateY(6px); }
     to { opacity: 1; transform: translateY(0); }
   }
+}
+
+/*
+ * Modo escuro (perfil de acessibilidade: Escuro, ou Automático com o aparelho
+ * no escuro). Troca só os tokens: os componentes continuam iguais. Os
+ * petróleos fundos (600 a 900) já são fundo escuro com texto branco e ficam.
+ */
+:root[data-theme='dark'] {
+  color-scheme: dark;
+
+  --color-brand-50: #12302f;
+  --color-brand-100: #17403e;
+  --color-brand-200: #1f5653;
+  --color-brand-300: #2f7a76;
+  --color-brand-400: #4fa39f;
+  --color-brand: #2a8a85;
+  --color-brand-strong: #8fd0cc;
+  --color-brand-soft: #12302f;
+
+  --color-fact: #1c2223;
+  --color-fact-line: #2f383a;
+  --color-fact-label: #8fd0cc;
+
+  --color-monogram: #17403e;
+  --color-monogram-ink: #a8d2cf;
+  --color-nav-active: #17403e;
+  --color-nav-active-ink: #a8d2cf;
+
+  --color-ink: #e9eded;
+  --color-ink-2: #b7c0c2;
+  --color-ink-3: #919b9e;
+
+  --color-surface: #171b1c;
+  --color-canvas: #101314;
+  --color-fill: #242b2c;
+  --color-fill-strong: #2d3537;
+  --color-line: #2a3234;
+  --color-line-strong: #3c4648;
+
+  --color-accent: #4d72f0;
+  --color-accent-hover: #6b8cff;
+  --color-accent-soft: #1a2445;
+
+  --color-reserve: #ff9a66;
+  --color-reserve-soft: #3a2216;
+
+  --color-positive: #6cc581;
+  --color-positive-soft: #16301d;
+  --color-caution: #e5ad4f;
+  --color-caution-soft: #342812;
+  --color-critical: #f07a6d;
+  --color-critical-soft: #3a1c19;
+
+  --shadow-popover: 0 8px 24px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.06);
+  --shadow-sheet: 0 20px 60px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.06);
+  --shadow-focus: 0 0 0 3px rgba(107, 140, 255, 0.45);
 }
 
 /* Overline: além do degrau da escala, sempre em caixa alta. */

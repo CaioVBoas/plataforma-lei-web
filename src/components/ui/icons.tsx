@@ -84,3 +84,8 @@ export const ZoomInIcon = (props: IconProps) => <SolarIcon glyph="ZoomIn" {...pr
 export const ZoomOutIcon = (props: IconProps) => <SolarIcon glyph="ZoomOut" {...props} />;
 export const UndoIcon = (props: IconProps) => <SolarIcon glyph="Undo" {...props} />;
 export const DoubleCheckIcon = (props: IconProps) => <SolarIcon glyph="DoubleCheck" {...props} />;
+export const SunIcon = (props: IconProps) => <SolarIcon glyph="Sun" {...props} />;
+export const MoonIcon = (props: IconProps) => <SolarIcon glyph="Moon" {...props} />;
+export const MonitorIcon = (props: IconProps) => <SolarIcon glyph="Monitor" {...props} />;
+export const LockIcon = (props: IconProps) => <SolarIcon glyph="Lock" {...props} />;
+export const TrashIcon = (props: IconProps) => <SolarIcon glyph="Trash" {...props} />;

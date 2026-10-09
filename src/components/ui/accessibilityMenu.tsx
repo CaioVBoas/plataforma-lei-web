@@ -12,7 +12,7 @@ export const AccessibilityMenu = () => {
         type="button"
         aria-expanded={open}
         aria-haspopup="dialog"
-        aria-label="Acessibilidade: tamanho do texto, zoom e botões maiores"
+        aria-label="Acessibilidade: tamanho do texto, zoom, botões maiores e modo escuro"
         onClick={toggle}
         className={cn('flex h-10 items-center gap-2 rounded-md px-2.5 text-small font-medium text-ink-2 hover:bg-fill hover:text-ink', open && 'bg-fill text-ink')}
       >
