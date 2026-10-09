@@ -1,19 +1,14 @@
+import { tokenStorage } from '@/lib/tokenStorage';
 import type { UserRole } from './types';
 
-/** Mesma chave que o api-client lê para enviar o Bearer token. */
-const TOKEN_KEY = 'auth_token';
-/** Qual portal a sessão abre. Sessão antiga, sem perfil guardado, é de docente. */
-const ROLE_KEY = 'auth_role';
-
 export const session = {
-  isAuthenticated: () => Boolean(localStorage.getItem(TOKEN_KEY)),
-  role: (): UserRole => (localStorage.getItem(ROLE_KEY) === 'organizacao' ? 'organizacao' : 'docente'),
+  isAuthenticated: () => Boolean(tokenStorage.getToken()),
+  role: (): UserRole => (tokenStorage.getRole() === 'organizacao' ? 'organizacao' : 'docente'),
   start: (token: string, role: UserRole) => {
-    localStorage.setItem(TOKEN_KEY, token);
-    localStorage.setItem(ROLE_KEY, role);
+    tokenStorage.setToken(token);
+    tokenStorage.setRole(role);
   },
   end: () => {
-    localStorage.removeItem(TOKEN_KEY);
-    localStorage.removeItem(ROLE_KEY);
+    tokenStorage.clearSession();
   },
 };
