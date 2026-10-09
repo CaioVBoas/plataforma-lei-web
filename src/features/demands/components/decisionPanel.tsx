@@ -1,9 +1,9 @@
-import type { ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { useToast } from '@/components/feedback/toastContext';
 import { Button } from '@/components/ui/button';
 import { buttonClassName } from '@/components/ui/buttonStyles';
-import { ArrowRightIcon, BellIcon, BookmarkIcon, CheckIcon, FolderIcon } from '@/components/ui/icons';
+import { ArrowRightIcon, BellIcon, BookmarkIcon, CheckIcon, FolderIcon, UndoIcon } from '@/components/ui/icons';
 import { formatShortDate, isLinkWindowOpen } from '@/domain/calendar';
 import { freeSlots } from '@/domain/disciplineRules';
 import type { DisciplineMatch } from '@/domain/matching';
@@ -17,6 +17,7 @@ import { cn } from '@/utils/cn';
 import { useReleaseReservation, useReserveDemand, useToggleWatch } from '../useDemands';
 import type { DemandDetail } from '../types';
 import { daysLeftLabel } from '../utils/demandPresentation';
+import { ConfirmDialog } from '@/components/ui/confirmDialog';
 
 const Panel = ({ tone = 'default', children }: { tone?: 'default' | 'reserve'; children: ReactNode }) => (
   <div className={cn('rounded-lg border p-5', tone === 'reserve' ? 'border-reserve-dot/40 bg-surface' : 'border-line')}>{children}</div>
@@ -43,6 +44,7 @@ export const DecisionPanel = ({ detail, best, calendar, hasDisciplines, onAdopt 
   const toast = useToast();
   const reserve = useReserveDemand();
   const release = useReleaseReservation();
+  const [releasing, setReleasing] = useState(false);
   const watch = useToggleWatch();
   const { demand } = detail;
   const failed = [reserve, release, watch].find((mutation) => mutation.isError)?.error;
@@ -77,15 +79,32 @@ export const DecisionPanel = ({ detail, best, calendar, hasDisciplines, onAdopt 
           Levar para uma disciplina
           <ArrowRightIcon size={16} />
         </Button>
-        <Button
-          variant="secondary"
-          fullWidth
-          className="mt-2"
-          disabled={release.isPending}
-          onClick={() => release.mutate(demand.id, { onSuccess: () => toast.show('Reserva liberada. A demanda voltou para o cardápio.') })}
-        >
+        <Button variant="secondary" fullWidth className="mt-2" disabled={release.isPending} onClick={() => setReleasing(true)}>
+          <UndoIcon size={16} />
           Liberar reserva
         </Button>
+        {releasing && (
+          <ConfirmDialog
+            icon={<UndoIcon size={26} />}
+            title="Liberar a reserva?"
+            description="A demanda volta para o cardápio e outro docente pode reservar. Se mudar de ideia, você precisa reservar de novo, se ela ainda estiver livre."
+            confirmLabel="Sim, liberar"
+            confirmIcon={<UndoIcon size={20} />}
+            cancelLabel="Não, manter"
+            pending={release.isPending}
+            pendingLabel="Liberando"
+            error={release.error?.message}
+            onConfirm={() =>
+              release.mutate(demand.id, {
+                onSuccess: () => {
+                  setReleasing(false);
+                  toast.show('Reserva liberada. A demanda voltou para o cardápio.');
+                },
+              })
+            }
+            onClose={() => setReleasing(false)}
+          />
+        )}
         {!windowOpen && <Fine>O prazo de {calendar.id} para levar demandas terminou em {formatShortDate(calendar.linkDeadline)}.</Fine>}
         {error}
       </Panel>

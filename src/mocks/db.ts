@@ -35,6 +35,8 @@ export const db = {
     docente: { password: null as string | null, deletedEmail: null as string | null },
     organizacao: { password: null as string | null, deletedEmail: null as string | null },
   },
+  /** Códigos de confirmação enviados por e-mail (cadastro e nova senha), por finalidade, perfil e e-mail. */
+  codes: {} as Record<string, { code: string; sentAt: number; expiresAt: number; attempts: number }>,
 };
 
 export class NotFoundError extends Error {

@@ -55,13 +55,14 @@ interface SearchInputProps extends InputHTMLAttributes<HTMLInputElement> {
   containerClassName?: string;
 }
 
+/** A busca, igual em toda a plataforma: branca, com borda e da altura dos filtros ao lado. */
 export const SearchInput = ({ containerClassName, className, ...props }: SearchInputProps) => (
   <div className={cn('relative', containerClassName)}>
-    <SearchIcon size={16} className="pointer-events-none absolute top-1/2 left-2.5 -translate-y-1/2 text-ink-3" />
+    <SearchIcon size={20} className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-ink-3" />
     <input
       type="search"
       className={cn(
-        'h-9 w-full rounded-md border border-transparent bg-fill pr-3 pl-8 text-small text-ink placeholder:text-ink-3 focus:border-accent focus:bg-surface',
+        'h-11 w-full rounded-lg border border-line-strong bg-surface pr-3 pl-10 text-body text-ink placeholder:text-ink-3 focus:border-accent',
         className,
       )}
       {...props}
@@ -78,6 +79,8 @@ interface FieldProps {
   required?: boolean;
   /** Explicação curta no "?" ao lado do rótulo, para o que pode gerar dúvida. */
   help?: string;
+  /** Só a borda vermelha, quando a explicação do erro já está logo abaixo (como as regras da senha). */
+  invalid?: boolean;
   className?: string;
   children: ReactNode;
 }
@@ -86,8 +89,8 @@ interface FieldProps {
  * Rótulo sempre visível acima do campo: placeholder nunca faz papel de label.
  * Com erro, a borda fica vermelha e a mensagem diz o que corrigir.
  */
-export const Field = ({ label, htmlFor, hint, error, required, help, className, children }: FieldProps) => (
-  <div className={cn(className, error && '[&_input]:border-critical! [&_select]:border-critical! [&_textarea]:border-critical!')}>
+export const Field = ({ label, htmlFor, hint, error, required, help, invalid, className, children }: FieldProps) => (
+  <div className={cn(className, (error || invalid) && '[&_input]:border-critical! [&_select]:border-critical! [&_textarea]:border-critical!')}>
     <div className="mb-1.5 flex flex-wrap items-center gap-x-1.5">
       <label htmlFor={htmlFor} className="text-small font-medium text-ink-2">
         {label}

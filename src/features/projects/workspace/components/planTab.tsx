@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { useToast } from '@/components/feedback/toastContext';
 import { Button } from '@/components/ui/button';
 import { AutoResizeTextarea } from '@/components/ui/formControls';
-import { CopyIcon } from '@/components/ui/icons';
+import { CheckIcon, CopyIcon } from '@/components/ui/icons';
+import { ConfirmDialog } from '@/components/ui/confirmDialog';
 import { formatShortDate } from '@/domain/calendar';
 import { emptyPlanSections, isPlanLocked, nextMilestone } from '@/domain/projectLifecycle';
 import type { IsoDate, PlanSection, Project } from '@/domain/types';
@@ -111,10 +112,16 @@ export const PlanTab = ({ project, today }: { project: Project; today: IsoDate }
   const empty = emptyPlanSections(project);
   const registeredAt = project.milestones.find((milestone) => milestone.id === 'sigaa')?.doneAt;
 
+  const [confirming, setConfirming] = useState(false);
   const confirm = () =>
     complete.mutate(
       { projectId: project.id, milestoneId: 'plan', doneAt: today },
-      { onSuccess: () => toast.show(MILESTONE_COPY.plan.doneMessage) },
+      {
+        onSuccess: () => {
+          setConfirming(false);
+          toast.show(MILESTONE_COPY.plan.doneMessage);
+        },
+      },
     );
 
   return (
@@ -136,10 +143,27 @@ export const PlanTab = ({ project, today }: { project: Project; today: IsoDate }
           <p className="min-w-0 flex-[1_1_300px] text-small text-ink-2">
             {empty.length > 0 ? `Falta preencher ${joinWithAnd(empty.map((section) => section.title))}.` : 'Tudo certo? Confirme para seguir para a reunião de abertura.'}
           </p>
-          <Button variant="primary" disabled={empty.length > 0 || complete.isPending} onClick={confirm}>
+          <Button variant="primary" disabled={empty.length > 0 || complete.isPending} onClick={() => setConfirming(true)}>
+            <CheckIcon size={16} />
             Confirmar plano
           </Button>
         </div>
+      )}
+      {confirming && (
+        <ConfirmDialog
+          tone="action"
+          icon={<CheckIcon size={26} />}
+          title="Confirmar o plano?"
+          description="A etapa Revisar o plano fica concluída e o próximo passo vira a reunião de abertura. Dá para ajustar o texto até o registro no SIGAA."
+          confirmLabel="Sim, confirmar"
+          confirmIcon={<CheckIcon size={20} />}
+          cancelLabel="Revisar mais"
+          pending={complete.isPending}
+          pendingLabel="Confirmando"
+          error={complete.error?.message}
+          onConfirm={confirm}
+          onClose={() => setConfirming(false)}
+        />
       )}
     </div>
   );

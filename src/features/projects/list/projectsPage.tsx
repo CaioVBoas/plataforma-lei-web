@@ -1,5 +1,5 @@
 import type { MouseEvent } from 'react';
-import { TrayIcon } from '@/components/ui/icons';
+import { FolderIcon, TrayIcon } from '@/components/ui/icons';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { ErrorState, LoadingState } from '@/components/feedback/queryStates';
 import { useToast } from '@/components/feedback/toastContext';
@@ -78,6 +78,7 @@ const ProjectTableRow = ({ item, today }: { item: ProjectListItem; today: IsoDat
       <td className="py-3 pr-1 pl-3">
         <div className="flex items-center justify-end gap-1">
           <Link to={paths.project(project.id)} className={buttonClassName({ variant: 'secondary' })}>
+            <FolderIcon size={16} />
             Abrir
           </Link>
           <ActionMenu

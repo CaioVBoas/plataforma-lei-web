@@ -142,7 +142,7 @@ export const AccountAccess = ({ role, email, emailHint, deleteConsequence }: Acc
 
   return (
     <div className="rounded-lg border border-line bg-surface p-6 sm:p-7">
-      <AccessRow icon={<MailIcon size={20} />} title="E-mail de acesso" text={<><span className="font-medium break-all text-ink">{email}</span>. {emailHint}</>} />
+      <AccessRow icon={<MailIcon size={20} />} title="E-mail de acesso" text={<><span className="font-medium [overflow-wrap:anywhere] text-ink">{email}</span>. {emailHint}</>} />
       <AccessRow
         icon={<LockIcon size={20} />}
         title="Senha"

@@ -180,7 +180,6 @@ export const OrgQuestionsPage = () => {
           value={search}
           onChange={(event) => setSearch(event.target.value)}
           containerClassName="sm:w-[14rem]"
-          className="h-11 border-line-strong! bg-surface text-body"
         />
         <FilterDropdown
           label="Mostrar"

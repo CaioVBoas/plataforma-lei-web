@@ -146,7 +146,7 @@ const OrgHomeContent = ({ account, organizationName, today }: { account: OrgAcco
             ))}
           </ul>
         ) : (
-          <EmptyState title="Tudo em dia" description="Tudo em dia. Quando algo precisar de vocês, aparece aqui." />
+          <EmptyState title="Tudo em dia" description="Nada esperando vocês agora. Quando algo precisar de vocês, aparece aqui." />
         )}
       </Section>
     </Page>

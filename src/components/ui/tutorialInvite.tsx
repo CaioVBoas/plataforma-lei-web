@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { buttonClassName } from './buttonStyles';
 import { CloseIcon } from './icons';
+import { QuestionIcon } from '@/components/ui/icons';
 
 interface TutorialInviteProps {
   to: string;
@@ -17,6 +18,7 @@ export const TutorialInvite = ({ to, text, onDismiss }: TutorialInviteProps) => 
     </div>
     <div className="flex items-center gap-1">
       <Link to={to} className={buttonClassName({ variant: 'primary', size: 'sm' })}>
+        <QuestionIcon size={16} />
         Ver como funciona
       </Link>
       <button

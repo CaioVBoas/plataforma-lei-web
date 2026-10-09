@@ -28,7 +28,7 @@ interface TeacherBubbleProps {
 
 /**
  * Balão do docente, à esquerda, com o nome em petróleo e a hora. Toda pergunta
- * pode receber mais uma resposta; a que ainda não tem nenhuma diz que espera.
+ * pode receber mais uma resposta.
  */
 const TeacherBubble = ({ question, replying, onReply }: TeacherBubbleProps) => {
   const waiting = !isAnswered(question);
@@ -43,7 +43,7 @@ const TeacherBubble = ({ question, replying, onReply }: TeacherBubbleProps) => {
         </p>
       </div>
       {onReply && (
-        <div className="mt-1.5 flex flex-wrap items-center gap-2">
+        <div className="mt-1.5">
           <button
             type="button"
             onClick={onReply}
@@ -56,7 +56,6 @@ const TeacherBubble = ({ question, replying, onReply }: TeacherBubbleProps) => {
             <UndoIcon size={16} />
             {replying ? 'Respondendo esta' : waiting ? 'Responder esta pergunta' : 'Responder de novo'}
           </button>
-          {waiting && <span className="text-caption font-semibold text-accent">Esperando resposta</span>}
         </div>
       )}
     </li>
