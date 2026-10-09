@@ -63,9 +63,9 @@ const ProfileView = ({ profile, account }: { profile: OrgProfile; account: OrgAc
           items={[
             { label: 'Tipo', value: organization.type },
             { label: 'Onde atuam', value: organization.location },
-            { label: 'Sobre', value: organization.about, wide: true },
             { label: 'Público atendido', value: organization.audience },
             { label: 'Site', value: organization.site },
+            { label: 'Sobre', value: organization.about, wide: true },
           ]}
         />
       </FormGroup>
@@ -135,9 +135,6 @@ const ProfileForm = ({ profile, account, onClose }: { profile: OrgProfile; accou
           <Field label="Onde atuam" htmlFor="perfil-local">
             <Input id="perfil-local" value={input.location} onChange={(event) => set({ location: event.target.value })} placeholder="Ex.: Várzea, Recife" />
           </Field>
-          <Field label="Sobre" htmlFor="perfil-sobre" hint="O que a organização faz, em duas ou três frases.">
-            <Textarea id="perfil-sobre" rows={4} value={input.about} onChange={(event) => set({ about: event.target.value })} />
-          </Field>
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
             <Field label="Público atendido" htmlFor="perfil-publico">
               <Input id="perfil-publico" value={input.audience} onChange={(event) => set({ audience: event.target.value })} />
@@ -146,6 +143,9 @@ const ProfileForm = ({ profile, account, onClose }: { profile: OrgProfile; accou
               <Input id="perfil-site" value={input.site} onChange={(event) => set({ site: event.target.value })} placeholder="organizacao.org.br" />
             </Field>
           </div>
+          <Field label="Sobre" htmlFor="perfil-sobre" hint="O que a organização faz, em duas ou três frases.">
+            <Textarea id="perfil-sobre" rows={4} value={input.about} onChange={(event) => set({ about: event.target.value })} />
+          </Field>
         </div>
       </FormGroup>
 
