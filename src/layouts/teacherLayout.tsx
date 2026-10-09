@@ -46,4 +46,4 @@ const TeacherAccountMenu = () => {
   return <AccountMenu name={account.name} email={account.email} photo={account.photo || undefined} accountPath={paths.account} accountLabel="Minha conta" />;
 };
 
-export const TeacherLayout = () => <PortalLayout sidebar={SIDEBAR} bell={<TeacherBell />} account={<TeacherAccountMenu />} helpPath={paths.guide} />;
+export const TeacherLayout = () => <PortalLayout sidebar={SIDEBAR} bell={<TeacherBell />} account={<TeacherAccountMenu />} />;

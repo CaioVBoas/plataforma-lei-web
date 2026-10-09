@@ -26,7 +26,6 @@ const PublicHeader = () => {
           <BrandMark />
         </Link>
         <nav aria-label="Acesso" className="ml-auto flex items-center gap-5">
-          <AccessibilityMenu />
           <a href="#sobre" className="hidden text-small text-ink-2 hover:text-ink sm:block">
             Sobre
           </a>
@@ -49,6 +48,7 @@ const PublicHeader = () => {
               </Link>
             </>
           )}
+          <AccessibilityMenu />
         </nav>
       </div>
     </header>
