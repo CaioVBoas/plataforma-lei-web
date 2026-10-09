@@ -32,7 +32,7 @@ interface OptionListProps<T extends string> {
 export const OptionList = <T extends string>({ label, value, options, onChange, columns = 2, compact = false }: OptionListProps<T>) => {
   const name = useId();
   return (
-    <div role="radiogroup" aria-label={label} className={cn('grid gap-2', columns === 2 && 'sm:grid-cols-2')}>
+    <div role="radiogroup" aria-label={label} className={cn('grid', compact ? 'gap-3' : 'gap-2', columns === 2 && 'sm:grid-cols-2')}>
       {options.map((option) => {
         const selected = option.value === value;
         return (
