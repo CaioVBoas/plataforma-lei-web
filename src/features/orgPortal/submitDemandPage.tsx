@@ -208,27 +208,28 @@ const SubmitForm = ({ submission, organization }: SubmitFormProps) => {
             </p>
           )}
 
-          <div className="mt-10 flex flex-wrap items-center justify-between gap-3 border-t border-line pt-5">
-            <div>
-              {step > 0 && (
-                <Button variant="secondary" size="xl" onClick={() => goTo(step - 1)}>
-                  <ArrowLeftIcon size={20} />
-                  Voltar
-                </Button>
-              )}
-            </div>
-            <div className="flex flex-wrap items-center gap-2">
-              <Button variant="secondary" size="xl" onClick={saveDraft} disabled={busy || (!isDirty && Boolean(submission))}>
+          {/* No celular os botões ficam um embaixo do outro, na largura toda, com o principal em cima. */}
+          <div className="mt-10 flex flex-col-reverse gap-3 border-t border-line pt-5 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
+            {step > 0 ? (
+              <Button variant="secondary" size="xl" className="w-full sm:w-auto" onClick={() => goTo(step - 1)}>
+                <ArrowLeftIcon size={20} />
+                Voltar
+              </Button>
+            ) : (
+              <span className="hidden sm:block" />
+            )}
+            <div className="flex flex-col-reverse gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-2">
+              <Button variant="secondary" size="xl" className="w-full sm:w-auto" onClick={saveDraft} disabled={busy || (!isDirty && Boolean(submission))}>
                 <SaveIcon size={20} />
                 {save.isPending ? 'Guardando' : 'Guardar e continuar depois'}
               </Button>
               {step < LAST_STEP ? (
-                <Button variant="primary" size="xl" onClick={next} disabled={busy}>
+                <Button variant="primary" size="xl" className="w-full sm:w-auto" onClick={next} disabled={busy}>
                   Continuar
                   <ArrowRightIcon size={20} />
                 </Button>
               ) : (
-                <Button variant="primary" size="xl" onClick={askToSend} disabled={busy}>
+                <Button variant="primary" size="xl" className="w-full sm:w-auto" onClick={askToSend} disabled={busy}>
                   <SendIcon size={20} />
                   {submit.isPending ? 'Enviando' : submission?.stage === 'needs-changes' ? 'Reenviar para a triagem' : 'Enviar para a triagem'}
                 </Button>

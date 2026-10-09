@@ -114,7 +114,7 @@ export const OrgDemandsPage = () => {
       <div role="search" aria-label="Filtrar demandas" className="mb-5 grid gap-3 sm:flex sm:flex-wrap sm:items-center">
         <SearchInput
           aria-label="Buscar demandas"
-          placeholder="Buscar pelo nome da demanda"
+          placeholder="Buscar demanda"
           value={search}
           onChange={(event) => setSearch(event.target.value)}
           containerClassName="sm:w-[18rem]"
