@@ -34,7 +34,7 @@ const PhotoActions = ({ account }: { account: Account }) => {
     <>
       <input ref={inputRef} type="file" accept="image/*" className="sr-only" tabIndex={-1} aria-hidden="true" onChange={choose} />
       <Button variant="secondary" size="sm" disabled={update.isPending} onClick={() => inputRef.current?.click()}>
-        <UserIcon size={15} />
+        <UserIcon size={16} />
         {account.photo ? 'Trocar foto' : 'Adicionar foto'}
       </Button>
       {account.photo && (
@@ -84,13 +84,13 @@ const AccountForm = ({ account }: { account: Account }) => {
         </Field>
       </div>
       {update.isError && (
-        <p role="alert" className="text-sm text-critical">
+        <p role="alert" className="text-small text-critical">
           {update.error.message}
         </p>
       )}
       <div className="flex justify-end">
         <Button variant="primary" type="submit" disabled={update.isPending}>
-          <CheckIcon size={15} />
+          <CheckIcon size={16} />
           Salvar
         </Button>
       </div>

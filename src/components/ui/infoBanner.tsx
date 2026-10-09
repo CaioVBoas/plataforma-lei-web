@@ -29,9 +29,9 @@ export const InfoBanner = ({
   action?: ReactNode;
   className?: string;
 }) => (
-  <div className={cn('flex flex-wrap items-center gap-x-4 gap-y-2 rounded-lg px-4 py-3 text-sm leading-relaxed', TONES[tone], className)}>
+  <div className={cn('flex flex-wrap items-center gap-x-4 gap-y-2 rounded-lg px-4 py-3 text-small', TONES[tone], className)}>
     <span aria-hidden="true" className={cn('shrink-0', ICON_TONES[tone])}>
-      {icon ?? <InfoIcon size={17} />}
+      {icon ?? <InfoIcon size={16} />}
     </span>
     <div className="min-w-0 flex-[1_1_280px]">{children}</div>
     {action && <div className="shrink-0">{action}</div>}

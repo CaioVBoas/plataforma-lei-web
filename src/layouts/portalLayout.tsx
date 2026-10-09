@@ -99,8 +99,8 @@ export const PortalLayout = ({ sidebar, bell, account, helpPath }: PortalLayoutP
 
           <div className="ml-auto flex items-center gap-1">
             {/* No celular o "Como funciona" já está no menu: a barra de cima fica só com o essencial. */}
-            <Link to={helpPath} className="hidden h-10 items-center gap-2 rounded-md px-2.5 text-sm font-medium text-ink-2 hover:bg-fill hover:text-ink sm:flex" aria-label="Ajuda: como funciona">
-              <QuestionIcon size={22} />
+            <Link to={helpPath} className="hidden h-10 items-center gap-2 rounded-md px-2.5 text-small font-medium text-ink-2 hover:bg-fill hover:text-ink sm:flex" aria-label="Ajuda: como funciona">
+              <QuestionIcon size={24} />
               <span className="top-label hidden xl:inline">Ajuda</span>
             </Link>
             <AccessibilityMenu />

@@ -57,8 +57,8 @@ const OrganizationView = ({ detail }: { detail: OrganizationDetail }) => {
     >
       <div className="grid grid-cols-1 gap-10 lg:gap-12 lg:grid-cols-[minmax(0,1fr)_300px]">
         <div className="min-w-0">
-          <h2 className="text-headline">Sobre</h2>
-          <p className="mt-2 text-[15px] leading-relaxed text-ink-2">{organization.about}</p>
+          <h2 className="text-h4">Sobre</h2>
+          <p className="mt-2 text-body text-ink-2">{organization.about}</p>
           <div className="mt-5">
             <FactGrid
               columns={2}
@@ -71,7 +71,7 @@ const OrganizationView = ({ detail }: { detail: OrganizationDetail }) => {
             />
           </div>
 
-          <h2 className="mt-10 text-headline">Demandas abertas</h2>
+          <h2 className="mt-10 text-h4">Demandas abertas</h2>
           {openDemands.length > 0 && calendar ? (
             <ul className={cn(cardGridClassName, 'mt-4')}>
               {openDemands.map((demand) => (
@@ -81,7 +81,7 @@ const OrganizationView = ({ detail }: { detail: OrganizationDetail }) => {
               ))}
             </ul>
           ) : (
-            <p className="mt-2 text-sm text-ink-3">Nenhuma demanda no cardápio agora.</p>
+            <p className="mt-2 text-small text-ink-3">Nenhuma demanda no cardápio agora.</p>
           )}
         </div>
 
@@ -94,8 +94,8 @@ const OrganizationView = ({ detail }: { detail: OrganizationDetail }) => {
                 { value: since ?? '–', label: 'desde' },
               ].map((stat) => (
                 <div key={stat.label} className="rounded-md bg-fact px-1 py-2.5">
-                  <dd className="text-[18px] leading-none font-bold text-brand-strong tabular-nums">{stat.value}</dd>
-                  <dt className="mt-1 text-[11px] leading-tight text-ink-2">{stat.label}</dt>
+                  <dd className="text-h4 text-brand-strong tabular-nums">{stat.value}</dd>
+                  <dt className="mt-1 text-caption text-ink-2">{stat.label}</dt>
                 </div>
               ))}
             </dl>
@@ -106,7 +106,7 @@ const OrganizationView = ({ detail }: { detail: OrganizationDetail }) => {
               <dl>
                 <SideFact label="Ponto focal">
                   {contact.focalName}
-                  <span className="block text-[13px] text-ink-2">{contact.focalRole}</span>
+                  <span className="block text-small text-ink-2">{contact.focalRole}</span>
                 </SideFact>
                 <SideFact label="E-mail">
                   <a href={`mailto:${contact.email}`} className={textLinkClassName}>
@@ -116,7 +116,7 @@ const OrganizationView = ({ detail }: { detail: OrganizationDetail }) => {
                 <SideFact label="Canal preferido">{contact.channel}</SideFact>
               </dl>
             ) : (
-              <p className="text-sm leading-relaxed text-ink-2">Aparece quando uma demanda desta organização virar projeto seu.</p>
+              <p className="text-small text-ink-2">Aparece quando uma demanda desta organização virar projeto seu.</p>
             )}
           </SideCard>
         </aside>
@@ -143,37 +143,37 @@ const OrganizationView = ({ detail }: { detail: OrganizationDetail }) => {
                 label={project.title}
                 anchor={
                   <AnchorIcon>
-                    <FolderIcon size={18} />
+                    <FolderIcon size={20} />
                   </AnchorIcon>
                 }
                 action={<RowAction>Abrir projeto</RowAction>}
               >
-                <p className="truncate text-[15px] font-semibold text-ink">{project.title}</p>
-                <p className="mt-1 truncate text-[13px] text-ink-2">
+                <p className="truncate text-body font-semibold text-ink">{project.title}</p>
+                <p className="mt-1 truncate text-small text-ink-2">
                   {project.disciplineName} · {project.semester}
                 </p>
               </Item>
             ))}
           </ItemList>
         ) : (
-          <p className="py-6 text-sm text-ink-3">Você ainda não tem projeto com esta organização.</p>
+          <p className="py-6 text-small text-ink-3">Você ainda não tem projeto com esta organização.</p>
         ))}
 
       {tab === 'cin' &&
         (organization.history.length > 0 ? (
           <ItemList flush>
             {organization.history.map((entry) => (
-              <Item key={`${entry.title}-${entry.semester}`} anchor={<span className="pt-0.5 text-[13px] font-semibold text-brand-strong tabular-nums">{entry.semester}</span>}>
-                <p className="text-[15px] font-semibold text-ink">{entry.title}</p>
-                <p className="mt-1 text-sm leading-relaxed text-ink-2">{entry.result}</p>
-                <p className="mt-1 truncate text-[13px] text-ink-3">
+              <Item key={`${entry.title}-${entry.semester}`} anchor={<span className="pt-0.5 text-small font-semibold text-brand-strong tabular-nums">{entry.semester}</span>}>
+                <p className="text-body font-semibold text-ink">{entry.title}</p>
+                <p className="mt-1 text-small text-ink-2">{entry.result}</p>
+                <p className="mt-1 truncate text-small text-ink-3">
                   {entry.disciplineName} · {entry.teacherName}
                 </p>
               </Item>
             ))}
           </ItemList>
         ) : (
-          <p className="py-6 text-sm text-ink-3">
+          <p className="py-6 text-small text-ink-3">
             Nenhum projeto com o CIn ainda. {pluralize(openDemands.length, 'demanda aberta pode', 'demandas abertas podem')} ser a primeira parceria.
           </p>
         ))}

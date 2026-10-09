@@ -18,7 +18,7 @@ const SideCard = ({ item, onSelect }: { item: SpotlightItem; onSelect: () => voi
     className="hidden h-[220px] w-[240px] min-w-0 shrink flex-col items-center justify-center gap-4 rounded-lg bg-fill px-6 text-center text-ink-3 transition-colors hover:bg-fill-strong lg:flex"
   >
     <span className="flex size-12 items-center justify-center rounded-full bg-surface">{item.icon}</span>
-    <span className="text-[15px] font-semibold text-ink-2">{item.title}</span>
+    <span className="text-body font-semibold text-ink-2">{item.title}</span>
   </button>
 );
 
@@ -39,7 +39,7 @@ export const SpotlightCarousel = ({ items, label }: { items: SpotlightItem[]; la
     <div role="region" aria-roledescription="carrossel" aria-label={label}>
       <div className="flex items-center justify-center gap-3 sm:gap-5">
         <button type="button" aria-label="Anterior" onClick={() => move(-1)} className={ARROW}>
-          <ChevronLeftIcon size={18} />
+          <ChevronLeftIcon size={20} />
         </button>
 
         {count > 2 && <SideCard item={at(-1)} onSelect={() => move(-1)} />}
@@ -48,13 +48,13 @@ export const SpotlightCarousel = ({ items, label }: { items: SpotlightItem[]; la
           className="flex min-h-[260px] w-full max-w-[320px] flex-col items-center justify-center rounded-lg bg-brand px-7 py-8 text-center text-white shadow-sheet"
         >
           <span className="flex size-14 items-center justify-center rounded-full bg-brand-700">{current.icon}</span>
-          <p className="mt-5 text-[18px] font-semibold">{current.title}</p>
-          <div className="mt-2 text-sm leading-relaxed text-white/80">{current.body}</div>
+          <p className="mt-5 text-h4 font-semibold">{current.title}</p>
+          <div className="mt-2 text-small text-white/80">{current.body}</div>
         </div>
         {count > 1 && <SideCard item={at(1)} onSelect={() => move(1)} />}
 
         <button type="button" aria-label="Próximo" onClick={() => move(1)} className={ARROW}>
-          <ChevronRightIcon size={18} />
+          <ChevronRightIcon size={20} />
         </button>
       </div>
 

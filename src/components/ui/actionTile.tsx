@@ -36,12 +36,16 @@ export const ActionTile = ({ to, icon, title, text, tone = 'brand', badge }: Act
       <span aria-hidden="true" className={cn('flex size-14 shrink-0 items-center justify-center rounded-full', ICON_TONES[tone])}>
         {icon}
       </span>
-      {badge && <span className="rounded-full bg-accent px-2.5 py-1 text-[13px] font-semibold text-white">{badge}</span>}
+      {badge && <span className="rounded-full bg-accent px-2.5 py-1 text-small font-semibold text-white">{badge}</span>}
     </div>
-    <p className="mt-4 text-[18px] leading-snug font-semibold text-ink group-hover:text-accent">
-      {title}
-      <ArrowRightIcon size={18} className="ml-1.5 inline-block align-[-3px]" />
+    <p className="mt-4 text-h4 font-semibold text-ink group-hover:text-accent">
+      {/* A seta anda junto com a última palavra, para nunca ficar sozinha numa linha. */}
+      {title.split(' ').slice(0, -1).join(' ')}{' '}
+      <span className="whitespace-nowrap">
+        {title.split(' ').at(-1)}
+        <ArrowRightIcon size={20} className="ml-1.5 inline-block align-[-4px]" />
+      </span>
     </p>
-    <p className="mt-1 text-[15px] leading-relaxed text-ink-2">{text}</p>
+    <p className="mt-1 text-body text-ink-2">{text}</p>
   </Link>
 );

@@ -4,10 +4,10 @@ import { HandIcon, UndoIcon, ZoomInIcon, ZoomOutIcon } from './icons';
 
 const TEXT_LABELS = ['Texto pequeno', 'Texto normal', 'Texto grande', 'Texto maior', 'Texto muito grande'];
 /** Os cinco "A" crescem como o texto que eles escolhem. */
-const A_SIZES = ['text-[13px]', 'text-[16px]', 'text-[19px]', 'text-[22px]', 'text-[26px]'];
+const A_SIZES = ['text-small', 'text-body', 'text-h4', 'text-h3', 'text-h2'];
 
 const GROUP = 'flex gap-1 rounded-lg bg-fill p-1';
-const OPTION = 'flex min-h-11 flex-1 items-center justify-center gap-1.5 rounded-md text-[15px] transition-colors duration-100';
+const OPTION = 'flex min-h-11 flex-1 items-center justify-center gap-1.5 rounded-md text-body transition-colors duration-100';
 const ON = 'bg-surface font-semibold text-ink shadow-[0_1px_3px_rgba(10,50,50,0.15)]';
 const OFF = 'text-ink-2 hover:bg-surface/60 hover:text-ink';
 
@@ -22,7 +22,7 @@ export const AccessibilityPanel = () => {
   return (
     <div className="flex flex-col gap-4">
       <div>
-        <p id="a11y-texto" className="mb-1.5 text-sm font-medium text-ink">
+        <p id="a11y-texto" className="mb-1.5 text-small font-medium text-ink">
           Tamanho do texto
         </p>
         <div role="radiogroup" aria-labelledby="a11y-texto" className={GROUP}>
@@ -46,10 +46,10 @@ export const AccessibilityPanel = () => {
       </div>
 
       <div>
-        <p className="mb-1.5 text-sm font-medium text-ink">Zoom da tela</p>
+        <p className="mb-1.5 text-small font-medium text-ink">Zoom da tela</p>
         {!zoomAvailable() ? (
-          <p className="flex items-start gap-2.5 rounded-lg bg-fill px-3 py-2.5 text-sm leading-relaxed text-ink-2">
-            <HandIcon size={22} className="mt-0.5 shrink-0 text-brand" />
+          <p className="flex items-start gap-2.5 rounded-lg bg-fill px-3 py-2.5 text-small text-ink-2">
+            <HandIcon size={24} className="mt-0.5 shrink-0 text-brand" />
             Nesta tela, aumente com o próprio aparelho: afaste dois dedos na tela, ou aperte Ctrl e + no teclado.
           </p>
         ) : (
@@ -64,7 +64,7 @@ export const AccessibilityPanel = () => {
               <ZoomOutIcon size={20} />
               Menos
             </button>
-            <span aria-live="polite" className="flex min-w-16 items-center justify-center text-[15px] font-semibold text-ink tabular-nums">
+            <span aria-live="polite" className="flex min-w-16 items-center justify-center text-body font-semibold text-ink tabular-nums">
               {prefs.zoom}%
             </span>
             <button
@@ -82,7 +82,7 @@ export const AccessibilityPanel = () => {
       </div>
 
       <div>
-        <p id="a11y-botoes" className="mb-1.5 text-sm font-medium text-ink">
+        <p id="a11y-botoes" className="mb-1.5 text-small font-medium text-ink">
           Botões e campos
         </p>
         <div role="radiogroup" aria-labelledby="a11y-botoes" className={GROUP}>
@@ -96,7 +96,7 @@ export const AccessibilityPanel = () => {
               role="radio"
               aria-checked={prefs.large === option.value}
               onClick={() => setAccessibility({ large: option.value })}
-              className={cn(OPTION, prefs.large === option.value ? ON : OFF, option.value && 'text-[17px]')}
+              className={cn(OPTION, prefs.large === option.value ? ON : OFF, option.value && 'text-h4')}
             >
               {option.label}
             </button>
@@ -108,9 +108,9 @@ export const AccessibilityPanel = () => {
         <button
           type="button"
           onClick={() => setAccessibility(DEFAULT_PREFS)}
-          className="inline-flex min-h-10 items-center justify-center gap-2 rounded-md text-sm font-medium text-accent hover:bg-accent-soft"
+          className="inline-flex min-h-10 items-center justify-center gap-2 rounded-md text-small font-medium text-accent hover:bg-accent-soft"
         >
-          <UndoIcon size={18} />
+          <UndoIcon size={20} />
           Voltar tudo ao normal
         </button>
       )}

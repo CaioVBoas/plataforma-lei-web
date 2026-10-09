@@ -55,14 +55,14 @@ export const OrgDemandCard = ({ demand }: { demand: OrgDemandSummary }) => {
     >
       <div className="flex min-h-6 flex-wrap items-center justify-between gap-2">
         <StageTag stage={demand.stage} />
-        {guidance.yourTurn && <span className="text-[13px] font-semibold text-accent">Sua vez</span>}
+        {guidance.yourTurn && <span className="text-small font-semibold text-accent">Sua vez</span>}
       </div>
 
-      <h3 className="mt-4 text-[17px] leading-snug font-semibold tracking-[-0.01em] text-ink">{demand.title}</h3>
-      {demand.problem && <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-ink-2">{demand.problem}</p>}
+      <h3 className="mt-4 text-h4 font-semibold text-ink">{demand.title}</h3>
+      {demand.problem && <p className="mt-2 line-clamp-2 text-small text-ink-2">{demand.problem}</p>}
 
       <div className="mt-auto pt-6">
-        <p className="rounded-md bg-canvas px-4 py-3.5 text-sm leading-relaxed text-ink">
+        <p className="rounded-md bg-canvas px-4 py-3.5 text-small text-ink">
           <span className="font-semibold">Agora: </span>
           {guidance.now}
         </p>

@@ -56,13 +56,13 @@ const ConversationItem = ({ conversation, selected, onSelect }: { conversation: 
       </span>
       <span className="min-w-0 flex-1">
         <span className="flex items-baseline justify-between gap-2">
-          <span className={cn('truncate text-[15px] text-ink', conversation.waiting > 0 ? 'font-semibold' : 'font-medium')}>{conversation.demand.title}</span>
-          <span className={cn('shrink-0 text-[12px]', conversation.waiting > 0 ? 'font-semibold text-accent' : 'text-ink-3')}>{formatShortDate(conversation.last)}</span>
+          <span className={cn('truncate text-body text-ink', conversation.waiting > 0 ? 'font-semibold' : 'font-medium')}>{conversation.demand.title}</span>
+          <span className={cn('shrink-0 text-caption', conversation.waiting > 0 ? 'font-semibold text-accent' : 'text-ink-3')}>{formatShortDate(conversation.last)}</span>
         </span>
         <span className="mt-0.5 flex items-center justify-between gap-2">
-          <span className="line-clamp-1 text-[13px] text-ink-2">{conversation.preview}</span>
+          <span className="line-clamp-1 text-small text-ink-2">{conversation.preview}</span>
           {conversation.waiting > 0 && (
-            <span className="min-w-6 shrink-0 rounded-full bg-accent px-1.5 text-center text-[12px] font-semibold text-white tabular-nums">
+            <span className="min-w-6 shrink-0 rounded-full bg-accent px-1.5 text-center text-caption font-semibold text-white tabular-nums">
               {conversation.waiting}
               <span className="sr-only"> sem resposta</span>
             </span>
@@ -76,7 +76,7 @@ const ConversationItem = ({ conversation, selected, onSelect }: { conversation: 
 /** Um grupo da lista de conversas, com o nome em caixa alta e a linha separando do grupo de cima. */
 const ConversationGroup = ({ title, children }: { title: string; children: ReactNode }) => (
   <div className="border-t border-line first:border-t-0">
-    <p className="bg-canvas/60 px-4 pt-3 pb-2 text-[12px] font-semibold tracking-[0.06em] text-ink-3 uppercase">{title}</p>
+    <p className="bg-canvas/60 px-4 pt-3 pb-2 text-overline text-ink-3">{title}</p>
     <ul className="divide-y divide-line">{children}</ul>
   </div>
 );
@@ -157,8 +157,8 @@ export const OrgQuestionsPage = () => {
           placeholder="Buscar nas perguntas"
           value={search}
           onChange={(event) => setSearch(event.target.value)}
-          containerClassName="sm:w-[16rem]"
-          className="h-11 border-line-strong! bg-surface text-[15px]"
+          containerClassName="sm:w-[14rem]"
+          className="h-11 border-line-strong! bg-surface text-body"
         />
         <FilterDropdown
           label="Mostrar"
@@ -172,14 +172,14 @@ export const OrgQuestionsPage = () => {
         />
         <FilterDropdown
           label="Demanda"
-          icon={<TrayIcon size={18} />}
+          icon={<TrayIcon size={20} />}
           value={demandFilter}
           onChange={(value) => setParam('demanda', value)}
           options={[{ value: ALL, label: 'Todas' }, ...demands.map((demand) => ({ value: demand.id, label: demand.title, count: demand.questions.length }))]}
         />
         <FilterDropdown
           label="Docente"
-          icon={<UserIcon size={18} />}
+          icon={<UserIcon size={20} />}
           value={teacherFilter}
           onChange={(value) => setParam('docente', value)}
           options={[
@@ -195,7 +195,7 @@ export const OrgQuestionsPage = () => {
               setSearch('');
               setSearchParams(openId ? { conversa: openId } : {}, { replace: true });
             }}
-            className="inline-flex min-h-11 items-center justify-center rounded-lg px-3 text-[15px] font-medium text-accent hover:bg-accent-soft"
+            className="inline-flex min-h-11 items-center justify-center rounded-lg px-3 text-body font-medium text-accent hover:bg-accent-soft"
           >
             Limpar filtros
           </button>
@@ -216,7 +216,7 @@ export const OrgQuestionsPage = () => {
           {/* Lado a lado só quando cabe de fato: com texto grande e zoom, uma conversa por vez. */}
           <div className="grid gap-6 @min-[52rem]:grid-cols-[minmax(20rem,26rem)_minmax(0,1fr)]">
             <nav aria-label="Conversas" className={cn('self-start overflow-hidden rounded-xl border border-line bg-surface', open && '@max-[52rem]:hidden')}>
-              <p className="border-b border-line px-4 py-3 text-[15px] font-semibold text-ink">Conversas</p>
+              <p className="border-b border-line px-4 py-3 text-body font-semibold text-ink">Conversas</p>
               {waitingList.length > 0 && (
                 <ConversationGroup title={`Esperando resposta · ${waitingList.length}`}>
                   {waitingList.map((conversation) => (
@@ -249,7 +249,7 @@ export const OrgQuestionsPage = () => {
                   <button
                     type="button"
                     onClick={() => setParam('conversa', '')}
-                    className="mb-3 inline-flex min-h-11 items-center gap-2 rounded-lg px-2 text-[15px] font-medium text-ink-2 hover:bg-fill @min-[52rem]:hidden"
+                    className="mb-3 inline-flex min-h-11 items-center gap-2 rounded-lg px-2 text-body font-medium text-ink-2 hover:bg-fill @min-[52rem]:hidden"
                   >
                     <ArrowLeftIcon size={20} />
                     Voltar às conversas
@@ -262,13 +262,13 @@ export const OrgQuestionsPage = () => {
                   header={
                     <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line px-4 py-3">
                       <div className="min-w-0">
-                        <h2 className="text-headline">{shown.demand.title}</h2>
+                        <h2 className="text-h4">{shown.demand.title}</h2>
                         <div className="mt-1">
                           <StageTag stage={shown.demand.status === 'reserved' ? 'reserved' : shown.demand.status === 'open' ? 'open' : 'in-project'} />
                         </div>
                       </div>
                       <Link to={paths.orgDemand(shown.demand.id)} className={buttonClassName({ variant: 'secondary' })}>
-                        <EyeIcon size={18} />
+                        <EyeIcon size={20} />
                         Ver a demanda
                       </Link>
                     </div>

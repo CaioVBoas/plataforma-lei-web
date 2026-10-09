@@ -58,15 +58,15 @@ const DisciplineItem = ({ discipline, matches, projects }: DisciplineItemProps) 
     <Item
       to={paths.discipline(discipline.id)}
       label={discipline.name}
-      anchor={<span className="pt-1 text-[13px] whitespace-nowrap text-ink-2 tabular-nums">{discipline.code || '–'}</span>}
+      anchor={<span className="pt-1 text-small whitespace-nowrap text-ink-2 tabular-nums">{discipline.code || '–'}</span>}
       menu={<ActionMenu label={`Ações de ${discipline.name}`} items={actions} />}
     >
-      <p className="truncate text-headline">{discipline.name}</p>
-      <p className="mt-1 truncate text-[13px] text-ink-2">
+      <p className="truncate text-h4">{discipline.name}</p>
+      <p className="mt-1 truncate text-small text-ink-2">
         {discipline.isCurrent ? disciplineFacts(discipline) : `${discipline.semester} · ${disciplineFacts(discipline)}`}
         {discipline.coTeachers.length > 0 && ` · com ${joinWithAnd(discipline.coTeachers.map((teacher) => teacher.name ?? teacher.email))}`}
       </p>
-      <p className="mt-1 truncate text-[13px] text-ink-2">
+      <p className="mt-1 truncate text-small text-ink-2">
         {discipline.isCurrent ? (
           <>
             <span className={freeSlots(discipline) === 0 ? 'text-ink-3' : undefined}>{slotsLabel(discipline)}</span>
@@ -105,13 +105,13 @@ const DisciplineList = ({ disciplines, menu, projects, tab, onCreate }: GroupsPr
         description="Cadastre as turmas que você leciona agora. Sem elas, não dá para saber quais demandas combinam com você."
         action={
           <Button variant="primary" onClick={onCreate}>
-            <PlusIcon size={15} />
+            <PlusIcon size={16} />
             Cadastrar disciplina
           </Button>
         }
       />
     ) : (
-      <p className="py-6 text-sm text-ink-3">Nenhuma disciplina de semestres anteriores.</p>
+      <p className="py-6 text-small text-ink-3">Nenhuma disciplina de semestres anteriores.</p>
     );
   }
 
@@ -183,7 +183,7 @@ export const DisciplinesPage = () => {
       subtitle="Suas turmas e as demandas que combinam com cada uma."
       actions={
         <Button variant="primary" onClick={() => setCreating(true)}>
-          <PlusIcon size={15} />
+          <PlusIcon size={16} />
           Nova disciplina
         </Button>
       }

@@ -48,7 +48,7 @@ export const NewDisciplineModal = ({ onClose, onCreated }: NewDisciplineModalPro
         }
       />
       {create.isError && (
-        <p role="alert" className="mt-4 text-sm text-critical">
+        <p role="alert" className="mt-4 text-small text-critical">
           {create.error.message}
         </p>
       )}

@@ -51,16 +51,16 @@ const OrgProjectCard = ({ project, today }: { project: OrgProjectSummary; today:
         <Tag pill tone={stage.tone}>
           {stage.label}
         </Tag>
-        {withYou && <span className="text-[13px] font-semibold text-accent">Com a participação de vocês</span>}
+        {withYou && <span className="text-small font-semibold text-accent">Com a participação de vocês</span>}
       </div>
-      <h3 className="mt-4 text-[17px] leading-snug font-semibold tracking-[-0.01em] text-ink">{project.title}</h3>
-      <p className="mt-1.5 text-sm text-ink-2">
+      <h3 className="mt-4 text-h4 font-semibold text-ink">{project.title}</h3>
+      <p className="mt-1.5 text-small text-ink-2">
         {project.disciplineName}, com {project.teacherName} · {project.semester}
       </p>
       <MilestoneTrack milestones={project.milestones} className="mt-5" />
 
       <div className="mt-auto pt-6">
-        <p className="rounded-md bg-canvas px-4 py-3.5 text-sm leading-relaxed text-ink">
+        <p className="rounded-md bg-canvas px-4 py-3.5 text-small text-ink">
           <span className="font-semibold">{next ? 'Próximo passo: ' : 'Resultado: '}</span>
           {next ? (
             <>
@@ -155,32 +155,32 @@ export const OrgProjectsPage = () => {
           value={search}
           onChange={(event) => setSearch(event.target.value)}
           containerClassName="sm:w-[16rem]"
-          className="h-11 border-line-strong! bg-surface text-[15px]"
+          className="h-11 border-line-strong! bg-surface text-body"
         />
         <FilterDropdown
           label="Mostrar"
-          icon={<FilterIcon size={18} />}
+          icon={<FilterIcon size={20} />}
           value={filter}
           onChange={(value) => setParam('estado', value)}
           options={FILTERS.map((value) => ({ value, label: LABELS[value], count: count(value) }))}
         />
         <FilterDropdown
           label="Disciplina"
-          icon={<BookIcon size={18} />}
+          icon={<BookIcon size={20} />}
           value={discipline}
           onChange={(value) => setParam('disciplina', value)}
           options={[{ value: 'todos', label: 'Todas' }, ...uniq(projects.map((project) => project.disciplineName)).map((name) => ({ value: name, label: name }))]}
         />
         <FilterDropdown
           label="Docente"
-          icon={<UserIcon size={18} />}
+          icon={<UserIcon size={20} />}
           value={teacher}
           onChange={(value) => setParam('docente', value)}
           options={[{ value: 'todos', label: 'Todos' }, ...uniq(projects.map((project) => project.teacherName)).map((name) => ({ value: name, label: name }))]}
         />
         <FilterDropdown
           label="Semestre"
-          icon={<CalendarIcon size={18} />}
+          icon={<CalendarIcon size={20} />}
           value={semester}
           onChange={(value) => setParam('semestre', value)}
           options={[
@@ -197,7 +197,7 @@ export const OrgProjectsPage = () => {
               setSearch('');
               setSearchParams({}, { replace: true });
             }}
-            className="inline-flex min-h-11 items-center justify-center rounded-lg px-3 text-[15px] font-medium text-accent hover:bg-accent-soft"
+            className="inline-flex min-h-11 items-center justify-center rounded-lg px-3 text-body font-medium text-accent hover:bg-accent-soft"
           >
             Limpar filtros
           </button>

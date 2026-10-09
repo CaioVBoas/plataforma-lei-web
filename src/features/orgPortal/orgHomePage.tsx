@@ -92,7 +92,7 @@ const OrgHomeContent = ({ account, organizationName, today }: { account: OrgAcco
           <li>
             <ActionTile
               to={draft ? paths.orgEditDemand(draft.id) : paths.orgNewDemand}
-              icon={draft ? <PencilIcon size={28} /> : <PlusIcon size={28} />}
+              icon={draft ? <PencilIcon size={32} variant="duotone" /> : <PlusIcon size={32} variant="duotone" />}
               tone="accent"
               title={draft ? 'Terminar o rascunho' : 'Contar um problema'}
               text={draft ? `"${draft.title}" ainda não foi enviado.` : 'Uma turma do CIn pode ajudar a resolver.'}
@@ -101,7 +101,7 @@ const OrgHomeContent = ({ account, organizationName, today }: { account: OrgAcco
           <li>
             <ActionTile
               to={paths.orgDemands('vez')}
-              icon={<BellIcon size={28} />}
+              icon={<BellIcon size={32} variant="duotone" />}
               tone={waiting.length > 0 ? 'caution' : 'brand'}
               title="Ver o que espera por vocês"
               text={waiting.length > 0 ? 'Ajustes e perguntas que precisam de resposta.' : 'Nada esperando agora.'}
@@ -109,12 +109,12 @@ const OrgHomeContent = ({ account, organizationName, today }: { account: OrgAcco
             />
           </li>
           <li>
-            <ActionTile to={paths.orgDemands('todas')} icon={<TrayIcon size={28} />} title="Ver minhas demandas" text="Todos os problemas que vocês já contaram." />
+            <ActionTile to={paths.orgDemands('todas')} icon={<TrayIcon size={32} variant="duotone" />} title="Ver minhas demandas" text="Todos os problemas que vocês já contaram." />
           </li>
           <li>
             <ActionTile
               to={paths.orgProjects}
-              icon={<FolderIcon size={28} />}
+              icon={<FolderIcon size={32} variant="duotone" />}
               title="Acompanhar projetos"
               text={milestones.length > 0 ? 'Uma etapa com vocês está chegando.' : 'As turmas que trabalham com vocês.'}
               badge={milestones.length > 0 ? String(milestones.length) : undefined}

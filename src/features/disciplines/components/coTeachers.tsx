@@ -14,8 +14,8 @@ const TeacherCard = ({ name, detail, menu }: { name: string; detail: string; men
   <div className="flex items-center gap-3 rounded-lg bg-canvas px-4 py-3.5">
     <Monogram name={name} />
     <div className="min-w-0 flex-1">
-      <p className="truncate text-[15px] font-semibold text-ink">{name}</p>
-      <p className="mt-0.5 truncate text-[13px] text-ink-2">{detail}</p>
+      <p className="truncate text-body font-semibold text-ink">{name}</p>
+      <p className="mt-0.5 truncate text-small text-ink-2">{detail}</p>
     </div>
     {menu}
   </div>
@@ -80,7 +80,7 @@ export const CoTeachers = ({ discipline }: { discipline: DisciplineWithUsage }) 
 
       {discipline.isCurrent && (
         <form onSubmit={submit} className="mt-6">
-          <label htmlFor={fieldId} className="mb-1.5 block text-[13px] font-medium text-ink-2">
+          <label htmlFor={fieldId} className="mb-1.5 block text-small font-medium text-ink-2">
             Divide a disciplina com alguém?
           </label>
           <div className="flex flex-wrap gap-2">
@@ -93,16 +93,16 @@ export const CoTeachers = ({ discipline }: { discipline: DisciplineWithUsage }) 
               className="h-9 max-w-[320px] flex-1"
             />
             <Button type="submit" disabled={!email.trim() || invite.isPending}>
-              <MailIcon size={15} />
+              <MailIcon size={16} />
               Convidar
             </Button>
           </div>
           {invite.isError ? (
-            <p role="alert" className="mt-2 text-[13px] text-critical">
+            <p role="alert" className="mt-2 text-small text-critical">
               {invite.error.message}
             </p>
           ) : (
-            <p className="mt-2 text-[13px] text-ink-3">O colega vê e edita os projetos desta disciplina.</p>
+            <p className="mt-2 text-small text-ink-3">O colega vê e edita os projetos desta disciplina.</p>
           )}
         </form>
       )}

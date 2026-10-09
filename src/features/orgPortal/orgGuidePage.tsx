@@ -14,7 +14,7 @@ import { ORG_MILESTONE_COPY } from './utils/orgPresentation';
 const goTo = (to: string, label: string) => (
   <Link to={to} className={buttonClassName({ variant: 'plain', size: 'sm' })}>
     {label}
-    <ArrowRightIcon size={14} />
+    <ArrowRightIcon size={16} />
   </Link>
 );
 
@@ -147,7 +147,7 @@ export const OrgGuidePage = () => {
       <LeiContact />
 
       <div className="mt-14 flex flex-wrap items-center justify-between gap-4 border-t border-line pt-8">
-        <p className="text-[15px] font-medium text-ink">Tem um problema que uma turma pode resolver?</p>
+        <p className="text-body font-medium text-ink">Tem um problema que uma turma pode resolver?</p>
         <Link to={paths.orgNewDemand} className={buttonClassName({ variant: 'primary' })}>
           <PlusIcon size={16} />
           Submeter demanda

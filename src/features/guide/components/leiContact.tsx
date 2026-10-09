@@ -6,13 +6,13 @@ import { LEI_CONTACT } from '@/lib/leiContact';
 export const LeiContact = () => (
   <section aria-labelledby="falar-com-lei" className="mt-12 flex flex-wrap items-center gap-x-6 gap-y-4 rounded-xl border border-line bg-surface p-5 sm:p-6">
     <span aria-hidden="true" className="flex size-14 shrink-0 items-center justify-center rounded-full bg-brand-50 text-brand">
-      <UsersIcon size={28} />
+      <UsersIcon size={32} variant="duotone" />
     </span>
     <div className="min-w-0 flex-[1_1_260px]">
-      <h2 id="falar-com-lei" className="text-headline">
+      <h2 id="falar-com-lei" className="text-h4">
         Ainda com dúvida? Fale com a gente
       </h2>
-      <p className="mt-1 text-[15px] leading-relaxed text-ink-2">A equipe do L.E.I. responde por e-mail e ajuda no que for preciso.</p>
+      <p className="mt-1 text-body text-ink-2">A equipe do L.E.I. responde por e-mail e ajuda no que for preciso.</p>
     </div>
     <a href={`mailto:${LEI_CONTACT.email}`} className={buttonClassName({ variant: 'secondary', size: 'xl' })}>
       <MailIcon size={20} />

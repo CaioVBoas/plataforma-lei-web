@@ -25,7 +25,7 @@ const timeline = (questions: DemandQuestion[]): ChatEvent[] =>
 
 const DaySeparator = ({ date }: { date: IsoDate }) => (
   <li className="flex justify-center py-1">
-    <span className="rounded-md bg-surface px-3 py-1 text-[12px] font-medium text-ink-2 shadow-[0_1px_0.5px_rgba(10,50,50,0.13)]">{dayLabel(date)}</span>
+    <span className="rounded-md bg-surface px-3 py-1 text-caption font-medium text-ink-2 shadow-[0_1px_0.5px_rgba(10,50,50,0.13)]">{dayLabel(date)}</span>
   </li>
 );
 
@@ -39,18 +39,18 @@ const TeacherBubble = ({ question, replying, onReply }: { question: DemandQuesti
       )}
     >
       <span aria-hidden="true" className="absolute top-0 -left-2 border-t-[10px] border-l-[10px] border-t-surface border-l-transparent" />
-      <p className="text-[13px] font-semibold text-brand-strong">{question.teacherName}</p>
-      <p className="mt-0.5 text-[15px] leading-relaxed whitespace-pre-line text-ink">{question.text}</p>
-      <p className="mt-1 text-right text-[11px] text-ink-3">{formatShortDate(question.askedAt)}</p>
+      <p className="text-small font-semibold text-brand-strong">{question.teacherName}</p>
+      <p className="mt-0.5 text-body whitespace-pre-line text-ink">{question.text}</p>
+      <p className="mt-1 text-right text-caption text-ink-3">{formatShortDate(question.askedAt)}</p>
     </div>
     {!question.answer && onReply && (
       <button
         type="button"
         onClick={onReply}
         aria-pressed={replying}
-        className={cn('mt-1.5 inline-flex min-h-9 items-center gap-1.5 rounded-full px-3 text-[13px] font-semibold', replying ? 'bg-accent text-white' : 'bg-accent-soft text-accent hover:bg-accent/15')}
+        className={cn('mt-1.5 inline-flex min-h-9 items-center gap-1.5 rounded-full px-3 text-small font-semibold', replying ? 'bg-accent text-white' : 'bg-accent-soft text-accent hover:bg-accent/15')}
       >
-        <UndoIcon size={15} />
+        <UndoIcon size={16} />
         {replying ? 'Respondendo esta' : 'Responder esta pergunta'}
       </button>
     )}
@@ -64,13 +64,13 @@ const AnswerBubble = ({ question }: { question: DemandQuestion }) =>
       <div className="relative max-w-[min(85%,36rem)] rounded-xl rounded-tr-none bg-brand-50 px-3.5 pt-2 pb-1.5 shadow-[0_1px_0.5px_rgba(10,50,50,0.13)]">
         <span aria-hidden="true" className="absolute top-0 -right-2 border-t-[10px] border-r-[10px] border-t-brand-50 border-r-transparent" />
         <div className="mb-1.5 rounded-md border-l-4 border-brand bg-surface/70 px-2.5 py-1.5">
-          <p className="text-[12px] font-semibold text-brand-strong">{question.teacherName}</p>
-          <p className="line-clamp-2 text-[13px] text-ink-2">{question.text}</p>
+          <p className="text-caption font-semibold text-brand-strong">{question.teacherName}</p>
+          <p className="line-clamp-2 text-small text-ink-2">{question.text}</p>
         </div>
-        <p className="text-[15px] leading-relaxed whitespace-pre-line text-ink">{question.answer.text}</p>
-        <p className="mt-1 flex items-center justify-end gap-1 text-[11px] text-ink-3">
+        <p className="text-body whitespace-pre-line text-ink">{question.answer.text}</p>
+        <p className="mt-1 flex items-center justify-end gap-1 text-caption text-ink-3">
           {question.answer.by.split(',')[0]} · {formatShortDate(question.answer.answeredAt)}
-          <DoubleCheckIcon size={15} className="text-brand" />
+          <DoubleCheckIcon size={16} className="text-brand" />
           <span className="sr-only">Resposta enviada</span>
         </p>
       </div>
@@ -111,8 +111,8 @@ const Composer = ({ demandId, question }: { demandId: string; question: DemandQu
     <form onSubmit={submit} className="border-t border-line bg-surface p-3 sm:p-4">
       <div className="mb-2 flex items-start gap-2 rounded-lg border-l-4 border-accent bg-accent-soft px-3 py-2">
         <div className="min-w-0 flex-1">
-          <p className="text-[13px] font-semibold text-accent">Respondendo a {question.teacherName}</p>
-          <p className="line-clamp-2 text-[13px] text-ink-2">{question.text}</p>
+          <p className="text-small font-semibold text-accent">Respondendo a {question.teacherName}</p>
+          <p className="line-clamp-2 text-small text-ink-2">{question.text}</p>
         </div>
       </div>
       <label htmlFor={fieldId} className="sr-only">
@@ -127,7 +127,7 @@ const Composer = ({ demandId, question }: { demandId: string; question: DemandQu
           onChange={(event) => setText(event.target.value)}
           onKeyDown={onKeyDown}
           placeholder="Escreva a resposta para o docente"
-          className="min-h-12 flex-1 resize-none rounded-2xl border border-line-strong bg-canvas px-4 py-2.5 text-[15px] leading-relaxed text-ink placeholder:text-ink-3 focus:border-accent focus:bg-surface focus:outline-none"
+          className="min-h-12 flex-1 resize-none rounded-2xl border border-line-strong bg-canvas px-4 py-2.5 text-body text-ink placeholder:text-ink-3 focus:border-accent focus:bg-surface focus:outline-none"
         />
         <Button type="submit" variant="primary" size="xl" disabled={!text.trim() || answer.isPending}>
           <SendIcon size={20} />
@@ -135,7 +135,7 @@ const Composer = ({ demandId, question }: { demandId: string; question: DemandQu
         </Button>
       </div>
       {answer.isError && (
-        <p role="alert" className="mt-1.5 text-[13px] text-critical">
+        <p role="alert" className="mt-1.5 text-small text-critical">
           {answer.error.message}
         </p>
       )}
@@ -194,7 +194,7 @@ export const QuestionsInbox = ({ demand, questions = demand.questions, header }:
             })}
           </ol>
         ) : (
-          <p className="flex min-h-[12rem] items-center justify-center text-center text-[15px] text-ink-3">
+          <p className="flex min-h-[12rem] items-center justify-center text-center text-body text-ink-3">
             Nenhuma pergunta ainda. Quando um docente perguntar algo antes de decidir, a pergunta aparece aqui.
           </p>
         )}
@@ -202,8 +202,8 @@ export const QuestionsInbox = ({ demand, questions = demand.questions, header }:
       {canAnswer && replyTo ? (
         <Composer key={replyTo.id} demandId={demand.id} question={replyTo} />
       ) : (
-        <p className="flex items-center gap-2 border-t border-line bg-surface px-4 py-3 text-[14px] text-ink-2">
-          <DoubleCheckIcon size={18} className="shrink-0 text-brand" />
+        <p className="flex items-center gap-2 border-t border-line bg-surface px-4 py-3 text-small text-ink-2">
+          <DoubleCheckIcon size={20} className="shrink-0 text-brand" />
           {canAnswer
             ? 'Todas as perguntas foram respondidas. A resposta fica na demanda, para todos os docentes que a abrirem.'
             : 'A demanda virou projeto. Agora a conversa é direto com o docente, pelo contato do projeto.'}

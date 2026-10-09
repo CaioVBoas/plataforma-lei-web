@@ -16,12 +16,12 @@ export const RoleTabs = ({ value, onChange }: { value: UserRole | null; onChange
           aria-checked={selected}
           onClick={() => onChange(role)}
           className={cn(
-            'flex h-auto min-h-9 flex-col items-center justify-center rounded-[5px] px-1 py-1.5 text-[13px] transition-colors duration-150',
+            'flex h-auto min-h-9 flex-col items-center justify-center rounded-[5px] px-1 py-1.5 text-small transition-colors duration-150',
             selected ? 'bg-surface font-semibold text-ink shadow-popover' : 'text-ink-2 hover:text-ink',
           )}
         >
           {ROLE_COPY[role].short}
-          {!ROLE_COPY[role].available && <span className="text-[11px] font-normal text-ink-3">em breve</span>}
+          {!ROLE_COPY[role].available && <span className="text-caption font-normal text-ink-3">em breve</span>}
         </button>
       );
     })}

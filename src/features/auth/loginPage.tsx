@@ -62,7 +62,7 @@ const OrganizationLogin = () => {
         </Field>
 
         {login.isError && (
-          <p role="alert" className="text-sm text-critical">
+          <p role="alert" className="text-small text-critical">
             {login.error.message}
           </p>
         )}
@@ -73,7 +73,7 @@ const OrganizationLogin = () => {
         </Button>
       </form>
 
-      <div className="mt-4 flex flex-wrap items-center justify-between gap-2 text-sm">
+      <div className="mt-4 flex flex-wrap items-center justify-between gap-2 text-small">
         <button type="button" onClick={() => setResetNotice(true)} className={textLinkClassName}>
           Esqueci minha senha
         </button>
@@ -85,7 +85,7 @@ const OrganizationLogin = () => {
         </span>
       </div>
       {resetNotice && (
-        <p role="status" className="mt-2 text-[13px] leading-relaxed text-ink-2">
+        <p role="status" className="mt-2 text-small text-ink-2">
           Nesta demonstração qualquer e-mail e senha entram na conta do Hospital das Clínicas. A recuperação de senha ainda não existe.
         </p>
       )}
@@ -118,7 +118,7 @@ const TeacherLogin = () => {
         </Field>
 
         {login.isError && (
-          <p role="alert" className="text-sm text-critical">
+          <p role="alert" className="text-small text-critical">
             {login.error.message}
           </p>
         )}
@@ -129,7 +129,7 @@ const TeacherLogin = () => {
         </Button>
       </form>
 
-      <div className="mt-4 flex flex-wrap items-center justify-between gap-2 text-sm">
+      <div className="mt-4 flex flex-wrap items-center justify-between gap-2 text-small">
         <button type="button" onClick={() => setResetNotice(true)} className={textLinkClassName}>
           Esqueci minha senha
         </button>
@@ -141,7 +141,7 @@ const TeacherLogin = () => {
         </span>
       </div>
       {resetNotice && (
-        <p role="status" className="mt-2 text-[13px] leading-relaxed text-ink-2">
+        <p role="status" className="mt-2 text-small text-ink-2">
           Nesta demonstração qualquer senha funciona com um e-mail institucional. A recuperação de senha chega com o login da UFPE.
         </p>
       )}
@@ -162,7 +162,7 @@ export const LoginPage = () => {
 
   return (
     <AuthShell>
-      <h2 className="text-[28px] leading-tight font-bold tracking-[-0.02em] text-ink">Entrar</h2>
+      <h2 className="text-h2 text-ink">Entrar</h2>
       <div className="mt-6 mb-7">
         <RoleTabs value={role} onChange={(next) => setSearchParams({ perfil: next }, { replace: true })} />
       </div>

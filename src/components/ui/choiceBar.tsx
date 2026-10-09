@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { cn } from '@/utils/cn';
+import { withIconVariant } from './iconVariant';
 
 export interface ChoiceBarOption<T extends string> {
   value: T;
@@ -33,18 +34,18 @@ export const ChoiceBar = <T extends string>({ label, value, options, onChange, c
           aria-checked={selected}
           onClick={() => onChange(option.value)}
           className={cn(
-            'flex min-h-11 items-center gap-2 rounded-lg px-3.5 text-left text-[15px] transition-colors duration-100',
+            'flex min-h-11 items-center gap-2 rounded-lg px-3.5 text-left text-body transition-colors duration-100',
             selected ? 'bg-surface font-semibold text-ink shadow-[0_1px_3px_rgba(10,50,50,0.12)]' : 'text-ink-2 hover:bg-surface/60 hover:text-ink',
           )}
         >
           <span aria-hidden="true" className={cn('shrink-0', selected ? 'text-brand' : 'text-ink-3')}>
-            {option.icon}
+            {withIconVariant(option.icon, selected)}
           </span>
           <span className="min-w-0 flex-1 truncate">{option.label}</span>
           {option.count !== undefined && (
             <span
               className={cn(
-                'min-w-6 shrink-0 rounded-full px-1.5 text-center text-[13px] font-semibold tabular-nums',
+                'min-w-6 shrink-0 rounded-full px-1.5 text-center text-small font-semibold tabular-nums',
                 selected ? 'bg-brand text-white' : 'bg-surface text-ink-2',
               )}
             >

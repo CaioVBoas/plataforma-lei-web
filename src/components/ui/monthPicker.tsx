@@ -39,7 +39,7 @@ export const MonthPicker = ({ value, onChange, available, current, label = 'Mês
   return (
     <div ref={containerRef} className="relative">
       <button type="button" aria-haspopup="dialog" aria-expanded={open} onClick={toggle} className={cn(FILTER_BUTTON, open && 'border-accent')}>
-        <CalendarIcon size={18} className="shrink-0 text-ink-2" />
+        <CalendarIcon size={20} className="shrink-0 text-ink-2" />
         <span className="min-w-0 flex-1 truncate">
           <span className="text-ink-2">{label}: </span>
           <span className="font-medium">{value ? monthLabel(value) : 'Todos'}</span>
@@ -56,9 +56,9 @@ export const MonthPicker = ({ value, onChange, available, current, label = 'Mês
               onClick={() => setYear(years[yearIndex - 1])}
               className="flex size-10 items-center justify-center rounded-md text-ink-2 hover:bg-fill disabled:opacity-30"
             >
-              <ChevronLeftIcon size={18} />
+              <ChevronLeftIcon size={20} />
             </button>
-            <p className="text-[17px] font-semibold text-ink tabular-nums">{year}</p>
+            <p className="text-h4 font-semibold text-ink tabular-nums">{year}</p>
             <button
               type="button"
               aria-label="Próximo ano"
@@ -66,7 +66,7 @@ export const MonthPicker = ({ value, onChange, available, current, label = 'Mês
               onClick={() => setYear(years[yearIndex + 1])}
               className="flex size-10 items-center justify-center rounded-md text-ink-2 hover:bg-fill disabled:opacity-30"
             >
-              <ChevronRightIcon size={18} />
+              <ChevronRightIcon size={20} />
             </button>
           </div>
           <div className="grid grid-cols-3 gap-2">
@@ -83,7 +83,7 @@ export const MonthPicker = ({ value, onChange, available, current, label = 'Mês
                   aria-label={`${MONTH_NAMES[index]} de ${year}${month === current ? ', mês atual' : ''}`}
                   onClick={() => pick(month)}
                   className={cn(
-                    'relative flex h-12 items-center justify-center rounded-lg text-[15px] font-semibold uppercase transition-colors',
+                    'relative flex h-12 items-center justify-center rounded-lg text-body font-semibold uppercase transition-colors',
                     selected ? 'border border-brand bg-brand-50 text-brand-strong' : enabled ? 'border border-line text-ink hover:bg-canvas' : 'text-ink-3/60',
                   )}
                 >
@@ -96,7 +96,7 @@ export const MonthPicker = ({ value, onChange, available, current, label = 'Mês
           <button
             type="button"
             onClick={() => pick('')}
-            className={cn('mt-3 flex h-11 w-full items-center justify-center rounded-lg text-[15px] font-medium', value ? 'text-accent hover:bg-accent-soft' : 'bg-fill text-ink')}
+            className={cn('mt-3 flex h-11 w-full items-center justify-center rounded-lg text-body font-medium', value ? 'text-accent hover:bg-accent-soft' : 'bg-fill text-ink')}
           >
             Todos os meses
           </button>

@@ -103,7 +103,7 @@ const SubmitForm = ({ submission, organization }: SubmitFormProps) => {
       <div className="grid grid-cols-1 gap-10 lg:gap-12 lg:grid-cols-[minmax(0,1fr)_320px]">
         <form onSubmit={(event) => event.preventDefault()} noValidate className="min-w-0 rounded-xl border border-line bg-surface p-5 sm:p-8">
           <FormStepsNav step={step} onChange={goTo} />
-          <h2 className="mt-8 mb-6 text-title">{FORM_STEPS[step]}</h2>
+          <h2 className="mt-8 mb-6 text-h2">{FORM_STEPS[step]}</h2>
 
           {step === 0 && <ProblemStep register={register} control={control} errors={errors} values={values} />}
           {step === 1 && <ClassStep register={register} control={control} errors={errors} values={values} />}
@@ -112,30 +112,30 @@ const SubmitForm = ({ submission, organization }: SubmitFormProps) => {
             <div>
               {missing.length > 0 ? (
                 <div className="mb-8 rounded-lg bg-caution-soft px-5 py-4">
-                  <p className="text-[15px] font-semibold text-caution">Falta preencher antes de enviar</p>
-                  <ul className="mt-2 space-y-1 text-sm text-ink">
+                  <p className="text-body font-semibold text-caution">Falta preencher antes de enviar</p>
+                  <ul className="mt-2 space-y-1 text-small text-ink">
                     {missing.map((label) => (
                       <li key={label}>{label}</li>
                     ))}
                   </ul>
                 </div>
               ) : (
-                <p className="mb-8 rounded-lg bg-accent-soft px-5 py-4 text-[15px] text-ink">
+                <p className="mb-8 rounded-lg bg-accent-soft px-5 py-4 text-body text-ink">
                   Tudo preenchido. Confira o texto abaixo como o docente vai ler e envie para a triagem.
                 </p>
               )}
-              <p className="text-[19px] leading-snug font-semibold text-ink">{draft.title || 'Demanda sem nome'}</p>
-              <p className="mt-1.5 mb-6 text-[15px] leading-relaxed text-ink-2">{draft.problem}</p>
+              <p className="text-h4 font-semibold text-ink">{draft.title || 'Demanda sem nome'}</p>
+              <p className="mt-1.5 mb-6 text-body text-ink-2">{draft.problem}</p>
               <DemandContent
                 {...draft}
                 outcome={{ title: 'O que ajudaria ao fim do semestre', text: draft.expectedOutcome }}
               />
               <section className="mt-10 rounded-lg border border-line bg-surface p-6">
-                <h3 className="text-[15px] font-semibold text-ink">Depois de enviar</h3>
+                <h3 className="text-body font-semibold text-ink">Depois de enviar</h3>
                 <ol className="mt-3 space-y-2.5">
                   {NEXT_STEPS.map((text, index) => (
-                    <li key={text} className="flex gap-3 text-sm leading-relaxed text-ink-2">
-                      <span aria-hidden="true" className="flex size-6 shrink-0 items-center justify-center rounded-full bg-monogram text-[12px] font-semibold text-monogram-ink">
+                    <li key={text} className="flex gap-3 text-small text-ink-2">
+                      <span aria-hidden="true" className="flex size-6 shrink-0 items-center justify-center rounded-full bg-monogram text-caption font-semibold text-monogram-ink">
                         {index + 1}
                       </span>
                       {text}
@@ -147,7 +147,7 @@ const SubmitForm = ({ submission, organization }: SubmitFormProps) => {
           )}
 
           {error && (
-            <p role="alert" className="mt-6 text-sm text-critical">
+            <p role="alert" className="mt-6 text-small text-critical">
               {error.message}
             </p>
           )}
@@ -182,9 +182,9 @@ const SubmitForm = ({ submission, organization }: SubmitFormProps) => {
         </form>
 
         <aside className="lg:sticky lg:top-20 lg:self-start">
-          <p className="mb-2.5 text-[13px] font-semibold text-brand-strong">Como aparece no cardápio</p>
+          <p className="mb-2.5 text-small font-semibold text-brand-strong">Como aparece no cardápio</p>
           <DemandPreviewCard draft={draft} organization={organization} />
-          <p className="mt-3 text-[13px] leading-relaxed text-ink-3">
+          <p className="mt-3 text-small text-ink-3">
             O docente abre o cartão e lê o resto. Dúvidas chegam como perguntas na demanda, e vocês respondem por aqui.
           </p>
         </aside>
@@ -223,7 +223,7 @@ const EditDemand = ({ id }: { id: string }) => {
           data.kind === 'submission' && profile.data ? (
             <SubmitForm key={data.submission.id} submission={data.submission} organization={profile.data.organization} />
           ) : (
-            <p className="text-sm text-ink-2">
+            <p className="text-small text-ink-2">
               Não deu para abrir esta demanda.{' '}
               <Link to={paths.orgDemands()} className={textLinkClassName}>
                 Voltar às demandas

@@ -18,13 +18,13 @@ export const OrganizationBrief = ({ organization, hasProject }: { organization: 
       <div className="flex items-center gap-3.5">
         <Monogram name={organization.name} logo={organization.logo} size="lg" />
         <div className="min-w-0">
-          <p className="text-[13px] font-semibold text-brand-strong">{organization.type}</p>
-          <p className="text-[19px] leading-tight font-bold text-ink">{organization.name}</p>
-          <p className="mt-0.5 text-[13px] text-ink-3">{organization.location}</p>
+          <p className="text-small font-semibold text-brand-strong">{organization.type}</p>
+          <p className="text-h4 text-ink">{organization.name}</p>
+          <p className="mt-0.5 text-small text-ink-3">{organization.location}</p>
         </div>
       </div>
 
-      <p className="mt-4 text-[15px] leading-relaxed text-ink-2">{organization.about}</p>
+      <p className="mt-4 text-body text-ink-2">{organization.about}</p>
 
       <div className="mt-4">
         <FactGrid
@@ -37,21 +37,21 @@ export const OrganizationBrief = ({ organization, hasProject }: { organization: 
       </div>
 
       <div className="mt-4 rounded-md bg-canvas px-3.5 py-3">
-        <p className="text-[12px] font-semibold text-ink-2">Com o CIn</p>
+        <p className="text-caption font-semibold text-ink-2">Com o CIn</p>
         {last ? (
-          <p className="mt-0.5 text-sm text-ink">
+          <p className="mt-0.5 text-small text-ink">
             {organization.history.length === 1 ? '1 projeto' : `${organization.history.length} projetos`}. O mais recente: {last.title}, em {last.semester}.
           </p>
         ) : (
-          <p className="mt-0.5 text-sm text-ink">Esta seria a primeira parceria.</p>
+          <p className="mt-0.5 text-small text-ink">Esta seria a primeira parceria.</p>
         )}
       </div>
 
       <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
-        {!hasProject && <p className="text-[13px] text-ink-3">O contato do ponto focal aparece quando a demanda virar projeto seu.</p>}
+        {!hasProject && <p className="text-small text-ink-3">O contato do ponto focal aparece quando a demanda virar projeto seu.</p>}
         <Link to={paths.organization(organization.id)} className={buttonClassName({ variant: 'secondary' })}>
           Ver perfil da organização
-          <ArrowRightIcon size={15} />
+          <ArrowRightIcon size={16} />
         </Link>
       </div>
     </div>

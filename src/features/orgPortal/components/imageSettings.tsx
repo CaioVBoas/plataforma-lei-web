@@ -33,13 +33,13 @@ const ImageRow = ({ label, hint, preview, hasImage, pending, onChoose, onRemove 
     <div className="flex flex-wrap items-center gap-x-5 gap-y-3 py-4 first:pt-0 last:pb-0">
       {preview}
       <div className="min-w-0 flex-[1_1_220px]">
-        <p className="text-[15px] font-semibold text-ink">{label}</p>
-        <p className="mt-0.5 text-[13px] leading-relaxed text-ink-2">{hint}</p>
+        <p className="text-body font-semibold text-ink">{label}</p>
+        <p className="mt-0.5 text-small text-ink-2">{hint}</p>
       </div>
       <div className="flex shrink-0 items-center gap-2">
         <input ref={inputRef} type="file" accept="image/*" className="sr-only" tabIndex={-1} aria-hidden="true" onChange={choose} />
         <Button variant="secondary" disabled={pending} onClick={() => inputRef.current?.click()}>
-          <ImageIcon size={18} />
+          <ImageIcon size={20} />
           {hasImage ? `Trocar ${label.toLowerCase()}` : `Enviar ${label.toLowerCase()}`}
         </Button>
         {hasImage && (

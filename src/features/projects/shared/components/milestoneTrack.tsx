@@ -19,7 +19,7 @@ export const MilestoneTrack = ({ milestones, className }: { milestones: Mileston
           <span key={milestone.id} className={cn('h-1 flex-1 rounded-full', milestone.doneAt ? 'bg-positive' : 'bg-fill-strong')} />
         ))}
       </div>
-      <span className="shrink-0 text-[13px] text-ink-3 tabular-nums">
+      <span className="shrink-0 text-small text-ink-3 tabular-nums">
         {done} de {MILESTONE_ORDER.length}
       </span>
     </div>

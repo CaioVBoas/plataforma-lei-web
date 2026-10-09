@@ -24,30 +24,30 @@ export const SkillsCoverage = ({ skills, matches }: SkillsCoverageProps) => {
             <Tag key={skill}>{skill}</Tag>
           ))}
         </div>
-        <p className="mt-4 text-sm text-ink-3">Cadastre uma disciplina deste semestre para ver quanto a turma já cobre.</p>
+        <p className="mt-4 text-small text-ink-3">Cadastre uma disciplina deste semestre para ver quanto a turma já cobre.</p>
       </>
     );
   }
 
   return (
-    <ul className="grid gap-3 sm:grid-cols-2">
+    <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2">
       {matches.map((match, index) => {
         const covered = new Set(match.covered);
         return (
           <li key={match.discipline.id} className={cn('rounded-lg border p-4', match.fits ? 'border-fact-line bg-fact' : 'border-line')}>
             <div className="flex items-start justify-between gap-3">
-              <p className="min-w-0 text-[15px] font-semibold text-ink">{match.discipline.name}</p>
+              <p className="min-w-0 text-body font-semibold text-ink">{match.discipline.name}</p>
               {index === 0 && match.fits && <Tag tone="positive">Combina mais</Tag>}
             </div>
             <div className="mt-2 flex items-center gap-2.5">
               <CoverageMeter covered={match.covered.length} total={skills.length} fits={match.fits} />
-              <span className="text-[13px] text-ink-2 tabular-nums">
+              <span className="text-small text-ink-2 tabular-nums">
                 {match.covered.length} de {skills.length}
               </span>
             </div>
             <ul className="mt-3 space-y-1.5">
               {skills.map((skill) => (
-                <li key={skill} className={cn('flex items-center gap-2 text-[13px]', covered.has(skill) ? 'text-ink' : 'text-ink-3')}>
+                <li key={skill} className={cn('flex items-center gap-2 text-small', covered.has(skill) ? 'text-ink' : 'text-ink-3')}>
                   <span
                     aria-hidden="true"
                     className={cn('flex size-4 shrink-0 items-center justify-center rounded-full', covered.has(skill) ? 'bg-positive text-white' : 'border border-line-strong')}
@@ -60,7 +60,7 @@ export const SkillsCoverage = ({ skills, matches }: SkillsCoverageProps) => {
               ))}
             </ul>
             {match.aboveLevel && (
-              <p className="mt-3 text-[13px] leading-relaxed text-caution">
+              <p className="mt-3 text-small text-caution">
                 Pede mais do que a turma, que está no {LEVEL_COPY[match.discipline.level].label.toLowerCase()}.
               </p>
             )}

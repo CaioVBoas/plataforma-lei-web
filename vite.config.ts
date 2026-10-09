@@ -8,8 +8,8 @@ import type { Plugin as PostcssPlugin } from 'postcss';
  * Tamanho de texto em px vira rem no CSS final, para o ajuste "Tamanho do
  * texto" (que muda o font-size da raiz) valer também para os text-[13px].
  */
-/** O font-size da raiz em index.css: 1rem vale 15px no tamanho normal. */
-const ROOT_PX = 15;
+/** O font-size da raiz em index.css: 1rem vale 16px no tamanho normal. */
+const ROOT_PX = 16;
 
 const fontSizeToRem: PostcssPlugin = {
   postcssPlugin: 'font-size-px-to-rem',

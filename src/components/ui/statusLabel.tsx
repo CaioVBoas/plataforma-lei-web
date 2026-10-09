@@ -23,7 +23,7 @@ const TEXT_CLASSES: Record<StatusTone, string> = {
 
 /** Estado com ponto colorido e texto. A cor nunca é a única pista: o texto sempre diz o estado. */
 export const StatusLabel = ({ tone, children, className }: { tone: StatusTone; children: ReactNode; className?: string }) => (
-  <span className={cn('inline-flex items-center gap-1.5 text-[13px] font-medium', TEXT_CLASSES[tone], className)}>
+  <span className={cn('inline-flex items-center gap-1.5 text-small font-medium', TEXT_CLASSES[tone], className)}>
     <span aria-hidden="true" className={cn('size-1.5 shrink-0 rounded-full', DOT_CLASSES[tone])} />
     {children}
   </span>

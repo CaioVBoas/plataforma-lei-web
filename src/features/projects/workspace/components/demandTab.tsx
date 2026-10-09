@@ -11,7 +11,7 @@ import { pluralize } from '@/utils/format';
 
 const Block = ({ title, children }: { title: string; children: ReactNode }) => (
   <section className="border-t border-line py-5 first:border-t-0 first:pt-0">
-    <h3 className="mb-2 text-[13px] font-semibold text-brand-strong">{title}</h3>
+    <h3 className="mb-2 text-small font-semibold text-brand-strong">{title}</h3>
     {children}
   </section>
 );
@@ -27,8 +27,8 @@ export const DemandTab = ({ project }: { project: Project }) => {
   if (!data) {
     return (
       <div className="rounded-lg border border-line bg-canvas p-5">
-        <p className="text-[15px] font-medium text-ink">A demanda original já saiu da plataforma</p>
-        <p className="mt-1 text-sm leading-relaxed text-ink-2">
+        <p className="text-body font-medium text-ink">A demanda original já saiu da plataforma</p>
+        <p className="mt-1 text-small text-ink-2">
           O que foi combinado com {project.organization.name} está na aba Plano{project.outcome ? ', e o resultado do semestre aparece no topo do projeto' : ''}.
         </p>
       </div>
@@ -41,11 +41,11 @@ export const DemandTab = ({ project }: { project: Project }) => {
     <div>
       <div>
         <Block title="O problema">
-          <p className="text-[15px] leading-relaxed text-ink-2">{demand.description}</p>
+          <p className="text-body text-ink-2">{demand.description}</p>
         </Block>
 
         <Block title="O que a organização oferece">
-          <ul className="space-y-1.5 text-[15px] text-ink-2">
+          <ul className="space-y-1.5 text-body text-ink-2">
             {demand.offers.map((offer) => (
               <li key={offer} className="flex gap-2.5">
                 <span aria-hidden="true" className="mt-2.5 size-1.5 shrink-0 rounded-full bg-brand" />
@@ -56,7 +56,7 @@ export const DemandTab = ({ project }: { project: Project }) => {
         </Block>
 
         <Block title="O que cabe no semestre">
-          <p className="text-[15px] leading-relaxed text-ink-2">{demand.scopeNote}</p>
+          <p className="text-body text-ink-2">{demand.scopeNote}</p>
         </Block>
 
         <Block title="Competências pedidas">
@@ -71,7 +71,7 @@ export const DemandTab = ({ project }: { project: Project }) => {
           <Block title="Condições">
             <ul className="space-y-1.5">
               {demand.constraints.map((constraint) => (
-                <li key={constraint} className="text-[15px] leading-relaxed text-ink-2">
+                <li key={constraint} className="text-body text-ink-2">
                   <span className="font-medium text-ink">{CONSTRAINT_COPY[constraint].label}.</span> {CONSTRAINT_COPY[constraint].detail}
                 </li>
               ))}
@@ -83,7 +83,7 @@ export const DemandTab = ({ project }: { project: Project }) => {
       <div className="mt-2 flex flex-wrap gap-2">
         <Link to={paths.demand(demand.id)} className={buttonClassName({ variant: 'secondary' })}>
           Ver a demanda completa
-          <ArrowRightIcon size={15} />
+          <ArrowRightIcon size={16} />
         </Link>
         {demand.questions.length > 0 && (
           <Link to={paths.demand(demand.id, 'perguntas')} className={buttonClassName({ variant: 'secondary' })}>

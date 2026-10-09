@@ -61,16 +61,16 @@ const TeamCard = ({ project }: { project: Project }) => {
 
   return (
     <SideCard title="Turma no projeto">
-      <Link to={paths.discipline(project.disciplineId)} className="text-[15px] font-semibold text-ink hover:text-brand-strong">
+      <Link to={paths.discipline(project.disciplineId)} className="text-body font-semibold text-ink hover:text-brand-strong">
         {project.disciplineName}
       </Link>
       {discipline && (
         <>
           <div className="mt-3 rounded-md border border-fact-line bg-fact p-3">
             <div className="flex flex-wrap items-center justify-between gap-3">
-              <span className="text-[13px] font-semibold text-fact-label">Equipes</span>
+              <span className="text-small font-semibold text-fact-label">Equipes</span>
               {done ? (
-                <span className="text-sm font-medium text-ink">{pluralize(project.teams, 'equipe', 'equipes')}</span>
+                <span className="text-small font-medium text-ink">{pluralize(project.teams, 'equipe', 'equipes')}</span>
               ) : (
                 <Stepper
                   label="equipes"
@@ -82,7 +82,7 @@ const TeamCard = ({ project }: { project: Project }) => {
                 />
               )}
             </div>
-            <p className="mt-2.5 text-[13px] leading-relaxed text-ink-2">
+            <p className="mt-2.5 text-small text-ink-2">
               <span className="font-semibold text-brand-strong tabular-nums">
                 {students} de {discipline.students}
               </span>{' '}
@@ -97,7 +97,7 @@ const TeamCard = ({ project }: { project: Project }) => {
           <Button variant="destructive" size="sm" className="-ml-3" onClick={() => setWithdrawing(true)}>
             Desistir do projeto
           </Button>
-          <p className="mt-1 text-[12px] leading-relaxed text-ink-3">Possível até o registro no SIGAA. A demanda volta para o cardápio.</p>
+          <p className="mt-1 text-caption text-ink-3">Possível até o registro no SIGAA. A demanda volta para o cardápio.</p>
         </div>
       )}
 
@@ -116,14 +116,14 @@ const ContactCard = ({ project }: { project: Project }) => {
       <Link to={paths.organization(organization.id)} className="group mb-4 flex items-center gap-3">
         <Monogram name={organization.name} />
         <span className="min-w-0">
-          <span className="block truncate text-[15px] font-semibold text-ink group-hover:text-brand-strong">{organization.name}</span>
-          <span className="block truncate text-[12px] text-ink-3">{organization.type}</span>
+          <span className="block truncate text-body font-semibold text-ink group-hover:text-brand-strong">{organization.name}</span>
+          <span className="block truncate text-caption text-ink-3">{organization.type}</span>
         </span>
       </Link>
       <dl>
         <SideFact label="Ponto focal">
           {contact.focalName}
-          <span className="block text-[13px] text-ink-2">{contact.focalRole}</span>
+          <span className="block text-small text-ink-2">{contact.focalRole}</span>
         </SideFact>
         <SideFact label="E-mail">
           <a href={`mailto:${contact.email}`} className={textLinkClassName}>

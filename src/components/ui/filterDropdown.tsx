@@ -23,7 +23,7 @@ interface FilterDropdownProps<T extends string> {
 
 /** Botão e painel dos filtros da linha de filtragem: o mesmo desenho do seletor de mês. */
 export const FILTER_BUTTON =
-  'flex h-11 w-full items-center gap-2 rounded-lg border border-line-strong bg-surface px-3.5 text-left text-[15px] text-ink transition-colors hover:border-ink-3 sm:w-auto';
+  'flex h-11 w-full items-center gap-2 rounded-lg border border-line-strong bg-surface px-3.5 text-left text-label text-ink transition-colors hover:border-ink-3 sm:w-auto';
 export const FILTER_PANEL = 'absolute top-full z-40 mt-2 rounded-xl border border-line bg-surface p-1.5 shadow-popover animate-fade-in';
 
 /**
@@ -64,12 +64,12 @@ export const FilterDropdown = <T extends string>({ label, value, options, onChan
                   close();
                 }}
                 className={cn(
-                  'flex min-h-11 w-full items-center gap-3 rounded-lg px-3 text-left text-[15px]',
+                  'flex min-h-11 w-full items-center gap-3 rounded-lg px-3 text-left text-body',
                   selected ? 'bg-brand-50 font-semibold text-brand-strong' : 'text-ink hover:bg-canvas',
                 )}
               >
                 <span className="min-w-0 flex-1">{option.label}</span>
-                {option.count !== undefined && <span className="text-[13px] text-ink-3 tabular-nums">{option.count}</span>}
+                {option.count !== undefined && <span className="text-small text-ink-3 tabular-nums">{option.count}</span>}
                 <span aria-hidden="true" className="w-4 shrink-0">
                   {selected && <CheckIcon size={16} />}
                 </span>

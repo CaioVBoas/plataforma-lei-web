@@ -51,10 +51,10 @@ const ProjectView = ({ project, today }: { project: OrgProjectDetail; today: str
       {/* A mesma faixa do topo do projeto do docente, sem a ação: quem registra cada etapa é ele. */}
       {next ? (
         <section className="rounded-lg border border-line bg-canvas p-5 sm:p-6">
-          <p className={cn('text-[13px] font-medium', overdue ? 'text-caution' : 'text-ink-3')}>Próximo passo · {milestoneDateLine(next, today, true)}</p>
-          <p className="mt-1.5 text-headline">{ORG_MILESTONE_COPY[next.id].title}</p>
-          <p className="mt-1 text-sm leading-relaxed text-ink-2">{ORG_MILESTONE_COPY[next.id].description}</p>
-          <p className="mt-3 text-sm font-medium text-ink">
+          <p className={cn('text-small font-medium', overdue ? 'text-caution' : 'text-ink-3')}>Próximo passo · {milestoneDateLine(next, today, true)}</p>
+          <p className="mt-1.5 text-h4">{ORG_MILESTONE_COPY[next.id].title}</p>
+          <p className="mt-1 text-small text-ink-2">{ORG_MILESTONE_COPY[next.id].description}</p>
+          <p className="mt-3 text-small font-medium text-ink">
             {ORG_FACING_MILESTONES.includes(next.id)
               ? 'Esta etapa conta com vocês: o docente vai combinar a data pelo contato ao lado.'
               : 'Esta etapa é do docente. Vocês não precisam fazer nada agora.'}
@@ -63,17 +63,17 @@ const ProjectView = ({ project, today }: { project: OrgProjectDetail; today: str
       ) : (
         project.outcome && (
           <section className="rounded-lg border border-line bg-canvas p-5 sm:p-6">
-            <p className="text-[13px] font-medium text-ink-3">O que ficou com vocês</p>
-            <p className="mt-1.5 text-headline">{project.outcome.summary}</p>
-            <p className="mt-1 text-sm text-ink-2">{ADOPTION_COPY[project.outcome.adoption]}.</p>
+            <p className="text-small font-medium text-ink-3">O que ficou com vocês</p>
+            <p className="mt-1.5 text-h4">{project.outcome.summary}</p>
+            <p className="mt-1 text-small text-ink-2">{ADOPTION_COPY[project.outcome.adoption]}.</p>
           </section>
         )
       )}
 
       <div className="mt-10 grid grid-cols-1 gap-10 lg:gap-12 lg:grid-cols-[minmax(0,1fr)_300px]">
         <div className="min-w-0">
-          <h2 className="text-headline">Etapas</h2>
-          <p className="mt-1 mb-6 text-sm text-ink-2">As mesmas seis etapas de todo projeto. O docente registra cada uma; vocês acompanham por aqui.</p>
+          <h2 className="text-h4">Etapas</h2>
+          <p className="mt-1 mb-6 text-small text-ink-2">As mesmas seis etapas de todo projeto. O docente registra cada uma; vocês acompanham por aqui.</p>
           <MilestoneTimeline milestones={project.milestones} today={today} copy={ORG_MILESTONE_COPY} />
         </div>
 
@@ -103,7 +103,7 @@ const ProjectView = ({ project, today }: { project: OrgProjectDetail; today: str
           {project.hasDemand && (
             <Link to={paths.orgDemand(project.demandId)} className={buttonClassName({ variant: 'secondary', fullWidth: true })}>
               Ver a demanda
-              <ArrowRightIcon size={15} />
+              <ArrowRightIcon size={16} />
             </Link>
           )}
         </aside>

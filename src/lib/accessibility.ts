@@ -17,7 +17,7 @@ export interface AccessibilityPrefs {
 export const TEXT_SCALES = [0.9, 1, 1.15, 1.3, 1.5];
 export const ZOOM_STEPS = [90, 100, 110, 125, 150];
 /** O font-size da raiz em index.css, no tamanho normal. */
-const ROOT_PX = 15;
+const ROOT_PX = 16;
 const KEY = 'plei.acessibilidade';
 const EVENT = 'plei:acessibilidade';
 

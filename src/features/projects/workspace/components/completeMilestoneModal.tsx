@@ -108,12 +108,12 @@ export const CompleteMilestoneModal = ({ project, milestone, today, onClose }: C
               />
             </Field>
             <fieldset>
-              <legend className="mb-2 text-[13px] font-medium text-ink-2">A organização usa a entrega?</legend>
+              <legend className="mb-2 text-small font-medium text-ink-2">A organização usa a entrega?</legend>
               <div className="flex flex-col gap-1">
                 {ADOPTION_OPTIONS.map((option) => (
                   <label
                     key={option}
-                    className={cn('flex h-10 cursor-pointer items-center gap-3 rounded-md px-3 text-sm', adoption === option ? 'bg-accent-soft' : 'hover:bg-canvas')}
+                    className={cn('flex h-10 cursor-pointer items-center gap-3 rounded-md px-3 text-small', adoption === option ? 'bg-accent-soft' : 'hover:bg-canvas')}
                   >
                     <input type="radio" name={`${formId}-adoption`} checked={adoption === option} onChange={() => setAdoption(option)} className="accent-accent" />
                     {ADOPTION_COPY[option]}
@@ -125,7 +125,7 @@ export const CompleteMilestoneModal = ({ project, milestone, today, onClose }: C
         )}
 
         {complete.isError && (
-          <p role="alert" className="text-sm text-critical">
+          <p role="alert" className="text-small text-critical">
             {complete.error.message}
           </p>
         )}

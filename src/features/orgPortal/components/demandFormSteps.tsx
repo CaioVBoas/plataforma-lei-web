@@ -26,15 +26,15 @@ export const FormStepsNav = ({ step, onChange }: { step: number; onChange: (step
             className="group flex w-full flex-col items-start gap-2 text-left"
           >
             <span className={cn('block h-1 w-full rounded-full', done ? 'bg-positive' : current ? 'bg-brand' : 'bg-fill-strong')} />
-            <span className={cn('flex items-center gap-1.5 text-[13px] leading-snug', current ? 'font-semibold text-ink' : 'text-ink-2 group-hover:text-ink')}>
+            <span className={cn('flex items-center gap-1.5 text-small', current ? 'font-semibold text-ink' : 'text-ink-2 group-hover:text-ink')}>
               <span
                 aria-hidden="true"
                 className={cn(
-                  'flex size-5 shrink-0 items-center justify-center rounded-full text-[11px] font-semibold',
+                  'flex size-5 shrink-0 items-center justify-center rounded-full text-caption font-semibold',
                   done ? 'bg-positive-soft text-positive' : current ? 'bg-brand text-white' : 'bg-fill text-ink-2',
                 )}
               >
-                {done ? <CheckIcon size={11} /> : index + 1}
+                {done ? <CheckIcon size={11} strokeWidth={2.2} /> : index + 1}
               </span>
               <span className="max-sm:sr-only">{label}</span>
             </span>
@@ -169,8 +169,8 @@ export const ClassStep = ({ register, control, errors, values }: StepProps) => {
                         className="mt-0.5 size-4 shrink-0 accent-accent"
                       />
                       <span>
-                        <span className="block text-sm font-medium text-ink">{CONSTRAINT_COPY[constraint].label}</span>
-                        <span className="mt-0.5 block text-[13px] leading-relaxed text-ink-2">{CONSTRAINT_COPY[constraint].detail}</span>
+                        <span className="block text-small font-medium text-ink">{CONSTRAINT_COPY[constraint].label}</span>
+                        <span className="mt-0.5 block text-small text-ink-2">{CONSTRAINT_COPY[constraint].detail}</span>
                       </span>
                     </label>
                   </li>
@@ -207,7 +207,7 @@ export const WorkStep = ({ register, control, errors, values, setValue }: WorkSt
               onClick={() => setValue('meetingCadence', suggestion, { shouldValidate: true, shouldDirty: true })}
               aria-pressed={values.meetingCadence === suggestion}
               className={cn(
-                'inline-flex h-8 items-center rounded-md border px-2.5 text-[13px] transition-colors duration-100',
+                'inline-flex h-8 items-center rounded-md border px-2.5 text-small transition-colors duration-100',
                 values.meetingCadence === suggestion ? 'border-accent bg-accent-soft text-accent' : 'border-line-strong bg-surface text-ink-2 hover:border-ink-3',
               )}
             >
@@ -231,7 +231,7 @@ export const WorkStep = ({ register, control, errors, values, setValue }: WorkSt
                   {...register(`offers.${index}.value`)}
                 />
                 {errors.offers?.[index]?.value?.message && (
-                  <p role="alert" className="mt-1.5 text-[13px] text-critical">
+                  <p role="alert" className="mt-1.5 text-small text-critical">
                     {errors.offers[index]?.value?.message}
                   </p>
                 )}
@@ -243,20 +243,20 @@ export const WorkStep = ({ register, control, errors, values, setValue }: WorkSt
                   onClick={() => offers.remove(index)}
                   className="flex size-10 shrink-0 items-center justify-center rounded-md text-ink-3 hover:bg-fill hover:text-ink"
                 >
-                  <CloseIcon size={15} />
+                  <CloseIcon size={16} />
                 </button>
               )}
             </li>
           ))}
         </ul>
         {offersError && (
-          <p role="alert" className="mt-1.5 text-[13px] text-critical">
+          <p role="alert" className="mt-1.5 text-small text-critical">
             {offersError}
           </p>
         )}
         {offers.fields.length < SUBMISSION_LIMITS.maxOffers && (
           <Button variant="secondary" size="sm" className="mt-3" onClick={() => offers.append({ value: '' })}>
-            <PlusIcon size={14} />
+            <PlusIcon size={16} />
             Adicionar outra
           </Button>
         )}
@@ -267,7 +267,7 @@ export const WorkStep = ({ register, control, errors, values, setValue }: WorkSt
           <ul className="flex flex-col gap-3">
             {references.fields.map((field, index) => (
               <li key={field.id} className="rounded-md border border-line p-3.5">
-                <div className="grid gap-3 sm:grid-cols-2">
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   <Field label="Nome" htmlFor={`ref-nome-${field.id}`} error={errors.references?.[index]?.name?.message}>
                     <Input id={`ref-nome-${field.id}`} placeholder="Ex.: Cal.com" {...register(`references.${index}.name`)} />
                   </Field>
@@ -289,7 +289,7 @@ export const WorkStep = ({ register, control, errors, values, setValue }: WorkSt
         )}
         {references.fields.length < SUBMISSION_LIMITS.maxReferences && (
           <Button variant="secondary" size="sm" className={references.fields.length > 0 ? 'mt-3' : undefined} onClick={() => references.append({ name: '', url: '', description: '' })}>
-            <PlusIcon size={14} />
+            <PlusIcon size={16} />
             Adicionar referência
           </Button>
         )}

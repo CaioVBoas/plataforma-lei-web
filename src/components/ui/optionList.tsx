@@ -1,6 +1,7 @@
 import { useId, type ReactNode } from 'react';
 import { cn } from '@/utils/cn';
 import { CheckIcon } from './icons';
+import { withIconVariant } from './iconVariant';
 
 export interface OptionListOption<T extends string> {
   value: T;
@@ -42,11 +43,11 @@ export const OptionList = <T extends string>({ label, value, options, onChange, 
               aria-hidden="true"
               className={cn('flex size-10 shrink-0 items-center justify-center rounded-md', selected ? 'bg-brand text-white' : 'bg-fill text-ink-2')}
             >
-              {option.icon}
+              {withIconVariant(option.icon, selected)}
             </span>
             <span className="min-w-0 flex-1">
-              <span className={cn('block text-[15px] text-ink', selected && 'font-semibold')}>{option.label}</span>
-              {option.description && <span className="mt-0.5 block text-[13px] leading-snug text-ink-2">{option.description}</span>}
+              <span className={cn('block text-body text-ink', selected && 'font-semibold')}>{option.label}</span>
+              {option.description && <span className="mt-0.5 block text-small text-ink-2">{option.description}</span>}
             </span>
             <span
               aria-hidden="true"
@@ -55,7 +56,7 @@ export const OptionList = <T extends string>({ label, value, options, onChange, 
                 selected ? 'border-brand bg-brand text-white' : 'border-line-strong bg-surface',
               )}
             >
-              {selected && <CheckIcon size={14} />}
+              {selected && <CheckIcon size={14} strokeWidth={2.2} />}
             </span>
           </label>
         );

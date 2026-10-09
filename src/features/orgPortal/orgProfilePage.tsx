@@ -19,7 +19,7 @@ import { MEETING_SUGGESTIONS } from './utils/orgPresentation';
 const SaveBar = ({ pending, error }: { pending: boolean; error: Error | null }) => (
   <div className="mt-6 flex flex-wrap items-center justify-end gap-3">
     {error && (
-      <p role="alert" className="mr-auto text-sm text-critical">
+      <p role="alert" className="mr-auto text-small text-critical">
         {error.message}
       </p>
     )}
@@ -59,7 +59,7 @@ const ProfileForm = ({ profile }: { profile: OrgProfile }) => {
       <FormGroup title="Quem são vocês" hint="Aparece no perfil da organização e no detalhe de cada demanda.">
         <div className="flex flex-col gap-5">
           <div>
-            <p className="mb-1.5 text-sm font-medium text-ink">Tipo</p>
+            <p className="mb-1.5 text-small font-medium text-ink">Tipo</p>
             <OrgTypePicker value={input.type} onChange={(type) => set({ type })} />
           </div>
           <Field label="Onde atuam" htmlFor="perfil-local">

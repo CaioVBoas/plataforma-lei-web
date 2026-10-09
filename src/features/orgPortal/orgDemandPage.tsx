@@ -84,8 +84,8 @@ const NEXT: Record<OrgDemandDetail['stage'], string> = {
 
 const Block = ({ title, children }: { title: string; children: ReactNode }) => (
   <div className="border-t border-line pt-3.5 first:border-t-0 first:pt-0">
-    <p className="text-[12px] font-semibold tracking-[0.04em] text-ink-3 uppercase">{title}</p>
-    <div className="mt-1 text-sm leading-relaxed text-ink">{children}</div>
+    <p className="text-overline text-ink-3">{title}</p>
+    <div className="mt-1 text-small text-ink">{children}</div>
   </div>
 );
 
@@ -145,7 +145,7 @@ const StatusPanel = ({ detail }: { detail: OrgDemandDetail }) => {
     action = (
       <Link to={paths.orgProject(detail.project.id)} className={buttonClassName({ variant: 'secondary', fullWidth: true })}>
         Acompanhar o projeto
-        <ArrowRightIcon size={15} />
+        <ArrowRightIcon size={16} />
       </Link>
     );
   }
@@ -175,7 +175,7 @@ const StatusPanel = ({ detail }: { detail: OrgDemandDetail }) => {
           {isSubmission && canDeleteSubmission(detail.submission) && <DeleteDraft submission={detail.submission} />}
         </div>
       )}
-      <p className="mt-5 border-t border-line pt-3.5 text-[13px] text-ink-2">
+      <p className="mt-5 border-t border-line pt-3.5 text-small text-ink-2">
         Dúvidas sobre o caminho?{' '}
         <Link to={paths.orgGuide} className={textLinkClassName}>
           Veja como funciona
@@ -236,7 +236,7 @@ const DemandView = ({ detail }: { detail: OrgDemandDetail }) => {
 
           {activeTab === 'cardapio' && (
             <div className="max-w-[460px]">
-              <p className="mb-4 text-sm leading-relaxed text-ink-2">
+              <p className="mb-4 text-small text-ink-2">
                 {isSubmission
                   ? 'Assim o cartão vai aparecer para os docentes quando a demanda entrar no cardápio.'
                   : 'Assim o cartão aparece para os docentes. Cada um vê também qual turma dele combina com a demanda.'}

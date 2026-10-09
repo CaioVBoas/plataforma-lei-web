@@ -24,7 +24,7 @@ import type { DisciplineWithUsage } from './types';
 import { LEVEL_COPY, slotsLabel } from './utils/disciplinePresentation';
 import { matchingDemands } from './utils/matchingDemands';
 
-const Empty = ({ children }: { children: string }) => <p className="text-sm text-ink-3">{children}</p>;
+const Empty = ({ children }: { children: string }) => <p className="text-small text-ink-3">{children}</p>;
 
 const DisciplineProjects = ({ discipline }: { discipline: DisciplineWithUsage }) => {
   const { data: projects = [] } = useProjects();
@@ -87,7 +87,7 @@ const DisciplineSettings = ({ discipline }: { discipline: DisciplineWithUsage })
           onSubmit={(input) => update.mutate({ id: discipline.id, input }, { onSuccess: () => toast.show('Disciplina atualizada.') })}
         />
         {update.isError && (
-          <p role="alert" className="mt-4 text-sm text-critical">
+          <p role="alert" className="mt-4 text-small text-critical">
             {update.error.message}
           </p>
         )}
@@ -98,10 +98,10 @@ const DisciplineSettings = ({ discipline }: { discipline: DisciplineWithUsage })
             Remover disciplina
           </Button>
         ) : (
-          <span className="text-[13px] text-ink-3">Com projeto em curso, a disciplina não pode ser removida.</span>
+          <span className="text-small text-ink-3">Com projeto em curso, a disciplina não pode ser removida.</span>
         )}
         <Button variant="primary" type="submit" form={formId} disabled={update.isPending}>
-          <CheckIcon size={15} />
+          <CheckIcon size={16} />
           Salvar alterações
         </Button>
       </div>
@@ -125,7 +125,7 @@ const DisciplineView = ({ discipline }: { discipline: DisciplineWithUsage }) => 
       hero={
         <ProfileHeader
           avatar={
-            <span className="flex size-[72px] items-center justify-center rounded-lg bg-monogram text-[13px] font-bold text-monogram-ink tabular-nums">
+            <span className="flex size-[72px] items-center justify-center rounded-lg bg-monogram text-small font-semibold text-monogram-ink tabular-nums">
               {discipline.code || discipline.name.charAt(0)}
             </span>
           }

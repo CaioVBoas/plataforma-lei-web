@@ -118,11 +118,11 @@ export const OrgDemandsPage = () => {
           value={search}
           onChange={(event) => setSearch(event.target.value)}
           containerClassName="sm:w-[18rem]"
-          className="h-11 border-line-strong! bg-surface text-[15px]"
+          className="h-11 border-line-strong! bg-surface text-body"
         />
         <FilterDropdown
           label="Mostrar"
-          icon={<TabIcon size={18} />}
+          icon={<TabIcon size={20} />}
           value={tab}
           onChange={(next) => setParam('ver', next)}
           options={TABS.map((key) => ({ value: key, label: TAB_LABELS[key], count: count(key) }))}
@@ -135,7 +135,7 @@ export const OrgDemandsPage = () => {
               setSearch('');
               setSearchParams({}, { replace: true });
             }}
-            className="inline-flex min-h-11 items-center justify-center rounded-lg px-3 text-[15px] font-medium text-accent hover:bg-accent-soft"
+            className="inline-flex min-h-11 items-center justify-center rounded-lg px-3 text-body font-medium text-accent hover:bg-accent-soft"
           >
             Limpar filtros
           </button>

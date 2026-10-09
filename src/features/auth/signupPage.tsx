@@ -61,7 +61,7 @@ const TeacherSignup = () => {
       </Field>
 
       {signup.isError && (
-        <p role="alert" className="text-sm text-critical">
+        <p role="alert" className="text-small text-critical">
           {signup.error.message}
         </p>
       )}
@@ -109,7 +109,7 @@ const OrganizationSignup = () => {
         <Input id="signup-org-name" autoComplete="organization" autoFocus {...register('organizationName')} />
       </Field>
       <div>
-        <p className="mb-1.5 text-sm font-medium text-ink">Tipo</p>
+        <p className="mb-1.5 text-small font-medium text-ink">Tipo</p>
         <OrgTypePicker compact value={watch('organizationType')} onChange={(type) => setValue('organizationType', type)} />
       </div>
       <Field label="Onde atua" htmlFor="signup-org-location" error={errors.location?.message}>
@@ -131,7 +131,7 @@ const OrganizationSignup = () => {
       </Field>
 
       {signup.isError && (
-        <p role="alert" className="text-sm text-critical">
+        <p role="alert" className="text-small text-critical">
           {signup.error.message}
         </p>
       )}
@@ -155,7 +155,7 @@ export const SignupPage = () => {
 
   return (
     <AuthShell>
-      <h2 className="text-[28px] leading-tight font-bold tracking-[-0.02em] text-ink">Criar conta</h2>
+      <h2 className="text-h2 text-ink">Criar conta</h2>
       <div className="mt-6 mb-7">
         <RoleTabs value={role} onChange={(next) => setSearchParams({ perfil: next }, { replace: true })} />
       </div>
@@ -174,7 +174,7 @@ export const SignupPage = () => {
         </SoonNotice>
       )}
 
-      <p className="mt-6 text-sm text-ink-2">
+      <p className="mt-6 text-small text-ink-2">
         Já tem conta?{' '}
         <Link to={role ? paths.loginAs(role) : paths.login} className={textLinkClassName}>
           Entrar

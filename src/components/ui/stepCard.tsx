@@ -22,9 +22,9 @@ export const StepCard = ({ to, kind, tone, title, context, when, overdue }: Step
   <Link to={to} className={linkCardClassName}>
     <div className="flex flex-wrap items-center justify-between gap-2">
       <Tag tone={tone}>{kind}</Tag>
-      {when && <span className={cn('text-[13px]', overdue ? 'font-medium text-caution' : 'text-ink-3')}>{when}</span>}
+      {when && <span className={cn('text-small', overdue ? 'font-medium text-caution' : 'text-ink-3')}>{when}</span>}
     </div>
-    <p className="mt-3 text-headline group-hover:text-accent">{title}</p>
-    <p className="mt-1 line-clamp-2 text-[13px] leading-relaxed text-ink-2">{context}</p>
+    <p className="mt-3 text-h4 group-hover:text-accent">{title}</p>
+    <p className="mt-1 line-clamp-2 text-small text-ink-2">{context}</p>
   </Link>
 );

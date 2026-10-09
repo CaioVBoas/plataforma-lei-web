@@ -51,10 +51,10 @@ export const Modal = ({ title, description, onClose, footer, children, size = 'm
         )}
       >
         <header className="px-6 pt-6">
-          <h2 id={titleId} className="text-headline">
+          <h2 id={titleId} className="text-h4">
             {title}
           </h2>
-          {description && <div className="mt-1.5 text-sm leading-relaxed text-ink-2">{description}</div>}
+          {description && <div className="mt-1.5 text-small text-ink-2">{description}</div>}
         </header>
         {children && <div className="overflow-y-auto px-6 pt-5 pb-1">{children}</div>}
         <footer className="flex flex-wrap items-center justify-end gap-2 px-6 pt-6 pb-5">{footer}</footer>

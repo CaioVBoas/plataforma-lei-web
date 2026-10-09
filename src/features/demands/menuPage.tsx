@@ -95,7 +95,7 @@ export const MenuPage = () => {
           description="O cardápio mostra as demandas que combinam com o que suas turmas trabalham."
           action={
             <Link to={paths.newDiscipline} className={buttonClassName({ variant: 'primary' })}>
-              <PlusIcon size={15} />
+              <PlusIcon size={16} />
               Cadastrar disciplina
             </Link>
           }
@@ -119,7 +119,7 @@ export const MenuPage = () => {
   return (
     <Page title={TITLE} subtitle={SUBTITLE}>
       {!isLinkWindowOpen(calendar) && (
-        <p className="mb-6 rounded-lg bg-caution-soft px-4 py-3 text-sm text-caution">
+        <p className="mb-6 rounded-lg bg-caution-soft px-4 py-3 text-small text-caution">
           O prazo para levar demandas para as turmas de {calendar.id} terminou em {formatShortDate(calendar.linkDeadline)}. Você ainda pode explorar e reservar.
         </p>
       )}
@@ -144,7 +144,7 @@ export const MenuPage = () => {
           containerClassName="mb-2 w-full sm:w-[280px]"
         />
       </div>
-      <p className="mb-6 text-[13px] text-ink-2">
+      <p className="mb-6 text-small text-ink-2">
         Você tem {byScope.reservas.length} de {MAX_ACTIVE_RESERVATIONS} reservas. Cada uma guarda a demanda por {RESERVATION_DAYS} dias enquanto você decide.
       </p>
 

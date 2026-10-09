@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { withIconVariant } from '@/components/ui/iconVariant';
 import { Link, useLocation } from 'react-router-dom';
 import { BrandMark, BrandSymbol } from '@/components/ui/brandMark';
 import { paths } from '@/routes/paths';
@@ -25,18 +26,19 @@ const NavItem = ({ to, icon, label, active, collapsed, large, badge, onNavigate 
     title={collapsed ? label : undefined}
     className={cn(
       'flex items-center gap-2.5 rounded-lg transition-colors duration-150',
-      large ? 'h-11 text-[15px]' : 'h-9 text-sm',
+      large ? 'h-11 text-body' : 'h-9 text-small',
       collapsed ? 'justify-center' : 'px-3',
       active ? 'bg-brand font-semibold text-white' : 'text-ink-2 hover:bg-brand-50 hover:text-brand-strong',
     )}
   >
-    <span className={active ? 'text-white' : 'text-ink-3'}>{icon}</span>
+    {/* A página atual leva o ícone cheio (bold); as outras, o de linha. */}
+    <span className={cn('flex', active ? 'text-white' : 'text-ink-3')}>{withIconVariant(icon, active)}</span>
     <span className={collapsed ? 'sr-only' : 'min-w-0 flex-1 truncate'}>
       {label}
       {badge ? <span className="sr-only">, {badge} esperando</span> : null}
     </span>
     {badge && !collapsed ? (
-      <span aria-hidden="true" className={cn('min-w-6 rounded-full px-1.5 text-center text-[13px] font-semibold tabular-nums', active ? 'bg-white text-brand-strong' : 'bg-accent text-white')}>
+      <span aria-hidden="true" className={cn('min-w-6 rounded-full px-1.5 text-center text-small font-semibold tabular-nums', active ? 'bg-white text-brand-strong' : 'bg-accent text-white')}>
         {badge}
       </span>
     ) : null}
@@ -94,7 +96,7 @@ export const Sidebar = ({ label, homePath, navigation, footer, large, collapsed,
             className={cn('flex flex-col gap-1', index > 0 && 'mt-5 border-t border-line pt-5')}
           >
             {collapsed ? null : (
-              <p aria-hidden="true" className="mb-2 px-3 text-[12px] font-semibold tracking-[0.06em] text-ink-3 uppercase">
+              <p aria-hidden="true" className="mb-2 px-3 text-overline text-ink-3">
                 {section.title}
               </p>
             )}

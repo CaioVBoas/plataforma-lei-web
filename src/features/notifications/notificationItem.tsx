@@ -28,8 +28,8 @@ export const NotificationItem = ({ item, compact, onNavigate }: { item: PortalNo
         <Icon size={17} />
       </span>
       <span className="min-w-0 flex-1">
-        <span className="block text-[14px] leading-snug font-semibold text-ink group-hover:text-brand-strong">{item.title}</span>
-        <span className="mt-0.5 block truncate text-[13px] text-ink-2">{item.context}</span>
+        <span className="block text-small font-semibold text-ink group-hover:text-brand-strong">{item.title}</span>
+        <span className="mt-0.5 block truncate text-small text-ink-2">{item.context}</span>
         <span className="mt-1.5 block">
           <Tag tone={item.tone}>{item.label}</Tag>
         </span>
