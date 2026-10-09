@@ -8,7 +8,8 @@ import { SearchInput } from '@/components/ui/formControls';
 import { ArrowLeftIcon, EyeIcon, TrayIcon, UserIcon } from '@/components/ui/icons';
 import { MonthPicker } from '@/components/ui/monthPicker';
 import { Page } from '@/components/ui/page';
-import { formatShortDate } from '@/domain/calendar';
+import { daysBetween, formatShortDate } from '@/domain/calendar';
+import { conversationOf, isAnswered } from '@/domain/questions';
 import type { Demand, DemandQuestion } from '@/domain/types';
 import { useCalendar } from '@/features/calendar/useCalendar';
 import { paths } from '@/routes/paths';
@@ -26,17 +27,29 @@ interface Conversation {
   /** As perguntas que passam nos filtros. */
   questions: DemandQuestion[];
   waiting: number;
-  /** Data do último movimento: pergunta ou resposta. */
-  last: string;
+  /** Data e hora do último movimento, pergunta ou resposta: ordena a lista. */
+  stamp: string;
+  /** Como a lista mostra a hora: "14:32" hoje, "Ontem", ou a data. */
+  when: string;
   preview: string;
 }
 
+/** Hoje mostra a hora; ontem, "Ontem"; antes disso, a data, como no WhatsApp. */
+const whenLabel = (stamp: string, today: string) => {
+  const date = stamp.slice(0, 10);
+  const days = daysBetween(date, today);
+  if (days === 0) return stamp.slice(11, 16);
+  if (days === 1) return 'Ontem';
+  return formatShortDate(date);
+};
+
+/** A última mensagem da conversa, para a prévia e a ordem da lista. */
 const lastOf = (questions: DemandQuestion[]) => {
-  const events = questions.flatMap((question) => [
-    { date: question.askedAt, text: `${question.teacherName.split(' ')[0]}: ${question.text}` },
-    ...(question.answer ? [{ date: question.answer.answeredAt, text: `Vocês: ${question.answer.text}` }] : []),
-  ]);
-  return events.sort((a, b) => a.date.localeCompare(b.date)).at(-1) ?? { date: '', text: '' };
+  const last = conversationOf(questions).at(-1);
+  if (!last) return { stamp: '', text: '' };
+  return last.kind === 'question'
+    ? { stamp: last.stamp, text: `${last.question.teacherName.split(' ')[0]}: ${last.question.text}` }
+    : { stamp: last.stamp, text: `Vocês: ${last.reply.text}` };
 };
 
 /** Uma conversa na lista: a demanda, a última mensagem e quantas perguntas esperam, como no WhatsApp. */
@@ -57,7 +70,7 @@ const ConversationItem = ({ conversation, selected, onSelect }: { conversation: 
       <span className="min-w-0 flex-1">
         <span className="flex items-baseline justify-between gap-2">
           <span className={cn('truncate text-body text-ink', conversation.waiting > 0 ? 'font-semibold' : 'font-medium')}>{conversation.demand.title}</span>
-          <span className={cn('shrink-0 text-caption', conversation.waiting > 0 ? 'font-semibold text-accent' : 'text-ink-3')}>{formatShortDate(conversation.last)}</span>
+          <span className={cn('shrink-0 text-caption', conversation.waiting > 0 ? 'font-semibold text-accent' : 'text-ink-3')}>{conversation.when}</span>
         </span>
         <span className="mt-0.5 flex items-center justify-between gap-2">
           <span className="line-clamp-1 text-small text-ink-2">{conversation.preview}</span>
@@ -127,19 +140,28 @@ export const OrgQuestionsPage = () => {
   const months = [...new Set(allQuestions.map((question) => question.askedAt.slice(0, 7)))].sort();
 
   const passes = (demand: Demand, question: DemandQuestion) =>
-    (situation === ALL || (situation === 'esperando' ? !question.answer : Boolean(question.answer))) &&
+    (situation === ALL || (situation === 'esperando' ? !isAnswered(question) : isAnswered(question))) &&
     (teacherFilter === ALL || question.teacherName === teacherFilter) &&
     (!month || question.askedAt.startsWith(month)) &&
-    (!term || normalizeText(`${demand.title} ${question.text} ${question.answer?.text ?? ''} ${question.teacherName}`).includes(term));
+    (!term || normalizeText(`${demand.title} ${question.text} ${question.replies.map((reply) => reply.text).join(' ')} ${question.teacherName}`).includes(term));
 
   const conversations: Conversation[] = demands
     .filter((demand) => demandFilter === ALL || demand.id === demandFilter)
     .map((demand) => {
       const questions = demand.questions.filter((question) => passes(demand, question));
       const last = lastOf(questions);
-      return { demand, questions, waiting: questions.filter((question) => !question.answer).length, last: last.date, preview: last.text };
+      return {
+        demand,
+        questions,
+        waiting: questions.filter((question) => !isAnswered(question)).length,
+        stamp: last.stamp,
+        when: last.stamp ? whenLabel(last.stamp, calendar.today) : '',
+        preview: last.text,
+      };
     })
-    .filter((conversation) => conversation.questions.length > 0);
+    .filter((conversation) => conversation.questions.length > 0)
+    // Em cada grupo, a conversa com o movimento mais recente fica em cima.
+    .sort((a, b) => b.stamp.localeCompare(a.stamp));
   const waitingList = conversations.filter((conversation) => conversation.waiting > 0);
   const answeredList = conversations.filter((conversation) => conversation.waiting === 0);
 
@@ -166,8 +188,8 @@ export const OrgQuestionsPage = () => {
           onChange={(value) => setParam('situacao', value)}
           options={[
             { value: 'todas', label: 'Todas as perguntas', count: allQuestions.length },
-            { value: 'esperando', label: 'Esperando resposta', count: allQuestions.filter((question) => !question.answer).length },
-            { value: 'respondidas', label: 'Já respondidas', count: allQuestions.filter((question) => question.answer).length },
+            { value: 'esperando', label: 'Esperando resposta', count: allQuestions.filter((question) => !isAnswered(question)).length },
+            { value: 'respondidas', label: 'Já respondidas', count: allQuestions.filter(isAnswered).length },
           ]}
         />
         <FilterDropdown

@@ -66,9 +66,23 @@ export type CourseLevel = 'intro' | 'intermediate' | 'advanced';
 /** O que pesa na rotina da disciplina antes de aceitar. */
 export type DemandConstraint = 'on-site' | 'sensitive-data' | 'confidential';
 
+/** Hora de uma mensagem, "HH:MM", no relógio de quem escreveu. */
+export type ClockTime = string;
+
+/** Uma resposta da organização a uma pergunta. Pode haver várias: completar, corrigir, mandar um detalhe depois. */
+export interface QuestionReply {
+  id: string;
+  text: string;
+  at: IsoDate;
+  time: ClockTime;
+  /** "Nome, Organização". */
+  by: string;
+}
+
 /**
  * Pergunta do docente à organização antes de decidir. A organização responde
- * no portal dela; pergunta e resposta ficam na demanda para quem vier depois.
+ * no portal dela, quantas vezes quiser; pergunta e respostas ficam na demanda
+ * para quem vier depois.
  */
 export interface DemandQuestion {
   id: string;
@@ -76,8 +90,10 @@ export interface DemandQuestion {
   /** Calculado pelo backend a partir de quem pergunta. */
   mine: boolean;
   askedAt: IsoDate;
+  askedTime: ClockTime;
   text: string;
-  answer?: { text: string; answeredAt: IsoDate; by: string };
+  /** Da mais antiga para a mais nova. Vazia enquanto espera resposta. */
+  replies: QuestionReply[];
 }
 
 /** Indicação pessoal do L.E.I.: o docente chega pelo e-mail direto na demanda. */

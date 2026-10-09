@@ -16,6 +16,7 @@ import type {
 import { normalizeText } from '@/utils/format';
 import { db, findOrThrow, NotFoundError, RuleError } from '../db';
 import { checkLogin, resetAccess } from './access';
+import { conversationOf, nextTime } from '@/domain/questions';
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -280,16 +281,27 @@ export const deleteDraft = (id: string) => {
   return { id };
 };
 
-/** A resposta aparece na hora para todos os docentes que abrirem a demanda. */
+/**
+ * Mais uma resposta a uma pergunta, sem limite: a organização pode completar
+ * ou corrigir o que disse. Aparece na hora para todos os docentes que abrirem
+ * a demanda, com data e hora.
+ */
 export const answerQuestion = ({ demandId, questionId, text }: { demandId: string; questionId: string; text: string }): Demand => {
   const demand = findMyDemand(demandId);
   const answer = text.trim();
   if (!answer) throw new RuleError('Escreva a resposta.');
-  if (answer.length > SUBMISSION_LIMITS.answer) throw new RuleError(`A resposta passa de ${SUBMISSION_LIMITS.answer} caracteres.`);
+  if (answer.length > SUBMISSION_LIMITS.answer) throw new RuleError(`A resposta passa de ${SUBMISSION_LIMITS.answer} caracteres. Divida em duas mensagens.`);
+  if (demand.status === 'in-project') throw new RuleError('A demanda virou projeto. Agora a conversa é direto com o docente.');
   const question = demand.questions.find((candidate) => candidate.id === questionId);
   if (!question) throw new NotFoundError('Pergunta não encontrada.');
-  if (question.answer) throw new RuleError('Esta pergunta já foi respondida.');
-  question.answer = { text: answer, answeredAt: db.calendar.today, by: `${db.orgAccount.name}, ${demand.organization.name}` };
+  const today = db.calendar.today;
+  question.replies.push({
+    id: `${question.id}-r${question.replies.length + 1}`,
+    text: answer,
+    at: today,
+    time: nextTime(today, conversationOf(demand.questions).map((message) => message.stamp)),
+    by: `${db.orgAccount.name}, ${demand.organization.name}`,
+  });
   return forOrganization(demand);
 };
 
@@ -298,7 +310,12 @@ export const listQuestionDemands = (): Demand[] =>
   db.demands
     .filter((demand) => isMine(demand) && demand.questions.length > 0)
     .map(forOrganization)
-    .sort((a, b) => unansweredQuestions(b).length - unansweredQuestions(a).length);
+    // Primeiro as que esperam resposta; entre elas, a do movimento mais recente.
+    .sort(
+      (a, b) =>
+        Number(unansweredQuestions(b).length > 0) - Number(unansweredQuestions(a).length > 0) ||
+        (conversationOf(b.questions).at(-1)?.stamp ?? '').localeCompare(conversationOf(a.questions).at(-1)?.stamp ?? ''),
+    );
 
 export const listProjects = (): OrgProjectSummary[] =>
   db.projects

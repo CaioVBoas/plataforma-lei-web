@@ -35,7 +35,7 @@ export const DemandTab = ({ project }: { project: Project }) => {
     );
   }
   const { demand } = data;
-  const answered = demand.questions.filter((question) => question.answer).length;
+  const answered = demand.questions.filter((question) => question.replies.length > 0).length;
 
   return (
     <div>

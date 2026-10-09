@@ -2,9 +2,9 @@ import { useEffect, useId, useRef, useState, type FormEvent, type KeyboardEvent,
 import { useToast } from '@/components/feedback/toastContext';
 import { Button } from '@/components/ui/button';
 import { DoubleCheckIcon, SendIcon, UndoIcon } from '@/components/ui/icons';
-import { formatShortDate } from '@/domain/calendar';
+import { conversationOf, isAnswered } from '@/domain/questions';
 import { SUBMISSION_LIMITS } from '@/domain/submission';
-import type { Demand, DemandQuestion, IsoDate } from '@/domain/types';
+import type { Demand, DemandQuestion, IsoDate, QuestionReply } from '@/domain/types';
 import { cn } from '@/utils/cn';
 import { MONTH_NAMES } from '@/utils/format';
 import { useAnswerQuestion } from '../useOrgPortal';
@@ -12,87 +12,100 @@ import { useAnswerQuestion } from '../useOrgPortal';
 /** "2026-08-19" vira "19 de agosto de 2026", como o separador de dia do WhatsApp. */
 const dayLabel = (date: IsoDate) => `${Number(date.slice(8, 10))} de ${MONTH_NAMES[Number(date.slice(5, 7)) - 1].toLowerCase()} de ${date.slice(0, 4)}`;
 
-type ChatEvent = { kind: 'question'; date: IsoDate; question: DemandQuestion } | { kind: 'answer'; date: IsoDate; question: DemandQuestion };
-
-/** Perguntas e respostas na ordem em que aconteceram, cada uma no seu dia. */
-const timeline = (questions: DemandQuestion[]): ChatEvent[] =>
-  questions
-    .flatMap<ChatEvent>((question) => [
-      { kind: 'question', date: question.askedAt, question },
-      ...(question.answer ? [{ kind: 'answer' as const, date: question.answer.answeredAt, question }] : []),
-    ])
-    .sort((a, b) => a.date.localeCompare(b.date) || (a.kind === 'question' ? -1 : 1));
+const BUBBLE_SHADOW = 'shadow-[0_1px_0.5px_rgba(10,50,50,0.13)]';
 
 const DaySeparator = ({ date }: { date: IsoDate }) => (
   <li className="flex justify-center py-1">
-    <span className="rounded-md bg-surface px-3 py-1 text-caption font-medium text-ink-2 shadow-[0_1px_0.5px_rgba(10,50,50,0.13)]">{dayLabel(date)}</span>
+    <span className={cn('rounded-md bg-surface px-3 py-1 text-caption font-medium text-ink-2', BUBBLE_SHADOW)}>{dayLabel(date)}</span>
   </li>
 );
 
-/** Balão do docente, à esquerda, com o nome em petróleo. Sem resposta, oferece "Responder", como no WhatsApp. */
-const TeacherBubble = ({ question, replying, onReply }: { question: DemandQuestion; replying: boolean; onReply?: () => void }) => (
-  <li className="flex flex-col items-start">
-    <div
-      className={cn(
-        'relative max-w-[min(85%,36rem)] rounded-xl rounded-tl-none bg-surface px-3.5 pt-2 pb-1.5 shadow-[0_1px_0.5px_rgba(10,50,50,0.13)]',
-        replying && 'ring-2 ring-accent/50',
-      )}
-    >
-      <span aria-hidden="true" className="absolute top-0 -left-2 border-t-[10px] border-l-[10px] border-t-surface border-l-transparent" />
-      <p className="text-small font-semibold text-brand-strong">{question.teacherName}</p>
-      <p className="mt-0.5 text-body whitespace-pre-line text-ink">{question.text}</p>
-      <p className="mt-1 text-right text-caption text-ink-3">{formatShortDate(question.askedAt)}</p>
-    </div>
-    {!question.answer && onReply && (
-      <button
-        type="button"
-        onClick={onReply}
-        aria-pressed={replying}
-        className={cn('mt-1.5 inline-flex min-h-9 items-center gap-1.5 rounded-full px-3 text-small font-semibold', replying ? 'bg-accent text-white' : 'bg-accent-soft text-accent hover:bg-accent/15')}
-      >
-        <UndoIcon size={16} />
-        {replying ? 'Respondendo esta' : 'Responder esta pergunta'}
-      </button>
-    )}
-  </li>
-);
+interface TeacherBubbleProps {
+  question: DemandQuestion;
+  replying: boolean;
+  onReply?: () => void;
+}
 
-/** Balão de vocês, à direita, em petróleo claro, citando a pergunta respondida e com os dois tiques. */
-const AnswerBubble = ({ question }: { question: DemandQuestion }) =>
-  question.answer ? (
-    <li className="flex justify-end">
-      <div className="relative max-w-[min(85%,36rem)] rounded-xl rounded-tr-none bg-brand-50 px-3.5 pt-2 pb-1.5 shadow-[0_1px_0.5px_rgba(10,50,50,0.13)]">
-        <span aria-hidden="true" className="absolute top-0 -right-2 border-t-[10px] border-r-[10px] border-t-brand-50 border-r-transparent" />
-        <div className="mb-1.5 rounded-md border-l-4 border-brand bg-surface/70 px-2.5 py-1.5">
-          <p className="text-caption font-semibold text-brand-strong">{question.teacherName}</p>
-          <p className="line-clamp-2 text-small text-ink-2">{question.text}</p>
-        </div>
-        <p className="text-body whitespace-pre-line text-ink">{question.answer.text}</p>
-        <p className="mt-1 flex items-center justify-end gap-1 text-caption text-ink-3">
-          {question.answer.by.split(',')[0]} · {formatShortDate(question.answer.answeredAt)}
-          <DoubleCheckIcon size={16} className="text-brand" />
-          <span className="sr-only">Resposta enviada</span>
+/**
+ * Balão do docente, à esquerda, com o nome em petróleo e a hora. Toda pergunta
+ * pode receber mais uma resposta; a que ainda não tem nenhuma diz que espera.
+ */
+const TeacherBubble = ({ question, replying, onReply }: TeacherBubbleProps) => {
+  const waiting = !isAnswered(question);
+  return (
+    <li className="flex flex-col items-start">
+      <div className={cn('relative max-w-[min(85%,36rem)] rounded-xl rounded-tl-none bg-surface px-3.5 pt-2 pb-1.5', BUBBLE_SHADOW, replying && 'ring-2 ring-accent/50')}>
+        <span aria-hidden="true" className="absolute top-0 -left-2 border-t-[10px] border-l-[10px] border-t-surface border-l-transparent" />
+        <p className="text-small font-semibold text-brand-strong">{question.teacherName}</p>
+        <p className="mt-0.5 text-body whitespace-pre-line text-ink">{question.text}</p>
+        <p className="mt-1 text-right text-caption text-ink-3">
+          <time dateTime={`${question.askedAt}T${question.askedTime}`}>{question.askedTime}</time>
         </p>
       </div>
+      {onReply && (
+        <div className="mt-1.5 flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            onClick={onReply}
+            aria-pressed={replying}
+            className={cn(
+              'inline-flex min-h-9 items-center gap-1.5 rounded-full px-3 text-small font-semibold',
+              replying ? 'bg-accent text-white' : 'bg-accent-soft text-accent hover:bg-accent/15',
+            )}
+          >
+            <UndoIcon size={16} />
+            {replying ? 'Respondendo esta' : waiting ? 'Responder esta pergunta' : 'Responder de novo'}
+          </button>
+          {waiting && <span className="text-caption font-semibold text-accent">Esperando resposta</span>}
+        </div>
+      )}
     </li>
-  ) : null;
+  );
+};
 
-/** O campo de resposta no pé da conversa, com a pergunta citada em cima. Enter envia; Shift e Enter pula linha. */
+/** Balão de vocês, à direita, em petróleo claro, citando a pergunta e com os dois tiques. */
+const ReplyBubble = ({ question, reply }: { question: DemandQuestion; reply: QuestionReply }) => (
+  <li className="flex justify-end">
+    <div className={cn('relative max-w-[min(85%,36rem)] rounded-xl rounded-tr-none bg-brand-50 px-3.5 pt-2 pb-1.5', BUBBLE_SHADOW)}>
+      <span aria-hidden="true" className="absolute top-0 -right-2 border-t-[10px] border-r-[10px] border-t-brand-50 border-r-transparent" />
+      <div className="mb-1.5 rounded-md border-l-4 border-brand bg-surface/70 px-2.5 py-1.5">
+        <p className="text-caption font-semibold text-brand-strong">{question.teacherName}</p>
+        <p className="line-clamp-2 text-small text-ink-2">{question.text}</p>
+      </div>
+      <p className="text-body whitespace-pre-line text-ink">{reply.text}</p>
+      <p className="mt-1 flex items-center justify-end gap-1 text-caption text-ink-3">
+        {reply.by.split(',')[0]} · <time dateTime={`${reply.at}T${reply.time}`}>{reply.time}</time>
+        <DoubleCheckIcon size={16} className="text-brand" />
+        <span className="sr-only">Resposta enviada</span>
+      </p>
+    </div>
+  </li>
+);
+
+/**
+ * O campo de resposta no pé da conversa, com a pergunta citada em cima.
+ * Enter envia; Shift e Enter pula linha. Depois de enviar, o campo continua
+ * na mesma pergunta, para mandar mais uma mensagem se quiser.
+ */
 const Composer = ({ demandId, question }: { demandId: string; question: DemandQuestion }) => {
   const toast = useToast();
   const fieldId = useId();
   const answer = useAnswerQuestion();
   const [text, setText] = useState('');
+  const fieldRef = useRef<HTMLTextAreaElement>(null);
 
+  // O campo limpa na hora do envio, e não na volta do servidor: quem já começou a
+  // escrever a próxima mensagem não perde o texto. Se o envio falhar, ele volta.
   const send = () => {
-    if (!text.trim() || answer.isPending) return;
+    const sent = text;
+    if (!sent.trim() || answer.isPending) return;
+    setText('');
+    fieldRef.current?.focus();
     answer.mutate(
-      { demandId, questionId: question.id, text },
+      { demandId, questionId: question.id, text: sent },
       {
-        onSuccess: () => {
-          setText('');
-          toast.show(`Resposta enviada. ${question.teacherName} e os próximos docentes já veem na demanda.`);
-        },
+        onSuccess: () => toast.show(`Resposta enviada. ${question.teacherName.split(' ')[0]} e os próximos docentes já veem na demanda.`),
+        onError: () => setText((current) => current || sent),
       },
     );
   };
@@ -106,6 +119,7 @@ const Composer = ({ demandId, question }: { demandId: string; question: DemandQu
       send();
     }
   };
+  const tooLong = text.length > SUBMISSION_LIMITS.answer * 0.9;
 
   return (
     <form onSubmit={submit} className="border-t border-line bg-surface p-3 sm:p-4">
@@ -120,6 +134,7 @@ const Composer = ({ demandId, question }: { demandId: string; question: DemandQu
       </label>
       <div className="flex items-end gap-2">
         <textarea
+          ref={fieldRef}
           id={fieldId}
           rows={2}
           maxLength={SUBMISSION_LIMITS.answer}
@@ -134,6 +149,9 @@ const Composer = ({ demandId, question }: { demandId: string; question: DemandQu
           {answer.isPending ? 'Enviando' : 'Enviar'}
         </Button>
       </div>
+      <p className={cn('mt-1.5 text-caption', tooLong ? 'font-medium text-caution' : 'text-ink-3')}>
+        {tooLong ? `${text.length} de ${SUBMISSION_LIMITS.answer} letras. Se precisar, mande o resto numa segunda mensagem.` : 'Enter envia. Shift e Enter pula linha.'}
+      </p>
       {answer.isError && (
         <p role="alert" className="mt-1.5 text-small text-critical">
           {answer.error.message}
@@ -153,42 +171,44 @@ interface QuestionsInboxProps {
 
 /**
  * As perguntas da demanda em conversa, no desenho do WhatsApp: o docente à
- * esquerda, vocês à direita, um separador por dia e o campo de resposta no
- * pé. A resposta vale para todos: fica na demanda, e o próximo docente já vê.
+ * esquerda, vocês à direita, um separador por dia, a hora em cada balão e o
+ * campo de resposta no pé. Dá para responder quantas vezes quiser; a resposta
+ * vale para todos: fica na demanda, e o próximo docente já vê.
  */
 export const QuestionsInbox = ({ demand, questions = demand.questions, header }: QuestionsInboxProps) => {
   const canAnswer = demand.status !== 'in-project';
-  const waiting = questions.filter((question) => !question.answer);
-  const [replyId, setReplyId] = useState<string | undefined>(waiting[0]?.id);
-  const replyTo = waiting.find((question) => question.id === replyId) ?? waiting[0];
-  const events = timeline(questions);
+  const waiting = questions.filter((question) => !isAnswered(question));
+  const [replyId, setReplyId] = useState<string | undefined>();
+  // A escolhida; senão a mais antiga sem resposta; senão a pergunta mais recente.
+  const replyTo = questions.find((question) => question.id === replyId) ?? waiting[0] ?? questions.at(-1);
+  const messages = conversationOf(questions);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // Como no WhatsApp, a conversa abre na mensagem mais recente.
+  // Como no WhatsApp, a conversa abre na mensagem mais recente e desce quando chega uma nova.
   useEffect(() => {
     const element = scrollRef.current;
     if (element) element.scrollTop = element.scrollHeight;
-  }, [events.length, demand.id]);
+  }, [messages.length, demand.id]);
 
   return (
     <section aria-label={`Perguntas dos docentes sobre ${demand.title}`} className="flex flex-col overflow-hidden rounded-xl border border-line bg-surface">
       {header}
       <div ref={scrollRef} className="max-h-[min(36rem,62vh)] min-h-[14rem] overflow-y-auto bg-canvas px-3 py-4 sm:px-5">
-        {events.length > 0 ? (
-          <ol className="flex flex-col gap-3">
-            {events.map((event, index) => {
-              const showDay = index === 0 || events[index - 1].date !== event.date;
+        {messages.length > 0 ? (
+          <ol aria-label="Mensagens, da mais antiga para a mais nova" className="flex flex-col gap-3">
+            {messages.map((message, index) => {
+              const showDay = index === 0 || messages[index - 1].date !== message.date;
               return [
-                showDay && <DaySeparator key={`dia-${event.date}-${index}`} date={event.date} />,
-                event.kind === 'question' ? (
+                showDay && <DaySeparator key={`dia-${message.date}-${index}`} date={message.date} />,
+                message.kind === 'question' ? (
                   <TeacherBubble
-                    key={`q-${event.question.id}`}
-                    question={event.question}
-                    replying={canAnswer && replyTo?.id === event.question.id && waiting.length > 1}
-                    onReply={canAnswer && waiting.length > 1 ? () => setReplyId(event.question.id) : undefined}
+                    key={`q-${message.question.id}`}
+                    question={message.question}
+                    replying={canAnswer && questions.length > 1 && replyTo?.id === message.question.id}
+                    onReply={canAnswer ? () => setReplyId(message.question.id) : undefined}
                   />
                 ) : (
-                  <AnswerBubble key={`a-${event.question.id}`} question={event.question} />
+                  <ReplyBubble key={`r-${message.reply.id}`} question={message.question} reply={message.reply} />
                 ),
               ];
             })}
@@ -204,9 +224,7 @@ export const QuestionsInbox = ({ demand, questions = demand.questions, header }:
       ) : (
         <p className="flex items-center gap-2 border-t border-line bg-surface px-4 py-3 text-small text-ink-2">
           <DoubleCheckIcon size={20} className="shrink-0 text-brand" />
-          {canAnswer
-            ? 'Tudo respondido. Os docentes veem a resposta na demanda.'
-            : 'A demanda virou projeto. Agora a conversa é direto com o docente, pelo contato do projeto.'}
+          {canAnswer ? 'Nenhuma pergunta para responder.' : 'A demanda virou projeto. Agora a conversa é direto com o docente, pelo contato do projeto.'}
         </p>
       )}
     </section>
