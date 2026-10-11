@@ -30,8 +30,8 @@ const LevelPicker = ({ value, onChange }: { value: CourseLevel; onChange: (level
             selected ? 'border-accent bg-accent-soft' : 'border-line-strong bg-surface hover:border-ink-3',
           )}
         >
-          <span className={cn('text-sm font-medium', selected ? 'text-accent' : 'text-ink')}>{LEVEL_COPY[level].label}</span>
-          <span className="text-[13px] text-ink-3">{LEVEL_COPY[level].periods}</span>
+          <span className={cn('text-small font-medium', selected ? 'text-accent' : 'text-ink')}>{LEVEL_COPY[level].label}</span>
+          <span className="text-small text-ink-3">{LEVEL_COPY[level].periods}</span>
         </button>
       );
     })}
@@ -86,7 +86,7 @@ export const DisciplineForm = ({ formId, defaultValues = EMPTY_DISCIPLINE, onSub
           </Field>
         </div>
         {teams > 0 && (
-          <p aria-live="polite" className="mt-3 rounded-md border border-fact-line bg-fact px-3.5 py-2.5 text-[13px] text-ink-2">
+          <p aria-live="polite" className="mt-3 rounded-md border border-fact-line bg-fact px-3.5 py-2.5 text-small text-ink-2">
             <span className="font-semibold text-brand-strong">{teams === 1 ? '1 equipe' : `${teams} equipes`}</span> de até {teamSize} pessoas, para até{' '}
             <span className="font-semibold text-brand-strong">{projectSlots === 1 ? '1 projeto' : `${projectSlots || 0} projetos`}</span> neste semestre.
           </p>
@@ -104,7 +104,7 @@ export const DisciplineForm = ({ formId, defaultValues = EMPTY_DISCIPLINE, onSub
       >
         <Controller control={control} name="skills" render={({ field }) => <ChoiceChips label="Competências da turma" options={catalog} value={field.value} onChange={field.onChange} />} />
         {errors.skills && (
-          <p role="alert" className="mt-2 text-[13px] text-critical">
+          <p role="alert" className="mt-2 text-small text-critical">
             {errors.skills.message}
           </p>
         )}

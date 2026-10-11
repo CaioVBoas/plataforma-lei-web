@@ -6,5 +6,5 @@ export const ORG_ACCOUNT: OrgAccount = {
   name: 'Renata Vasconcelos',
   email: 'renata.vasconcelos@exemplo.org.br',
   position: 'Coordenadora do núcleo de regulação',
-  phone: '',
+  phone: '(81) 98765-4321',
 };

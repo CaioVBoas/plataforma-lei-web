@@ -9,7 +9,7 @@ export interface ActionMenuItem {
   destructive?: boolean;
 }
 
-const MENU_ITEM = 'flex h-8 w-full items-center rounded-[5px] px-2.5 text-left text-sm whitespace-nowrap';
+const MENU_ITEM = 'flex h-8 w-full items-center rounded-[5px] px-2.5 text-left text-small whitespace-nowrap';
 
 /**
  * Menu de ações de um item: kebab de 32px, nunca a palavra "Ações" solta.
@@ -72,7 +72,7 @@ export const ActionMenu = ({ label, items }: { label: string; items: ActionMenuI
           open && 'bg-fill text-ink',
         )}
       >
-        <MoreIcon size={18} />
+        <MoreIcon size={20} />
       </button>
       {position &&
         createPortal(

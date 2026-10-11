@@ -81,13 +81,16 @@ export const buildNotifications = (agenda: AgendaItem[], menu: Demand[], today: 
 
   const answers = menu.flatMap((demand) =>
     demand.questions
-      .filter((question) => question.mine && question.answer && daysBetween(question.answer.answeredAt, today) <= ANSWER_FRESH_DAYS)
+      .filter((question) => {
+        const reply = question.replies.at(-1);
+        return question.mine && reply !== undefined && daysBetween(reply.at, today) <= ANSWER_FRESH_DAYS;
+      })
       .map<PortalNotification>((question) => ({
         id: `answer-${question.id}`,
         kind: 'answer',
         actionable: false,
         tone: 'neutral',
-        label: `Respondida em ${formatShortDate(question.answer?.answeredAt ?? today)}`,
+        label: `Respondida em ${formatShortDate(question.replies.at(-1)?.at ?? today)}`,
         title: `${demand.organization.name} respondeu sua pergunta`,
         context: demand.title,
         to: paths.demand(demand.id, 'perguntas'),

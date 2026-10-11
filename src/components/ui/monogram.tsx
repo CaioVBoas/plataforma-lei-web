@@ -3,10 +3,10 @@ import { cn } from '@/utils/cn';
 type MonogramSize = 'sm' | 'md' | 'lg' | 'xl';
 
 const SIZES: Record<MonogramSize, string> = {
-  sm: 'size-8 rounded-sm text-[13px]',
-  md: 'size-10 rounded-md text-[16px]',
-  lg: 'size-14 rounded-lg text-[24px]',
-  xl: 'size-[72px] rounded-lg text-[30px]',
+  sm: 'size-8 rounded-sm text-small',
+  md: 'size-10 rounded-md text-body',
+  lg: 'size-14 rounded-lg text-h3',
+  xl: 'size-[72px] rounded-lg text-h2',
 };
 
 /**

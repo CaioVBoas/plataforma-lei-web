@@ -14,13 +14,13 @@ const STEP_BUTTON = 'flex size-8 items-center justify-center rounded-[5px] text-
 export const Stepper = ({ label, value, min, max, onChange, formatValue = String }: StepperProps) => (
   <div role="group" aria-label={label} className="inline-flex items-center gap-1 rounded-md bg-fill p-0.5">
     <button type="button" aria-label={`Diminuir ${label}`} disabled={value <= min} onClick={() => onChange(value - 1)} className={STEP_BUTTON}>
-      <MinusIcon size={14} />
+      <MinusIcon size={16} />
     </button>
-    <output aria-live="polite" className="min-w-[88px] text-center text-sm font-medium tabular-nums">
+    <output aria-live="polite" className="min-w-[5.9rem] text-center text-small font-medium tabular-nums">
       {formatValue(value)}
     </output>
     <button type="button" aria-label={`Aumentar ${label}`} disabled={value >= max} onClick={() => onChange(value + 1)} className={STEP_BUTTON}>
-      <PlusIcon size={14} />
+      <PlusIcon size={16} />
     </button>
   </div>
 );

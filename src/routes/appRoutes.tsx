@@ -31,6 +31,7 @@ const SubmitDemandPage = lazyPage(() => import('@/features/orgPortal/submitDeman
 const OrgProjectsPage = lazyPage(() => import('@/features/orgPortal/orgProjectsPage'), 'OrgProjectsPage');
 const OrgProjectPage = lazyPage(() => import('@/features/orgPortal/orgProjectPage'), 'OrgProjectPage');
 const OrgProfilePage = lazyPage(() => import('@/features/orgPortal/orgProfilePage'), 'OrgProfilePage');
+const OrgQuestionsPage = lazyPage(() => import('@/features/orgPortal/orgQuestionsPage'), 'OrgQuestionsPage');
 const OrgGuidePage = lazyPage(() => import('@/features/orgPortal/orgGuidePage'), 'OrgGuidePage');
 const OrgNotificationsPage = lazyPage(() => import('@/features/orgPortal/orgNotificationsPage'), 'OrgNotificationsPage');
 
@@ -68,6 +69,7 @@ export const AppRoutes = () => (
           <Route path={paths.orgProjects} element={<OrgProjectsPage />} />
           <Route path="/organizacao/projetos/:projectId" element={<OrgProjectPage />} />
           <Route path={paths.orgProfile} element={<OrgProfilePage />} />
+          <Route path="/organizacao/perguntas" element={<OrgQuestionsPage />} />
           <Route path={paths.orgGuide} element={<OrgGuidePage />} />
           <Route path={paths.orgNotifications} element={<OrgNotificationsPage />} />
         </Route>

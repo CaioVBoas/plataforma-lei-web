@@ -17,15 +17,15 @@ export const ProjectRow = ({ project, today }: { project: Project; today: IsoDat
       label={project.title}
       anchor={
         <AnchorIcon>
-          <FolderIcon size={18} />
+          <FolderIcon size={20} />
         </AnchorIcon>
       }
     >
-      <p className="truncate text-[15px] font-semibold text-ink">{project.title}</p>
-      <p className="mt-1 truncate text-[13px] text-ink-2">
+      <p className="truncate text-body font-semibold text-ink">{project.title}</p>
+      <p className="mt-1 truncate text-small text-ink-2">
         {project.organization.name} · {project.semester}
       </p>
-      <p className={cn('mt-1 truncate text-[13px]', overdue ? 'font-medium text-caution' : 'text-ink-3')}>
+      <p className={cn('mt-1 truncate text-small', overdue ? 'font-medium text-caution' : 'text-ink-3')}>
         {next ? `${MILESTONE_COPY[next.id].title} · ${milestoneDateLine(next, today, true)}` : project.outcome && ADOPTION_COPY[project.outcome.adoption]}
       </p>
     </Item>

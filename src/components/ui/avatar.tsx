@@ -2,8 +2,8 @@ import { initialsOf } from '@/utils/format';
 import { cn } from '@/utils/cn';
 
 const SIZES = {
-  sm: 'size-8 rounded-sm text-[12px]',
-  xl: 'size-[72px] rounded-lg text-[26px]',
+  sm: 'size-8 rounded-sm text-caption',
+  xl: 'size-[72px] rounded-lg text-h2',
 } as const;
 
 /** Foto do docente ou, sem ela, as iniciais no mesmo desenho do monograma. */

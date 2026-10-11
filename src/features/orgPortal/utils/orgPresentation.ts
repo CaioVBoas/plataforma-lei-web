@@ -45,27 +45,27 @@ export const journeyIndex = (stage: OrgDemandStage) => JOURNEY.findIndex((step) 
 export const ORG_MILESTONE_COPY: Record<MilestoneId, { title: string; description: string }> = {
   plan: {
     title: 'O docente revisa o plano',
-    description: 'O plano do projeto sai da sua demanda. O docente ajusta para a disciplina antes de falar com vocês.',
+    description: 'O docente ajusta o plano à disciplina antes de falar com vocês.',
   },
   kickoff: {
     title: 'Reunião de abertura',
-    description: 'Vocês e o docente combinam escopo, calendário de reuniões, regras de sigilo e o que a turma entrega no fim.',
+    description: 'Vocês combinam com o docente o que a turma faz, as reuniões e o sigilo.',
   },
   sigaa: {
     title: 'Registro na UFPE',
-    description: 'O docente registra o projeto como ação de extensão no SIGAA. A partir daqui o compromisso é institucional.',
+    description: 'O docente registra o projeto na UFPE. Daqui em diante, é compromisso oficial.',
   },
   midterm: {
     title: 'Entrega parcial',
-    description: 'A turma mostra o que já funciona. É a hora de dizer ao docente o que ajustar até o fim do semestre.',
+    description: 'A turma mostra o que já funciona. Digam o que ajustar.',
   },
   final: {
     title: 'Entrega final',
-    description: 'A turma entrega o resultado do semestre: pesquisa, protótipo ou prova de conceito.',
+    description: 'A turma entrega o resultado do semestre.',
   },
   closing: {
     title: 'Encerramento',
-    description: 'O docente registra o que ficou com vocês. O texto entra no histórico da organização, para a próxima turma não começar do zero.',
+    description: 'O docente registra o que ficou com vocês, para a próxima turma não começar do zero.',
   },
 };
 

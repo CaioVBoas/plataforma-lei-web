@@ -14,6 +14,8 @@ import { ROLE_COPY, isRole } from './roles';
 import { session } from './session';
 import type { UserRole } from './types';
 import { useLogin, useOrgLogin } from './useAuth';
+import { visibleError } from '@/utils/formProblems';
+import { ForgotPassword } from './components/forgotPassword';
 
 const INSTITUTIONAL_EMAIL = /@(cin\.)?ufpe\.br$/i;
 
@@ -21,16 +23,16 @@ const loginSchema = z.object({
   email: z
     .string()
     .trim()
-    .min(1, 'Informe seu e-mail.')
+    .min(1, 'Escreva seu e-mail da UFPE.')
     .regex(INSTITUTIONAL_EMAIL, 'Use seu e-mail @ufpe.br ou @cin.ufpe.br. Se você é de uma organização, escolha Organização acima.'),
-  password: z.string().min(1, 'Informe sua senha.'),
+  password: z.string().min(1, 'Escreva sua senha.'),
 });
 
 type LoginValues = z.infer<typeof loginSchema>;
 
 const orgLoginSchema = z.object({
-  email: z.string().trim().min(1, 'Informe seu e-mail.').email('Informe um e-mail válido.'),
-  password: z.string().min(1, 'Informe sua senha.'),
+  email: z.string().trim().min(1, 'Escreva o e-mail do cadastro.').email('Confira o e-mail: ele precisa ter @ e um ponto. Ex.: nome@organizacao.org.br'),
+  password: z.string().min(1, 'Escreva sua senha.'),
 });
 
 type OrgLoginValues = z.infer<typeof orgLoginSchema>;
@@ -40,41 +42,65 @@ const OrganizationLogin = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const login = useOrgLogin();
-  const [resetNotice, setResetNotice] = useState(false);
+  const [recovering, setRecovering] = useState(false);
   const {
     register,
     handleSubmit,
-    formState: { errors },
-  } = useForm<OrgLoginValues>({ resolver: zodResolver(orgLoginSchema), defaultValues: { email: '', password: '' } });
+    watch,
+    setValue,
+    getValues,
+    formState: { errors, isSubmitted },
+  } = useForm<OrgLoginValues>({ mode: 'onChange', resolver: zodResolver(orgLoginSchema), defaultValues: { email: '', password: '' } });
 
   const requested = (location.state as { from?: string } | null)?.from;
   const from = requested?.startsWith(paths.orgHome) ? requested : paths.orgHome;
   const onSubmit = (values: OrgLoginValues) => login.mutate(values, { onSuccess: () => navigate(from, { replace: true }) });
 
+  if (recovering) {
+    return (
+      <ForgotPassword
+        role="organizacao"
+        initialEmail={getValues('email')}
+        onCancel={() => setRecovering(false)}
+        onDone={(email) => {
+          setRecovering(false);
+          setValue('email', email);
+          setValue('password', '');
+          login.reset();
+        }}
+      />
+    );
+  }
+
   return (
     <>
       <form onSubmit={handleSubmit(onSubmit)} noValidate className="flex flex-col gap-5">
-        <Field label="E-mail" htmlFor="login-org-email" error={errors.email?.message}>
+        <Field label="E-mail" htmlFor="login-org-email" error={visibleError(errors.email?.message, watch('email'), isSubmitted)}>
           <Input id="login-org-email" type="email" autoComplete="username" placeholder="nome@organizacao.org.br" autoFocus {...register('email')} />
         </Field>
-        <Field label="Senha" htmlFor="login-org-senha" error={errors.password?.message}>
+        <Field label="Senha" htmlFor="login-org-senha" error={visibleError(errors.password?.message, watch('password'), isSubmitted)}>
           <Input id="login-org-senha" type="password" autoComplete="current-password" {...register('password')} />
         </Field>
 
         {login.isError && (
-          <p role="alert" className="text-sm text-critical">
+          <div role="alert" className="flex flex-wrap items-center gap-x-2 gap-y-1 text-small font-medium text-critical">
             {login.error.message}
-          </p>
+            {login.error.message.startsWith('Senha incorreta') && (
+              <button type="button" onClick={() => setRecovering(true)} className={textLinkClassName}>
+                Recuperar a senha
+              </button>
+            )}
+          </div>
         )}
 
-        <Button variant="primary" size="lg" type="submit" fullWidth disabled={login.isPending}>
+        <Button variant="primary" size="xl" type="submit" fullWidth disabled={login.isPending}>
           {login.isPending ? 'Entrando' : 'Entrar'}
-          {!login.isPending && <ArrowRightIcon size={16} />}
+          {!login.isPending && <ArrowRightIcon size={20} />}
         </Button>
       </form>
 
-      <div className="mt-4 flex flex-wrap items-center justify-between gap-2 text-sm">
-        <button type="button" onClick={() => setResetNotice(true)} className={textLinkClassName}>
+      <div className="mt-4 flex flex-wrap items-center justify-between gap-2 text-small">
+        <button type="button" onClick={() => setRecovering(true)} className={textLinkClassName}>
           Esqueci minha senha
         </button>
         <span className="text-ink-2">
@@ -84,11 +110,7 @@ const OrganizationLogin = () => {
           </Link>
         </span>
       </div>
-      {resetNotice && (
-        <p role="status" className="mt-2 text-[13px] leading-relaxed text-ink-2">
-          Nesta demonstração qualquer e-mail e senha entram na conta do Hospital das Clínicas. A recuperação de senha ainda não existe.
-        </p>
-      )}
+      <p className="mt-4 text-small text-ink-3">Demonstração: qualquer e-mail entra na conta do Hospital das Clínicas, com qualquer senha até alguém trocar a senha.</p>
     </>
   );
 };
@@ -97,40 +119,64 @@ const TeacherLogin = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const login = useLogin();
-  const [resetNotice, setResetNotice] = useState(false);
+  const [recovering, setRecovering] = useState(false);
   const {
     register,
     handleSubmit,
-    formState: { errors },
-  } = useForm<LoginValues>({ resolver: zodResolver(loginSchema), defaultValues: { email: '', password: '' } });
+    watch,
+    setValue,
+    getValues,
+    formState: { errors, isSubmitted },
+  } = useForm<LoginValues>({ mode: 'onChange', resolver: zodResolver(loginSchema), defaultValues: { email: '', password: '' } });
 
   const from = (location.state as { from?: string } | null)?.from ?? paths.home;
   const onSubmit = (values: LoginValues) => login.mutate(values, { onSuccess: () => navigate(from, { replace: true }) });
 
+  if (recovering) {
+    return (
+      <ForgotPassword
+        role="docente"
+        initialEmail={getValues('email')}
+        onCancel={() => setRecovering(false)}
+        onDone={(email) => {
+          setRecovering(false);
+          setValue('email', email);
+          setValue('password', '');
+          login.reset();
+        }}
+      />
+    );
+  }
+
   return (
     <>
       <form onSubmit={handleSubmit(onSubmit)} noValidate className="flex flex-col gap-5">
-        <Field label="E-mail institucional" htmlFor="login-email" error={errors.email?.message}>
+        <Field label="E-mail institucional" htmlFor="login-email" error={visibleError(errors.email?.message, watch('email'), isSubmitted)}>
           <Input id="login-email" type="email" autoComplete="username" placeholder="nome@cin.ufpe.br" autoFocus {...register('email')} />
         </Field>
-        <Field label="Senha" htmlFor="login-senha" error={errors.password?.message}>
+        <Field label="Senha" htmlFor="login-senha" error={visibleError(errors.password?.message, watch('password'), isSubmitted)}>
           <Input id="login-senha" type="password" autoComplete="current-password" {...register('password')} />
         </Field>
 
         {login.isError && (
-          <p role="alert" className="text-sm text-critical">
+          <div role="alert" className="flex flex-wrap items-center gap-x-2 gap-y-1 text-small font-medium text-critical">
             {login.error.message}
-          </p>
+            {login.error.message.startsWith('Senha incorreta') && (
+              <button type="button" onClick={() => setRecovering(true)} className={textLinkClassName}>
+                Recuperar a senha
+              </button>
+            )}
+          </div>
         )}
 
-        <Button variant="primary" size="lg" type="submit" fullWidth disabled={login.isPending}>
+        <Button variant="primary" size="xl" type="submit" fullWidth disabled={login.isPending}>
           {login.isPending ? 'Entrando' : 'Entrar'}
-          {!login.isPending && <ArrowRightIcon size={16} />}
+          {!login.isPending && <ArrowRightIcon size={20} />}
         </Button>
       </form>
 
-      <div className="mt-4 flex flex-wrap items-center justify-between gap-2 text-sm">
-        <button type="button" onClick={() => setResetNotice(true)} className={textLinkClassName}>
+      <div className="mt-4 flex flex-wrap items-center justify-between gap-2 text-small">
+        <button type="button" onClick={() => setRecovering(true)} className={textLinkClassName}>
           Esqueci minha senha
         </button>
         <span className="text-ink-2">
@@ -140,11 +186,7 @@ const TeacherLogin = () => {
           </Link>
         </span>
       </div>
-      {resetNotice && (
-        <p role="status" className="mt-2 text-[13px] leading-relaxed text-ink-2">
-          Nesta demonstração qualquer senha funciona com um e-mail institucional. A recuperação de senha chega com o login da UFPE.
-        </p>
-      )}
+      <p className="mt-4 text-small text-ink-3">Demonstração: qualquer e-mail institucional entra na conta da docente, com qualquer senha até alguém trocar a senha.</p>
     </>
   );
 };
@@ -162,7 +204,7 @@ export const LoginPage = () => {
 
   return (
     <AuthShell>
-      <h2 className="text-[28px] leading-tight font-bold tracking-[-0.02em] text-ink">Entrar</h2>
+      <h2 className="text-h2 text-ink">Entrar</h2>
       <div className="mt-6 mb-7">
         <RoleTabs value={role} onChange={(next) => setSearchParams({ perfil: next }, { replace: true })} />
       </div>
@@ -176,6 +218,7 @@ export const LoginPage = () => {
       ) : (
         <SoonNotice title={`${ROLE_COPY[role].label}: em breve`} text={ROLE_COPY[role].soon}>
           <Link to={paths.landing} className={buttonClassName({ variant: 'secondary' })}>
+            <ArrowRightIcon size={16} />
             Conhecer o PLEI
           </Link>
         </SoonNotice>

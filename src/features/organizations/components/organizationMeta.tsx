@@ -14,7 +14,7 @@ export const OrganizationMeta = ({ organization, openDemands }: OrganizationMeta
   const done = organization.history.length;
 
   return (
-    <p className="text-[13px] text-ink-3">
+    <p className="text-small text-ink-3">
       {openDemands === 0 ? (
         'Nenhuma demanda aberta'
       ) : (
