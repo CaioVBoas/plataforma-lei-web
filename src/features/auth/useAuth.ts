@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/components/feedback/toastContext';
 import { paths } from '@/routes/paths';
@@ -26,6 +26,17 @@ export const useOrgSignupCode = () => useMutation({ mutationFn: authApi.requestO
 export const usePasswordResetCode = () => useMutation({ mutationFn: authApi.requestPasswordReset });
 
 export const useResetPassword = () => useMutation({ mutationFn: authApi.resetPassword });
+
+/** Obtém os dados do usuário autenticado no backend via /auth/me. */
+export const useCurrentUser = () => {
+  return useQuery({
+    queryKey: ['auth', 'me'],
+    queryFn: authApi.getMe,
+    enabled: session.isAuthenticated(),
+    staleTime: 5 * 60 * 1000,
+    retry: false,
+  });
+};
 
 /** Sair limpa o cache para que a próxima conta não veja dados da anterior, e volta à entrada do mesmo perfil. */
 export const useLogout = () => {
