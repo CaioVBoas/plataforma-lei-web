@@ -20,7 +20,7 @@ interface PageProps {
 }
 
 /** Mesma zona de respiro em todas as telas: largura máxima e margens laterais iguais. */
-export const PAGE_FRAME = 'mx-auto w-full max-w-[1280px] px-4 pt-6 pb-20 sm:px-6 sm:pt-8 lg:px-8';
+export const PAGE_FRAME = 'mx-auto w-full max-w-[1280px] px-4 pt-8 pb-24 sm:px-8 sm:pt-10 lg:px-10';
 
 /** Casca de toda tela do portal: voltar, título grande, subtítulo e ações à direita. */
 export const Page = ({ title, eyebrow, subtitle, meta, leading, back, hero, actions, children }: PageProps) => {
@@ -32,22 +32,22 @@ export const Page = ({ title, eyebrow, subtitle, meta, leading, back, hero, acti
     <div className={PAGE_FRAME}>
       {back && (
         // Voltar é navegação, não ação: texto cinza escuro, sem peso de botão.
-        <Link to={back.to} className="-ml-1.5 mb-4 inline-flex items-center gap-0.5 text-sm text-ink-2 hover:text-ink">
+        <Link to={back.to} className="-ml-1.5 mb-6 inline-flex items-center gap-0.5 text-small text-ink-2 hover:text-ink">
           <ChevronLeftIcon size={16} />
           {back.label}
         </Link>
       )}
       {hero ? (
-        <div className="mb-10">{hero}</div>
+        <div className="mb-12">{hero}</div>
       ) : (
-      <header className="mb-10 flex flex-wrap items-end justify-between gap-x-6 gap-y-4">
+      <header className="mb-12 flex flex-wrap items-end justify-between gap-x-6 gap-y-4">
         <div className="flex min-w-0 flex-[1_1_420px] items-start gap-4">
           {leading}
           <div className="min-w-0 flex-1">
-            {eyebrow && <p className="mb-1.5 text-[13px] font-semibold text-brand-strong">{eyebrow}</p>}
-            <h1 className={cn('text-balance', leading ? 'text-[26px] leading-tight font-bold tracking-[-0.019em] text-ink' : 'text-large-title')}>{title}</h1>
-            {subtitle && <div className={cn('leading-snug text-ink-2', leading ? 'mt-1 text-[15px]' : 'mt-2 text-[17px]')}>{subtitle}</div>}
-            {meta && <div className="mt-2 text-[13px] text-ink-2">{meta}</div>}
+            {eyebrow && <p className="mb-1.5 text-small font-semibold text-brand-strong">{eyebrow}</p>}
+            <h1 className={cn('text-balance', leading ? 'text-h2 text-ink' : 'text-h1')}>{title}</h1>
+            {subtitle && <div className={cn('leading-snug text-ink-2', leading ? 'mt-1.5 text-body' : 'mt-3 text-h4 font-normal')}>{subtitle}</div>}
+            {meta && <div className="mt-2 text-small text-ink-2">{meta}</div>}
           </div>
         </div>
         {actions && <div className="flex shrink-0 items-center gap-2">{actions}</div>}
@@ -63,18 +63,18 @@ interface SectionProps {
   id?: string;
   description?: ReactNode;
   aside?: ReactNode;
-  /** 36px entre seções em vez de 48px, para telas de consulta com pouco conteúdo por bloco. */
+  /** 48px entre seções em vez de 64px, para telas de consulta com pouco conteúdo por bloco. */
   compact?: boolean;
   className?: string;
   children: ReactNode;
 }
 
 export const Section = ({ title, id, description, aside, compact, className, children }: SectionProps) => (
-  <section id={id} className={cn(compact ? 'mt-10' : 'mt-12', 'scroll-mt-20 first:mt-0', className)}>
-    <div className="mb-5 flex flex-wrap items-end justify-between gap-x-4 gap-y-2">
+  <section id={id} className={cn(compact ? 'mt-12' : 'mt-16', 'scroll-mt-20 first:mt-0', className)}>
+    <div className="mb-6 flex flex-wrap items-end justify-between gap-x-4 gap-y-2">
       <div className="min-w-0">
-        <h2 className="text-title">{title}</h2>
-        {description && <p className="mt-1 text-sm leading-relaxed text-ink-2">{description}</p>}
+        <h2 className="text-h2">{title}</h2>
+        {description && <p className="mt-1.5 text-small text-ink-2">{description}</p>}
       </div>
       {aside}
     </div>
@@ -87,11 +87,11 @@ export const Section = ({ title, id, description, aside, compact, className, chi
  * único bloco com fundo petróleo e borda: não se confunde com tag, botão nem card clicável.
  */
 export const FactGrid = ({ items, columns = 4 }: { items: { label: string; value: ReactNode }[]; columns?: 2 | 3 | 4 }) => (
-  <dl className={cn('grid grid-cols-1 gap-3 sm:grid-cols-2', columns === 3 && 'lg:grid-cols-3', columns === 4 && 'lg:grid-cols-4')}>
+  <dl className={cn('grid grid-cols-1 gap-4 sm:grid-cols-2', columns === 3 && 'lg:grid-cols-3', columns === 4 && 'lg:grid-cols-4')}>
     {items.map((item) => (
       <div key={item.label} className="min-w-0 rounded-md border border-fact-line bg-fact px-3.5 py-3">
-        <dt className="text-[12px] font-semibold text-fact-label">{item.label}</dt>
-        <dd className="mt-1 text-[15px] leading-snug break-words text-ink">{item.value}</dd>
+        <dt className="text-caption font-semibold text-fact-label">{item.label}</dt>
+        <dd className="mt-1 text-body break-words text-ink">{item.value}</dd>
       </div>
     ))}
   </dl>

@@ -8,7 +8,7 @@ const MilestoneMarker = ({ done, current }: { done: boolean; current: boolean })
   if (done) {
     return (
       <span className="flex size-6 items-center justify-center rounded-full bg-positive text-white">
-        <CheckIcon size={13} />
+        <CheckIcon size={13} strokeWidth={2.2} />
       </span>
     );
   }
@@ -36,15 +36,15 @@ export const MilestoneTimeline = ({ milestones, today, copy }: MilestoneTimeline
             {!isLast && <span aria-hidden="true" className="absolute top-7 bottom-1 left-[11px] w-0.5 rounded-full bg-line" />}
             <MilestoneMarker done={Boolean(milestone.doneAt)} current={current} />
             <div className="min-w-0 flex-1 pt-0.5">
-              <p className={cn('text-[15px] font-medium', milestone.doneAt || current ? 'text-ink' : 'text-ink-2')}>
+              <p className={cn('text-body font-medium', milestone.doneAt || current ? 'text-ink' : 'text-ink-2')}>
                 {(copy ?? MILESTONE_COPY)[milestone.id].title}
                 <span className="sr-only">{milestone.doneAt ? ', concluída' : current ? ', próxima' : ', pendente'}</span>
               </p>
-              <p className={cn('mt-0.5 text-[13px]', current && milestone.dueAt < today ? 'text-caution' : 'text-ink-3')}>
+              <p className={cn('mt-0.5 text-small', current && milestone.dueAt < today ? 'text-caution' : 'text-ink-3')}>
                 {milestoneDateLine(milestone, today, current)}
               </p>
-              {copy?.[milestone.id].description && <p className="mt-1.5 text-sm leading-relaxed text-ink-2">{copy[milestone.id].description}</p>}
-              {milestone.note && <p className="mt-2 text-sm leading-relaxed text-ink-2">{milestone.note}</p>}
+              {copy?.[milestone.id].description && <p className="mt-1.5 text-small text-ink-2">{copy[milestone.id].description}</p>}
+              {milestone.note && <p className="mt-2 text-small text-ink-2">{milestone.note}</p>}
             </div>
           </li>
         );

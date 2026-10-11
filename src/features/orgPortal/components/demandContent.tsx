@@ -7,7 +7,7 @@ import { CONSTRAINT_COPY } from '@/features/demands/utils/demandPresentation';
 
 const SubBlock = ({ title, children }: { title: string; children: ReactNode }) => (
   <section className="mt-8">
-    <h3 className="mb-2.5 text-[15px] font-semibold text-ink">{title}</h3>
+    <h3 className="mb-2.5 text-body font-semibold text-ink">{title}</h3>
     {children}
   </section>
 );
@@ -44,16 +44,16 @@ export const DemandContent = ({ description, affectedPublic, meetingCadence, off
     {facts && <DemandFacts affectedPublic={affectedPublic} meetingCadence={meetingCadence} />}
 
     <SubBlock title="Contexto">
-      <p className="text-[15px] leading-relaxed whitespace-pre-line text-ink-2">{description || <Empty />}</p>
+      <p className="text-body whitespace-pre-line text-ink-2">{description || <Empty />}</p>
     </SubBlock>
 
     <SubBlock title={outcome.title}>
-      <p className="text-[15px] leading-relaxed text-ink-2">{outcome.text || <Empty />}</p>
+      <p className="text-body text-ink-2">{outcome.text || <Empty />}</p>
     </SubBlock>
 
     <SubBlock title="O que vocês oferecem à turma">
       {offers.length > 0 ? (
-        <ul className="space-y-2 text-[15px] text-ink-2">
+        <ul className="space-y-2 text-body text-ink-2">
           {offers.map((offer) => (
             <li key={offer} className="flex gap-2.5">
               <span aria-hidden="true" className="mt-2.5 size-1 shrink-0 rounded-full bg-ink-3" />
@@ -62,7 +62,7 @@ export const DemandContent = ({ description, affectedPublic, meetingCadence, off
           ))}
         </ul>
       ) : (
-        <p className="text-[15px]">
+        <p className="text-body">
           <Empty />
         </p>
       )}
@@ -72,7 +72,7 @@ export const DemandContent = ({ description, affectedPublic, meetingCadence, off
       <SubBlock title="O que pesa na rotina da turma">
         <ul className="space-y-2">
           {constraints.map((constraint) => (
-            <li key={constraint} className="text-[15px] leading-relaxed text-ink-2">
+            <li key={constraint} className="text-body text-ink-2">
               <span className="font-medium text-ink">{CONSTRAINT_COPY[constraint].label}.</span> {CONSTRAINT_COPY[constraint].detail}
             </li>
           ))}
@@ -90,21 +90,21 @@ export const DemandContent = ({ description, affectedPublic, meetingCadence, off
           ))}
         </ul>
       ) : (
-        <p className="text-[15px] text-ink-3">O L.E.I. indica as competências na triagem.</p>
+        <p className="text-body text-ink-3">O L.E.I. indica as competências na triagem.</p>
       )}
     </SubBlock>
 
     {references.length > 0 && (
       <SubBlock title="Para se inspirar">
-        <ul className="grid gap-3 sm:grid-cols-2">
+        <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           {references.map((reference) => (
             <li key={reference.name}>
-              <a href={reference.url} target="_blank" rel="noreferrer" className="flex h-full flex-col rounded-lg bg-canvas px-4 py-3.5 transition-colors duration-150 hover:bg-fill">
-                <span className="flex items-center justify-between gap-3 text-[15px] font-medium text-ink">
+              <a href={reference.url} target="_blank" rel="noreferrer" className="flex h-full flex-col rounded-lg border border-line bg-surface px-4 py-3.5 transition-colors duration-150 hover:border-line-strong">
+                <span className="flex items-center justify-between gap-3 text-body font-medium text-ink">
                   {reference.name}
-                  <ArrowUpRightIcon size={15} className="shrink-0 text-ink-3" />
+                  <ArrowUpRightIcon size={16} className="shrink-0 text-ink-3" />
                 </span>
-                {reference.description && <span className="mt-1 text-[13px] leading-relaxed text-ink-2">{reference.description}</span>}
+                {reference.description && <span className="mt-1 text-small text-ink-2">{reference.description}</span>}
               </a>
             </li>
           ))}

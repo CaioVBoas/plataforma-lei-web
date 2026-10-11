@@ -1,6 +1,7 @@
 import { Suspense, useEffect, useState, type ReactNode } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import { LoadingState } from '@/components/feedback/queryStates';
+import { AccessibilityMenu } from '@/components/ui/accessibilityMenu';
 import { BrandSymbol } from '@/components/ui/brandMark';
 import { CloseIcon, MenuIcon, SidebarIcon } from '@/components/ui/icons';
 import { cn } from '@/utils/cn';
@@ -57,7 +58,7 @@ export const PortalLayout = ({ sidebar, bell, account }: PortalLayoutProps) => {
       <aside
         className={cn(
           'fixed inset-y-0 left-0 z-30 hidden border-r border-line bg-surface transition-[width] duration-200 md:block',
-          collapsed ? 'w-[68px]' : 'w-[236px]',
+          collapsed ? 'w-[4.5rem]' : 'w-[18rem]',
         )}
       >
         <Sidebar {...sidebar} collapsed={collapsed} />
@@ -66,7 +67,7 @@ export const PortalLayout = ({ sidebar, bell, account }: PortalLayoutProps) => {
       {drawerOpen && (
         <div className="fixed inset-0 z-40 md:hidden">
           <div aria-hidden="true" onClick={closeDrawer} className="absolute inset-0 bg-black/25 animate-fade-in" />
-          <aside className="absolute inset-y-0 left-0 w-[272px] bg-surface shadow-sheet animate-fade-in">
+          <aside className="absolute inset-y-0 left-0 w-[19rem] bg-surface shadow-sheet animate-fade-in">
             <button type="button" aria-label="Fechar menu" onClick={closeDrawer} className="absolute top-4 right-3 flex size-8 items-center justify-center rounded-md hover:bg-fill">
               <CloseIcon size={16} />
             </button>
@@ -75,7 +76,7 @@ export const PortalLayout = ({ sidebar, bell, account }: PortalLayoutProps) => {
         </div>
       )}
 
-      <div className={cn('transition-[padding] duration-200', collapsed ? 'md:pl-[68px]' : 'md:pl-[236px]')}>
+      <div className={cn('transition-[padding] duration-200', collapsed ? 'md:pl-[4.5rem]' : 'md:pl-[18rem]')}>
         <header className="sticky top-0 z-20 flex h-14 items-center gap-2 border-b border-line bg-surface/95 px-3 backdrop-blur-md sm:px-4">
           <button type="button" aria-label="Abrir menu" onClick={() => setDrawerOpen(true)} className={cn(ICON_BUTTON, 'flex md:hidden')}>
             <MenuIcon />
@@ -95,6 +96,7 @@ export const PortalLayout = ({ sidebar, bell, account }: PortalLayoutProps) => {
           </button>
 
           <div className="ml-auto flex items-center gap-1">
+            <AccessibilityMenu />
             {bell}
             <span aria-hidden="true" className="mx-1 h-6 w-px bg-line" />
             {account}

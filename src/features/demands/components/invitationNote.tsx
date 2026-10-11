@@ -21,25 +21,25 @@ export const InvitationNote = ({ invitation }: { invitation: DemandInvitation })
       <div className="flex items-center gap-3">
         <Avatar name={name} />
         <div className="flex min-w-0 flex-1 flex-wrap items-baseline justify-between gap-x-3 gap-y-0.5">
-          <p className="min-w-0 text-sm text-ink-2">
+          <p className="min-w-0 text-small text-ink-2">
             <span className="font-semibold text-ink">{name}</span>, {role}, indicou esta demanda para você
           </p>
-          <span className="text-[13px] text-ink-3">{formatShortDate(invitation.sentAt)}</span>
+          <span className="text-small text-ink-3">{formatShortDate(invitation.sentAt)}</span>
         </div>
       </div>
 
-      <blockquote className="mt-4 border-l-2 border-accent pl-4 text-[16px] leading-relaxed text-ink">{invitation.message}</blockquote>
+      <blockquote className="mt-4 border-l-2 border-accent pl-4 text-body text-ink">{invitation.message}</blockquote>
 
       <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-accent/15 pt-4">
         <ul className="flex flex-wrap gap-x-5 gap-y-2">
           {WHAT_HAPPENS.map((item) => (
-            <li key={item} className="flex items-center gap-1.5 text-[13px] text-ink-2">
-              <CheckIcon size={13} className="text-accent" />
+            <li key={item} className="flex items-center gap-1.5 text-small text-ink-2">
+              <CheckIcon size={16} className="text-accent" />
               {item}
             </li>
           ))}
         </ul>
-        <Link to={paths.guide} className={`${textLinkClassName} text-[13px] sm:ml-auto`}>
+        <Link to={paths.guide} className={`${textLinkClassName} text-small sm:ml-auto`}>
           Como funciona
         </Link>
       </div>

@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
+import { useToast } from '@/components/feedback/toastContext';
 import { paths } from '@/routes/paths';
 import * as authApi from './authApi';
 import { session } from './session';
@@ -18,6 +19,14 @@ export const useOrgLogin = () => useSessionMutation(authApi.loginOrganization);
 
 export const useOrgSignup = () => useSessionMutation(authApi.signupOrganization);
 
+export const useSignupCode = () => useMutation({ mutationFn: authApi.requestSignupCode });
+
+export const useOrgSignupCode = () => useMutation({ mutationFn: authApi.requestOrgSignupCode });
+
+export const usePasswordResetCode = () => useMutation({ mutationFn: authApi.requestPasswordReset });
+
+export const useResetPassword = () => useMutation({ mutationFn: authApi.resetPassword });
+
 /** Obtém os dados do usuário autenticado no backend via /auth/me. */
 export const useCurrentUser = () => {
   return useQuery({
@@ -33,10 +42,12 @@ export const useCurrentUser = () => {
 export const useLogout = () => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+  const toast = useToast();
   return () => {
     const role = session.role();
     authApi.logout();
     queryClient.clear();
     navigate(paths.loginAs(role), { replace: true });
+    toast.show('Você saiu da conta. Até a próxima.');
   };
 };

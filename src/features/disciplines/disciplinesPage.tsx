@@ -1,11 +1,13 @@
+import { useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { QueryView } from '@/components/feedback/queryStates';
 import { useToast } from '@/components/feedback/toastContext';
 import { ActionMenu, type ActionMenuItem } from '@/components/ui/actionMenu';
 import { Button } from '@/components/ui/button';
+import { ConfirmDialog } from '@/components/ui/confirmDialog';
 import { textLinkClassName } from '@/components/ui/buttonStyles';
 import { EmptyState } from '@/components/ui/emptyState';
-import { PlusIcon } from '@/components/ui/icons';
+import { PlusIcon, TrashIcon } from '@/components/ui/icons';
 import { aboveRowLink, Item, ItemList } from '@/components/ui/itemList';
 import { Page } from '@/components/ui/page';
 import { UnderlineTabs } from '@/components/ui/underlineTabs';
@@ -36,6 +38,7 @@ const DisciplineItem = ({ discipline, matches, projects }: DisciplineItemProps) 
   const navigate = useNavigate();
   const toast = useToast();
   const remove = useRemoveDiscipline();
+  const [confirmingRemove, setConfirmingRemove] = useState(false);
 
   const actions: ActionMenuItem[] = [];
   // Só turmas do semestre atual têm formulário; as antigas guardam o histórico como está.
@@ -44,29 +47,26 @@ const DisciplineItem = ({ discipline, matches, projects }: DisciplineItemProps) 
     actions.push({
       label: 'Remover',
       destructive: true,
-      onSelect: () =>
-        remove.mutate(discipline.id, {
-          onSuccess: () => toast.show(`${discipline.name} removida.`),
-          onError: (error) => toast.show(error.message),
-        }),
+      onSelect: () => setConfirmingRemove(true),
     });
   }
 
   const matchesText = pluralize(matches, 'demanda compatível', 'demandas compatíveis');
 
   return (
+    <>
     <Item
       to={paths.discipline(discipline.id)}
       label={discipline.name}
-      anchor={<span className="pt-1 text-[13px] whitespace-nowrap text-ink-2 tabular-nums">{discipline.code || '–'}</span>}
+      anchor={<span className="pt-1 text-small whitespace-nowrap text-ink-2 tabular-nums">{discipline.code || '–'}</span>}
       menu={<ActionMenu label={`Ações de ${discipline.name}`} items={actions} />}
     >
-      <p className="truncate text-headline">{discipline.name}</p>
-      <p className="mt-1 truncate text-[13px] text-ink-2">
+      <p className="truncate text-h4">{discipline.name}</p>
+      <p className="mt-1 truncate text-small text-ink-2">
         {discipline.isCurrent ? disciplineFacts(discipline) : `${discipline.semester} · ${disciplineFacts(discipline)}`}
         {discipline.coTeachers.length > 0 && ` · com ${joinWithAnd(discipline.coTeachers.map((teacher) => teacher.name ?? teacher.email))}`}
       </p>
-      <p className="mt-1 truncate text-[13px] text-ink-2">
+      <p className="mt-1 truncate text-small text-ink-2">
         {discipline.isCurrent ? (
           <>
             <span className={freeSlots(discipline) === 0 ? 'text-ink-3' : undefined}>{slotsLabel(discipline)}</span>
@@ -84,6 +84,27 @@ const DisciplineItem = ({ discipline, matches, projects }: DisciplineItemProps) 
         )}
       </p>
     </Item>
+    {confirmingRemove && (
+      <ConfirmDialog
+        icon={<TrashIcon size={26} />}
+        title={`Remover ${discipline.name}?`}
+        description="A disciplina sai da sua lista e deixa de receber indicações. Os projetos já encerrados continuam no histórico."
+        confirmLabel="Sim, remover"
+        confirmIcon={<TrashIcon size={20} />}
+        cancelLabel="Não, manter"
+        pending={remove.isPending}
+        pendingLabel="Removendo"
+        onConfirm={() =>
+          remove.mutate(discipline.id, {
+            onSuccess: () => toast.show(`${discipline.name} removida.`),
+            onError: (error) => toast.show(error.message),
+            onSettled: () => setConfirmingRemove(false),
+          })
+        }
+        onClose={() => setConfirmingRemove(false)}
+      />
+    )}
+    </>
   );
 };
 
@@ -105,13 +126,13 @@ const DisciplineList = ({ disciplines, menu, projects, tab, onCreate }: GroupsPr
         description="Cadastre as turmas que você leciona agora. Sem elas, não dá para saber quais demandas combinam com você."
         action={
           <Button variant="primary" onClick={onCreate}>
-            <PlusIcon size={15} />
+            <PlusIcon size={16} />
             Cadastrar disciplina
           </Button>
         }
       />
     ) : (
-      <p className="py-6 text-sm text-ink-3">Nenhuma disciplina de semestres anteriores.</p>
+      <p className="py-6 text-small text-ink-3">Nenhuma disciplina de semestres anteriores.</p>
     );
   }
 
@@ -183,7 +204,7 @@ export const DisciplinesPage = () => {
       subtitle="Suas turmas e as demandas que combinam com cada uma."
       actions={
         <Button variant="primary" onClick={() => setCreating(true)}>
-          <PlusIcon size={15} />
+          <PlusIcon size={16} />
           Nova disciplina
         </Button>
       }

@@ -34,7 +34,7 @@ export const ToastProvider = ({ children }: { children: ReactNode }) => {
             role="status"
             className="pointer-events-auto flex max-w-[480px] items-center gap-4 rounded-lg bg-ink px-4 py-3 shadow-popover animate-rise-in"
           >
-            <p className="text-sm leading-snug text-white">{toast.message}</p>
+            <p className="text-small text-white">{toast.message}</p>
             {toast.action && (
               <button
                 type="button"
@@ -42,7 +42,7 @@ export const ToastProvider = ({ children }: { children: ReactNode }) => {
                   setToast(null);
                   toast.action?.onClick();
                 }}
-                className="shrink-0 text-sm font-semibold text-accent-on-dark hover:text-white"
+                className="shrink-0 text-small font-semibold text-accent-on-dark hover:text-white"
               >
                 {toast.action.label}
               </button>

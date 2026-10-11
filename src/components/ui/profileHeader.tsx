@@ -39,9 +39,9 @@ export const ProfileHeader = ({ avatar, title, eyebrow, meta, actions, cover }: 
       <div className="flex min-w-0 flex-[1_1_360px] items-end gap-4">
         <div className="-mt-9 shrink-0 rounded-xl bg-surface p-1">{avatar}</div>
         <div className="min-w-0 pt-3">
-          {eyebrow && <p className="text-[13px] font-semibold text-brand-strong">{eyebrow}</p>}
-          <h1 className="mt-0.5 text-[26px] leading-tight font-bold tracking-[-0.019em] text-balance text-ink">{title}</h1>
-          {meta && <div className="mt-1.5 text-[13px] text-ink-2">{meta}</div>}
+          {eyebrow && <p className="text-small font-semibold text-brand-strong">{eyebrow}</p>}
+          <h1 className="mt-0.5 text-h2 text-balance text-ink">{title}</h1>
+          {meta && <div className="mt-1.5 text-small text-ink-2">{meta}</div>}
         </div>
       </div>
       {actions && <div className="flex shrink-0 items-center gap-2">{actions}</div>}
@@ -59,8 +59,8 @@ export const StatTiles = ({ items }: StatTilesProps) => (
     {items.map((item) => (
       <div key={item.label} className="rounded-md border border-fact-line bg-fact px-4 py-3.5">
         <dt className="sr-only">{item.label}</dt>
-        <dd className="text-[24px] leading-none font-bold text-brand-strong tabular-nums">{item.value}</dd>
-        <dd className="mt-1.5 text-[13px] text-ink-2">{item.label}</dd>
+        <dd className="text-h3 text-brand-strong tabular-nums">{item.value}</dd>
+        <dd className="mt-1.5 text-small text-ink-2">{item.label}</dd>
       </div>
     ))}
   </dl>

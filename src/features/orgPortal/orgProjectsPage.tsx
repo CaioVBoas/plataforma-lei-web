@@ -1,134 +1,88 @@
-import type { MouseEvent } from 'react';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { useState } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import { LoadingState } from '@/components/feedback/queryStates';
 import { buttonClassName } from '@/components/ui/buttonStyles';
+import { cardGridClassName } from '@/components/ui/card';
 import { EmptyState } from '@/components/ui/emptyState';
+import { FilterDropdown } from '@/components/ui/filterDropdown';
+import { SearchInput } from '@/components/ui/formControls';
+import { BookIcon, CalendarIcon, CheckIcon, FolderIcon, ListIcon, PencilIcon, UserIcon } from '@/components/ui/icons';
+import { InfoBanner } from '@/components/ui/infoBanner';
 import { Page } from '@/components/ui/page';
-import { StatTiles } from '@/components/ui/profileHeader';
-import { UnderlineTabs } from '@/components/ui/underlineTabs';
+import { Tag } from '@/components/ui/tag';
 import { formatRelativeDays, formatShortDate } from '@/domain/calendar';
 import { isOverdue, nextMilestone, projectStage, type ProjectStage } from '@/domain/projectLifecycle';
 import type { IsoDate } from '@/domain/types';
 import { useCalendar } from '@/features/calendar/useCalendar';
+import { MilestoneTrack } from '@/features/projects/shared/components/milestoneTrack';
 import { STAGE_COPY } from '@/features/projects/shared/utils/projectPresentation';
 import { paths } from '@/routes/paths';
 import { cn } from '@/utils/cn';
+import { normalizeText } from '@/utils/format';
 import { SubmitDemandLink } from './components/submitDemandLink';
 import type { OrgProjectSummary } from './types';
 import { useOrgProjects } from './useOrgPortal';
-import { ORG_MILESTONE_COPY } from './utils/orgPresentation';
+import { ORG_FACING_MILESTONES, ORG_MILESTONE_COPY } from './utils/orgPresentation';
 
 type Filter = 'todos' | 'planejamento' | 'andamento' | 'concluidos';
 
 const FILTERS: Filter[] = ['todos', 'planejamento', 'andamento', 'concluidos'];
 const STAGE_BY_FILTER: Record<Exclude<Filter, 'todos'>, ProjectStage> = { planejamento: 'planning', andamento: 'running', concluidos: 'done' };
-const STAGE_ORDER: Record<ProjectStage, number> = { planning: 0, running: 1, done: 2 };
+const LABELS: Record<Filter, string> = { todos: 'Todos', planejamento: 'Em planejamento', andamento: 'Em andamento', concluidos: 'Concluídos' };
+const ICONS: Record<Filter, typeof ListIcon> = { todos: ListIcon, planejamento: PencilIcon, andamento: CalendarIcon, concluidos: CheckIcon };
 
-interface Row {
-  project: OrgProjectSummary;
-  stage: ProjectStage;
-  next?: ReturnType<typeof nextMilestone>;
-  overdue: boolean;
-  /** O prazo da próxima etapa ou o dia do encerramento. */
-  date?: IsoDate;
-}
-
-const toRows = (projects: OrgProjectSummary[], today: IsoDate): Row[] =>
-  projects
-    .map((project) => {
-      const next = nextMilestone(project.milestones);
-      return {
-        project,
-        stage: projectStage(project.milestones),
-        next,
-        overdue: next ? isOverdue(next, today) : false,
-        date: next ? next.dueAt : project.milestones.find((milestone) => milestone.id === 'closing')?.doneAt,
-      };
-    })
-    .sort((a, b) => STAGE_ORDER[a.stage] - STAGE_ORDER[b.stage] || (a.stage === 'done' ? -1 : 1) * (a.date ?? '').localeCompare(b.date ?? ''));
-
-const HEADER_CELL = 'px-3 pb-2.5 text-[11px] font-semibold tracking-[0.04em] text-ink-2 uppercase';
-
-/** Mesma tabela do portal do docente, com o docente no lugar da organização e as etapas contadas do lado de vocês. */
-const ProjectTableRow = ({ row, today }: { row: Row; today: IsoDate }) => {
-  const navigate = useNavigate();
-  const { project, next, overdue } = row;
-  const openFromRow = (event: MouseEvent<HTMLTableRowElement>) => {
-    if ((event.target as HTMLElement).closest('a, button')) return;
-    navigate(paths.orgProject(project.id));
-  };
-
-  return (
-    <tr onClick={openFromRow} className="h-16 cursor-pointer transition-colors duration-150 hover:bg-canvas">
-      <td className="px-3 py-3">
-        <p className="line-clamp-2 text-sm font-medium text-ink">{project.title}</p>
-        <p className="mt-0.5 truncate text-xs text-ink-3">
-          {project.disciplineName} · {project.semester}
-        </p>
-      </td>
-      <td className="px-3 py-3">
-        <p className="line-clamp-2 text-sm text-ink">{project.teacherName}</p>
-      </td>
-      <td className="px-3 py-3">
-        {next ? (
-          <>
-            <p className="text-sm font-medium text-ink">{ORG_MILESTONE_COPY[next.id].title}</p>
-            <p className={cn('mt-0.5 text-xs', overdue ? 'text-caution' : 'text-ink-3')}>
-              {overdue ? 'atrasada ' : ''}
-              {formatRelativeDays(today, next.dueAt)}
-            </p>
-          </>
-        ) : (
-          <p className="text-sm font-medium text-ink">{STAGE_COPY.done.label}</p>
-        )}
-      </td>
-      <td className="px-3 py-3 text-right text-sm whitespace-nowrap text-ink-2 tabular-nums">{row.date && formatShortDate(row.date)}</td>
-      <td className="py-3 pr-1 pl-3 text-right">
-        <Link to={paths.orgProject(project.id)} className={buttonClassName({ variant: 'secondary' })}>
-          Abrir
-        </Link>
-      </td>
-    </tr>
-  );
+const HELP: Record<Filter, string> = {
+  todos: 'Cada projeto é uma turma trabalhando num problema de vocês. São seis etapas.',
+  planejamento: 'O docente revisa o plano e marca a primeira reunião.',
+  andamento: 'A turma trabalha. Vocês veem as duas entregas.',
+  concluidos: 'Já terminaram. Veja o que ficou com vocês.',
 };
 
-const ProjectTable = ({ rows, today }: { rows: Row[]; today: IsoDate }) => (
-  <div className="relative overflow-x-auto">
-    <table className="w-full min-w-[720px] table-fixed border-collapse text-left">
-      <colgroup>
-        <col className="w-[40%]" />
-        <col className="w-[20%]" />
-        <col className="w-[22%]" />
-        <col className="w-[12%]" />
-        <col className="w-[96px]" />
-      </colgroup>
-      <thead>
-        <tr className="border-b border-line">
-          <th scope="col" className={HEADER_CELL}>
-            Projeto
-          </th>
-          <th scope="col" className={HEADER_CELL}>
-            Docente
-          </th>
-          <th scope="col" className={HEADER_CELL}>
-            Próxima etapa
-          </th>
-          <th scope="col" className={cn(HEADER_CELL, 'text-right')}>
-            Data
-          </th>
-          <th scope="col" className={HEADER_CELL}>
-            <span className="sr-only">Ações</span>
-          </th>
-        </tr>
-      </thead>
-      <tbody className="divide-y divide-line border-b border-line">
-        {rows.map((row) => (
-          <ProjectTableRow key={row.project.id} row={row} today={today} />
-        ))}
-      </tbody>
-    </table>
-  </div>
-);
+/** Um projeto em cartão: estado, quem faz, o andamento em seis traços e o próximo passo em palavras simples. */
+const OrgProjectCard = ({ project, today }: { project: OrgProjectSummary; today: IsoDate }) => {
+  const stage = STAGE_COPY[projectStage(project.milestones)];
+  const next = nextMilestone(project.milestones);
+  const overdue = next ? isOverdue(next, today) : false;
+  const withYou = next ? ORG_FACING_MILESTONES.includes(next.id) : false;
+
+  return (
+    <article className="flex h-full min-w-0 flex-col rounded-lg border border-line bg-surface p-6 sm:p-7">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <Tag pill tone={stage.tone}>
+          {stage.label}
+        </Tag>
+        {withYou && <span className="text-small font-semibold text-accent">Com a participação de vocês</span>}
+      </div>
+      <h3 className="mt-4 text-h4 font-semibold text-ink">{project.title}</h3>
+      <p className="mt-1.5 text-small text-ink-2">
+        {project.disciplineName}, com {project.teacherName} · {project.semester}
+      </p>
+      <MilestoneTrack milestones={project.milestones} className="mt-5" />
+
+      <div className="mt-auto pt-6">
+        <p className="rounded-md bg-canvas px-4 py-3.5 text-small text-ink">
+          <span className="font-semibold">{next ? 'Próximo passo: ' : 'Resultado: '}</span>
+          {next ? (
+            <>
+              {ORG_MILESTONE_COPY[next.id].title},{' '}
+              <span className={cn(overdue && 'font-semibold text-caution')}>
+                {overdue ? 'atrasado, era para ' : 'até '}
+                {formatShortDate(next.dueAt)} ({formatRelativeDays(today, next.dueAt)})
+              </span>
+              .
+            </>
+          ) : (
+            (project.outcome?.summary ?? 'Projeto concluído.')
+          )}
+        </p>
+        <Link to={paths.orgProject(project.id)} className={cn(buttonClassName({ variant: 'secondary', size: 'xl', fullWidth: true }), 'mt-4')}>
+          <FolderIcon size={20} />
+          Abrir o projeto
+        </Link>
+      </div>
+    </article>
+  );
+};
 
 const TITLE = 'Projetos';
 const SUBTITLE = 'As turmas que trabalham, ou já trabalharam, nos problemas de vocês.';
@@ -137,6 +91,7 @@ export const OrgProjectsPage = () => {
   const { data: projects } = useOrgProjects();
   const { data: calendar } = useCalendar();
   const [searchParams, setSearchParams] = useSearchParams();
+  const [search, setSearch] = useState('');
 
   if (!projects || !calendar) {
     return (
@@ -151,7 +106,7 @@ export const OrgProjectsPage = () => {
       <Page title={TITLE} subtitle={SUBTITLE}>
         <EmptyState
           title="Nenhum projeto ainda"
-          description="Quando um docente levar uma demanda de vocês para uma disciplina, o projeto aparece aqui, com as etapas e o contato do docente."
+          description="Quando um docente levar uma demanda de vocês para a turma, o projeto aparece aqui."
           action={<SubmitDemandLink />}
         />
       </Page>
@@ -160,39 +115,108 @@ export const OrgProjectsPage = () => {
 
   const requested = searchParams.get('estado') as Filter | null;
   const filter: Filter = requested && FILTERS.includes(requested) ? requested : 'todos';
-  const setFilter = (value: Filter) => setSearchParams(value === 'todos' ? {} : { estado: value }, { replace: true });
-  const rows = toRows(projects, calendar.today);
-  const matches = (row: Row, value: Filter) => value === 'todos' || row.stage === STAGE_BY_FILTER[value];
-  const count = (value: Filter) => rows.filter((row) => matches(row, value)).length;
-  const visible = rows.filter((row) => matches(row, filter));
-  const nextDue = rows.find((row) => row.next)?.date;
+  const matches = (project: OrgProjectSummary, value: Filter) => value === 'todos' || projectStage(project.milestones) === STAGE_BY_FILTER[value];
+  const count = (value: Filter) => projects.filter((project) => matches(project, value)).length;
+  // Primeiro o que está em curso, depois os concluídos, do mais recente ao mais antigo.
+  const param = (key: string) => searchParams.get(key) ?? 'todos';
+  const setParam = (key: string, value: string) =>
+    setSearchParams(
+      (current) => {
+        const next = new URLSearchParams(current);
+        if (value === 'todos') next.delete(key);
+        else next.set(key, value);
+        return next;
+      },
+      { replace: true },
+    );
+  const discipline = param('disciplina');
+  const teacher = param('docente');
+  const semester = param('semestre');
+  const uniq = (values: string[]) => [...new Set(values)].sort((a, b) => a.localeCompare(b));
+  const term = normalizeText(search.trim());
+  const passesRow = (project: OrgProjectSummary) =>
+    (discipline === 'todos' || project.disciplineName === discipline) &&
+    (teacher === 'todos' || project.teacherName === teacher) &&
+    (semester === 'todos' || project.semester === semester) &&
+    (!term || normalizeText(`${project.title} ${project.disciplineName} ${project.teacherName}`).includes(term));
+  const narrowing = discipline !== 'todos' || teacher !== 'todos' || semester !== 'todos' || Boolean(term);
+  const filtering = narrowing || filter !== 'todos';
+  const FilterIcon = ICONS[filter];
+  const visible = projects
+    .filter((project) => matches(project, filter) && passesRow(project))
+    .sort((a, b) => Number(projectStage(a.milestones) === 'done') - Number(projectStage(b.milestones) === 'done') || b.semester.localeCompare(a.semester));
 
   return (
     <Page title={TITLE} subtitle={SUBTITLE}>
-      <div className="mb-8">
-        <StatTiles
-          items={[
-            { value: count('planejamento'), label: 'em planejamento' },
-            { value: count('andamento'), label: 'em andamento' },
-            { value: count('concluidos'), label: count('concluidos') === 1 ? 'concluído' : 'concluídos' },
-            { value: nextDue ? formatShortDate(nextDue) : '–', label: 'próximo prazo' },
+      <div role="search" aria-label="Filtrar projetos" className="mb-5 grid gap-3 sm:flex sm:flex-wrap sm:items-center">
+        <SearchInput
+          aria-label="Buscar projetos"
+          placeholder="Buscar projeto"
+          value={search}
+          onChange={(event) => setSearch(event.target.value)}
+          containerClassName="sm:w-[16rem]"
+        />
+        <FilterDropdown
+          label="Mostrar"
+          icon={<FilterIcon size={20} />}
+          value={filter}
+          onChange={(value) => setParam('estado', value)}
+          options={FILTERS.map((value) => ({ value, label: LABELS[value], count: count(value) }))}
+        />
+        <FilterDropdown
+          label="Disciplina"
+          icon={<BookIcon size={20} />}
+          value={discipline}
+          onChange={(value) => setParam('disciplina', value)}
+          options={[{ value: 'todos', label: 'Todas' }, ...uniq(projects.map((project) => project.disciplineName)).map((name) => ({ value: name, label: name }))]}
+        />
+        <FilterDropdown
+          label="Docente"
+          icon={<UserIcon size={20} />}
+          value={teacher}
+          onChange={(value) => setParam('docente', value)}
+          options={[{ value: 'todos', label: 'Todos' }, ...uniq(projects.map((project) => project.teacherName)).map((name) => ({ value: name, label: name }))]}
+        />
+        <FilterDropdown
+          label="Semestre"
+          icon={<CalendarIcon size={20} />}
+          value={semester}
+          onChange={(value) => setParam('semestre', value)}
+          options={[
+            { value: 'todos', label: 'Todos' },
+            ...uniq(projects.map((project) => project.semester))
+              .reverse()
+              .map((value) => ({ value, label: value })),
           ]}
         />
+        {filtering && (
+          <button
+            type="button"
+            onClick={() => {
+              setSearch('');
+              setSearchParams({}, { replace: true });
+            }}
+            className="inline-flex min-h-11 items-center justify-center rounded-lg px-3 text-body font-medium text-accent hover:bg-accent-soft"
+          >
+            Limpar filtros
+          </button>
+        )}
       </div>
-      <UnderlineTabs
-        label="Estado dos projetos"
-        value={filter}
-        onChange={setFilter}
-        options={[
-          { value: 'todos', label: 'Todos', count: rows.length },
-          { value: 'planejamento', label: 'Em planejamento', count: count('planejamento') },
-          { value: 'andamento', label: 'Em andamento', count: count('andamento') },
-          { value: 'concluidos', label: 'Concluídos', count: count('concluidos') },
-        ]}
-      />
-      <div className="mt-4">
-        {visible.length > 0 ? <ProjectTable rows={visible} today={calendar.today} /> : <p className="py-6 text-sm text-ink-3">Nenhum projeto neste estado.</p>}
-      </div>
+      <InfoBanner className="mb-8">{HELP[filter]}</InfoBanner>
+      {visible.length > 0 ? (
+        <ul className={cardGridClassName}>
+          {visible.map((project) => (
+            <li key={project.id}>
+              <OrgProjectCard project={project} today={calendar.today} />
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <EmptyState
+          title={narrowing ? 'Nada com esses filtros' : `Nada em "${LABELS[filter]}"`}
+          description={narrowing ? 'Mude ou limpe os filtros para ver outros projetos.' : 'Nenhum projeto neste estado agora.'}
+        />
+      )}
     </Page>
   );
 };

@@ -18,13 +18,13 @@ const OrganizationCard = ({ organization }: { organization: OrganizationSummary 
     <div className="flex items-start gap-3">
       <Monogram name={organization.name} logo={organization.logo} />
       <div className="min-w-0 flex-1">
-        <p className="truncate text-headline group-hover:text-accent">{organization.name}</p>
-        <p className="mt-0.5 truncate text-[13px] text-ink-3">
+        <p className="truncate text-h4 group-hover:text-accent">{organization.name}</p>
+        <p className="mt-0.5 truncate text-small text-ink-3">
           {organization.type} · {organization.location}
         </p>
       </div>
     </div>
-    <p className="mt-4 line-clamp-2 flex-1 text-sm leading-relaxed text-ink-2">{organization.about}</p>
+    <p className="mt-4 line-clamp-2 flex-1 text-small text-ink-2">{organization.about}</p>
     <div className="mt-4 border-t border-line pt-3.5">
       <OrganizationMeta organization={organization} openDemands={organization.openDemands} />
     </div>

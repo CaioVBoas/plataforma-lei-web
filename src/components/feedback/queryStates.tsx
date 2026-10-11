@@ -1,9 +1,10 @@
 import type { ReactNode } from 'react';
 import type { UseQueryResult } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
+import { UndoIcon } from '@/components/ui/icons';
 
 export const LoadingState = ({ label = 'Carregando' }: { label?: string }) => (
-  <div role="status" className="flex items-center justify-center gap-2.5 py-24 text-sm text-ink-3">
+  <div role="status" className="flex items-center justify-center gap-2.5 py-24 text-small text-ink-3">
     <span aria-hidden="true" className="size-4 animate-spin rounded-full border-2 border-fill-strong border-t-ink-3" />
     {label}
   </div>
@@ -16,10 +17,11 @@ interface ErrorStateProps {
 
 export const ErrorState = ({ error, onRetry }: ErrorStateProps) => (
   <div role="alert" className="mx-auto my-16 max-w-md text-center">
-    <p className="text-headline">Não deu para carregar</p>
-    <p className="mt-1.5 text-sm text-ink-2">{error?.message ?? 'Tente de novo em instantes.'}</p>
+    <p className="text-h4">Não deu para carregar</p>
+    <p className="mt-1.5 text-small text-ink-2">{error?.message ?? 'Tente de novo em instantes.'}</p>
     {onRetry && (
       <Button variant="secondary" size="sm" className="mt-4" onClick={onRetry}>
+        <UndoIcon size={16} />
         Tentar de novo
       </Button>
     )}

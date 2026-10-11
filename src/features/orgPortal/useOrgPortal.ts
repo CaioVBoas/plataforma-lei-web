@@ -12,7 +12,14 @@ export const useUpdateOrgAccount = () => {
 
 export const useMarkOrgTutorialSeen = () => {
   const queryClient = useQueryClient();
-  return useMutation({ mutationFn: orgPortalApi.markOrgTutorialSeen, onSuccess: (account) => queryClient.setQueryData(queryKeys.orgAccount, account) });
+  return useMutation({
+    mutationFn: orgPortalApi.markOrgTutorialSeen,
+    // Some na hora: quem abriu o Como funciona e volta ao Início não vê o convite de novo enquanto salva.
+    onMutate: () => {
+      queryClient.setQueryData<Awaited<ReturnType<typeof orgPortalApi.getOrgAccount>>>(queryKeys.orgAccount, (account) => account && { ...account, tutorialSeen: true });
+    },
+    onSuccess: (account) => queryClient.setQueryData(queryKeys.orgAccount, account),
+  });
 };
 
 export const useOrgProfile = () => useQuery({ queryKey: queryKeys.orgProfile, queryFn: orgPortalApi.getOrgProfile });
@@ -52,6 +59,8 @@ export const useSubmitForReview = () => useOrgMutation(orgPortalApi.submitForRev
 export const useDeleteDraft = () => useOrgMutation(orgPortalApi.deleteDraft);
 
 export const useAnswerQuestion = () => useOrgMutation(orgPortalApi.answerQuestion);
+
+export const useOrgQuestions = () => useQuery({ queryKey: queryKeys.orgQuestions, queryFn: orgPortalApi.getOrgQuestions });
 
 export const useOrgProjects = () => useQuery({ queryKey: queryKeys.orgProjects, queryFn: orgPortalApi.getOrgProjects });
 

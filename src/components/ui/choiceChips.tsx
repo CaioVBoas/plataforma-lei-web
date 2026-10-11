@@ -22,11 +22,11 @@ export const ChoiceChips = ({ label, options, value, onChange }: ChoiceChipsProp
             aria-pressed={selected}
             onClick={() => toggle(option)}
             className={cn(
-              'inline-flex h-8 items-center gap-1 rounded-md border px-2.5 text-[13px] transition-colors duration-100',
+              'inline-flex h-8 items-center gap-1 rounded-md border px-2.5 text-small transition-colors duration-100',
               selected ? 'border-accent bg-accent-soft text-accent' : 'border-line-strong bg-surface text-ink-2 hover:border-ink-3',
             )}
           >
-            {selected && <CheckIcon size={13} />}
+            {selected && <CheckIcon size={16} />}
             {option}
           </button>
         );

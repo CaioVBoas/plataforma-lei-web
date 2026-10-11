@@ -1,5 +1,6 @@
 import { apiClient } from '@/lib/apiClient';
 import * as server from '@/mocks/handlers/account';
+import * as accessServer from '@/mocks/handlers/access';
 import * as orgServer from '@/mocks/handlers/orgPortal';
 import { mockRequest } from '@/mocks/mockRequest';
 import type { OrgSignupPayload } from '@/features/orgPortal/types';
@@ -47,9 +48,18 @@ export const login = async (payload: LoginPayload): Promise<void> => {
   }
 };
 
-export const signup = async (payload: SignupPayload): Promise<void> => {
+export const requestSignupCode = (payload: SignupPayload) =>
+  mockRequest(() => server.requestSignupCode(payload));
+
+export const signup = async ({
+  payload,
+  code,
+}: {
+  payload: SignupPayload;
+  code: string;
+}): Promise<void> => {
   if (shouldUseMockOnly) {
-    const token = await mockRequest(() => server.signup(payload));
+    const token = await mockRequest(() => server.signup(payload, code));
     session.start(token, 'docente');
     return;
   }
@@ -65,7 +75,7 @@ export const signup = async (payload: SignupPayload): Promise<void> => {
   } catch (error) {
     if (import.meta.env.DEV && isNetworkError(error)) {
       console.warn('API local indisponível, acionando mock de cadastro docente:', error);
-      const token = await mockRequest(() => server.signup(payload));
+      const token = await mockRequest(() => server.signup(payload, code));
       session.start(token, 'docente');
       return;
     }
@@ -95,9 +105,18 @@ export const loginOrganization = async (payload: LoginPayload): Promise<void> =>
   }
 };
 
-export const signupOrganization = async (payload: OrgSignupPayload): Promise<void> => {
+export const requestOrgSignupCode = (payload: OrgSignupPayload) =>
+  mockRequest(() => orgServer.requestSignupCode(payload));
+
+export const signupOrganization = async ({
+  payload,
+  code,
+}: {
+  payload: OrgSignupPayload;
+  code: string;
+}): Promise<void> => {
   if (shouldUseMockOnly) {
-    const token = await mockRequest(() => orgServer.signup(payload));
+    const token = await mockRequest(() => orgServer.signup(payload, code));
     session.start(token, 'organizacao');
     return;
   }
@@ -114,13 +133,27 @@ export const signupOrganization = async (payload: OrgSignupPayload): Promise<voi
   } catch (error) {
     if (import.meta.env.DEV && isNetworkError(error)) {
       console.warn('API local indisponível, acionando mock de cadastro de organização:', error);
-      const token = await mockRequest(() => orgServer.signup(payload));
+      const token = await mockRequest(() => orgServer.signup(payload, code));
       session.start(token, 'organizacao');
       return;
     }
     throw error;
   }
 };
+
+type AccessRole = 'docente' | 'organizacao';
+
+/** Senha nova: o código vai para o e-mail, e com ele a pessoa escolhe a senha. */
+export const requestPasswordReset = ({ role, email }: { role: AccessRole; email: string }) =>
+  mockRequest(() =>
+    role === 'docente' ? server.requestPasswordReset(email) : orgServer.requestPasswordReset(email),
+  );
+
+export const resetPassword = ({
+  role,
+  ...payload
+}: { role: AccessRole } & accessServer.ResetPasswordPayload) =>
+  mockRequest(() => accessServer.resetPassword(role, payload));
 
 export const getMe = async (): Promise<ApiUserResponse> => {
   const response = await apiClient.get<ApiUserResponse>('/auth/me');

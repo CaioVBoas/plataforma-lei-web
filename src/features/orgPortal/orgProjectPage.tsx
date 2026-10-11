@@ -2,7 +2,7 @@ import { Link, useParams } from 'react-router-dom';
 import { QueryView } from '@/components/feedback/queryStates';
 import { buttonClassName, textLinkClassName } from '@/components/ui/buttonStyles';
 import { CoverBanner } from '@/components/ui/coverBanner';
-import { ArrowRightIcon } from '@/components/ui/icons';
+import { ArrowRightIcon, MailIcon } from '@/components/ui/icons';
 import { Page } from '@/components/ui/page';
 import { SideCard, SideFact } from '@/components/ui/sideCard';
 import { Tag } from '@/components/ui/tag';
@@ -17,7 +17,7 @@ import { cn } from '@/utils/cn';
 import { pluralize } from '@/utils/format';
 import type { OrgProjectDetail } from './types';
 import { useOrgProfile, useOrgProject } from './useOrgPortal';
-import { ORG_MILESTONE_COPY } from './utils/orgPresentation';
+import { ORG_FACING_MILESTONES, ORG_MILESTONE_COPY } from './utils/orgPresentation';
 
 /**
  * O projeto visto pela organização: em que etapa a turma está, o que vem a
@@ -51,28 +51,33 @@ const ProjectView = ({ project, today }: { project: OrgProjectDetail; today: str
       {/* A mesma faixa do topo do projeto do docente, sem a ação: quem registra cada etapa é ele. */}
       {next ? (
         <section className="rounded-lg border border-line bg-canvas p-5 sm:p-6">
-          <p className={cn('text-[13px] font-medium', overdue ? 'text-caution' : 'text-ink-3')}>Próximo passo · {milestoneDateLine(next, today, true)}</p>
-          <p className="mt-1.5 text-headline">{ORG_MILESTONE_COPY[next.id].title}</p>
-          <p className="mt-1 text-sm leading-relaxed text-ink-2">{ORG_MILESTONE_COPY[next.id].description}</p>
+          <p className={cn('text-small font-medium', overdue ? 'text-caution' : 'text-ink-3')}>Próximo passo · {milestoneDateLine(next, today, true)}</p>
+          <p className="mt-1.5 text-h4">{ORG_MILESTONE_COPY[next.id].title}</p>
+          <p className="mt-1 text-small text-ink-2">{ORG_MILESTONE_COPY[next.id].description}</p>
+          <p className="mt-3 text-small font-medium text-ink">
+            {ORG_FACING_MILESTONES.includes(next.id)
+              ? 'Esta etapa conta com vocês: o docente vai combinar a data pelo contato ao lado.'
+              : 'Esta etapa é do docente. Vocês não precisam fazer nada agora.'}
+          </p>
         </section>
       ) : (
         project.outcome && (
           <section className="rounded-lg border border-line bg-canvas p-5 sm:p-6">
-            <p className="text-[13px] font-medium text-ink-3">O que ficou com vocês</p>
-            <p className="mt-1.5 text-headline">{project.outcome.summary}</p>
-            <p className="mt-1 text-sm text-ink-2">{ADOPTION_COPY[project.outcome.adoption]}.</p>
+            <p className="text-small font-medium text-ink-3">O que ficou com vocês</p>
+            <p className="mt-1.5 text-h4">{project.outcome.summary}</p>
+            <p className="mt-1 text-small text-ink-2">{ADOPTION_COPY[project.outcome.adoption]}.</p>
           </section>
         )
       )}
 
-      <div className="mt-10 grid gap-8 lg:grid-cols-[minmax(0,1fr)_300px]">
+      <div className="mt-10 grid grid-cols-1 gap-10 lg:gap-12 lg:grid-cols-[minmax(0,1fr)_300px]">
         <div className="min-w-0">
-          <h2 className="text-headline">Etapas</h2>
-          <p className="mt-1 mb-6 text-sm text-ink-2">As mesmas seis etapas de todo projeto. O docente registra cada uma; vocês acompanham por aqui.</p>
+          <h2 className="text-h4">Etapas</h2>
+          <p className="mt-1 mb-6 text-small text-ink-2">As mesmas seis etapas de todo projeto. O docente registra cada uma; vocês acompanham por aqui.</p>
           <MilestoneTimeline milestones={project.milestones} today={today} copy={ORG_MILESTONE_COPY} />
         </div>
 
-        <aside className="flex flex-col gap-4 lg:sticky lg:top-20 lg:self-start">
+        <aside className="flex flex-col gap-5 lg:sticky lg:top-20 lg:self-start">
           <SideCard title="Turma no projeto">
             <dl>
               <SideFact label="Disciplina">{project.disciplineName}</SideFact>
@@ -90,11 +95,15 @@ const ProjectView = ({ project, today }: { project: OrgProjectDetail; today: str
               {project.teacherPhone && <SideFact label="Telefone">{project.teacherPhone}</SideFact>}
               {project.coTeachers.length > 0 && <SideFact label="Divide a disciplina com">{project.coTeachers.join(', ')}</SideFact>}
             </dl>
+            <a href={`mailto:${project.teacherEmail}`} className={cn(buttonClassName({ variant: 'primary', size: 'xl', fullWidth: true }), 'mt-4')}>
+              <MailIcon size={20} />
+              Escrever ao docente
+            </a>
           </SideCard>
           {project.hasDemand && (
             <Link to={paths.orgDemand(project.demandId)} className={buttonClassName({ variant: 'secondary', fullWidth: true })}>
               Ver a demanda
-              <ArrowRightIcon size={15} />
+              <ArrowRightIcon size={16} />
             </Link>
           )}
         </aside>

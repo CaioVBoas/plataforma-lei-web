@@ -64,4 +64,4 @@ export const publishedStage = (demand: Pick<Demand, 'status'>, projectMilestones
   return projectMilestones && projectStage(projectMilestones) === 'done' ? 'done' : 'in-project';
 };
 
-export const unansweredQuestions = (demand: Pick<Demand, 'questions'>) => demand.questions.filter((question) => !question.answer);
+export const unansweredQuestions = (demand: Pick<Demand, 'questions'>) => demand.questions.filter((question) => question.replies.length === 0);

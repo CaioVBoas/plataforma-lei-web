@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* dark: vale quando o perfil de acessibilidade pôs o modo escuro na raiz. */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
 /*
  * Tokens visuais do portal. Toda cor, fonte, raio e movimento sai daqui;
  * componentes nunca usam hex solto.
@@ -10,7 +13,48 @@
  * Tecnológico nas ações e Laranja Social só na reserva.
  */
 @theme {
-  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  /* Onest (Google Fonts, OFL), variável; a interface usa 400, 500, 600 e, só nos títulos grandes, 700. */
+  --font-sans: "Onest", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --font-mono: Consolas, "Lucida Console", "Courier New", monospace;
+
+  /*
+   * Escala tipográfica (Onest). Cada degrau leva tamanho, altura de linha,
+   * peso e espaçamento juntos: text-display, text-h1 ... text-overline.
+   * No celular, display e h1 diminuem (ver o fim do arquivo).
+   */
+  --text-display: 3rem;
+  --text-display--line-height: 1.1;
+  --text-display--font-weight: 700;
+  --text-display--letter-spacing: -0.02em;
+  --text-h1: 2.25rem;
+  --text-h1--line-height: 1.2;
+  --text-h1--font-weight: 700;
+  --text-h1--letter-spacing: -0.02em;
+  --text-h2: 1.75rem;
+  --text-h2--line-height: 1.25;
+  --text-h2--font-weight: 600;
+  --text-h2--letter-spacing: -0.01em;
+  --text-h3: 1.375rem;
+  --text-h3--line-height: 1.3;
+  --text-h3--font-weight: 600;
+  --text-h3--letter-spacing: -0.01em;
+  --text-h4: 1.125rem;
+  --text-h4--line-height: 1.4;
+  --text-h4--font-weight: 600;
+  --text-body: 1rem;
+  --text-body--line-height: 1.5;
+  --text-small: 0.875rem;
+  --text-small--line-height: 1.5;
+  --text-label: 0.875rem;
+  --text-label--line-height: 1.2;
+  --text-label--font-weight: 500;
+  --text-caption: 0.75rem;
+  --text-caption--line-height: 1.4;
+  --text-caption--letter-spacing: 0.01em;
+  --text-overline: 0.75rem;
+  --text-overline--line-height: 1.2;
+  --text-overline--font-weight: 600;
+  --text-overline--letter-spacing: 0.06em;
 
   /*
    * Identidade: Verde Petróleo. Marca, fatos, monogramas e "onde estou"
@@ -57,12 +101,12 @@
   --color-line: #e0e5e6;
   --color-line-strong: #ccd3d4;
 
-  /* Ação: Azul Tecnológico do Design System, no tom 600 para não gritar. */
-  --color-accent: #1a42c2;
-  --color-accent-hover: #16349a;
-  --color-accent-soft: #eef3ff;
+  /* Ação: Azul Inverno, um azul mais calmo e menos violeta, que ainda passa AA com texto branco (6:1). */
+  --color-accent: #2a64ad;
+  --color-accent-hover: #1f5290;
+  --color-accent-soft: #edf3fa;
   /* Azul legível sobre o fundo escuro do aviso. */
-  --color-accent-on-dark: #86a4ff;
+  --color-accent-on-dark: #8fb4e3;
 
   /* Reserva: Laranja Social do Design System, exclusivo da reserva. */
   --color-reserve: #a63d10;
@@ -76,6 +120,8 @@
   --color-caution-soft: #fcf3e4;
   --color-critical: #c0392b;
   --color-critical-soft: #fbeeec;
+  /* Fundo do botão de excluir na confirmação: vermelho cheio com texto branco (5,4:1), igual no claro e no escuro. */
+  --color-critical-strong: #b8352a;
 
   --radius-sm: 6px;
   --radius-md: 8px;
@@ -83,7 +129,7 @@
 
   --shadow-popover: 0 8px 24px rgba(0, 0, 0, 0.12), 0 0 0 0.5px rgba(0, 0, 0, 0.08);
   --shadow-sheet: 0 20px 60px rgba(0, 0, 0, 0.18), 0 0 0 0.5px rgba(0, 0, 0, 0.08);
-  --shadow-focus: 0 0 0 3px rgba(26, 66, 194, 0.3);
+  --shadow-focus: 0 0 0 3px rgba(42, 100, 173, 0.3);
 
   --ease-standard: cubic-bezier(0.25, 0.1, 0.25, 1);
 
@@ -113,29 +159,102 @@
   }
 }
 
-/* Títulos com a escala tipográfica do sistema. */
-@utility text-large-title {
-  font-size: 32px;
-  line-height: 1.15;
-  font-weight: 700;
-  letter-spacing: -0.021em;
-  color: var(--color-ink);
+/*
+ * Modo escuro (perfil de acessibilidade: Escuro, ou Automático com o aparelho
+ * no escuro). Troca só os tokens: os componentes continuam iguais. Os
+ * petróleos fundos (600 a 900) já são fundo escuro com texto branco e ficam.
+ */
+:root[data-theme='dark'] {
+  color-scheme: dark;
+
+  --color-brand-50: #12302f;
+  --color-brand-100: #17403e;
+  --color-brand-200: #1f5653;
+  --color-brand-300: #2f7a76;
+  --color-brand-400: #4fa39f;
+  --color-brand: #2a8a85;
+  --color-brand-strong: #8fd0cc;
+  --color-brand-soft: #12302f;
+
+  --color-fact: #1c2223;
+  --color-fact-line: #2f383a;
+  --color-fact-label: #8fd0cc;
+
+  --color-monogram: #17403e;
+  --color-monogram-ink: #a8d2cf;
+  --color-nav-active: #17403e;
+  --color-nav-active-ink: #a8d2cf;
+
+  --color-ink: #e9eded;
+  --color-ink-2: #b7c0c2;
+  --color-ink-3: #919b9e;
+
+  --color-surface: #171b1c;
+  --color-canvas: #101314;
+  --color-fill: #242b2c;
+  --color-fill-strong: #2d3537;
+  --color-line: #2a3234;
+  --color-line-strong: #3c4648;
+
+  --color-accent: #3d75b8;
+  --color-accent-hover: #5287c7;
+  --color-accent-soft: #16222f;
+
+  --color-reserve: #ff9a66;
+  --color-reserve-soft: #3a2216;
+
+  --color-positive: #6cc581;
+  --color-positive-soft: #16301d;
+  --color-caution: #e5ad4f;
+  --color-caution-soft: #342812;
+  --color-critical: #f07a6d;
+  --color-critical-soft: #3a1c19;
+
+  --shadow-popover: 0 8px 24px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.06);
+  --shadow-sheet: 0 20px 60px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.06);
+  --shadow-focus: 0 0 0 3px rgba(143, 180, 227, 0.45);
 }
 
-@utility text-title {
-  font-size: 22px;
-  line-height: 1.25;
-  font-weight: 600;
-  letter-spacing: -0.017em;
-  color: var(--color-ink);
+/* Overline: além do degrau da escala, sempre em caixa alta. */
+.text-overline {
+  text-transform: uppercase;
 }
 
-@utility text-headline {
-  font-size: 17px;
-  line-height: 1.35;
-  font-weight: 600;
-  letter-spacing: -0.012em;
-  color: var(--color-ink);
+/* No celular, os dois maiores degraus diminuem para caber sem quebrar demais. */
+@media (max-width: 639px) {
+  :root {
+    --text-display: 2.25rem;
+    --text-h1: 1.75rem;
+  }
+}
+
+/*
+ * "Botões e campos maiores", do perfil de acessibilidade: alvo de 48px em
+ * botões e campos, ícones 20% maiores e o foco bem visível.
+ */
+:root[data-scale='big'] .top-label {
+  display: none;
+}
+
+:root[data-ui='large'] {
+  & :is(a, button).inline-flex,
+  & input:not([type='checkbox'], [type='radio'], [type='file']),
+  & select {
+    min-height: 3rem;
+  }
+  & :is(a, button).inline-flex {
+    padding-inline: max(1.1rem, 1em);
+  }
+  & textarea {
+    min-height: 7rem;
+  }
+  & svg[data-icon] {
+    zoom: 1.2;
+  }
+  & :focus-visible {
+    outline: 3px solid var(--color-accent);
+    outline-offset: 2px;
+  }
 }
 
 @layer base {
@@ -145,10 +264,19 @@
     background: var(--color-surface);
     color: var(--color-ink);
     font-family: var(--font-sans);
-    font-size: 15px;
+    font-size: 16px;
+    line-height: 1.5;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
+  }
+
+  /* Com texto grande, uma palavra longa num título quebra com hífen em vez de passar da tela. */
+  h1,
+  h2,
+  h3 {
+    overflow-wrap: anywhere;
+    hyphens: auto;
   }
 
   button {
