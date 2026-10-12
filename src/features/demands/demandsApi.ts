@@ -1,14 +1,41 @@
-import * as server from '@/mocks/handlers/demands';
-import { mockRequest } from '@/mocks/mockRequest';
+import { apiClient } from '@/lib/apiClient';
+import type { Demand } from '@/domain/types';
+import type { DemandDetail } from './types';
 
-export const getMenu = () => mockRequest(() => server.listMenu());
+export const getMenu = async (): Promise<Demand[]> => {
+  const response = await apiClient.get<Demand[]>('/demands/menu');
+  return response.data;
+};
 
-export const getDemand = (id: string) => mockRequest(() => server.getDemand(id));
+export const getDemand = async (id: string): Promise<DemandDetail> => {
+  const response = await apiClient.get<DemandDetail>(`/demands/${id}`);
+  return response.data;
+};
 
-export const reserveDemand = (id: string) => mockRequest(() => server.reserveDemand(id));
+export const reserveDemand = async (id: string): Promise<Demand> => {
+  const response = await apiClient.post<Demand>(`/demands/${id}/reserve`);
+  return response.data;
+};
 
-export const releaseReservation = (id: string) => mockRequest(() => server.releaseReservation(id));
+export const releaseReservation = async (id: string): Promise<Demand> => {
+  const response = await apiClient.post<Demand>(`/demands/${id}/release`);
+  return response.data;
+};
 
-export const toggleWatch = (id: string) => mockRequest(() => server.toggleWatch(id));
+export const toggleWatch = async (id: string): Promise<Demand> => {
+  const response = await apiClient.post<Demand>(`/demands/${id}/watch`);
+  return response.data;
+};
 
-export const askQuestion = ({ id, text }: { id: string; text: string }) => mockRequest(() => server.askQuestion(id, text));
+export const askQuestion = async ({
+  id,
+  text,
+}: {
+  id: string;
+  text: string;
+}): Promise<Demand> => {
+  const response = await apiClient.post<Demand>(`/demands/${id}/questions`, {
+    text,
+  });
+  return response.data;
+};
