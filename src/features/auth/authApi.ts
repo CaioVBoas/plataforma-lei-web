@@ -1,4 +1,4 @@
-import { apiClient } from '@/lib/apiClient';
+import { apiClient, mocksEnabled } from '@/lib/apiClient';
 import * as server from '@/mocks/handlers/account';
 import * as accessServer from '@/mocks/handlers/access';
 import * as orgServer from '@/mocks/handlers/orgPortal';
@@ -14,8 +14,6 @@ import {
 } from './types';
 import { session } from './session';
 
-const shouldUseMockOnly = import.meta.env.VITE_USE_MOCKS === 'true';
-
 const isNetworkError = (error: unknown): boolean => {
   if (typeof error === 'object' && error !== null) {
     const err = error as { code?: string; isAxiosError?: boolean; response?: unknown };
@@ -27,7 +25,7 @@ const isNetworkError = (error: unknown): boolean => {
 };
 
 export const login = async (payload: LoginPayload): Promise<void> => {
-  if (shouldUseMockOnly) {
+  if (mocksEnabled) {
     const token = await mockRequest(() => server.login(payload));
     session.start(token, 'docente');
     return;
@@ -58,7 +56,7 @@ export const signup = async ({
   payload: SignupPayload;
   code: string;
 }): Promise<void> => {
-  if (shouldUseMockOnly) {
+  if (mocksEnabled) {
     const token = await mockRequest(() => server.signup(payload, code));
     session.start(token, 'docente');
     return;
@@ -69,6 +67,7 @@ export const signup = async ({
       name: payload.name,
       email: payload.email,
       password: payload.password,
+      department: payload.department,
     });
     const role = apiRoleToUserRole(response.data.user.role);
     session.start(response.data.accessToken, role);
@@ -84,7 +83,7 @@ export const signup = async ({
 };
 
 export const loginOrganization = async (payload: LoginPayload): Promise<void> => {
-  if (shouldUseMockOnly) {
+  if (mocksEnabled) {
     const token = await mockRequest(() => orgServer.login(payload));
     session.start(token, 'organizacao');
     return;
@@ -115,7 +114,7 @@ export const signupOrganization = async ({
   payload: OrgSignupPayload;
   code: string;
 }): Promise<void> => {
-  if (shouldUseMockOnly) {
+  if (mocksEnabled) {
     const token = await mockRequest(() => orgServer.signup(payload, code));
     session.start(token, 'organizacao');
     return;
@@ -125,6 +124,10 @@ export const signupOrganization = async ({
     const response = await apiClient.post<ApiAuthResponse>('/auth/register/partner', {
       name: payload.organizationName,
       type: mapOrgTypeToTipoParceiro(payload.organizationType),
+      location: payload.location,
+      // Quem se cadastra é o ponto focal da organização.
+      focalName: payload.name,
+      focalRole: payload.position,
       email: payload.email,
       password: payload.password,
     });
