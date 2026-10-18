@@ -1,18 +1,52 @@
+import type { OrgAccount } from '@/domain/types';
+import { mapOrgTypeToTipoParceiro, mapTipoParceiroToOrgType, type TipoParceiro } from '@/features/auth/types';
+import { api, mocksEnabled } from '@/lib/apiClient';
 import * as server from '@/mocks/handlers/orgPortal';
 import { mockRequest } from '@/mocks/mockRequest';
-import type { OrgAccountInput, OrgImagesInput, OrgProfileInput, SaveDraftPayload } from './types';
+import type { OrgAccountInput, OrgImagesInput, OrgProfile, OrgProfileInput, SaveDraftPayload } from './types';
 
-export const getOrgAccount = () => mockRequest(() => server.getAccount());
+/** O backend trafega o tipo como enum; a tela mostra o rótulo do seletor. */
+type ApiOrgProfile = Omit<OrgProfile, 'organization'> & {
+  organization: Omit<OrgProfile['organization'], 'type'> & { type: TipoParceiro };
+};
 
-export const updateOrgAccount = (input: OrgAccountInput) => mockRequest(() => server.updateAccount(input));
+const toOrgProfile = ({ organization, contact }: ApiOrgProfile): OrgProfile => ({
+  organization: { ...organization, type: mapTipoParceiroToOrgType(organization.type) },
+  contact,
+});
 
-export const markOrgTutorialSeen = () => mockRequest(() => server.markTutorialSeen());
+export const getOrgAccount = () =>
+  mocksEnabled
+    ? mockRequest(() => server.getAccount())
+    : api.get<OrgAccount>('/org-portal/account').then((response) => response.data);
 
-export const getOrgProfile = () => mockRequest(() => server.getProfile());
+/** Parcial: só o que mudou, para não sobrescrever o ponto focal salvo pelo perfil (no backend são as mesmas colunas). */
+export const updateOrgAccount = (input: Partial<OrgAccountInput>) =>
+  mocksEnabled
+    ? mockRequest(() => server.updateAccount({ ...server.getAccount(), ...input }))
+    : api.patch<OrgAccount>('/org-portal/account', input).then((response) => response.data);
 
-export const updateOrgProfile = (input: OrgProfileInput) => mockRequest(() => server.updateProfile(input));
+export const markOrgTutorialSeen = () =>
+  mocksEnabled
+    ? mockRequest(() => server.markTutorialSeen())
+    : api.patch<OrgAccount>('/org-portal/account', { tutorialSeen: true }).then((response) => response.data);
 
-export const updateOrgImages = (input: OrgImagesInput) => mockRequest(() => server.updateImages(input));
+export const getOrgProfile = () =>
+  mocksEnabled
+    ? mockRequest(() => server.getProfile())
+    : api.get<ApiOrgProfile>('/org-portal/profile').then((response) => toOrgProfile(response.data));
+
+export const updateOrgProfile = (input: OrgProfileInput) =>
+  mocksEnabled
+    ? mockRequest(() => server.updateProfile(input))
+    : api
+        .patch<ApiOrgProfile>('/org-portal/profile', { ...input, type: mapOrgTypeToTipoParceiro(input.type) })
+        .then((response) => toOrgProfile(response.data));
+
+export const updateOrgImages = (input: OrgImagesInput) =>
+  mocksEnabled
+    ? mockRequest(() => server.updateImages(input))
+    : api.patch<ApiOrgProfile>('/org-portal/profile/images', input).then((response) => toOrgProfile(response.data));
 
 export const getOrgDemands = () => mockRequest(() => server.listDemands());
 
