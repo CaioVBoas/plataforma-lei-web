@@ -1,0 +1,41 @@
+schema: spec-driven
+
+context: |
+  Language: pt-BR
+  All artifacts must be written in pt-BR.
+  Keep OpenSpec structural headings and SHALL/MUST keywords in English.
+
+  Projeto: plataforma-lei-web, frontend da Plataforma LEI (CIn/UFPE).
+  Stack: React 19, TypeScript, Vite, Tailwind CSS v4, React Router, TanStack Query,
+  React Hook Form e Zod. Lint com oxlint; build com `tsc -b && vite build`.
+  Backend: plataforma-lei-api (NestJS + Prisma). O contrato de cada endpoint é
+  o Swagger da API; ids trafegam como string.
+  Arquitetura: regras puras em src/domain, uma pasta por feature em src/features
+  (página, hook use*.ts, contrato *Api.ts), backend simulado em src/mocks.
+  Os *Api.ts são a única fronteira com o backend: telas e hooks não sabem se a
+  resposta veio da API ou do mock. `VITE_USE_MOCKS=true` mantém a demonstração
+  sem backend.
+  Produto e regras de negócio: docs/fluxos.md e docs/requisitos.md.
+  Commits em conventional commits com o ticket do Jira, ex.: feat(x): ... (PLEI-41).
+
+# Per-artifact rules (optional)
+# Add custom rules for specific artifacts.
+# Example:
+#   rules:
+#     proposal:
+#       - Keep proposals under 500 words
+#       - Always include a "Non-goals" section
+#     tasks:
+#       - Break tasks into chunks of max 2 hours
+
+# Per-operation guidance (optional)
+# Add advisory guidance for how apply and archive work should be conducted.
+# This is separate from artifact rules above.
+# Example:
+#   operations:
+#     apply:
+#       guidance:
+#         - Keep test summaries concise
+#     archive:
+#       guidance:
+#         - Summarize the archive outcome before finishing
