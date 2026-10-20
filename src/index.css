@@ -276,12 +276,11 @@
     text-rendering: optimizeLegibility;
   }
 
-  /* Com texto grande, uma palavra longa num título quebra com hífen em vez de passar da tela. */
+  /* Palavra longa demais para a linha (com texto grande) quebra só quando não cabe; nunca com hífen automático, que partia "Pernambu-co". */
   h1,
   h2,
   h3 {
     overflow-wrap: anywhere;
-    hyphens: auto;
   }
 
   button {
