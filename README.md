@@ -101,7 +101,7 @@ src/
 - **Datas só com `formatShortDate`** ("21 ago 2026").
 - **Fotos com licença que exige crédito** levam o crédito junto da foto (`PhotoCreditLine`). Fotos esperando crédito ou autorização ficam em `image/pendentes`, fora do código.
 - **Marca:** use só os SVGs de `src/assets/brand` pelo componente `BrandMark`; o favicon é o símbolo `petroleo-600`.
-- **Identidade visual:** Verde Petróleo (`brand`, `fact`, `monogram`, `nav-active`) para identidade, Azul Tecnológico (`accent`) para ação e Laranja Social (`reserve`) só na reserva. Regras 13 a 16 da seção 7 do `docs/fluxos.md`.
+- **Identidade visual:** paleta do CIn, nos arquivos de `src/assets/brand` (ver o `LEIA-ME.txt` de lá). Vermelho CIn (`accent`, `cin`) para ação e marca, Grafite (`brand`, `nav-active`) para identidade e "onde estou", Cinza claro (`canvas`, `brand-50`) nos fundos, branco como base e laranja âmbar (`reserve`) só na reserva. Regras 13 a 16 da seção 7 do `docs/fluxos.md`.
 - **Cor, fonte, raio e movimento vêm dos tokens** do `index.css`. Não use hex solto nos componentes.
 - **URLs só em `routes/paths.ts`, chaves de cache só em `lib/queryKeys.ts`.**
 - **Arquivos em camelCase** (`projectPage.tsx`, `useProjects.ts`, `demandPresentation.ts`).

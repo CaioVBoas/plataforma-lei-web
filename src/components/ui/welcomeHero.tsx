@@ -1,5 +1,5 @@
 interface WelcomeHeroProps {
-  /** Foto de fundo, coberta pelo petróleo escuro para o texto passar AA. */
+  /** Foto de fundo, coberta pelo grafite para o texto passar AA. */
   photo: string;
   title: string;
   line: string;
@@ -7,7 +7,7 @@ interface WelcomeHeroProps {
 }
 
 /**
- * Boas-vindas em petróleo sobre uma foto, para o Início ter cara de ponto de
+ * Boas-vindas em grafite sobre uma foto, para o Início ter cara de ponto de
  * partida. Os números são a situação de quem entrou, em um olhar.
  */
 export const WelcomeHero = ({ photo, title, line, stats }: WelcomeHeroProps) => (

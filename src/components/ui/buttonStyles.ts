@@ -12,16 +12,16 @@ export interface ButtonStyleOptions {
 /*
  * primary: a única ação principal da tela.
  * secondary: ação real de apoio, com borda fina sobre fundo branco. No máximo duas por item.
- * plain: ação terciária, só texto em azul.
+ * plain: ação terciária, só texto em vermelho.
  * destructive: desfazer ou remover, só texto em vermelho.
- * onDark e onDarkOutline: só sobre blocos petróleo do portal público, em branco cheio ou contorno claro.
+ * onDark e onDarkOutline: só sobre blocos grafite ou fotos escuras do portal público, em branco cheio ou contorno claro.
  */
 const VARIANT_CLASSES: Record<ButtonVariant, string> = {
   primary: 'bg-accent text-white hover:bg-accent-hover',
   secondary: 'border border-line-strong bg-surface text-ink hover:bg-canvas',
   plain: 'bg-transparent text-accent hover:bg-accent-soft',
   destructive: 'bg-transparent text-critical hover:bg-critical-soft',
-  onDark: 'bg-surface text-brand-strong hover:bg-brand-50',
+  onDark: 'bg-surface text-ink hover:bg-brand-50',
   onDarkOutline: 'border border-brand-300 bg-transparent text-white hover:bg-brand-700',
 };
 
@@ -45,7 +45,7 @@ export const buttonClassName = ({ variant = 'secondary', size = 'md', fullWidth 
   );
 
 /**
- * Link de texto: azul escuro, sem borda nem fundo, sublinhado só no hover.
+ * Link de texto: vermelho escuro, sem borda nem fundo, sublinhado só no hover.
  * Nunca se parece com botão, para que contagem, link e ação não se confundam.
  */
 export const textLinkClassName = 'text-accent-hover underline-offset-2 hover:underline';

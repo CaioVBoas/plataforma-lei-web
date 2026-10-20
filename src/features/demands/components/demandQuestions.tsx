@@ -12,7 +12,7 @@ const QUESTION_LIMIT = 500;
 
 /**
  * Conversa, não lista: a pergunta do docente em balão branco à esquerda e a
- * resposta da organização em azul, recuada à direita, para nunca se confundir com card.
+ * resposta da organização em vermelho, recuada à direita, para nunca se confundir com card.
  */
 const Exchange = ({ question }: { question: DemandQuestion }) => (
   <li>

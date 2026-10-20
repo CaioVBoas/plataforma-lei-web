@@ -3,7 +3,7 @@ import type { PhotoCredit } from '@/components/ui/photoCredit';
 /**
  * Fotos de capa das organizações e das demandas, lidas pelo nome do arquivo:
  * `organizacoes/<id da organização>.webp` e `demandas/<id da demanda>.webp`.
- * Sem foto, quem usa mostra o desenho de sempre (monograma e capa petróleo).
+ * Sem foto, quem usa mostra o desenho de sempre (monograma e capa grafite).
  */
 const files = import.meta.glob<string>('/src/assets/covers/*/*.{webp,jpg,jpeg,png}', { eager: true, import: 'default' });
 

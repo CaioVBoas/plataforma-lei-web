@@ -5,7 +5,7 @@ import type { OrgDemandSummary } from '../types';
 export interface DemandGuidance {
   /** O que está acontecendo, em uma frase simples. */
   now: string;
-  /** Se a vez é da organização: o botão fica em azul cheio e o cartão ganha o aviso "Sua vez". */
+  /** Se a vez é da organização: o botão fica em vermelho cheio e o cartão ganha o aviso "Sua vez". */
   yourTurn: boolean;
   /** O ícone do botão diz a ação sem precisar ler: escrever, responder, ver, acompanhar. */
   action: { label: string; to: string; icon: 'write' | 'answer' | 'see' | 'follow' | 'done' };

@@ -6,16 +6,16 @@ interface ProfileHeaderProps {
   /** Monograma ou ícone grande que sobrepõe a capa. */
   avatar: ReactNode;
   title: string;
-  /** Linha pequena acima do título, em petróleo: tipo, código, semestre. */
+  /** Linha pequena acima do título, em grafite: tipo, código, semestre. */
   eyebrow?: ReactNode;
   meta?: ReactNode;
   actions?: ReactNode;
-  /** Foto de capa, com o crédito quando a licença pede. Sem ela, a capa é o petróleo com os dois círculos. */
+  /** Foto de capa, com o crédito quando a licença pede. Sem ela, a capa é o grafite com os dois círculos. */
   cover?: Cover;
 }
 
 /**
- * Cabeçalho de perfil (organização, disciplina, conta): capa petróleo com o
+ * Cabeçalho de perfil (organização, disciplina, conta): capa grafite com o
  * avatar sobreposto. É a cor de identidade dizendo "isto é uma entidade", não uma ação.
  */
 export const ProfileHeader = ({ avatar, title, eyebrow, meta, actions, cover }: ProfileHeaderProps) => (
@@ -53,7 +53,7 @@ interface StatTilesProps {
   items: { value: ReactNode; label: string }[];
 }
 
-/** Números de resumo em petróleo claro: o estado da tela em um olhar, sem ser clicável. */
+/** Números de resumo em cinza claro: o estado da tela em um olhar, sem ser clicável. */
 export const StatTiles = ({ items }: StatTilesProps) => (
   <dl className="grid grid-cols-2 gap-3 sm:grid-cols-4">
     {items.map((item) => (

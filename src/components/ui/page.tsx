@@ -6,7 +6,7 @@ import { ChevronLeftIcon } from './icons';
 interface PageProps {
   title: string;
   subtitle?: ReactNode;
-  /** Linha pequena em petróleo acima do título: de quem é, que tipo de coisa é. */
+  /** Linha pequena em grafite acima do título: de quem é, que tipo de coisa é. */
   eyebrow?: ReactNode;
   /** Linha de contexto em texto 13 logo abaixo do subtítulo: resumo, metadados. */
   meta?: ReactNode;
@@ -84,7 +84,7 @@ export const Section = ({ title, id, description, aside, compact, className, chi
 
 /**
  * Pares de rótulo e valor em mini cards de fato, até quatro por linha. Fato é o
- * único bloco com fundo petróleo e borda: não se confunde com tag, botão nem card clicável.
+ * único bloco com fundo grafite e borda: não se confunde com tag, botão nem card clicável.
  */
 export const FactGrid = ({ items, columns = 4 }: { items: { label: string; value: ReactNode }[]; columns?: 2 | 3 | 4 }) => (
   <dl className={cn('grid grid-cols-1 gap-4 sm:grid-cols-2', columns === 3 && 'lg:grid-cols-3', columns === 4 && 'lg:grid-cols-4')}>

@@ -25,7 +25,7 @@ const SideCard = ({ item, onSelect }: { item: SpotlightItem; onSelect: () => voi
 const ARROW = 'flex size-10 shrink-0 items-center justify-center rounded-full border border-line-strong bg-surface text-ink hover:bg-fill';
 
 /**
- * Carrossel em destaque: o cartão do meio em petróleo, os vizinhos esmaecidos,
+ * Carrossel em destaque: o cartão do meio em grafite, os vizinhos esmaecidos,
  * setas e pontos. Usado no portal, em "O que você encontra na plataforma".
  */
 export const SpotlightCarousel = ({ items, label }: { items: SpotlightItem[]; label: string }) => {

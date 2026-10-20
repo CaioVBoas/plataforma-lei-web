@@ -5,7 +5,7 @@ import { JOURNEY, journeyIndex } from '../utils/orgPresentation';
 
 /**
  * Os cinco passos de um pedido, numerados e ligados por um traço, como o
- * caminho do Como funciona: feitos com check verde, o atual em petróleo com
+ * caminho do Como funciona: feitos com check verde, o atual em grafite com
  * "Agora" embaixo, os próximos apagados. No celular fica só o passo atual escrito.
  */
 export const JourneyTrack = ({ stage }: { stage: OrgDemandStage }) => {

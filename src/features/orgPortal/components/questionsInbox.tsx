@@ -25,16 +25,16 @@ const timeline = (questions: DemandQuestion[]): ChatEvent[] =>
 
 const DaySeparator = ({ date }: { date: IsoDate }) => (
   <li className="flex justify-center py-1">
-    <span className="rounded-md bg-surface px-3 py-1 text-caption font-medium text-ink-2 shadow-[0_1px_0.5px_rgba(10,50,50,0.13)]">{dayLabel(date)}</span>
+    <span className="rounded-md bg-surface px-3 py-1 text-caption font-medium text-ink-2 shadow-[0_1px_0.5px_rgba(0,0,0,0.13)]">{dayLabel(date)}</span>
   </li>
 );
 
-/** Balão do docente, à esquerda, com o nome em petróleo. Sem resposta, oferece "Responder", como no WhatsApp. */
+/** Balão do docente, à esquerda, com o nome em grafite. Sem resposta, oferece "Responder", como no WhatsApp. */
 const TeacherBubble = ({ question, replying, onReply }: { question: DemandQuestion; replying: boolean; onReply?: () => void }) => (
   <li className="flex flex-col items-start">
     <div
       className={cn(
-        'relative max-w-[min(85%,36rem)] rounded-xl rounded-tl-none bg-surface px-3.5 pt-2 pb-1.5 shadow-[0_1px_0.5px_rgba(10,50,50,0.13)]',
+        'relative max-w-[min(85%,36rem)] rounded-xl rounded-tl-none bg-surface px-3.5 pt-2 pb-1.5 shadow-[0_1px_0.5px_rgba(0,0,0,0.13)]',
         replying && 'ring-2 ring-accent/50',
       )}
     >
@@ -57,11 +57,11 @@ const TeacherBubble = ({ question, replying, onReply }: { question: DemandQuesti
   </li>
 );
 
-/** Balão de vocês, à direita, em petróleo claro, citando a pergunta respondida e com os dois tiques. */
+/** Balão de vocês, à direita, em cinza claro, citando a pergunta respondida e com os dois tiques. */
 const AnswerBubble = ({ question }: { question: DemandQuestion }) =>
   question.answer ? (
     <li className="flex justify-end">
-      <div className="relative max-w-[min(85%,36rem)] rounded-xl rounded-tr-none bg-brand-50 px-3.5 pt-2 pb-1.5 shadow-[0_1px_0.5px_rgba(10,50,50,0.13)]">
+      <div className="relative max-w-[min(85%,36rem)] rounded-xl rounded-tr-none bg-brand-50 px-3.5 pt-2 pb-1.5 shadow-[0_1px_0.5px_rgba(0,0,0,0.13)]">
         <span aria-hidden="true" className="absolute top-0 -right-2 border-t-[10px] border-r-[10px] border-t-brand-50 border-r-transparent" />
         <div className="mb-1.5 rounded-md border-l-4 border-brand bg-surface/70 px-2.5 py-1.5">
           <p className="text-caption font-semibold text-brand-strong">{question.teacherName}</p>

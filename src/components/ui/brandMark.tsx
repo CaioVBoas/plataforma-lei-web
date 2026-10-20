@@ -1,34 +1,34 @@
-import horizontalOnDark from '@/assets/brand/horizontal/branco.svg';
-import horizontal from '@/assets/brand/horizontal/principal.svg';
-import symbol from '@/assets/brand/simbolo/petroleo-600.svg';
-import symbolOnDark from '@/assets/brand/simbolo/petroleo-on-dark.svg';
+import horizontalOnPhoto from '@/assets/brand/logo/plei-horizontal-branco.svg';
+import horizontalOnDark from '@/assets/brand/logo/plei-horizontal-escuro.svg';
+import horizontal from '@/assets/brand/logo/plei-horizontal-principal.svg';
+import symbol from '@/assets/brand/simbolo/plei-simbolo-vermelho.svg';
 import { cn } from '@/utils/cn';
 
 interface BrandMarkProps {
-  /** Versão branca, para o painel petróleo da tela de entrada. */
+  /** Versão branca, para fotos escuras e fundos vermelhos. */
   onDark?: boolean;
   className?: string;
 }
 
+const LOGO = 'h-9 w-auto self-start';
+
 /**
- * Logotipo horizontal do PLEI: o mascote com o botão de play e o
- * nome. Vem dos arquivos oficiais em `src/assets/brand`; não redesenhar aqui.
+ * Logotipo horizontal do PLEI: o caranguejo com o botão de play e o letreiro.
+ * Vem dos arquivos oficiais em `src/assets/brand`; não redesenhar aqui. A
+ * altura de 36px mantém o mínimo de 120px de largura pedido pela marca.
  */
 export const BrandMark = ({ onDark = false, className }: BrandMarkProps) =>
   onDark ? (
-    <img src={horizontalOnDark} alt="PLEI" width={80} height={32} className={cn('h-8 w-auto self-start', className)} />
+    <img src={horizontalOnPhoto} alt="PLEI" width={126} height={36} className={cn(LOGO, className)} />
   ) : (
-    // No modo escuro entra a versão branca, que é a oficial para fundo escuro.
+    // No modo escuro entra a versão "escuro" da marca: caranguejo vermelho e letreiro branco.
     <>
-      <img src={horizontal} alt="PLEI" width={80} height={32} className={cn('h-8 w-auto self-start dark:hidden', className)} />
-      <img src={horizontalOnDark} alt="PLEI" width={80} height={32} className={cn('hidden h-8 w-auto self-start dark:block', className)} />
+      <img src={horizontal} alt="PLEI" width={126} height={36} className={cn(LOGO, 'dark:hidden', className)} />
+      <img src={horizontalOnDark} alt="PLEI" width={126} height={36} className={cn(LOGO, 'hidden dark:block', className)} />
     </>
   );
 
-/** Só o símbolo, para a barra lateral recolhida. */
+/** Só o caranguejo, para a barra lateral recolhida e o topo no celular. O vermelho serve nos dois modos. */
 export const BrandSymbol = ({ className }: { className?: string }) => (
-  <>
-    <img src={symbol} alt="PLEI" width={32} height={32} className={cn('size-8 dark:hidden', className)} />
-    <img src={symbolOnDark} alt="PLEI" width={32} height={32} className={cn('hidden size-8 dark:block', className)} />
-  </>
+  <img src={symbol} alt="PLEI" width={32} height={20} className={cn('h-auto w-8', className)} />
 );

@@ -31,7 +31,7 @@ export const DemandCard = ({ demand, best, today }: DemandCardProps) => {
     <Link
       to={paths.demand(demand.id)}
       className={cn(
-        'group flex h-full min-w-0 flex-col rounded-lg border bg-surface p-5 transition-[border-color,box-shadow] duration-150 hover:shadow-[0_2px_8px_rgba(10,50,50,0.08)]',
+        'group flex h-full min-w-0 flex-col rounded-lg border bg-surface p-5 transition-[border-color,box-shadow] duration-150 hover:shadow-[0_2px_8px_rgba(0,0,0,0.08)]',
         demand.reservation?.mine ? 'border-reserve-dot/40' : 'border-line hover:border-line-strong',
       )}
     >

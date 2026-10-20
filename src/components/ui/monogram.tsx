@@ -10,7 +10,7 @@ const SIZES: Record<MonogramSize, string> = {
 };
 
 /**
- * Inicial da organização num quadrado petróleo claro: identidade, sem cor por
+ * Inicial da organização num quadrado cinza claro: identidade, sem cor por
  * tipo. Com logo enviada pela organização, a logo toma o lugar da inicial.
  */
 export const Monogram = ({ name, logo, size = 'md' }: { name: string; logo?: string; size?: MonogramSize }) =>

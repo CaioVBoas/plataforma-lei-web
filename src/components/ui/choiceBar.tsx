@@ -35,7 +35,7 @@ export const ChoiceBar = <T extends string>({ label, value, options, onChange, c
           onClick={() => onChange(option.value)}
           className={cn(
             'flex min-h-11 items-center gap-2 rounded-lg px-3.5 text-left text-body transition-colors duration-100',
-            selected ? 'bg-surface font-semibold text-ink shadow-[0_1px_3px_rgba(10,50,50,0.12)]' : 'text-ink-2 hover:bg-surface/60 hover:text-ink',
+            selected ? 'bg-surface font-semibold text-ink shadow-[0_1px_3px_rgba(0,0,0,0.12)]' : 'text-ink-2 hover:bg-surface/60 hover:text-ink',
           )}
         >
           <span aria-hidden="true" className={cn('shrink-0', selected ? 'text-brand' : 'text-ink-3')}>
