@@ -67,7 +67,7 @@ export const DisciplineForm = ({ formId, defaultValues = EMPTY_DISCIPLINE, onSub
           <Field label="Nome" htmlFor={`${formId}-name`} error={errors.name?.message}>
             <Input id={`${formId}-name`} placeholder="Ex.: Projetos de Software" {...register('name')} />
           </Field>
-          <Field label="Código, opcional" htmlFor={`${formId}-code`}>
+          <Field label="Código" htmlFor={`${formId}-code`} error={errors.code?.message}>
             <Input id={`${formId}-code`} placeholder="Ex.: IF1015" {...register('code')} />
           </Field>
         </div>
