@@ -76,11 +76,13 @@ interface AdoptDemandModalProps {
   demand: Demand;
   disciplines: DisciplineWithUsage[];
   calendar: SemesterCalendar;
+  /** Turma que já vem marcada, como a escolhida no Match Maker. Vale só se ela puder receber a demanda. */
+  initialDisciplineId?: string;
   onClose: () => void;
 }
 
 /** A decisão principal do produto: escolher a turma e confirmar. Sem disciplina, o cadastro acontece aqui mesmo. */
-export const AdoptDemandModal = ({ demand, disciplines, calendar, onClose }: AdoptDemandModalProps) => {
+export const AdoptDemandModal = ({ demand, disciplines, calendar, initialDisciplineId, onClose }: AdoptDemandModalProps) => {
   const navigate = useNavigate();
   const toast = useToast();
   const formId = useId();
@@ -89,7 +91,8 @@ export const AdoptDemandModal = ({ demand, disciplines, calendar, onClose }: Ado
 
   const ranked = rankDisciplines(demand, disciplines);
   const firstAvailable = ranked.find(canReceive);
-  const [selectedId, setSelectedId] = useState(firstAvailable?.discipline.id);
+  const preferred = ranked.find((match) => match.discipline.id === initialDisciplineId && canReceive(match));
+  const [selectedId, setSelectedId] = useState((preferred ?? firstAvailable)?.discipline.id);
   const [creating, setCreating] = useState(disciplines.length === 0);
   const selectedMatch = ranked.find((match) => match.discipline.id === selectedId);
   const selected = selectedMatch?.discipline;

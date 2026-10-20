@@ -1,4 +1,4 @@
-import { ArrowUpRightIcon, BookIcon, BuildingIcon, FolderIcon, HomeIcon, QuestionIcon, TrayIcon, UserIcon } from '@/components/ui/icons';
+import { ArrowUpRightIcon, BookIcon, BuildingIcon, FolderIcon, HomeIcon, LayersIcon, QuestionIcon, TrayIcon, UserIcon } from '@/components/ui/icons';
 import { useAccount } from '@/features/account/useAccount';
 import { useNotifications } from '@/features/notifications/useNotifications';
 import { paths } from '@/routes/paths';
@@ -17,6 +17,7 @@ const SIDEBAR: SidebarConfig = {
       items: [
         { to: paths.home, label: 'Início', icon: <HomeIcon /> },
         { to: paths.menu, label: 'Cardápio', icon: <TrayIcon /> },
+        { to: paths.matchMaker(), label: 'Match Maker', icon: <LayersIcon /> },
         { to: paths.projects, label: 'Projetos', icon: <FolderIcon /> },
       ],
     },

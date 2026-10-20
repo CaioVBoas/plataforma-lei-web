@@ -72,6 +72,7 @@ Só a próxima etapa pendente tem ação. As outras mostram a data prevista ou a
 | --- | --- | --- |
 | **Início** | O que fazer agora: reservas a decidir e etapas dos projetos | "O que eu preciso fazer hoje?" |
 | **Cardápio** | Escolher e reservar uma demanda | "Que problema a minha turma pode resolver?" |
+| **Match Maker** | Partir da turma e ver as demandas que combinam com ela | "Que demanda serve para esta turma?" |
 | **Projetos** | Acompanhar as etapas | "Em que pé estão os meus projetos?" |
 | **Disciplinas** | Dizer o que cada turma sabe fazer | "Quais turmas podem receber projeto?" |
 | **Organizações** | Conhecer os parceiros | "Com quem eu vou trabalhar?" |
@@ -96,6 +97,21 @@ Avisos não fica na barra lateral: o sino da barra superior abre os mais recente
    - Já é projeto seu: **Abrir projeto**.
 3. **Janela de confirmação.** O docente escolhe a disciplina (a que mais combina já vem marcada) e o número de equipes. A janela diz o que acontece em seguida. Se não houver disciplina cadastrada, o cadastro acontece ali mesmo.
 4. **Projeto criado.** O docente cai no projeto, na etapa 1, com o plano pronto para revisar.
+
+### F1b. Match Maker: da turma à demanda
+
+O caminho inverso do F1. Em vez de abrir uma demanda e ver qual turma serve, o docente parte da turma. Usa a mesma compatibilidade da regra 9 e as mesmas ações do cardápio; não existe regra nova.
+
+1. **Escolher a turma** (`/match-maker`). Só disciplinas do semestre atual, cada uma com quantas demandas combinam e as vagas. Já vem marcada a turma com mais demandas que combinam. Sem disciplina cadastrada, a tela leva ao cadastro. Também abre direto pela turma, em "Abrir no Match Maker" na página da disciplina (`?turma=`).
+2. **Ver as sugestões.** No alto, vagas, altura do curso e "Suas reservas: N de 3". Abas com contagem: **Combinam**, **Combinam em parte** (menos da metade das competências) e **Minhas reservas** (guardadas pelo docente, combinem ou não). A aba fica na URL. Demanda acima da altura do curso e demanda sem nenhuma competência em comum não aparecem. Os chips de competência filtram as sugestões que cobrem todas as marcadas; trocar de aba zera o filtro.
+3. **Escolher uma sugestão.** O cartão é uma escolha (rádio, setas do teclado): o azul marca a selecionada e o painel ao lado mostra por que combina, competência por competência, o que falta e o que pesa na rotina. Em tela estreita o painel vem abaixo e a tela rola até ele. Cobertura abaixo da metade mostra o aviso da regra 9.
+4. **Decidir, com uma ação primária por estado:**
+   - Livre: **Reservar por 7 dias**. Com 3 reservas, o botão desliga, diz o motivo e oferece **Ver minhas reservas**.
+   - Reservada por você: **Levar para a turma**, com **Liberar reserva** (mesmo `ConfirmDialog` do cardápio) como secundária. A janela de levar abre com a turma do Match Maker marcada. Sem vaga, acima do nível ou depois do prazo de vinculação, o botão desliga e a frase embaixo diz o que fazer.
+   - **Ver a demanda completa** leva ao detalhe do cardápio.
+5. Ao confirmar, o docente cai no projeto, como no F1.
+
+Não existe "pular" ou "não tenho interesse": a decisão da equipe é que a demanda simplesmente não é reservada.
 
 ### F2. Planejar
 
