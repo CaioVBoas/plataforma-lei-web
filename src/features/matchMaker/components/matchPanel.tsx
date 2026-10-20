@@ -13,7 +13,7 @@ import { formatShortDate, isLinkWindowOpen } from '@/domain/calendar';
 import { freeSlots } from '@/domain/disciplineRules';
 import type { DemandMatch } from '@/domain/matching';
 import { MAX_ACTIVE_RESERVATIONS, RESERVATION_DAYS } from '@/domain/reservation';
-import type { SemesterCalendar } from '@/domain/types';
+import type { Project, SemesterCalendar } from '@/domain/types';
 import { AdoptDemandModal } from '@/features/demands/components/adoptDemandModal';
 import { SkillChecklist } from '@/features/demands/components/skillsCoverage';
 import { useReleaseReservation, useReserveDemand } from '@/features/demands/useDemands';
@@ -21,6 +21,7 @@ import { CONSTRAINT_COPY, daysLeftLabel, SCOPE_COPY } from '@/features/demands/u
 import type { DisciplineWithUsage } from '@/features/disciplines/types';
 import { LEVEL_COPY } from '@/features/disciplines/utils/disciplinePresentation';
 import { paths } from '@/routes/paths';
+import { Mascot } from './mascot';
 import { cn } from '@/utils/cn';
 import { joinWithAnd } from '@/utils/format';
 
@@ -34,6 +35,8 @@ interface MatchPanelProps {
   calendar: SemesterCalendar;
   reservedCount: number;
   onShowReservations: () => void;
+  onReserved: () => void;
+  onAdopted: (project: Project, demandTitle: string) => void;
 }
 
 /**
@@ -41,7 +44,7 @@ interface MatchPanelProps {
  * a única ação do momento. O caminho é o do cardápio (reservar, pensar, levar),
  * então a regra de reserva e o prazo de vinculação valem aqui do mesmo jeito.
  */
-export const MatchPanel = ({ item, discipline, disciplines, calendar, reservedCount, onShowReservations }: MatchPanelProps) => {
+export const MatchPanel = ({ item, discipline, disciplines, calendar, reservedCount, onShowReservations, onReserved, onAdopted }: MatchPanelProps) => {
   const { demand, match } = item;
   const toast = useToast();
   const reserve = useReserveDemand();
@@ -122,10 +125,15 @@ export const MatchPanel = ({ item, discipline, disciplines, calendar, reservedCo
             fullWidth
             className="mt-5"
             disabled={reserve.isPending || reserveLimitReached}
-            onClick={() => reserve.mutate(demand.id, { onSuccess: () => toast.show(`Reservada por ${RESERVATION_DAYS} dias. Quando decidir, leve para ${discipline.name}.`) })}
+            onClick={() => reserve.mutate(demand.id, { onSuccess: () => {
+                  onReserved();
+                  toast.show(`Reservada por ${RESERVATION_DAYS} dias. Quando decidir, leve para ${discipline.name}.`);
+                },
+              })
+            }
           >
-            <BookmarkIcon size={16} />
-            Reservar por {RESERVATION_DAYS} dias
+            {reserve.isPending ? <Mascot tone="branco" pose="walk" size="xs" /> : <BookmarkIcon size={16} />}
+            {reserve.isPending ? 'Reservando' : `Reservar por ${RESERVATION_DAYS} dias`}
           </Button>
           {reserveLimitReached ? (
             <>
@@ -174,7 +182,7 @@ export const MatchPanel = ({ item, discipline, disciplines, calendar, reservedCo
           onClose={() => setReleasing(false)}
         />
       )}
-      {adopting && <AdoptDemandModal demand={demand} disciplines={disciplines} calendar={calendar} initialDisciplineId={discipline.id} onClose={() => setAdopting(false)} />}
+      {adopting && <AdoptDemandModal demand={demand} disciplines={disciplines} calendar={calendar} initialDisciplineId={discipline.id} onAdopted={(project) => onAdopted(project, demand.title)} onClose={() => setAdopting(false)} />}
     </div>
   );
 };

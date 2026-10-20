@@ -1,9 +1,10 @@
 import { useId, useRef, useState } from 'react';
+import type { Project } from '@/domain/types';
 import { Button } from '@/components/ui/button';
 import { ChoiceChips } from '@/components/ui/choiceChips';
 import { EmptyState } from '@/components/ui/emptyState';
 import { BookmarkIcon, CloseIcon, LayersIcon } from '@/components/ui/icons';
-import { FactGrid, Page } from '@/components/ui/page';
+import { FactGrid } from '@/components/ui/page';
 import { UnderlineTabs } from '@/components/ui/underlineTabs';
 import { rankDemandsFor } from '@/domain/matching';
 import { isMyReservation, MAX_ACTIVE_RESERVATIONS } from '@/domain/reservation';
@@ -11,10 +12,13 @@ import type { Demand, SemesterCalendar } from '@/domain/types';
 import type { DisciplineWithUsage } from '@/features/disciplines/types';
 import { LEVEL_COPY, slotsLabel } from '@/features/disciplines/utils/disciplinePresentation';
 import { useTabParam } from '@/hooks/useTabParam';
-import { paths, type MatchMakerView } from '@/routes/paths';
+import type { MatchMakerView } from '@/routes/paths';
 import { cardGridClassName } from '@/components/ui/card';
 import { pluralize } from '@/utils/format';
+import { useStage } from '../hooks';
+import { resultsStage } from '../utils/stageCopy';
 import { filterableSkills, filterBySkills, itemsForView, MATCH_MAKER_VIEWS, myReservationsFor, VIEW_HELP } from '../utils/matchMakerPresentation';
+import type { StageState } from './mascotStage';
 import { MatchPanel } from './matchPanel';
 import { SuggestionCard } from './suggestionCard';
 
@@ -23,6 +27,11 @@ interface SuggestionsStepProps {
   disciplines: DisciplineWithUsage[];
   menu: Demand[];
   calendar: SemesterCalendar;
+  onStage: (stage: StageState) => void;
+  /** O mascote pula: uma reserva foi feita. */
+  onReserved: () => void;
+  /** A demanda virou projeto: a página conduz a transição até ele. */
+  onAdopted: (project: Project, demandTitle: string) => void;
 }
 
 const EMPTY_COPY: Record<MatchMakerView, { title: string; description: string }> = {
@@ -32,7 +41,7 @@ const EMPTY_COPY: Record<MatchMakerView, { title: string; description: string }>
 };
 
 /** Segunda pergunta: qual destas demandas é a da turma. Lista à esquerda, o porquê e a ação à direita. */
-export const SuggestionsStep = ({ discipline, disciplines, menu, calendar }: SuggestionsStepProps) => {
+export const SuggestionsStep = ({ discipline, disciplines, menu, calendar, onStage, onReserved, onAdopted }: SuggestionsStepProps) => {
   const groupName = useId();
   const panelRef = useRef<HTMLElement>(null);
   const [view, setViewParam] = useTabParam(MATCH_MAKER_VIEWS);
@@ -54,6 +63,9 @@ export const SuggestionsStep = ({ discipline, disciplines, menu, calendar }: Sug
   // Sem escolha (ou com a escolhida fora da lista), vale a primeira: o painel nunca fica vazio com sugestões na tela.
   const selected = items.find(({ demand }) => demand.id === selectedId) ?? items[0];
 
+  // O palco acompanha o que está escolhido: azul para agir, laranja se já é reserva sua.
+  useStage(onStage, resultsStage(selected, view, discipline));
+
   // Trocar de recorte zera os filtros: uma competência marcada antes poderia não existir no novo recorte.
   const setView = (next: MatchMakerView) => {
     setSkills([]);
@@ -71,12 +83,8 @@ export const SuggestionsStep = ({ discipline, disciplines, menu, calendar }: Sug
   };
 
   return (
-    <Page
-      title="Match Maker"
-      eyebrow={discipline.name}
-      subtitle={`Demandas que combinam com o que ${discipline.name} trabalha. Escolha uma para ver o porquê.`}
-      back={{ to: paths.matchMaker(), label: 'Escolher outra turma' }}
-    >
+    <>
+      <div className="mt-8">
       <FactGrid
         columns={3}
         items={[
@@ -85,12 +93,13 @@ export const SuggestionsStep = ({ discipline, disciplines, menu, calendar }: Sug
           { label: 'Suas reservas', value: `${reservedCount} de ${MAX_ACTIVE_RESERVATIONS}` },
         ]}
       />
+      </div>
 
       <UnderlineTabs
         label="Recorte das sugestões"
         value={view}
         onChange={setView}
-        className="mt-10"
+        className="mt-8"
         options={[
           { value: 'combinam', label: 'Combinam', count: counts.combinam },
           { value: 'parte', label: 'Combinam em parte', count: counts.parte },
@@ -140,8 +149,8 @@ export const SuggestionsStep = ({ discipline, disciplines, menu, calendar }: Sug
           ) : (
             <div role="radiogroup" aria-label="Sugestões para a turma">
               <ul className={cardGridClassName}>
-                {items.map((item) => (
-                  <li key={item.demand.id}>
+                {items.map((item, index) => (
+                  <li key={item.demand.id} className="animate-rise-in [animation-fill-mode:backwards]" style={{ animationDelay: `${Math.min(index, 8) * 60}ms` }}>
                     <SuggestionCard item={item} today={calendar.today} name={groupName} selected={item.demand.id === selected?.demand.id} onSelect={() => select(item.demand.id)} />
                   </li>
                 ))}
@@ -159,10 +168,12 @@ export const SuggestionsStep = ({ discipline, disciplines, menu, calendar }: Sug
               calendar={calendar}
               reservedCount={reservedCount}
               onShowReservations={() => setView('reservas')}
+              onReserved={onReserved}
+              onAdopted={onAdopted}
             />
           )}
         </aside>
       </div>
-    </Page>
+    </>
   );
 };
