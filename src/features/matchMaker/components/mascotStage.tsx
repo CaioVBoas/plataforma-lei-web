@@ -75,8 +75,9 @@ export const MascotStage = ({ stage, burst }: MascotStageProps) => {
         className={cn(
           'px-5 pt-6 transition-[padding] duration-700 ease-in-out sm:px-8 sm:pt-8',
           working ? 'pb-28' : 'pb-6 sm:pb-8',
-          !working && 'pl-[calc(var(--pad)+var(--mw)+1.5rem)]',
         )}
+        // Fora da busca o balão sai de baixo do caranguejo. Inline porque o recuo lateral das telas largas (sm:px-8) venceria uma classe.
+        style={working ? undefined : { paddingLeft: 'calc(var(--pad) + var(--mw) + 1.5rem)' }}
       >
         {/* A chave no texto repete a entrada a cada mensagem nova. */}
         <div key={`${stage.title}|${stage.text}`} role="status" className="relative min-w-0 animate-rise-in rounded-lg border border-line bg-surface px-5 py-4">
@@ -98,6 +99,7 @@ export const MascotStage = ({ stage, burst }: MascotStageProps) => {
           size="fluid"
           burst={burst}
           overlayClassName={working ? 'text-white' : undefined}
+          className="motion-safe:animate-mascot-enter"
         />
       </div>
     </section>

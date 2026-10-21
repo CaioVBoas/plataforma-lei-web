@@ -31,10 +31,12 @@ export const chooseStage = (discipline: DisciplineWithUsage | undefined, fits: n
     ? {
         tone: 'identity',
         pose: 'idle',
+        // Na primeira tela o caranguejo chama: os anéis saem do botão de play.
+        variant: 'calling',
         title: discipline.name,
         text: `${pluralize(fits, 'demanda combina', 'demandas combinam')} com o que a turma trabalha, e ${slotsLabel(discipline)}. Escolha Ver sugestões para continuar.`,
       }
-    : { tone: 'identity', pose: 'idle', title: 'Qual turma vai receber um projeto?', text: 'Escolha uma turma e o PLEI mostra as demandas que combinam com ela.' };
+    : { tone: 'identity', pose: 'idle', variant: 'calling', title: 'Qual turma vai receber um projeto?', text: 'Escolha uma turma e o PLEI mostra as demandas que combinam com ela.' };
 
 export interface SearchFacts {
   skills: number;

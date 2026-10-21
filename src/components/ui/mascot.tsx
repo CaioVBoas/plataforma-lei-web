@@ -147,7 +147,7 @@ interface MascotProps {
  * Decorativo: quem usa diz o que está acontecendo no texto ao lado.
  */
 export const Mascot = ({ tone, variant = 'default', pose, size = 'md', burst = 0, overlayClassName, className, style }: MascotProps) => (
-  <span aria-hidden="true" className={cn('inline-block shrink-0', className)} style={style}>
+  <span aria-hidden="true" className={cn(size === 'fluid' ? 'block w-full' : 'inline-block shrink-0', className)} style={style}>
     {/* A chave no pulo reinicia a animação a cada reserva ou escolha. */}
     <span key={burst} className={cn('block origin-bottom', burst > 0 && 'motion-safe:animate-mascot-hop')}>
       <span className={cn('relative block origin-bottom aspect-[311/191]', SIZE_CLASSES[size], POSE_CLASSES[pose ?? VARIANT_POSE[variant]])}>

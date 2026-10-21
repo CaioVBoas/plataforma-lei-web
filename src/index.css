@@ -156,6 +156,8 @@
   --animate-curtain-in: curtain-in 650ms var(--ease-standard) both;
   --animate-step-pop: step-pop 260ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
 
+  /* A entrada: o caranguejo chega andando de lado, da esquerda. */
+  --animate-mascot-enter: mascot-enter 900ms cubic-bezier(0.22, 1, 0.36, 1) both;
   --animate-mascot-cheer: mascot-cheer 1.4s cubic-bezier(0.34, 1.56, 0.64, 1) infinite;
   /* A espera: o caranguejo patrulha a faixa de água, de um lado ao outro, sem pressa. */
   --animate-mascot-patrol: mascot-patrol 2.8s ease-in-out infinite alternate;
@@ -163,6 +165,13 @@
   --animate-dots-blink: dots-blink 1.4s ease-in-out infinite;
   --animate-sparkle: sparkle 2.4s ease-in-out infinite;
 
+  @keyframes mascot-enter {
+    0% { opacity: 0; transform: translateX(-56px) rotate(-6deg); }
+    35% { opacity: 1; }
+    55% { transform: translateX(-18px) rotate(4deg); }
+    75% { transform: translateX(-6px) rotate(-3deg); }
+    100% { opacity: 1; transform: translateX(0) rotate(0deg); }
+  }
   @keyframes mascot-cheer {
     0%, 45%, 100% { transform: translateY(0) scale(1, 1); }
     18% { transform: translateY(-14px) scale(0.97, 1.05); }
@@ -185,8 +194,8 @@
     50% { transform: translateY(-7px) rotate(25deg); }
   }
   @keyframes mascot-idle {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-3px); }
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-6px) rotate(-2deg); }
   }
   @keyframes mascot-walk {
     0%, 100% { transform: translateX(-14px) rotate(-4deg); }
