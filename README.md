@@ -28,6 +28,7 @@ A página inicial (`/`) é o portal público do L.E.I. Para entrar como docente,
 | Início | O que eu preciso fazer hoje? |
 | Avisos (sino da barra superior) | O que mudou e o que pede decisão minha? |
 | Cardápio | Que problema a minha turma pode resolver? |
+| Match Maker | Que demanda serve para esta turma? |
 | Projetos | Em que pé estão os meus projetos? |
 | Disciplinas | Quais turmas podem receber projeto? |
 | Organizações | Com quem eu vou trabalhar? |
@@ -83,6 +84,7 @@ src/
 | `demands` | Cardápio, detalhe com a reserva e a janela "Levar para uma disciplina" |
 | `projects` | `list/` (lista de projetos), `workspace/` (próximo passo, etapas, plano e organização) e `shared/` (o que outras telas usam) |
 | `disciplines` | Disciplinas, cadastro e detalhe com as demandas que combinam |
+| `matchMaker` | Match Maker: escolher a turma, ver as demandas que combinam e reservar ou levar, na mesma tela |
 | `organizations` | Organizações e detalhe com contato e histórico |
 | `landing` | Portal público: abertura com fotos, perfis, boas-vindas, carrossel e como funciona |
 | `notifications` | Sino e página de avisos, derivados do cardápio, dos projetos e do calendário |
@@ -125,7 +127,7 @@ export const getMenu = () => api.get<Demand[]>('/menu').then((response) => respo
 
 - **Propor um projeto a uma organização**, sem partir de uma demanda do cardápio, ainda não tem fluxo. Por isso a página da organização não tem esse botão.
 - **Ementa, carga horária e nível da disciplina**, e as ações de duplicar, pausar e arquivar disciplina, dependem do modelo `Course` da API (seção 5 do plano de reestruturação).
-- A **triagem do L.E.I.** ainda não tem painel. A demanda enviada pela organização fica "Na triagem do L.E.I." e não chega sozinha ao cardápio; o pedido de ajuste e a aprovação vêm do seed. O matchmaking por IA entre demandas, docentes e disciplinas também fica de fora deste repositório.
+- A **triagem do L.E.I.** ainda não tem painel. A demanda enviada pela organização fica "Na triagem do L.E.I." e não chega sozinha ao cardápio; o pedido de ajuste e a aprovação vêm do seed. O Match Maker do docente usa só a compatibilidade contada de `src/domain/matching.ts`; o matchmaking por IA entre demandas, docentes e disciplinas fica de fora deste repositório.
 - O **portal dos estudantes** (participar da turma, contar horas) ainda não foi desenhado; entrada e cadastro mostram esse perfil como "em breve".
 - O **plano gerado** vem pronto do seed. Na versão real ele sai de um modelo de linguagem alimentado pela demanda e pela disciplina.
 - O **prazo de vinculação** e o calendário do semestre precisam vir do calendário acadêmico oficial.

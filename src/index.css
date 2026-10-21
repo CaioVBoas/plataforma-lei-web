@@ -143,6 +143,47 @@
   --animate-rise-in: rise-in 220ms var(--ease-standard);
   /* Água correndo pela meia-lua do portal: uma onda inteira por ciclo, sem emenda. */
   --animate-water: water 6s linear infinite;
+  /*
+   * Mascote do Match Maker. O caranguejo é o arquivo oficial da marca; só o
+   * movimento é daqui: parado respira, na busca anda de lado, ao decidir dá um pulo.
+   * Quem usa põe motion-safe: quando a pessoa pede menos movimento, ele fica parado.
+   */
+  --animate-mascot-idle: mascot-idle 3.2s ease-in-out infinite;
+  --animate-mascot-walk: mascot-walk 1s ease-in-out infinite;
+  --animate-mascot-think: mascot-think 2.6s ease-in-out infinite;
+  --animate-mascot-hop: mascot-hop 700ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  /* A cortina de cor ao levar a demanda: abre do centro até cobrir a tela. */
+  --animate-curtain-in: curtain-in 650ms var(--ease-standard) both;
+  --animate-step-pop: step-pop 260ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+
+  @keyframes mascot-idle {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-3px); }
+  }
+  @keyframes mascot-walk {
+    0%, 100% { transform: translateX(-14px) rotate(-4deg); }
+    25% { transform: translateX(-7px) rotate(3deg); }
+    50% { transform: translateX(14px) rotate(-3deg); }
+    75% { transform: translateX(7px) rotate(3deg); }
+  }
+  @keyframes mascot-think {
+    0%, 100% { transform: rotate(-5deg); }
+    50% { transform: rotate(5deg); }
+  }
+  @keyframes mascot-hop {
+    0% { transform: translateY(0) scale(1, 1); }
+    30% { transform: translateY(-16px) scale(0.96, 1.06); }
+    60% { transform: translateY(0) scale(1.06, 0.94); }
+    100% { transform: translateY(0) scale(1, 1); }
+  }
+  @keyframes curtain-in {
+    from { clip-path: circle(0% at 50% 55%); }
+    to { clip-path: circle(150% at 50% 55%); }
+  }
+  @keyframes step-pop {
+    from { opacity: 0; transform: scale(0.6); }
+    to { opacity: 1; transform: scale(1); }
+  }
 
   @keyframes water {
     to {

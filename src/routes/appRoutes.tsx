@@ -19,6 +19,7 @@ const ProjectsPage = lazyPage(() => import('@/features/projects/list/projectsPag
 const ProjectPage = lazyPage(() => import('@/features/projects/workspace/projectPage'), 'ProjectPage');
 const DisciplinesPage = lazyPage(() => import('@/features/disciplines/disciplinesPage'), 'DisciplinesPage');
 const DisciplinePage = lazyPage(() => import('@/features/disciplines/disciplinePage'), 'DisciplinePage');
+const MatchMakerPage = lazyPage(() => import('@/features/matchMaker/matchMakerPage'), 'MatchMakerPage');
 const OrganizationsPage = lazyPage(() => import('@/features/organizations/organizationsPage'), 'OrganizationsPage');
 const OrganizationPage = lazyPage(() => import('@/features/organizations/organizationPage'), 'OrganizationPage');
 const NotificationsPage = lazyPage(() => import('@/features/notifications/notificationsPage'), 'NotificationsPage');
@@ -52,6 +53,7 @@ export const AppRoutes = () => (
           <Route path="/projetos/:projectId" element={<ProjectPage />} />
           <Route path={paths.disciplines} element={<DisciplinesPage />} />
           <Route path="/disciplinas/:disciplineId" element={<DisciplinePage />} />
+          <Route path="/match-maker" element={<MatchMakerPage />} />
           <Route path={paths.organizations} element={<OrganizationsPage />} />
           <Route path="/organizacoes/:organizationId" element={<OrganizationPage />} />
           <Route path={paths.notifications} element={<NotificationsPage />} />

@@ -1,10 +1,11 @@
 import { useId } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { QueryView } from '@/components/feedback/queryStates';
 import { useToast } from '@/components/feedback/toastContext';
 import { Button } from '@/components/ui/button';
+import { buttonClassName } from '@/components/ui/buttonStyles';
 import { cardGridClassName } from '@/components/ui/card';
-import { CheckIcon } from '@/components/ui/icons';
+import { CheckIcon, LayersIcon } from '@/components/ui/icons';
 import { ItemList } from '@/components/ui/itemList';
 import { FactGrid, Page, Section } from '@/components/ui/page';
 import { ProfileHeader } from '@/components/ui/profileHeader';
@@ -156,7 +157,18 @@ const DisciplineView = ({ discipline }: { discipline: DisciplineWithUsage }) => 
       </Section>
 
       {discipline.isCurrent && (
-        <Section id="demandas" title="Demandas que combinam" description="Livres no cardápio, cobrem metade das competências e cabem na altura do curso." compact>
+        <Section
+          id="demandas"
+          title="Demandas que combinam"
+          description="Livres no cardápio, cobrem metade das competências e cabem na altura do curso."
+          compact
+          aside={
+            <Link to={paths.matchMaker(discipline.id)} className={buttonClassName({ variant: 'secondary' })}>
+              <LayersIcon size={16} />
+              Abrir no Match Maker
+            </Link>
+          }
+        >
           <MatchingDemands discipline={discipline} />
         </Section>
       )}

@@ -6,6 +6,24 @@ import type { DisciplineWithUsage } from '@/features/disciplines/types';
 import { LEVEL_COPY } from '@/features/disciplines/utils/disciplinePresentation';
 import { cn } from '@/utils/cn';
 
+/** Cada competência pedida com o sinal de pronto quando a turma já a trabalha. Leitor de tela ouve o estado. */
+export const SkillChecklist = ({ skills, covered, className }: { skills: string[]; covered: Set<string>; className?: string }) => (
+  <ul className={cn('space-y-1.5', className)}>
+    {skills.map((skill) => (
+      <li key={skill} className={cn('flex items-center gap-2 text-small', covered.has(skill) ? 'text-ink' : 'text-ink-3')}>
+        <span
+          aria-hidden="true"
+          className={cn('flex size-4 shrink-0 items-center justify-center rounded-full', covered.has(skill) ? 'bg-positive text-white' : 'border border-line-strong')}
+        >
+          {covered.has(skill) && <CheckIcon size={11} strokeWidth={2.8} />}
+        </span>
+        <span className="min-w-0 truncate">{skill}</span>
+        <span className="sr-only">{covered.has(skill) ? ', a turma trabalha' : ', falta'}</span>
+      </li>
+    ))}
+  </ul>
+);
+
 interface SkillsCoverageProps {
   skills: string[];
   matches: DisciplineMatch<DisciplineWithUsage>[];
@@ -45,20 +63,7 @@ export const SkillsCoverage = ({ skills, matches }: SkillsCoverageProps) => {
                 {match.covered.length} de {skills.length}
               </span>
             </div>
-            <ul className="mt-3 space-y-1.5">
-              {skills.map((skill) => (
-                <li key={skill} className={cn('flex items-center gap-2 text-small', covered.has(skill) ? 'text-ink' : 'text-ink-3')}>
-                  <span
-                    aria-hidden="true"
-                    className={cn('flex size-4 shrink-0 items-center justify-center rounded-full', covered.has(skill) ? 'bg-positive text-white' : 'border border-line-strong')}
-                  >
-                    {covered.has(skill) && <CheckIcon size={11} strokeWidth={2.8} />}
-                  </span>
-                  <span className="min-w-0 truncate">{skill}</span>
-                  <span className="sr-only">{covered.has(skill) ? ', a turma trabalha' : ', falta'}</span>
-                </li>
-              ))}
-            </ul>
+            <SkillChecklist skills={skills} covered={covered} className="mt-3" />
             {match.aboveLevel && (
               <p className="mt-3 text-small text-caution">
                 Pede mais do que a turma, que está no {LEVEL_COPY[match.discipline.level].label.toLowerCase()}.
