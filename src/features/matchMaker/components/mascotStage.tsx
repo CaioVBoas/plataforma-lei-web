@@ -1,5 +1,5 @@
+import { Mascot, type MascotPose, type MascotTone, type MascotVariant } from '@/components/ui/mascot';
 import { cn } from '@/utils/cn';
-import { Mascot, type MascotPose, type MascotTone } from './mascot';
 
 /**
  * A cor do palco conta o momento, com os mesmos papéis do resto do portal:
@@ -13,6 +13,10 @@ export interface StageState {
   pose: MascotPose;
   title: string;
   text: string;
+  /** Qual variação do mascote aparece; sem isso, o caranguejo padrão. */
+  variant?: MascotVariant;
+  /** Só na busca: de 0 a 1, onde o caranguejo está na faixa de água. Sem isso, ele patrulha a faixa. */
+  progress?: number;
 }
 
 const TONES: Record<StageTone, { surface: string; mascot: MascotTone }> = {
@@ -35,6 +39,9 @@ const Water = () => (
   </div>
 );
 
+/** Altura do caranguejo: a largura dividida pela proporção do desenho (311 por 191). */
+const MASCOT_H = 'calc(var(--mw) * 0.614)';
+
 interface MascotStageProps {
   stage: StageState;
   /** Número que sobe a cada gesto (escolher turma, reservar) e faz o mascote pular. */
@@ -44,26 +51,55 @@ interface MascotStageProps {
 /**
  * O palco do Match Maker: o mascote e o balão com o que está acontecendo.
  * Fica em cima das três etapas, então a cor muda em transição em vez de piscar
- * a cada tela. O balão é branco com borda, como as mensagens do portal, e o
- * texto dele nunca depende da cor do palco (contraste AA).
+ * a cada tela. Na busca o caranguejo sai do canto e anda pela água, mais longe a
+ * cada passo, e na volta para as sugestões ele atravessa de novo até o canto. O
+ * balão é branco com borda, como as mensagens do portal, e o texto dele nunca
+ * depende da cor do palco (contraste AA).
  */
 export const MascotStage = ({ stage, burst }: MascotStageProps) => {
   const tone = TONES[stage.tone];
+  const working = stage.tone === 'working';
+  const placed = working && stage.progress !== undefined;
+  const left = placed ? `calc(var(--pad) + (100% - var(--mw) - 2 * var(--pad)) * ${stage.progress})` : 'var(--pad)';
+
   return (
     <section
       aria-label="Match Maker"
-      className={cn('relative overflow-hidden rounded-lg border transition-colors duration-500 ease-standard', tone.surface)}
+      className={cn(
+        'relative min-h-[132px] overflow-hidden rounded-lg border [--mw:84px] [--pad:20px] sm:[--mw:104px] sm:[--pad:32px]',
+        'transition-[background-color,border-color] duration-500 ease-standard',
+        tone.surface,
+      )}
     >
-      <div className={cn('flex items-center gap-5 px-5 py-6 sm:gap-8 sm:px-8 sm:py-8', stage.tone === 'working' && 'pb-12')}>
-        <Mascot tone={tone.mascot} pose={stage.pose} burst={burst} />
+      <div
+        className={cn(
+          'px-5 pt-6 transition-[padding] duration-700 ease-in-out sm:px-8 sm:pt-8',
+          working ? 'pb-28' : 'pb-6 sm:pb-8',
+          !working && 'pl-[calc(var(--pad)+var(--mw)+1.5rem)]',
+        )}
+      >
         {/* A chave no texto repete a entrada a cada mensagem nova. */}
-        <div key={`${stage.title}|${stage.text}`} role="status" className="relative min-w-0 flex-1 animate-rise-in rounded-lg border border-line bg-surface px-5 py-4">
-          <span aria-hidden="true" className="absolute top-1/2 -left-1.5 hidden size-3 -translate-y-1/2 rotate-45 border-b border-l border-line bg-surface sm:block" />
+        <div key={`${stage.title}|${stage.text}`} role="status" className="relative min-w-0 animate-rise-in rounded-lg border border-line bg-surface px-5 py-4">
+          {!working && <span aria-hidden="true" className="absolute top-1/2 -left-1.5 size-3 -translate-y-1/2 rotate-45 border-b border-l border-line bg-surface" />}
           <p className="text-h4 text-ink">{stage.title}</p>
           <p className="mt-1 text-small text-ink-2">{stage.text}</p>
         </div>
       </div>
-      {stage.tone === 'working' && <Water />}
+      {working && <Water />}
+      {/* Um só caranguejo para as três etapas: o canto, a faixa de água e o canto de novo são deslocamentos dele. */}
+      <div
+        className={cn('absolute w-(--mw) transition-[top,left] duration-700 ease-in-out', working && !placed && 'motion-safe:animate-mascot-patrol')}
+        style={{ top: working ? `calc(100% - ${MASCOT_H} - 10px)` : `calc(50% - ${MASCOT_H} / 2)`, ...(working && !placed ? {} : { left }) }}
+      >
+        <Mascot
+          tone={tone.mascot}
+          variant={stage.variant}
+          pose={stage.pose}
+          size="fluid"
+          burst={burst}
+          overlayClassName={working ? 'text-white' : undefined}
+        />
+      </div>
     </section>
   );
 };

@@ -3,9 +3,10 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { LoadingState } from '@/components/feedback/queryStates';
 import { buttonClassName } from '@/components/ui/buttonStyles';
 import { EmptyState } from '@/components/ui/emptyState';
+import { FilterBar } from '@/components/ui/filterBar';
 import { FilterDropdown } from '@/components/ui/filterDropdown';
 import { SearchInput } from '@/components/ui/formControls';
-import { ArrowLeftIcon, EyeIcon, TrayIcon, UserIcon } from '@/components/ui/icons';
+import { ArrowLeftIcon, EyeIcon, TrayIcon } from '@/components/ui/icons';
 import { MonthPicker } from '@/components/ui/monthPicker';
 import { Page } from '@/components/ui/page';
 import { formatShortDate } from '@/domain/calendar';
@@ -151,14 +152,15 @@ export const OrgQuestionsPage = () => {
 
   return (
     <Page title={TITLE} subtitle={SUBTITLE}>
-      <div role="search" aria-label="Filtrar perguntas" className="mb-5 grid gap-3 sm:flex sm:flex-wrap sm:items-center">
+      <FilterBar label="Filtrar perguntas" onClear={filtering ? () => {
+          setSearch('');
+          setSearchParams(openId ? { conversa: openId } : {}, { replace: true });
+        } : undefined}>
         <SearchInput
           aria-label="Buscar nas perguntas"
           placeholder="Buscar nas perguntas"
           value={search}
           onChange={(event) => setSearch(event.target.value)}
-          containerClassName="sm:w-[14rem]"
-          className="h-11 border-line-strong! bg-surface text-body"
         />
         <FilterDropdown
           label="Mostrar"
@@ -172,14 +174,12 @@ export const OrgQuestionsPage = () => {
         />
         <FilterDropdown
           label="Demanda"
-          icon={<TrayIcon size={20} />}
           value={demandFilter}
           onChange={(value) => setParam('demanda', value)}
           options={[{ value: ALL, label: 'Todas' }, ...demands.map((demand) => ({ value: demand.id, label: demand.title, count: demand.questions.length }))]}
         />
         <FilterDropdown
           label="Docente"
-          icon={<UserIcon size={20} />}
           value={teacherFilter}
           onChange={(value) => setParam('docente', value)}
           options={[
@@ -188,19 +188,7 @@ export const OrgQuestionsPage = () => {
           ]}
         />
         <MonthPicker value={month} onChange={(value) => setParam('mes', value)} available={months} current={calendar.today.slice(0, 7)} />
-        {filtering && (
-          <button
-            type="button"
-            onClick={() => {
-              setSearch('');
-              setSearchParams(openId ? { conversa: openId } : {}, { replace: true });
-            }}
-            className="inline-flex min-h-11 items-center justify-center rounded-lg px-3 text-body font-medium text-accent hover:bg-accent-soft"
-          >
-            Limpar filtros
-          </button>
-        )}
-      </div>
+      </FilterBar>
 
       {conversations.length === 0 ? (
         <EmptyState

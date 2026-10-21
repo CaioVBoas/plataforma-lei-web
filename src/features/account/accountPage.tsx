@@ -135,6 +135,14 @@ export const AccountPage = () => {
   return (
     <Page
       title="Minha conta"
+      actions={
+        !editing && (
+          <Button variant="primary" size="xl" onClick={() => setEditing(true)}>
+            <PencilIcon size={20} />
+            Editar perfil
+          </Button>
+        )
+      }
       hero={
         accountQuery.data && (
           <ProfileHeader
@@ -146,24 +154,13 @@ export const AccountPage = () => {
         )
       }
     >
-      <Section
-        title="Perfil"
-        description="O que as organizações e o L.E.I. veem sobre você."
-        aside={
-          !editing && (
-            <Button variant="primary" size="xl" onClick={() => setEditing(true)}>
-              <PencilIcon size={20} />
-              Editar perfil
-            </Button>
-          )
-        }
-      >
+      <Section>
         <QueryView query={accountQuery}>
           {(account) => (editing ? <AccountForm account={account} onClose={() => setEditing(false)} /> : <AccountView account={account} />)}
         </QueryView>
       </Section>
 
-      <Section title="Conta" description="Como você entra no PLEI. Fica separado do perfil e não muda com o Editar perfil.">
+      <Section compact>
         <QueryView query={accountQuery}>
           {(account) => (
             <AccountAccess

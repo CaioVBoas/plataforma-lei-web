@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { QueryView } from '@/components/feedback/queryStates';
 import { EmptyState } from '@/components/ui/emptyState';
+import { FilterBar } from '@/components/ui/filterBar';
 import { SearchInput } from '@/components/ui/formControls';
 import { cardGridClassName, linkCardClassName } from '@/components/ui/card';
 import { Monogram } from '@/components/ui/monogram';
@@ -57,13 +58,9 @@ export const OrganizationsPage = () => {
 
   return (
     <Page title="Organizações" subtitle="Quem publica as demandas do cardápio.">
-      <SearchInput
-        aria-label="Buscar organizações"
-        placeholder="Buscar organização"
-        value={search}
-        onChange={(event) => setSearch(event.target.value)}
-        containerClassName="mb-5 w-full sm:w-[320px]"
-      />
+      <FilterBar label="Filtrar organizações">
+        <SearchInput aria-label="Buscar organizações" placeholder="Buscar organização" value={search} onChange={(event) => setSearch(event.target.value)} />
+      </FilterBar>
       <QueryView query={organizationsQuery}>{(organizations) => <OrganizationList organizations={organizations} search={search} />}</QueryView>
     </Page>
   );

@@ -70,7 +70,7 @@ Só a próxima etapa pendente tem ação. As outras mostram a data prevista ou a
 
 | Item | Para quê | Pergunta que responde |
 | --- | --- | --- |
-| **Início** | O que fazer agora: reservas a decidir e etapas dos projetos | "O que eu preciso fazer hoje?" |
+| **Início** | O que fazer agora: o convite do mascote para o Match Maker, reservas a decidir e etapas dos projetos | "O que eu preciso fazer hoje?" |
 | **Cardápio** | Escolher e reservar uma demanda | "Que problema a minha turma pode resolver?" |
 | **Match Maker** | Partir da turma e ver as demandas que combinam com ela | "Que demanda serve para esta turma?" |
 | **Projetos** | Acompanhar as etapas | "Em que pé estão os meus projetos?" |
@@ -112,11 +112,22 @@ O caminho inverso do F1. Em vez de abrir uma demanda e ver qual turma serve, o d
 | Sugestão que já é reserva sua | âmbar suave (`reserve-soft`) | grafite |
 | Cortina ao levar para a turma | vermelho cheio, tela inteira | branco, anda de lado |
 
-O mascote pula uma vez ao escolher uma turma e ao reservar. Com `prefers-reduced-motion`, a busca é pulada, o mascote fica parado e a cortina aparece direto, por menos tempo. Os tokens de movimento (`animate-mascot-*`, `animate-curtain-in`) estão no `index.css`.
+**Variações do mascote.** O caranguejo é sempre o arquivo oficial; cada momento muda a pose e põe um acessório simples por cima (`components/ui/mascot.tsx`):
+
+| Variação | Onde aparece | O que muda |
+| --- | --- | --- |
+| `calling` | Convite no Início | anéis saindo do botão de play |
+| `searching` | Busca do Match Maker | anda de lado, com uma lupa |
+| `found` | Fim da busca e sugestão reservada | selo de confirmação |
+| `empty` | Estados vazios de toda a plataforma | inclinado, com reticências |
+| `error` | Quando algo não carrega | inclinado, com selo de atenção |
+| `celebrating` | Cortina ao virar projeto | pula, com confete |
+
+Na busca o caranguejo sai do canto e anda pela água, um terço mais longe a cada passo, e na volta atravessa de novo até o canto. Enquanto o cardápio abre, ele patrulha a água de um lado ao outro. O mascote pula uma vez ao escolher uma turma e ao reservar. Com `prefers-reduced-motion`, a busca é pulada, o mascote fica parado e a cortina aparece direto, por menos tempo. Os tokens de movimento (`animate-mascot-*`, `animate-curtain-in`) estão no `index.css`.
 
 1. **Escolher a turma** (`/match-maker`). Só disciplinas do semestre atual, cada uma com quantas demandas combinam e as vagas. Já vem marcada a turma com mais demandas que combinam, e o balão mostra a turma marcada. Sem disciplina cadastrada, a tela leva ao cadastro. Também abre direto pela turma, em "Abrir no Match Maker" na página da disciplina (`?turma=`).
 2. **Busca.** Três passos reais, na ordem em que a regra roda: competências da turma, demandas do cardápio, quantas combinam. Cada passo mostra o número que a regra de fato contou, nunca uma estimativa. Dura 2,6 segundos e **Ver agora** pula. Não repete para a mesma turma na mesma visita.
-3. **Ver as sugestões.** No alto, vagas, altura do curso e "Suas reservas: N de 3". Abas com contagem: **Combinam**, **Combinam em parte** (menos da metade das competências) e **Minhas reservas** (guardadas pelo docente, combinem ou não). A aba fica na URL. Demanda acima da altura do curso e demanda sem nenhuma competência em comum não aparecem. Os chips de competência filtram as sugestões que cobrem todas as marcadas; trocar de aba zera o filtro. Os cartões entram em sequência.
+3. **Ver as sugestões.** No alto, vagas, altura do curso e "Suas reservas: N de 3". Depois a linha de busca e filtros do portal: busca pelo nome da demanda ou da organização, **Mostrar** (Combinam, Combinam em parte e Minhas reservas, cada um com a contagem; combinam em parte são as que a turma cobre em menos da metade das competências; minhas reservas são as guardadas pelo docente, combinem ou não) e **Competência** (as que a turma trabalha e alguma sugestão pede). Demanda acima da altura do curso e demanda sem nenhuma competência em comum não aparecem. Trocar o Mostrar zera a competência. Os cartões entram em sequência.
 4. **Escolher uma sugestão.** O cartão é uma escolha (rádio, setas do teclado): o vermelho da ação marca a selecionada, o palco acompanha e o painel ao lado mostra por que combina, competência por competência, o que falta e o que pesa na rotina. Em tela estreita o painel vem abaixo e a tela rola até ele. Cobertura abaixo da metade mostra o aviso da regra 9 num `InfoBanner` de atenção.
 5. **Decidir, com uma ação primária por estado:**
    - Livre: **Reservar por 7 dias** (o botão mostra o mascote andando enquanto reserva). Com 3 reservas, o botão desliga, diz o motivo e oferece **Ver minhas reservas**.
@@ -136,7 +147,7 @@ Entrega parcial, entrega final e encerramento. O encerramento pede o resultado e
 
 ### F4. Primeiro acesso
 
-O docente entra com o e-mail institucional. O Início mostra um convite para o tutorial e, se não houver disciplina cadastrada, pede isso antes de qualquer outra coisa.
+O docente entra com o e-mail institucional. O Início abre com o convite do mascote (o caranguejo chamando, com anéis saindo do botão de play) para abrir o Match Maker, e depois o convite para o tutorial, e, se não houver disciplina cadastrada, pede isso antes de qualquer outra coisa.
 
 ### F5. Reserva a decidir
 
@@ -203,7 +214,7 @@ O perfil que a organização edita é o mesmo que os docentes veem na página da
 
 **Perguntas, no desenho do WhatsApp:** à esquerda a lista de conversas (uma por demanda), separada entre "Esperando resposta" e "Já respondidas", com a última mensagem, a data e o número sem resposta; à direita a conversa aberta, com separador por dia, o docente em balão branco à esquerda (nome em grafite), vocês em balão cinza claro à direita citando a pergunta e com os dois tiques, e o campo de resposta no pé ("Respondendo a…", Enter envia). Com mais de uma pergunta esperando, "Responder esta pergunta" no balão escolhe qual. A aba Perguntas do detalhe da demanda usa a mesma conversa. No celular a lista vem primeiro e a conversa abre com "Voltar às conversas".
 
-**Linha de filtros com menus** (Demandas, Perguntas e Projetos; em Demandas: busca, Mostrar, com Sua vez, Todas e cada situação com a contagem, e Mês): busca, e menus no formato "Rótulo: escolha ⌄" que abrem uma lista com o check na opção atual e a contagem de cada uma (Mostrar, Demanda, Docente; em Projetos, Mostrar, com Todos, Em planejamento, Em andamento e Concluídos, Disciplina, Docente e Semestre), e o seletor de mês em grade de três colunas com o ano e as setas, meses sem nada apagados e o mês atual marcado. "Limpar filtros" aparece quando há algum filtro. Os menus abrem para o lado que cabe na tela, e os filtros ficam na URL.
+**Linha de busca e filtros** (toda lista do portal: Cardápio, Disciplinas, Organizações, Projetos, Match Maker e, na organização, Demandas, Perguntas e Projetos), sempre pelo componente `FilterBar`: o campo de busca branco com a lupa à esquerda e, ao lado, menus no formato "Rótulo: escolha ⌄", sem ícone. O menu abre logo abaixo com o check na opção atual e, quando ajuda, a contagem de cada uma. Com um filtro ligado, o botão ganha o fundo suave do vermelho da ação e o valor em negrito; a primeira opção ("Todas", "Todos") é a que não filtra. Em Demandas, o filtro Mês é um seletor em grade de três colunas com o ano e as setas, meses sem nada apagados e o mês atual marcado. "Limpar filtros" aparece quando há algum filtro. Os menus abrem para o lado que cabe na tela, e os filtros ficam na URL.
 
 **Componentes para quem tem pouca prática com computador** (usados no portal da organização): todo botão tem ícone ao lado do texto, e as ações principais usam o tamanho grande (`size="xl"`, 48px de altura, ícone de 20px). `ActionTile` é o cartão grande do Início, com ícone em círculo colorido, o nome da ação e uma frase. `ChoiceBar` troca abas e menus por opções lado a lado com ícone e contagem (no celular, grade de duas colunas). Nas listas com linha de filtros (Demandas, Perguntas e Projetos) a escolha do que mostrar fica no menu Mostrar da própria linha, e não em opções lado a lado. `OptionList` troca o menu suspenso por opções sempre abertas, com ícone, exemplo e o check na escolhida. `Hint` é a dica com lâmpada ao lado de onde a pessoa vai agir. Cada tela tem um propósito: o Início pergunta "O que vocês querem fazer?" e mostra só o que está esperando por vocês.
 
@@ -219,7 +230,8 @@ O perfil que a organização edita é o mesmo que os docentes veem na página da
     - **Laranja âmbar** aparece só na reserva de demanda, puxado para o amarelo para não se confundir com o vermelho.
 14. **Fato, tag e card não se confundem.** Mini card de fato usa `fact`, borda `fact-line` de 1px, rótulo `fact-label` e valor `ink`. Tag de estado não tem borda e ocupa uma linha só. Card clicável continua branco com borda `line`. Monograma usa `monogram` com a inicial em `monogram-ink`.
 15. **Fundo escuro de marca (`panel-deep`) só na tela de entrada.** Medidor de cobertura e linha das etapas continuam em `positive` sobre `fill-strong`.
-16. **Contraste AA sempre.** Nenhum texto abaixo de 4,5:1 sobre o fundo; `ink-3` é o cinza mais claro permitido.
+16. **Sem subseções por padrão.** A página é o título, o conteúdo e, no máximo, um bloco com nome. Título de seção (`Section` com `title`) fica só onde o conteúdo não se explica sozinho: o guia (Como funciona) e os avisos por data, e "Demandas que combinam" na disciplina, que leva o atalho para o Match Maker. Perfil e Conta, Início e as demais páginas usam blocos sem título, e o botão Editar perfil fica nas ações da página, abaixo da capa.
+17. **Contraste AA sempre.** Nenhum texto abaixo de 4,5:1 sobre o fundo; `ink-3` é o cinza mais claro permitido.
 
 ## 8. O que nos faz únicos
 

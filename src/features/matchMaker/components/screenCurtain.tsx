@@ -1,4 +1,4 @@
-import { Mascot } from './mascot';
+import { Mascot } from '@/components/ui/mascot';
 
 interface ScreenCurtainProps {
   demandTitle: string;
@@ -12,7 +12,7 @@ interface ScreenCurtainProps {
  */
 export const ScreenCurtain = ({ demandTitle, disciplineName }: ScreenCurtainProps) => (
   <div role="status" className="fixed inset-0 z-[70] flex flex-col items-center justify-center bg-accent px-6 text-center text-white motion-safe:animate-curtain-in">
-    <Mascot tone="branco" pose="walk" size="lg" />
+    <Mascot tone="branco" variant="celebrating" size="lg" overlayClassName="text-white" />
     <p className="mt-8 text-h2">Projeto criado</p>
     <p className="mt-2 max-w-md text-body text-white/90">
       Levando {demandTitle} para {disciplineName}. O plano abre em seguida.

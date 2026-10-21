@@ -20,7 +20,7 @@ import { CONSTRAINT_COPY, daysLeftLabel, SCOPE_COPY } from '@/features/demands/u
 import type { DisciplineWithUsage } from '@/features/disciplines/types';
 import { LEVEL_COPY } from '@/features/disciplines/utils/disciplinePresentation';
 import { paths } from '@/routes/paths';
-import { Mascot } from './mascot';
+import { Mascot } from '@/components/ui/mascot';
 import { cn } from '@/utils/cn';
 import { joinWithAnd } from '@/utils/format';
 

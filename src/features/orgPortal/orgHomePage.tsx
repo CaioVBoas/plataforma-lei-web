@@ -87,7 +87,7 @@ const OrgHomeContent = ({ account, organizationName, today }: { account: OrgAcco
         />
       )}
 
-      <Section title="O que vocês querem fazer?">
+      <Section>
         <ul className={tileGridClassName}>
           <li>
             <ActionTile
@@ -123,7 +123,7 @@ const OrgHomeContent = ({ account, organizationName, today }: { account: OrgAcco
         </ul>
       </Section>
 
-      <Section title="Esperando por vocês" description="Só o que precisa de uma resposta ou de uma ação de vocês agora.">
+      <Section compact>
         {waiting.length > 0 || milestones.length > 0 ? (
           <ul className={cardGridClassName}>
             {waiting.slice(0, RECENT_ON_HOME).map((demand) => (

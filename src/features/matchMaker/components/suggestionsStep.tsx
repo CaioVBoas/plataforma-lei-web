@@ -1,11 +1,12 @@
 import { useId, useRef, useState } from 'react';
 import type { Project } from '@/domain/types';
 import { Button } from '@/components/ui/button';
-import { ChoiceChips } from '@/components/ui/choiceChips';
 import { EmptyState } from '@/components/ui/emptyState';
-import { BookmarkIcon, CloseIcon, LayersIcon } from '@/components/ui/icons';
+import { FilterBar } from '@/components/ui/filterBar';
+import { FilterDropdown } from '@/components/ui/filterDropdown';
+import { SearchInput } from '@/components/ui/formControls';
+import { BookmarkIcon, LayersIcon } from '@/components/ui/icons';
 import { FactGrid } from '@/components/ui/page';
-import { UnderlineTabs } from '@/components/ui/underlineTabs';
 import { rankDemandsFor } from '@/domain/matching';
 import { isMyReservation, MAX_ACTIVE_RESERVATIONS } from '@/domain/reservation';
 import type { Demand, SemesterCalendar } from '@/domain/types';
@@ -17,7 +18,7 @@ import { cardGridClassName } from '@/components/ui/card';
 import { pluralize } from '@/utils/format';
 import { useStage } from '../hooks';
 import { resultsStage } from '../utils/stageCopy';
-import { filterableSkills, filterBySkills, itemsForView, MATCH_MAKER_VIEWS, myReservationsFor, VIEW_HELP } from '../utils/matchMakerPresentation';
+import { ALL_SKILLS, filterableSkills, filterBySearch, filterBySkill, itemsForView, MATCH_MAKER_VIEWS, myReservationsFor, VIEW_HELP } from '../utils/matchMakerPresentation';
 import type { StageState } from './mascotStage';
 import { MatchPanel } from './matchPanel';
 import { SuggestionCard } from './suggestionCard';
@@ -45,7 +46,8 @@ export const SuggestionsStep = ({ discipline, disciplines, menu, calendar, onSta
   const groupName = useId();
   const panelRef = useRef<HTMLElement>(null);
   const [view, setViewParam] = useTabParam(MATCH_MAKER_VIEWS);
-  const [skills, setSkills] = useState<string[]>([]);
+  const [skill, setSkill] = useState(ALL_SKILLS);
+  const [search, setSearch] = useState('');
   const [selectedId, setSelectedId] = useState<string>();
 
   const suggestions = rankDemandsFor(menu, discipline);
@@ -59,16 +61,17 @@ export const SuggestionsStep = ({ discipline, disciplines, menu, calendar, onSta
 
   const viewItems = itemsForView(view, suggestions, reservations);
   const skillOptions = filterableSkills(viewItems);
-  const items = filterBySkills(viewItems, skills);
+  const items = filterBySearch(filterBySkill(viewItems, skill), search);
+  const narrowing = skill !== ALL_SKILLS || search.trim() !== '';
   // Sem escolha (ou com a escolhida fora da lista), vale a primeira: o painel nunca fica vazio com sugestões na tela.
   const selected = items.find(({ demand }) => demand.id === selectedId) ?? items[0];
 
   // O palco acompanha o que está escolhido: vermelho para agir, âmbar se já é reserva sua.
   useStage(onStage, resultsStage(selected, view, discipline));
 
-  // Trocar de recorte zera os filtros: uma competência marcada antes poderia não existir no novo recorte.
+  // Trocar de recorte zera a competência: a escolhida antes poderia não existir no novo recorte.
   const setView = (next: MatchMakerView) => {
-    setSkills([]);
+    setSkill(ALL_SKILLS);
     setSelectedId(undefined);
     setViewParam(next);
   };
@@ -84,44 +87,46 @@ export const SuggestionsStep = ({ discipline, disciplines, menu, calendar, onSta
 
   return (
     <>
-      <div className="mt-8">
-      <FactGrid
-        columns={3}
-        items={[
-          { label: 'Vagas de projeto', value: `${slotsLabel(discipline)} de ${discipline.projectSlots}` },
-          { label: 'Altura do curso', value: `${LEVEL_COPY[discipline.level].label}, ${LEVEL_COPY[discipline.level].periods}` },
-          { label: 'Suas reservas', value: `${reservedCount} de ${MAX_ACTIVE_RESERVATIONS}` },
-        ]}
-      />
+      <div className="mt-8 mb-8">
+        <FactGrid
+          columns={3}
+          items={[
+            { label: 'Vagas de projeto', value: `${slotsLabel(discipline)} de ${discipline.projectSlots}` },
+            { label: 'Altura do curso', value: `${LEVEL_COPY[discipline.level].label}, ${LEVEL_COPY[discipline.level].periods}` },
+            { label: 'Suas reservas', value: `${reservedCount} de ${MAX_ACTIVE_RESERVATIONS}` },
+          ]}
+        />
       </div>
 
-      <UnderlineTabs
-        label="Recorte das sugestões"
-        value={view}
-        onChange={setView}
-        className="mt-8"
-        options={[
-          { value: 'combinam', label: 'Combinam', count: counts.combinam },
-          { value: 'parte', label: 'Combinam em parte', count: counts.parte },
-          { value: 'reservas', label: 'Minhas reservas', count: counts.reservas },
-        ]}
-      />
-      <p className="mt-3 text-small text-ink-2">{VIEW_HELP[view]}</p>
-
-      {skillOptions.length > 1 && (
-        <div className="mt-6">
-          <p className="mb-2 text-small font-medium text-ink-2">Só demandas que pedem</p>
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-            <ChoiceChips label="Competências da turma" options={skillOptions} value={skills} onChange={setSkills} />
-            {skills.length > 0 && (
-              <Button variant="plain" size="sm" onClick={() => setSkills([])}>
-                <CloseIcon size={16} />
-                Limpar filtros
-              </Button>
-            )}
-          </div>
-        </div>
-      )}
+      <FilterBar
+        label="Filtrar sugestões"
+        className="mb-3"
+        onClear={narrowing || view !== 'combinam' ? () => {
+          setSearch('');
+          setView('combinam');
+        } : undefined}
+      >
+        <SearchInput aria-label="Buscar sugestão" placeholder="Buscar pelo nome da demanda ou da organização" value={search} onChange={(event) => setSearch(event.target.value)} />
+        <FilterDropdown
+          label="Mostrar"
+          value={view}
+          onChange={setView}
+          options={[
+            { value: 'combinam', label: 'Combinam', count: counts.combinam },
+            { value: 'parte', label: 'Combinam em parte', count: counts.parte },
+            { value: 'reservas', label: 'Minhas reservas', count: counts.reservas },
+          ]}
+        />
+        {skillOptions.length > 1 && (
+          <FilterDropdown
+            label="Competência"
+            value={skill}
+            onChange={setSkill}
+            options={[{ value: ALL_SKILLS, label: 'Todas' }, ...skillOptions.map((name) => ({ value: name, label: name }))]}
+          />
+        )}
+      </FilterBar>
+      <p className="text-small text-ink-2">{VIEW_HELP[view]}</p>
 
       <p role="status" className="sr-only">
         {pluralize(items.length, 'sugestão', 'sugestões')}
@@ -132,11 +137,17 @@ export const SuggestionsStep = ({ discipline, disciplines, menu, calendar, onSta
           {items.length === 0 ? (
             <EmptyState
               icon={view === 'reservas' ? <BookmarkIcon size={48} variant="duotone" /> : <LayersIcon size={48} variant="duotone" />}
-              title={skills.length > 0 ? 'Nenhuma demanda pede tudo isso' : EMPTY_COPY[view].title}
-              description={skills.length > 0 ? 'Tire alguma competência do filtro para ver mais sugestões.' : EMPTY_COPY[view].description}
+              title={narrowing ? 'Nada com esses filtros' : EMPTY_COPY[view].title}
+              description={narrowing ? 'Mude a busca ou a competência para ver mais sugestões.' : EMPTY_COPY[view].description}
               action={
-                skills.length > 0 ? (
-                  <Button variant="secondary" onClick={() => setSkills([])}>
+                narrowing ? (
+                  <Button
+                    variant="secondary"
+                    onClick={() => {
+                      setSearch('');
+                      setSkill(ALL_SKILLS);
+                    }}
+                  >
                     Limpar filtros
                   </Button>
                 ) : view === 'combinam' && counts.parte > 0 ? (

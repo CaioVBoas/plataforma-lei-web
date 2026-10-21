@@ -57,8 +57,7 @@ const OrganizationView = ({ detail }: { detail: OrganizationDetail }) => {
     >
       <div className="grid grid-cols-1 gap-10 lg:gap-12 lg:grid-cols-[minmax(0,1fr)_300px]">
         <div className="min-w-0">
-          <h2 className="text-h4">Sobre</h2>
-          <p className="mt-2 text-body text-ink-2">{organization.about}</p>
+          <p className="text-body text-ink-2">{organization.about}</p>
           <div className="mt-5">
             <FactGrid
               columns={2}

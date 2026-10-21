@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { ArrowRightIcon, CheckIcon } from '@/components/ui/icons';
 import { cn } from '@/utils/cn';
-import { SEARCH_STEPS, type SearchFacts } from '../utils/stageCopy';
+import type { SearchFacts } from '../utils/stageCopy';
 
 interface SearchProgressProps {
   step: number;
@@ -18,8 +18,9 @@ const rows = (disciplineName: string, facts: SearchFacts) => [
 ];
 
 /**
- * A espera do Match Maker. O palco em cima faz a parte expressiva; aqui ficam os
- * números reais de cada passo e a saída "Ver agora", para ninguém esperar à toa.
+ * A espera do Match Maker. O palco em cima faz a parte expressiva (o caranguejo
+ * anda pela água conforme os passos avançam); aqui ficam os números reais de cada
+ * passo e a saída "Ver agora", para ninguém esperar à toa.
  */
 export const SearchProgress = ({ step, facts, disciplineName, onSkip }: SearchProgressProps) => (
   <div className="mx-auto mt-10 max-w-xl" role="group" aria-label="Andamento da busca">
@@ -47,13 +48,6 @@ export const SearchProgress = ({ step, facts, disciplineName, onSkip }: SearchPr
         );
       })}
     </ol>
-    <div className="mt-4 flex gap-1.5" aria-hidden="true">
-      {Array.from({ length: SEARCH_STEPS }, (_, index) => (
-        <span key={index} className="h-1.5 flex-1 overflow-hidden rounded-full bg-fill">
-          <span className={cn('block h-full rounded-full bg-brand transition-[width] ease-linear', step > index ? 'w-full duration-500' : step === index ? 'w-1/2 duration-700' : 'w-0')} />
-        </span>
-      ))}
-    </div>
     <div className="mt-6 flex justify-end">
       <Button variant="plain" onClick={onSkip}>
         Ver agora

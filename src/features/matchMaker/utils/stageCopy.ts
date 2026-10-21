@@ -13,13 +13,15 @@ export const SEARCH_STEPS = 3;
 export const OPENING_STAGE: StageState = {
   tone: 'working',
   pose: 'walk',
+  variant: 'searching',
   title: 'Abrindo o cardápio',
   text: 'Buscando as turmas do semestre e as demandas livres.',
 };
 
 export const NO_DISCIPLINE_STAGE: StageState = {
   tone: 'identity',
-  pose: 'idle',
+  pose: 'think',
+  variant: 'empty',
   title: 'Antes, uma turma',
   text: 'Cadastre as disciplinas que você leciona neste semestre para comparar com as demandas.',
 };
@@ -51,7 +53,9 @@ export const searchStage = (step: number, discipline: DisciplineWithUsage, facts
     `${pluralize(facts.fits, 'combina', 'combinam')} e ${pluralize(facts.partial, 'combina em parte', 'combinam em parte')}.`,
   ];
   const index = Math.min(step, titles.length - 1);
-  return { tone: 'working', pose: step >= SEARCH_STEPS ? 'idle' : 'walk', title: titles[index], text: texts[index] };
+  const done = step >= SEARCH_STEPS;
+  // O caranguejo anda um terço da faixa a cada passo e chega ao fim junto com o "Pronto".
+  return { tone: 'working', pose: done ? 'idle' : 'walk', variant: done ? 'found' : 'searching', progress: Math.min(step / SEARCH_STEPS, 1), title: titles[index], text: texts[index] };
 };
 
 const EMPTY_STAGE: Record<MatchMakerView, Pick<StageState, 'title' | 'text'>> = {
@@ -69,6 +73,7 @@ export const resultsStage = (selected: DemandMatch | undefined, view: MatchMaker
     return {
       tone: 'reserve',
       pose: 'idle',
+      variant: 'found',
       title: `Reservada até ${formatShortDate(demand.reservation.until)}`,
       text: 'Ninguém mais consegue levar esta demanda. Leve para a turma ou libere quando decidir.',
     };

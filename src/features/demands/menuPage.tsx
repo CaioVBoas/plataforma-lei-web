@@ -5,9 +5,10 @@ import { LoadingState } from '@/components/feedback/queryStates';
 import { Button } from '@/components/ui/button';
 import { buttonClassName } from '@/components/ui/buttonStyles';
 import { EmptyState } from '@/components/ui/emptyState';
+import { FilterBar } from '@/components/ui/filterBar';
+import { FilterDropdown } from '@/components/ui/filterDropdown';
 import { SearchInput } from '@/components/ui/formControls';
 import { Page } from '@/components/ui/page';
-import { UnderlineTabs } from '@/components/ui/underlineTabs';
 import { formatShortDate, isLinkWindowOpen } from '@/domain/calendar';
 import { rankDisciplines } from '@/domain/matching';
 import { isMyReservation, MAX_ACTIVE_RESERVATIONS, RESERVATION_DAYS } from '@/domain/reservation';
@@ -124,10 +125,15 @@ export const MenuPage = () => {
         </p>
       )}
 
-      <div className="mb-3 flex flex-wrap items-end justify-between gap-x-6 gap-y-3 border-b border-line">
-        <UnderlineTabs
-          bordered={false}
-          label="Quais demandas mostrar"
+      <FilterBar label="Filtrar o cardápio" onClear={search || scope !== 'turmas' ? () => setSearchParams({}, { replace: true }) : undefined} className="mb-4">
+        <SearchInput
+          aria-label="Buscar no cardápio"
+          placeholder="Buscar no cardápio"
+          value={search}
+          onChange={(event) => updateParams({ busca: event.target.value })}
+        />
+        <FilterDropdown
+          label="Mostrar"
           value={scope}
           onChange={(ver) => updateParams({ ver })}
           options={[
@@ -136,14 +142,7 @@ export const MenuPage = () => {
             { value: 'todas', label: 'Todas', count: byScope.todas.length },
           ]}
         />
-        <SearchInput
-          aria-label="Buscar no cardápio"
-          placeholder="Buscar no cardápio"
-          value={search}
-          onChange={(event) => updateParams({ busca: event.target.value })}
-          containerClassName="mb-2 w-full sm:w-[280px]"
-        />
-      </div>
+      </FilterBar>
       <p className="mb-6 text-small text-ink-2">
         Você tem {byScope.reservas.length} de {MAX_ACTIVE_RESERVATIONS} reservas. Cada uma guarda a demanda por {RESERVATION_DAYS} dias enquanto você decide.
       </p>

@@ -38,7 +38,11 @@ export const Page = ({ title, eyebrow, subtitle, meta, leading, back, hero, acti
         </Link>
       )}
       {hero ? (
-        <div className="mb-12">{hero}</div>
+        <>
+          <div className={actions ? 'mb-6' : 'mb-12'}>{hero}</div>
+          {/* Com a capa no lugar do título, as ações ficam logo abaixo dela, à direita. */}
+          {actions && <div className="mb-10 flex flex-wrap items-center justify-end gap-2">{actions}</div>}
+        </>
       ) : (
       <header className="mb-12 flex flex-wrap items-end justify-between gap-x-6 gap-y-4">
         <div className="flex min-w-0 flex-[1_1_420px] items-start gap-4">
@@ -59,7 +63,7 @@ export const Page = ({ title, eyebrow, subtitle, meta, leading, back, hero, acti
 };
 
 interface SectionProps {
-  title: string;
+  title?: string;
   id?: string;
   description?: ReactNode;
   aside?: ReactNode;
@@ -71,13 +75,16 @@ interface SectionProps {
 
 export const Section = ({ title, id, description, aside, compact, className, children }: SectionProps) => (
   <section id={id} className={cn(compact ? 'mt-12' : 'mt-16', 'scroll-mt-20 first:mt-0', className)}>
-    <div className="mb-6 flex flex-wrap items-end justify-between gap-x-4 gap-y-2">
-      <div className="min-w-0">
-        <h2 className="text-h2">{title}</h2>
-        {description && <p className="mt-1.5 text-small text-ink-2">{description}</p>}
+    {/* Sem título, o bloco é só espaço e âncora: a seção com nome fica para onde o conteúdo não se explica sozinho. */}
+    {title && (
+      <div className="mb-6 flex flex-wrap items-end justify-between gap-x-4 gap-y-2">
+        <div className="min-w-0">
+          <h2 className="text-h2">{title}</h2>
+          {description && <p className="mt-1.5 text-small text-ink-2">{description}</p>}
+        </div>
+        {aside}
       </div>
-      {aside}
-    </div>
+    )}
     {children}
   </section>
 );

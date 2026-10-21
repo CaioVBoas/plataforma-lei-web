@@ -84,7 +84,7 @@ src/
 | `demands` | Cardápio, detalhe com a reserva e a janela "Levar para uma disciplina" |
 | `projects` | `list/` (lista de projetos), `workspace/` (próximo passo, etapas, plano e organização) e `shared/` (o que outras telas usam) |
 | `disciplines` | Disciplinas, cadastro e detalhe com as demandas que combinam |
-| `matchMaker` | Match Maker: escolher a turma, ver as demandas que combinam e reservar ou levar, na mesma tela |
+| `matchMaker` | Match Maker: escolher a turma, ver as demandas que combinam e reservar ou levar, com o mascote guiando |
 | `organizations` | Organizações e detalhe com contato e histórico |
 | `landing` | Portal público: abertura com fotos, perfis, boas-vindas, carrossel e como funciona |
 | `notifications` | Sino e página de avisos, derivados do cardápio, dos projetos e do calendário |

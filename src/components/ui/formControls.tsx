@@ -54,13 +54,17 @@ interface SearchInputProps extends InputHTMLAttributes<HTMLInputElement> {
   containerClassName?: string;
 }
 
+/**
+ * Campo de busca da linha de filtros: branco, com borda e a lupa à esquerda, na
+ * mesma altura dos botões de filtro. Cresce para ocupar o que sobra da linha.
+ */
 export const SearchInput = ({ containerClassName, className, ...props }: SearchInputProps) => (
-  <div className={cn('relative', containerClassName)}>
-    <SearchIcon size={16} className="pointer-events-none absolute top-1/2 left-2.5 -translate-y-1/2 text-ink-3" />
+  <div className={cn('relative min-w-0 flex-[1_1_16rem]', containerClassName)}>
+    <SearchIcon size={20} className="pointer-events-none absolute top-1/2 left-3.5 -translate-y-1/2 text-ink-2" />
     <input
       type="search"
       className={cn(
-        'h-9 w-full rounded-md border border-transparent bg-fill pr-3 pl-8 text-small text-ink placeholder:text-ink-3 focus:border-accent focus:bg-surface',
+        'h-11 w-full rounded-lg border border-line-strong bg-surface pr-3.5 pl-11 text-body text-ink placeholder:text-ink-3 hover:border-ink-3 focus:border-accent',
         className,
       )}
       {...props}
