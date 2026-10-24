@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { QueryView } from '@/components/feedback/queryStates';
 import { useToast } from '@/components/feedback/toastContext';
@@ -5,9 +6,10 @@ import { ActionMenu, type ActionMenuItem } from '@/components/ui/actionMenu';
 import { Button } from '@/components/ui/button';
 import { FilterBar } from '@/components/ui/filterBar';
 import { FilterDropdown } from '@/components/ui/filterDropdown';
+import { ConfirmDialog } from '@/components/ui/confirmDialog';
 import { textLinkClassName } from '@/components/ui/buttonStyles';
 import { EmptyState } from '@/components/ui/emptyState';
-import { PlusIcon } from '@/components/ui/icons';
+import { PlusIcon, TrashIcon } from '@/components/ui/icons';
 import { aboveRowLink, Item, ItemList } from '@/components/ui/itemList';
 import { Page } from '@/components/ui/page';
 import { freeSlots } from '@/domain/disciplineRules';
@@ -37,6 +39,7 @@ const DisciplineItem = ({ discipline, matches, projects }: DisciplineItemProps) 
   const navigate = useNavigate();
   const toast = useToast();
   const remove = useRemoveDiscipline();
+  const [confirmingRemove, setConfirmingRemove] = useState(false);
 
   const actions: ActionMenuItem[] = [];
   // Só turmas do semestre atual têm formulário; as antigas guardam o histórico como está.
@@ -45,17 +48,14 @@ const DisciplineItem = ({ discipline, matches, projects }: DisciplineItemProps) 
     actions.push({
       label: 'Remover',
       destructive: true,
-      onSelect: () =>
-        remove.mutate(discipline.id, {
-          onSuccess: () => toast.show(`${discipline.name} removida.`),
-          onError: (error) => toast.show(error.message),
-        }),
+      onSelect: () => setConfirmingRemove(true),
     });
   }
 
   const matchesText = pluralize(matches, 'demanda compatível', 'demandas compatíveis');
 
   return (
+    <>
     <Item
       to={paths.discipline(discipline.id)}
       label={discipline.name}
@@ -85,6 +85,27 @@ const DisciplineItem = ({ discipline, matches, projects }: DisciplineItemProps) 
         )}
       </p>
     </Item>
+    {confirmingRemove && (
+      <ConfirmDialog
+        icon={<TrashIcon size={26} />}
+        title={`Remover ${discipline.name}?`}
+        description="A disciplina sai da sua lista e deixa de receber indicações. Os projetos já encerrados continuam no histórico."
+        confirmLabel="Sim, remover"
+        confirmIcon={<TrashIcon size={20} />}
+        cancelLabel="Não, manter"
+        pending={remove.isPending}
+        pendingLabel="Removendo"
+        onConfirm={() =>
+          remove.mutate(discipline.id, {
+            onSuccess: () => toast.show(`${discipline.name} removida.`),
+            onError: (error) => toast.show(error.message),
+            onSettled: () => setConfirmingRemove(false),
+          })
+        }
+        onClose={() => setConfirmingRemove(false)}
+      />
+    )}
+    </>
   );
 };
 

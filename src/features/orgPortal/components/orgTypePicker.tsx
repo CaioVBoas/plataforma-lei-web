@@ -20,6 +20,7 @@ export const OrgTypePicker = ({ value, onChange, compact }: { value: string; onC
       label="Tipo da organização"
       value={value}
       onChange={onChange}
+      compact={compact}
       options={types.map((type) => {
         const look = TYPE_LOOK[type] ?? { icon: BuildingIcon, description: '' };
         const Icon = look.icon;

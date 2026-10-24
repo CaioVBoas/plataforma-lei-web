@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/formControls';
 import { SendIcon } from '@/components/ui/icons';
 import { formatShortDate } from '@/domain/calendar';
+import { askedStamp } from '@/domain/questions';
 import type { Demand, DemandQuestion } from '@/domain/types';
 import { pluralize } from '@/utils/format';
 import { useAskQuestion } from '../useDemands';
@@ -18,17 +19,22 @@ const Exchange = ({ question }: { question: DemandQuestion }) => (
   <li>
     <div className="max-w-[88%]">
       <p className="mb-1 px-1 text-caption text-ink-3">
-        {question.mine ? 'Você' : question.teacherName} · {formatShortDate(question.askedAt)}
+        {question.mine ? 'Você' : question.teacherName} · {formatShortDate(question.askedAt)}, {question.askedTime}
       </p>
       <p className="rounded-lg rounded-tl-sm border border-line bg-surface px-3.5 py-2.5 text-small text-ink">{question.text}</p>
     </div>
-    {question.answer ? (
-      <div className="mt-2.5 ml-auto max-w-[88%]">
-        <p className="mb-1 px-1 text-right text-caption text-ink-3">
-          {question.answer.by} · {formatShortDate(question.answer.answeredAt)}
-        </p>
-        <p className="rounded-lg rounded-tr-sm bg-accent-soft px-3.5 py-2.5 text-small text-ink">{question.answer.text}</p>
-      </div>
+    {question.replies.length > 0 ? (
+      // A organização pode responder mais de uma vez: cada resposta é um balão, na ordem em que chegou.
+      <ul className="mt-2.5 flex flex-col gap-2">
+        {question.replies.map((reply) => (
+          <li key={reply.id} className="ml-auto max-w-[88%]">
+            <p className="mb-1 px-1 text-right text-caption text-ink-3">
+              {reply.by} · {formatShortDate(reply.at)}, {reply.time}
+            </p>
+            <p className="rounded-lg rounded-tr-sm bg-accent-soft px-3.5 py-2.5 text-small text-ink">{reply.text}</p>
+          </li>
+        ))}
+      </ul>
     ) : (
       <p className="mt-2 flex items-center gap-1.5 px-1 text-caption text-ink-3">
         <span aria-hidden="true" className="size-1.5 animate-pulse rounded-full bg-ink-3" />
@@ -49,8 +55,9 @@ export const DemandQuestions = ({ demand, canAsk }: { demand: Demand; canAsk: bo
   const ask = useAskQuestion();
   const [text, setText] = useState('');
   const threadRef = useRef<HTMLDivElement>(null);
-  const { questions } = demand;
-  const answered = questions.filter((question) => question.answer).length;
+  // Da mais antiga para a mais nova, pela data e hora da pergunta.
+  const questions = [...demand.questions].sort((a, b) => askedStamp(a).localeCompare(askedStamp(b)));
+  const answered = questions.filter((question) => question.replies.length > 0).length;
 
   // Como num chat, a conversa abre na mensagem mais recente e desce quando chega uma nova.
   useEffect(() => {
@@ -58,15 +65,16 @@ export const DemandQuestions = ({ demand, canAsk }: { demand: Demand; canAsk: bo
     if (thread) thread.scrollTop = thread.scrollHeight;
   }, [questions.length]);
 
+  // Limpa na hora do envio (quem já escreve a próxima não perde o texto); se falhar, o texto volta.
   const send = () => {
-    if (!text.trim() || ask.isPending) return;
+    const sent = text;
+    if (!sent.trim() || ask.isPending) return;
+    setText('');
     ask.mutate(
-      { id: demand.id, text },
+      { id: demand.id, text: sent },
       {
-        onSuccess: () => {
-          setText('');
-          toast.show('Pergunta enviada. A organização responde no portal dela e a resposta aparece aqui.');
-        },
+        onSuccess: () => toast.show('Pergunta enviada. A organização responde no portal dela e a resposta aparece aqui.'),
+        onError: () => setText((current) => current || sent),
       },
     );
   };

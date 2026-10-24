@@ -6,7 +6,8 @@ import type { StatusTone } from './statusLabel';
 const TONES: Partial<Record<StatusTone, string>> = {
   neutral: 'bg-fill/70 text-ink-2',
   accent: 'bg-accent-soft text-ink',
-  caution: 'bg-caution-soft text-ink',
+  // Aviso: fundo neutro com a faixa amarela à esquerda; amarelo nunca é fundo.
+  caution: 'border border-line border-l-4 border-l-caution bg-surface text-ink',
 };
 
 const ICON_TONES: Partial<Record<StatusTone, string>> = {

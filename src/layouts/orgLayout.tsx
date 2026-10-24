@@ -56,5 +56,5 @@ export const OrgLayout = () => {
     ],
   };
 
-  return <PortalLayout sidebar={sidebar} bell={<OrgBell />} account={<OrgAccountMenu />} helpPath={paths.orgGuide} />;
+  return <PortalLayout sidebar={sidebar} bell={<OrgBell />} account={<OrgAccountMenu />} />;
 };

@@ -2,7 +2,7 @@ import { Controller, useFieldArray, type Control, type FieldErrors, type UseForm
 import { Button } from '@/components/ui/button';
 import { ChoiceChips } from '@/components/ui/choiceChips';
 import { Field, FormGroup, Input, Textarea } from '@/components/ui/formControls';
-import { CheckIcon, CloseIcon, PlusIcon } from '@/components/ui/icons';
+import { CheckIcon, CloseIcon, InfoIcon, PlusIcon, TrashIcon } from '@/components/ui/icons';
 import { SUBMISSION_LIMITS } from '@/domain/submission';
 import type { DemandConstraint } from '@/domain/types';
 import { CONSTRAINT_COPY } from '@/features/demands/utils/demandPresentation';
@@ -62,14 +62,15 @@ interface StepProps {
 
 export const ProblemStep = ({ register, errors, values }: StepProps) => (
   <div className="@container">
-    <FormGroup title="A demanda" hint="O nome e a frase do problema são o que o docente vê primeiro, no cartão do cardápio.">
+    <FormGroup title="A demanda" hint="É o que o docente vê primeiro, no cartão.">
       <div className="flex flex-col gap-5">
         <Field
           label="Nome da demanda"
           htmlFor="demanda-nome"
+          required
           hint={
             <span className="flex justify-between gap-3">
-              <span>Curto, como vocês chamam o problema no dia a dia. Ex.: Fila de consultas do interior.</span>
+              <span>Ex.: Fila de consultas do interior.</span>
               <Counter value={values.title} limit={SUBMISSION_LIMITS.title} />
             </span>
           }
@@ -80,9 +81,11 @@ export const ProblemStep = ({ register, errors, values }: StepProps) => (
         <Field
           label="O problema em uma frase"
           htmlFor="demanda-problema"
+          required
+          help="Conte o problema como quem sofre com ele, sem falar ainda da solução. Ex.: Pacientes do interior viajam e perdem a consulta."
           hint={
             <span className="flex justify-between gap-3">
-              <span>Do ponto de vista de quem sofre com ele, sem falar ainda da solução.</span>
+              <span>Ex.: Pacientes esperam meses por uma consulta.</span>
               <Counter value={values.problem} limit={SUBMISSION_LIMITS.problem} />
             </span>
           }
@@ -93,14 +96,16 @@ export const ProblemStep = ({ register, errors, values }: StepProps) => (
       </div>
     </FormGroup>
 
-    <FormGroup title="O contexto" hint="Como é hoje, o que já tentaram e por que importa resolver agora.">
+    <FormGroup title="O contexto" hint="Como é hoje e por que importa.">
       <div className="flex flex-col gap-5">
         <Field
           label="Contexto"
           htmlFor="demanda-contexto"
+          required
+          help="Como a equipe trabalha hoje, onde o problema aparece e o que vocês já tentaram. Pode escrever como fala."
           hint={
             <span className="flex justify-between gap-3">
-              <span>Conte como a equipe trabalha hoje e onde o problema aparece.</span>
+              <span>Algumas linhas já bastam.</span>
               <Counter value={values.description} limit={SUBMISSION_LIMITS.description} />
             </span>
           }
@@ -108,7 +113,7 @@ export const ProblemStep = ({ register, errors, values }: StepProps) => (
         >
           <Textarea id="demanda-contexto" rows={7} {...register('description')} />
         </Field>
-        <Field label="Quem sente o problema" htmlFor="demanda-publico" hint="Quem é afetado e quantas pessoas, se souberem." error={errors.affectedPublic?.message}>
+        <Field label="Quem sente o problema" htmlFor="demanda-publico" required help="Quem é afetado e, se souberem, quantas pessoas. Ex.: 2 mil pacientes por mês." hint="Ex.: Pacientes do interior." error={errors.affectedPublic?.message}>
           <Input id="demanda-publico" {...register('affectedPublic')} />
         </Field>
       </div>
@@ -122,13 +127,15 @@ export const ClassStep = ({ register, control, errors, values }: StepProps) => {
   const { data: catalog = [] } = useSkillCatalog();
   return (
     <div className="@container">
-      <FormGroup title="O resultado" hint="Em um semestre, uma turma entrega pesquisa com usuários, protótipo ou prova de conceito. Um sistema pronto para uso costuma ficar de fora.">
+      <FormGroup title="O resultado" hint="O que a turma entrega em um semestre.">
         <Field
           label="O que já ajudaria ao fim do semestre"
           htmlFor="demanda-resultado"
+          required
+          help="Em um semestre, uma turma entrega uma pesquisa com quem usa, um protótipo ou um teste da ideia. Um sistema pronto costuma ficar de fora."
           hint={
             <span className="flex justify-between gap-3">
-              <span>Pense no primeiro passo que faria diferença, não no sistema completo.</span>
+              <span>Pense no primeiro passo, não no sistema completo.</span>
               <Counter value={values.expectedOutcome} limit={SUBMISSION_LIMITS.expectedOutcome} />
             </span>
           }
@@ -138,7 +145,7 @@ export const ClassStep = ({ register, control, errors, values }: StepProps) => {
         </Field>
       </FormGroup>
 
-      <FormGroup title="Competências, opcional" hint="Se não souber, deixe em branco: o L.E.I. completa na triagem. É o que liga a demanda às turmas.">
+      <FormGroup title="Competências, opcional" hint="Não sabe? Deixe em branco: o L.E.I. completa.">
         <Controller
           control={control}
           name="skills"
@@ -146,7 +153,7 @@ export const ClassStep = ({ register, control, errors, values }: StepProps) => {
         />
       </FormGroup>
 
-      <FormGroup title="O que pesa na rotina" hint="Marque o que vale para esta demanda. O docente vê isso antes de aceitar.">
+      <FormGroup title="O que pesa na rotina, opcional" hint="Marque só o que vale para esta demanda.">
         <Controller
           control={control}
           name="constraints"
@@ -195,8 +202,8 @@ export const WorkStep = ({ register, control, errors, values, setValue }: WorkSt
 
   return (
     <div className="@container">
-      <FormGroup title="Reuniões com a turma" hint="Com que frequência e como vocês podem encontrar a turma durante o semestre.">
-        <Field label="Ritmo das reuniões" htmlFor="demanda-reunioes" error={errors.meetingCadence?.message}>
+      <FormGroup title="Reuniões com a turma" hint="Toque numa sugestão ou escreva.">
+        <Field label="Ritmo das reuniões" htmlFor="demanda-reunioes" required help="Com que frequência e de que jeito vocês podem encontrar a turma no semestre: presencial ou por vídeo." error={errors.meetingCadence?.message}>
           <Input id="demanda-reunioes" placeholder="Ex.: Reunião quinzenal de 1 hora, por vídeo" {...register('meetingCadence')} />
         </Field>
         <div className="mt-2.5 flex flex-wrap gap-1.5">
@@ -217,7 +224,7 @@ export const WorkStep = ({ register, control, errors, values, setValue }: WorkSt
         </div>
       </FormGroup>
 
-      <FormGroup title="O que vocês oferecem" hint="Dados, visitas, tempo da equipe. É o que faz a turma conseguir trabalhar no problema.">
+      <FormGroup title="O que vocês oferecem" hint="Obrigatório: pelo menos uma coisa. Ex.: dados, visitas, tempo da equipe.">
         <ul className="flex flex-col gap-2">
           {offers.fields.map((field, index) => (
             <li key={field.id} className="flex items-start gap-2">
@@ -231,7 +238,8 @@ export const WorkStep = ({ register, control, errors, values, setValue }: WorkSt
                   {...register(`offers.${index}.value`)}
                 />
                 {errors.offers?.[index]?.value?.message && (
-                  <p role="alert" className="mt-1.5 text-small text-critical">
+                  <p role="alert" className="mt-1.5 flex items-start gap-1.5 text-small font-medium text-critical">
+                    <InfoIcon size={16} className="mt-0.5 shrink-0" />
                     {errors.offers[index]?.value?.message}
                   </p>
                 )}
@@ -250,7 +258,8 @@ export const WorkStep = ({ register, control, errors, values, setValue }: WorkSt
           ))}
         </ul>
         {offersError && (
-          <p role="alert" className="mt-1.5 text-small text-critical">
+          <p role="alert" className="mt-1.5 flex items-start gap-1.5 text-small font-medium text-critical">
+            <InfoIcon size={16} className="mt-0.5 shrink-0" />
             {offersError}
           </p>
         )}
@@ -262,7 +271,7 @@ export const WorkStep = ({ register, control, errors, values, setValue }: WorkSt
         )}
       </FormGroup>
 
-      <FormGroup title="Para se inspirar, opcional" hint="Sistemas ou iniciativas parecidas que vocês conhecem. Ajudam a turma a não começar do zero.">
+      <FormGroup title="Para se inspirar, opcional" hint="Sites ou sistemas parecidos que vocês conhecem.">
         {references.fields.length > 0 && (
           <ul className="flex flex-col gap-3">
             {references.fields.map((field, index) => (
@@ -280,6 +289,7 @@ export const WorkStep = ({ register, control, errors, values, setValue }: WorkSt
                 </Field>
                 <div className="mt-2 flex justify-end">
                   <Button variant="destructive" size="sm" onClick={() => references.remove(index)}>
+                    <TrashIcon size={16} />
                     Remover
                   </Button>
                 </div>

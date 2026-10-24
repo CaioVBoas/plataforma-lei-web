@@ -7,6 +7,8 @@ import type { IsoDate, Milestone, OutcomeAdoption, Project } from '@/domain/type
 import { cn } from '@/utils/cn';
 import { useCompleteMilestone } from '../useProjectWorkspace';
 import { ADOPTION_COPY, MILESTONE_COPY } from '../../shared/utils/projectPresentation';
+import { DialogActions } from '@/components/ui/confirmDialog';
+import { CheckIcon, CloseIcon } from '@/components/ui/icons';
 
 /** O que cada etapa pergunta além da data. O plano não passa por aqui: é confirmado na aba Plano. */
 const NOTE_PROMPT: Partial<Record<Milestone['id'], { label: string; placeholder: string }>> = {
@@ -64,14 +66,16 @@ export const CompleteMilestoneModal = ({ project, milestone, today, onClose }: C
       description={copy.description}
       onClose={onClose}
       footer={
-        <>
-          <Button variant="secondary" onClick={onClose}>
+        <DialogActions>
+          <Button variant="secondary" size="xl" fullWidth onClick={onClose}>
+            <CloseIcon size={20} />
             Cancelar
           </Button>
-          <Button variant="primary" type="submit" form={formId} disabled={complete.isPending || (isClosing && !summary.trim())}>
+          <Button variant="primary" size="xl" fullWidth type="submit" form={formId} disabled={complete.isPending || (isClosing && !summary.trim())}>
+            <CheckIcon size={20} />
             {isClosing ? 'Encerrar projeto' : 'Registrar'}
           </Button>
-        </>
+        </DialogActions>
       }
     >
       <form id={formId} onSubmit={submit} className="flex flex-col gap-5">

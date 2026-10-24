@@ -3,6 +3,7 @@ import type { Demand } from '@/domain/types';
 import type { DemandDetail } from '@/features/demands/types';
 import { db, findOrThrow, NotFoundError, RuleError } from '../db';
 import { forTeacher } from './demandView';
+import { conversationOf, nextTime } from '@/domain/questions';
 
 /**
  * Reserva vencida volta ao cardápio. O backend real faria isso numa rotina
@@ -79,12 +80,15 @@ export const askQuestion = (id: string, text: string): Demand => {
   if (!question) throw new RuleError('Escreva a pergunta.');
   if (question.length > QUESTION_LIMIT) throw new RuleError(`A pergunta passa de ${QUESTION_LIMIT} caracteres. Tente ser mais direto.`);
   if (demand.status === 'in-project') throw new RuleError('Esta demanda já virou projeto. Fale com a organização pelo contato do projeto.');
+  const today = db.calendar.today;
   demand.questions.push({
     id: `${id}-q${demand.questions.length + 1}`,
     teacherName: db.account.name,
     mine: true,
-    askedAt: db.calendar.today,
+    askedAt: today,
+    askedTime: nextTime(today, conversationOf(demand.questions).map((message) => message.stamp)),
     text: question,
+    replies: [],
   });
   return forTeacher(demand);
 };

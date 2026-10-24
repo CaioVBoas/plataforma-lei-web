@@ -15,7 +15,8 @@ import type {
 } from '@/features/orgPortal/types';
 import { normalizeText } from '@/utils/format';
 import { db, findOrThrow, NotFoundError, RuleError } from '../db';
-import { checkLogin, resetAccess } from './access';
+import { checkLogin, checkPasswordRules, isRegistered, resetAccess, sendCode, verifyCode, type CodeSent } from './access';
+import { conversationOf, nextTime } from '@/domain/questions';
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -43,18 +44,40 @@ const slugify = (text: string) =>
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-|-$/g, '');
 
-/** Cadastro da organização: cria o perfil com quem se cadastrou como ponto focal e já entra no portal. */
-export const signup = (payload: OrgSignupPayload) => {
+/** As regras do cadastro da organização, conferidas antes de mandar o código e de novo ao criar a conta. */
+const checkSignup = (payload: OrgSignupPayload) => {
   const organizationName = payload.organizationName.trim();
-  const name = payload.name.trim();
-  const email = payload.email.trim().toLowerCase();
   if (!organizationName) throw new RuleError('Informe o nome da organização.');
-  if (!name) throw new RuleError('Informe seu nome.');
-  if (!EMAIL.test(email)) throw new RuleError('Informe um e-mail válido.');
-  if (payload.password.length < 8) throw new RuleError('A senha precisa de pelo menos 8 caracteres.');
+  if (!payload.location.trim()) throw new RuleError('Informe onde a organização atua.');
+  if (!payload.name.trim()) throw new RuleError('Informe seu nome.');
+  if (!payload.position.trim()) throw new RuleError('Informe seu cargo ou papel.');
+  if (!EMAIL.test(payload.email.trim())) throw new RuleError('Informe um e-mail válido.');
+  if (isRegistered('organizacao', payload.email)) throw new RuleError('Este e-mail já tem conta. Entre com ele ou use "Esqueci minha senha".');
+  checkPasswordRules(payload.password);
   if (db.organizations.some((organization) => normalizeText(organization.name) === normalizeText(organizationName))) {
     throw new RuleError('Esta organização já tem cadastro. Peça a quem cadastrou para entrar, ou fale com o L.E.I.');
   }
+};
+
+/** Etapa 1 do cadastro: confere os dados e manda o código para o e-mail. */
+export const requestSignupCode = (payload: OrgSignupPayload): CodeSent => {
+  checkSignup(payload);
+  return sendCode('cadastro', 'organizacao', payload.email);
+};
+
+/** Pedido de senha nova: o código vai para o e-mail. */
+export const requestPasswordReset = (email: string): CodeSent => {
+  if (!EMAIL.test(email.trim())) throw new RuleError('Informe um e-mail válido.');
+  return sendCode('senha', 'organizacao', email);
+};
+
+/** Etapa 2 do cadastro: com o código certo, cria o perfil com quem se cadastrou como ponto focal e já entra no portal. */
+export const signup = (payload: OrgSignupPayload, code: string) => {
+  checkSignup(payload);
+  verifyCode('cadastro', 'organizacao', payload.email, code);
+  const organizationName = payload.organizationName.trim();
+  const name = payload.name.trim();
+  const email = payload.email.trim().toLowerCase();
 
   const base = slugify(organizationName) || 'organizacao';
   const id = db.organizations.some((organization) => organization.id === base) ? `${base}-${db.organizations.length + 1}` : base;
@@ -280,16 +303,27 @@ export const deleteDraft = (id: string) => {
   return { id };
 };
 
-/** A resposta aparece na hora para todos os docentes que abrirem a demanda. */
+/**
+ * Mais uma resposta a uma pergunta, sem limite: a organização pode completar
+ * ou corrigir o que disse. Aparece na hora para todos os docentes que abrirem
+ * a demanda, com data e hora.
+ */
 export const answerQuestion = ({ demandId, questionId, text }: { demandId: string; questionId: string; text: string }): Demand => {
   const demand = findMyDemand(demandId);
   const answer = text.trim();
   if (!answer) throw new RuleError('Escreva a resposta.');
-  if (answer.length > SUBMISSION_LIMITS.answer) throw new RuleError(`A resposta passa de ${SUBMISSION_LIMITS.answer} caracteres.`);
+  if (answer.length > SUBMISSION_LIMITS.answer) throw new RuleError(`A resposta passa de ${SUBMISSION_LIMITS.answer} caracteres. Divida em duas mensagens.`);
+  if (demand.status === 'in-project') throw new RuleError('A demanda virou projeto. Agora a conversa é direto com o docente.');
   const question = demand.questions.find((candidate) => candidate.id === questionId);
   if (!question) throw new NotFoundError('Pergunta não encontrada.');
-  if (question.answer) throw new RuleError('Esta pergunta já foi respondida.');
-  question.answer = { text: answer, answeredAt: db.calendar.today, by: `${db.orgAccount.name}, ${demand.organization.name}` };
+  const today = db.calendar.today;
+  question.replies.push({
+    id: `${question.id}-r${question.replies.length + 1}`,
+    text: answer,
+    at: today,
+    time: nextTime(today, conversationOf(demand.questions).map((message) => message.stamp)),
+    by: `${db.orgAccount.name}, ${demand.organization.name}`,
+  });
   return forOrganization(demand);
 };
 
@@ -298,7 +332,12 @@ export const listQuestionDemands = (): Demand[] =>
   db.demands
     .filter((demand) => isMine(demand) && demand.questions.length > 0)
     .map(forOrganization)
-    .sort((a, b) => unansweredQuestions(b).length - unansweredQuestions(a).length);
+    // Primeiro as que esperam resposta; entre elas, a do movimento mais recente.
+    .sort(
+      (a, b) =>
+        Number(unansweredQuestions(b).length > 0) - Number(unansweredQuestions(a).length > 0) ||
+        (conversationOf(b.questions).at(-1)?.stamp ?? '').localeCompare(conversationOf(a.questions).at(-1)?.stamp ?? ''),
+    );
 
 export const listProjects = (): OrgProjectSummary[] =>
   db.projects

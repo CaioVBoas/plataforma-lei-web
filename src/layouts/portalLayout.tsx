@@ -3,7 +3,7 @@ import { Link, Outlet, useLocation } from 'react-router-dom';
 import { LoadingState } from '@/components/feedback/queryStates';
 import { AccessibilityMenu } from '@/components/ui/accessibilityMenu';
 import { BrandSymbol } from '@/components/ui/brandMark';
-import { CloseIcon, MenuIcon, QuestionIcon, SidebarIcon } from '@/components/ui/icons';
+import { CloseIcon, MenuIcon, SidebarIcon } from '@/components/ui/icons';
 import { cn } from '@/utils/cn';
 import { Sidebar, type SidebarConfig } from './sidebar';
 
@@ -26,15 +26,13 @@ interface PortalLayoutProps {
   bell: ReactNode;
   /** Menu da conta do perfil. */
   account: ReactNode;
-  /** O Como funciona do perfil, num botão "Ajuda" sempre à vista na barra de cima. */
-  helpPath: string;
 }
 
 /**
  * Casca de todas as telas dos portais do docente e da organização: barra
  * lateral recolhível no desktop, gaveta no celular e a barra superior com avisos e conta.
  */
-export const PortalLayout = ({ sidebar, bell, account, helpPath }: PortalLayoutProps) => {
+export const PortalLayout = ({ sidebar, bell, account }: PortalLayoutProps) => {
   const { pathname } = useLocation();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(readCollapsed);
@@ -98,11 +96,6 @@ export const PortalLayout = ({ sidebar, bell, account, helpPath }: PortalLayoutP
           </button>
 
           <div className="ml-auto flex items-center gap-1">
-            {/* No celular o "Como funciona" já está no menu: a barra de cima fica só com o essencial. */}
-            <Link to={helpPath} className="hidden h-10 items-center gap-2 rounded-md px-2.5 text-small font-medium text-ink-2 hover:bg-fill hover:text-ink sm:flex" aria-label="Ajuda: como funciona">
-              <QuestionIcon size={24} />
-              <span className="top-label hidden xl:inline">Ajuda</span>
-            </Link>
             <AccessibilityMenu />
             {bell}
             <span aria-hidden="true" className="mx-1 h-6 w-px bg-line" />

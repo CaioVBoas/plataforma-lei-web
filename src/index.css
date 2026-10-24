@@ -127,6 +127,8 @@
   --color-caution-soft: #fbf5e1;
   --color-critical: #b3141f;
   --color-critical-soft: #fdeeef;
+  /* Fundo do botão de excluir na confirmação: vermelho fechado com texto branco (7,9:1), mais escuro que o vermelho de ação e igual no claro e no escuro. */
+  --color-critical-strong: #a3121c;
 
   --radius-sm: 6px;
   --radius-md: 8px;

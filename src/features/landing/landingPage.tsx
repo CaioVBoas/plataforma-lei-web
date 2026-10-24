@@ -5,7 +5,7 @@ import { BrandMark } from '@/components/ui/brandMark';
 import { buttonClassName } from '@/components/ui/buttonStyles';
 import { PhotoCreditLine } from '@/components/ui/photoCredit';
 import { SpotlightCarousel, type SpotlightItem } from '@/components/ui/spotlightCarousel';
-import { ArrowRightIcon, BellIcon, BookIcon, BuildingIcon, CheckIcon, CopyIcon, FolderIcon, TrayIcon, UsersIcon } from '@/components/ui/icons';
+import { ArrowRightIcon, BellIcon, BookIcon, BuildingIcon, CheckIcon, CopyIcon, FolderIcon, TrayIcon, UserIcon, UsersIcon } from '@/components/ui/icons';
 import { ROLE_COPY } from '@/features/auth/roles';
 import { session } from '@/features/auth/session';
 import type { UserRole } from '@/features/auth/types';
@@ -26,7 +26,6 @@ const PublicHeader = () => {
           <BrandMark />
         </Link>
         <nav aria-label="Acesso" className="ml-auto flex items-center gap-5">
-          <AccessibilityMenu />
           <a href="#sobre" className="hidden text-small text-ink-2 hover:text-ink sm:block">
             Sobre
           </a>
@@ -35,6 +34,7 @@ const PublicHeader = () => {
           </a>
           {signedIn ? (
             <Link to={homeFor(session.role())} className={buttonClassName({ variant: 'primary' })}>
+              <ArrowRightIcon size={16} />
               Ir para o portal
             </Link>
           ) : (
@@ -43,10 +43,12 @@ const PublicHeader = () => {
                 Entrar
               </Link>
               <Link to={paths.signup()} className={buttonClassName({ variant: 'primary' })}>
+                <UserIcon size={16} />
                 Criar conta
               </Link>
             </>
           )}
+          <AccessibilityMenu />
         </nav>
       </div>
     </header>

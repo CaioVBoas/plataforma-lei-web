@@ -3,11 +3,12 @@ import { Link } from 'react-router-dom';
 import { useToast } from '@/components/feedback/toastContext';
 import { Button } from '@/components/ui/button';
 import { textLinkClassName } from '@/components/ui/buttonStyles';
+import { ConfirmDialog } from '@/components/ui/confirmDialog';
 import { CoverageMeter } from '@/components/ui/coverageMeter';
 import { ArrowRightIcon, BookmarkIcon, UndoIcon } from '@/components/ui/icons';
 import { Monogram } from '@/components/ui/monogram';
 import { Tag } from '@/components/ui/tag';
-import { InfoBanner } from '@/components/ui/infoBanner';
+import { WarningNote } from '@/components/ui/warningNote';
 import { formatShortDate, isLinkWindowOpen } from '@/domain/calendar';
 import { freeSlots } from '@/domain/disciplineRules';
 import type { DemandMatch } from '@/domain/matching';
@@ -49,6 +50,7 @@ export const MatchPanel = ({ item, discipline, disciplines, calendar, reservedCo
   const reserve = useReserveDemand();
   const release = useReleaseReservation();
   const [adopting, setAdopting] = useState(false);
+  const [releasing, setReleasing] = useState(false);
 
   const mine = Boolean(demand.reservation?.mine);
   const scope = SCOPE_COPY[demand.scopeFit];
@@ -96,11 +98,9 @@ export const MatchPanel = ({ item, discipline, disciplines, calendar, reservedCo
       </div>
 
       {!match.fits && !match.aboveLevel && (
-        <InfoBanner tone="caution" className="mt-4">
-          <span role="status">
-            A turma cobre {match.covered.length} de {demand.skills.length} competências e não trabalha {joinWithAnd(match.missing)}. Dá para levar, mas o resultado com a organização fica por sua conta.
-          </span>
-        </InfoBanner>
+        <WarningNote role="status" title="Esta demanda não serve bem para a turma" className="mt-4">
+          A turma cobre {match.covered.length} de {demand.skills.length} competências e não trabalha {joinWithAnd(match.missing)}. Dá para levar, mas o resultado com a organização fica por sua conta.
+        </WarningNote>
       )}
 
       {mine ? (
@@ -109,7 +109,7 @@ export const MatchPanel = ({ item, discipline, disciplines, calendar, reservedCo
             Levar para {discipline.name}
             <ArrowRightIcon size={16} />
           </Button>
-          <Button variant="secondary" fullWidth className="mt-2" disabled={release.isPending} onClick={() => release.mutate(demand.id, { onSuccess: () => toast.show('Reserva liberada. A demanda voltou para o cardápio.') })}>
+          <Button variant="secondary" fullWidth className="mt-2" disabled={release.isPending} onClick={() => setReleasing(true)}>
             <UndoIcon size={16} />
             Liberar reserva
           </Button>
@@ -159,6 +159,28 @@ export const MatchPanel = ({ item, discipline, disciplines, calendar, reservedCo
         Ver a demanda completa
       </Link>
 
+      {releasing && (
+        <ConfirmDialog
+          icon={<UndoIcon size={26} />}
+          title="Liberar a reserva?"
+          description="A demanda volta para o cardápio e outro docente pode reservar. Se mudar de ideia, você precisa reservar de novo, se ela ainda estiver livre."
+          confirmLabel="Sim, liberar"
+          confirmIcon={<UndoIcon size={20} />}
+          cancelLabel="Não, manter"
+          pending={release.isPending}
+          pendingLabel="Liberando"
+          error={release.error?.message}
+          onConfirm={() =>
+            release.mutate(demand.id, {
+              onSuccess: () => {
+                setReleasing(false);
+                toast.show('Reserva liberada. A demanda voltou para o cardápio.');
+              },
+            })
+          }
+          onClose={() => setReleasing(false)}
+        />
+      )}
       {adopting && <AdoptDemandModal demand={demand} disciplines={disciplines} calendar={calendar} initialDisciplineId={discipline.id} onAdopted={(project) => onAdopted(project, demand.title)} onClose={() => setAdopting(false)} />}
     </div>
   );

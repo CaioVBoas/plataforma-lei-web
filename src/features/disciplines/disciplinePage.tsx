@@ -1,11 +1,11 @@
-import { useId } from 'react';
+import { useId, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { QueryView } from '@/components/feedback/queryStates';
 import { useToast } from '@/components/feedback/toastContext';
 import { Button } from '@/components/ui/button';
 import { buttonClassName } from '@/components/ui/buttonStyles';
 import { cardGridClassName } from '@/components/ui/card';
-import { CheckIcon, LayersIcon } from '@/components/ui/icons';
+import { CheckIcon, LayersIcon, TrashIcon } from '@/components/ui/icons';
 import { ItemList } from '@/components/ui/itemList';
 import { FactGrid, Page, Section } from '@/components/ui/page';
 import { ProfileHeader } from '@/components/ui/profileHeader';
@@ -24,6 +24,7 @@ import { useDiscipline, useRemoveDiscipline, useUpdateDiscipline } from './useDi
 import type { DisciplineWithUsage } from './types';
 import { LEVEL_COPY, slotsLabel } from './utils/disciplinePresentation';
 import { matchingDemands } from './utils/matchingDemands';
+import { ConfirmDialog } from '@/components/ui/confirmDialog';
 
 const Empty = ({ children }: { children: string }) => <p className="text-small text-ink-3">{children}</p>;
 
@@ -68,6 +69,7 @@ const DisciplineSettings = ({ discipline }: { discipline: DisciplineWithUsage })
   const navigate = useNavigate();
   const update = useUpdateDiscipline();
   const remove = useRemoveDiscipline();
+  const [confirmingRemove, setConfirmingRemove] = useState(false);
 
   const removeDiscipline = () =>
     remove.mutate(discipline.id, {
@@ -95,7 +97,8 @@ const DisciplineSettings = ({ discipline }: { discipline: DisciplineWithUsage })
       </div>
       <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line bg-canvas px-5 py-3.5 sm:px-6">
         {discipline.activeProjects === 0 ? (
-          <Button variant="destructive" size="sm" onClick={removeDiscipline}>
+          <Button variant="destructive" size="sm" onClick={() => setConfirmingRemove(true)}>
+            <TrashIcon size={16} />
             Remover disciplina
           </Button>
         ) : (
@@ -106,6 +109,20 @@ const DisciplineSettings = ({ discipline }: { discipline: DisciplineWithUsage })
           Salvar alterações
         </Button>
       </div>
+      {confirmingRemove && (
+        <ConfirmDialog
+          icon={<TrashIcon size={26} />}
+          title={`Remover ${discipline.name}?`}
+          description="A disciplina sai da sua lista e deixa de receber indicações. Os projetos já encerrados continuam no histórico."
+          confirmLabel="Sim, remover"
+          confirmIcon={<TrashIcon size={20} />}
+          cancelLabel="Não, manter"
+          pending={remove.isPending}
+          pendingLabel="Removendo"
+          onConfirm={removeDiscipline}
+          onClose={() => setConfirmingRemove(false)}
+        />
+      )}
     </div>
   );
 };

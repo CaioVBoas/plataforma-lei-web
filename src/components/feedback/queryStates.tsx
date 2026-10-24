@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import type { UseQueryResult } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Mascot } from '@/components/ui/mascot';
+import { UndoIcon } from '@/components/ui/icons';
 
 export const LoadingState = ({ label = 'Carregando' }: { label?: string }) => (
   <div role="status" className="flex items-center justify-center gap-2.5 py-24 text-small text-ink-3">
@@ -22,6 +23,7 @@ export const ErrorState = ({ error, onRetry }: ErrorStateProps) => (
     <p className="mt-1.5 text-small text-ink-2">{error?.message ?? 'Tente de novo em instantes.'}</p>
     {onRetry && (
       <Button variant="secondary" size="sm" className="mt-4" onClick={onRetry}>
+        <UndoIcon size={16} />
         Tentar de novo
       </Button>
     )}
