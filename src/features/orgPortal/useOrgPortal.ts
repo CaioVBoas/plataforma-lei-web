@@ -5,9 +5,17 @@ import * as orgPortalApi from './orgPortalApi';
 
 export const useOrgAccount = () => useQuery({ queryKey: queryKeys.orgAccount, queryFn: orgPortalApi.getOrgAccount });
 
+// No backend, nome e cargo da conta são os do ponto focal: salvar um recarrega o outro.
 export const useUpdateOrgAccount = () => {
   const queryClient = useQueryClient();
-  return useMutation({ mutationFn: orgPortalApi.updateOrgAccount, onSuccess: (account) => queryClient.setQueryData(queryKeys.orgAccount, account) });
+  const invalidate = useInvalidateQueries();
+  return useMutation({
+    mutationFn: orgPortalApi.updateOrgAccount,
+    onSuccess: (account) => {
+      queryClient.setQueryData(queryKeys.orgAccount, account);
+      invalidate([queryKeys.orgProfile]);
+    },
+  });
 };
 
 export const useMarkOrgTutorialSeen = () => {
@@ -26,7 +34,14 @@ export const useOrgProfile = () => useQuery({ queryKey: queryKeys.orgProfile, qu
 
 export const useUpdateOrgProfile = () => {
   const queryClient = useQueryClient();
-  return useMutation({ mutationFn: orgPortalApi.updateOrgProfile, onSuccess: (profile) => queryClient.setQueryData(queryKeys.orgProfile, profile) });
+  const invalidate = useInvalidateQueries();
+  return useMutation({
+    mutationFn: orgPortalApi.updateOrgProfile,
+    onSuccess: (profile) => {
+      queryClient.setQueryData(queryKeys.orgProfile, profile);
+      invalidate([queryKeys.orgAccount]);
+    },
+  });
 };
 
 /** A logo e a capa aparecem também para os docentes: a lista e a página das organizações recarregam. */
