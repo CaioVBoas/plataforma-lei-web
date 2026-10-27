@@ -64,6 +64,7 @@ export const FilterDropdown = <T extends string>({ label, value, options, onChan
                 }}
                 className={cn(
                   'flex min-h-11 w-full items-center gap-3 rounded-lg px-3 text-left text-body text-ink hover:bg-canvas',
+                  selected && 'bg-canvas font-semibold',
                 )}
               >
                 <span className="min-w-0 flex-1">{option.label}</span>

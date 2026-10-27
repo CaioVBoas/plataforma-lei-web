@@ -211,7 +211,11 @@ export const DisciplinesPage = () => {
       }
     >
       <SemesterSummary disciplines={disciplines} menu={menu} />
-      <FilterBar label="Filtrar disciplinas" className="mb-4">
+      <FilterBar
+        label="Filtrar disciplinas"
+        onClear={tab !== 'atual' ? () => updateParams({ semestre: null }) : undefined}
+        className="mb-4"
+      >
         <FilterDropdown
           label="Semestre"
           value={tab}

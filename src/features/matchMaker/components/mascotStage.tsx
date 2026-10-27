@@ -73,15 +73,20 @@ export const MascotStage = ({ stage, burst }: MascotStageProps) => {
     >
       <div
         className={cn(
-          'px-5 pt-6 transition-[padding] duration-700 ease-in-out sm:px-8 sm:pt-8',
-          working ? 'pb-28' : 'pb-6 sm:pb-8',
+          'px-5 transition-[padding] duration-700 ease-in-out sm:px-8 sm:pt-8',
+          working
+            ? 'pt-6 pb-28'
+            : 'pt-21 pb-6 sm:pb-8 sm:pl-[calc(var(--pad)+var(--mw)+1.5rem)]',
         )}
-        // Fora da busca o balão sai de baixo do caranguejo. Inline porque o recuo lateral das telas largas (sm:px-8) venceria uma classe.
-        style={working ? undefined : { paddingLeft: 'calc(var(--pad) + var(--mw) + 1.5rem)' }}
       >
         {/* A chave no texto repete a entrada a cada mensagem nova. */}
         <div key={`${stage.title}|${stage.text}`} role="status" className="relative min-w-0 animate-rise-in rounded-lg border border-line bg-surface px-5 py-4">
-          {!working && <span aria-hidden="true" className="absolute top-1/2 -left-1.5 size-3 -translate-y-1/2 rotate-45 border-b border-l border-line bg-surface" />}
+          {!working && (
+            <span
+              aria-hidden="true"
+              className="absolute -top-1.5 left-8 size-3 rotate-45 border-t border-l border-line bg-surface sm:top-1/2 sm:-left-1.5 sm:-translate-y-1/2 sm:border-t-0 sm:border-b"
+            />
+          )}
           <p className="text-h4 text-ink">{stage.title}</p>
           <p className="mt-1 text-small text-ink-2">{stage.text}</p>
         </div>
@@ -89,8 +94,16 @@ export const MascotStage = ({ stage, burst }: MascotStageProps) => {
       {working && <Water />}
       {/* Um só caranguejo para as três etapas: o canto, a faixa de água e o canto de novo são deslocamentos dele. */}
       <div
-        className={cn('absolute w-(--mw) transition-[top,left] duration-700 ease-in-out', working && !placed && 'motion-safe:animate-mascot-patrol')}
-        style={{ top: working ? `calc(100% - ${MASCOT_H} - 10px)` : `calc(50% - ${MASCOT_H} / 2)`, ...(working && !placed ? {} : { left }) }}
+        className={cn(
+          'absolute w-(--mw) transition-[top,left] duration-700 ease-in-out',
+          working
+            ? !placed && 'motion-safe:animate-mascot-patrol'
+            : 'top-5 sm:top-[calc(50%-var(--mw)*0.307)]',
+        )}
+        style={{
+          ...(working ? { top: `calc(100% - ${MASCOT_H} - 10px)` } : {}),
+          ...(working && !placed ? {} : { left }),
+        }}
       >
         <Mascot
           tone={tone.mascot}

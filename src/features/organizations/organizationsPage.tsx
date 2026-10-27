@@ -58,7 +58,7 @@ export const OrganizationsPage = () => {
 
   return (
     <Page title="Organizações" subtitle="Quem publica as demandas do cardápio.">
-      <FilterBar label="Filtrar organizações">
+      <FilterBar label="Filtrar organizações" onClear={search ? () => setSearch('') : undefined}>
         <SearchInput aria-label="Buscar organizações" placeholder="Buscar organização" value={search} onChange={(event) => setSearch(event.target.value)} />
       </FilterBar>
       <QueryView query={organizationsQuery}>{(organizations) => <OrganizationList organizations={organizations} search={search} />}</QueryView>
