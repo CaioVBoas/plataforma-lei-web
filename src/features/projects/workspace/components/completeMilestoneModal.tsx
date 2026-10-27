@@ -3,7 +3,7 @@ import { useToast } from '@/components/feedback/toastContext';
 import { Button } from '@/components/ui/button';
 import { Field, Input, Textarea } from '@/components/ui/formControls';
 import { Modal } from '@/components/ui/modal';
-import type { IsoDate, Milestone, OutcomeAdoption, Project } from '@/domain/types';
+import type { Milestone, OutcomeAdoption, Project } from '@/domain/types';
 import { cn } from '@/utils/cn';
 import { useCompleteMilestone } from '../useProjectWorkspace';
 import { ADOPTION_COPY, MILESTONE_COPY } from '../../shared/utils/projectPresentation';
@@ -22,15 +22,13 @@ const ADOPTION_OPTIONS: OutcomeAdoption[] = ['in-use', 'partial', 'not-used'];
 interface CompleteMilestoneModalProps {
   project: Project;
   milestone: Milestone;
-  today: IsoDate;
   onClose: () => void;
 }
 
-export const CompleteMilestoneModal = ({ project, milestone, today, onClose }: CompleteMilestoneModalProps) => {
+export const CompleteMilestoneModal = ({ project, milestone, onClose }: CompleteMilestoneModalProps) => {
   const toast = useToast();
   const complete = useCompleteMilestone();
   const formId = useId();
-  const [doneAt, setDoneAt] = useState(today);
   const [note, setNote] = useState('');
   const [sigaaCode, setSigaaCode] = useState('');
   const [summary, setSummary] = useState('');
@@ -46,7 +44,6 @@ export const CompleteMilestoneModal = ({ project, milestone, today, onClose }: C
       {
         projectId: project.id,
         milestoneId: milestone.id,
-        doneAt,
         note,
         sigaaCode: milestone.id === 'sigaa' ? sigaaCode : undefined,
         outcome: isClosing ? { summary, adoption } : undefined,
@@ -71,7 +68,7 @@ export const CompleteMilestoneModal = ({ project, milestone, today, onClose }: C
             <CloseIcon size={20} />
             Cancelar
           </Button>
-          <Button variant="primary" size="xl" fullWidth type="submit" form={formId} disabled={complete.isPending || (isClosing && !summary.trim())}>
+          <Button variant="primary" size="xl" fullWidth type="submit" form={formId} disabled={complete.isPending || (isClosing && !summary.trim()) || (milestone.id === 'sigaa' && !sigaaCode.trim())}>
             <CheckIcon size={20} />
             {isClosing ? 'Encerrar projeto' : 'Registrar'}
           </Button>
@@ -79,16 +76,10 @@ export const CompleteMilestoneModal = ({ project, milestone, today, onClose }: C
       }
     >
       <form id={formId} onSubmit={submit} className="flex flex-col gap-5">
-        <Field label={isClosing ? 'Data do encerramento' : 'Quando aconteceu'} htmlFor={`${formId}-date`}>
-          <div className="w-48">
-            <Input id={`${formId}-date`} type="date" required max={today} value={doneAt} onChange={(event) => setDoneAt(event.target.value)} />
-          </div>
-        </Field>
-
         {milestone.id === 'sigaa' && (
-          <Field label="Código do registro, opcional" htmlFor={`${formId}-code`} hint="A plataforma não acessa o SIGAA. Ela só guarda o que você informar.">
+          <Field label="Código do registro" htmlFor={`${formId}-code`} hint="A plataforma não acessa o SIGAA. Ela só guarda o que você informar.">
             <div className="w-60">
-              <Input id={`${formId}-code`} value={sigaaCode} onChange={(event) => setSigaaCode(event.target.value)} placeholder="PJ-2026-0000" />
+              <Input id={`${formId}-code`} required value={sigaaCode} onChange={(event) => setSigaaCode(event.target.value)} placeholder="PJ-2026-0000" />
             </div>
           </Field>
         )}

@@ -95,7 +95,7 @@ const ProjectView = ({ project, calendar }: { project: Project; calendar: Semest
         <ProjectAside project={project} />
       </div>
 
-      {completing && <CompleteMilestoneModal project={project} milestone={completing} today={calendar.today} onClose={() => setCompleting(null)} />}
+      {completing && <CompleteMilestoneModal project={project} milestone={completing} onClose={() => setCompleting(null)} />}
     </Page>
   );
 };

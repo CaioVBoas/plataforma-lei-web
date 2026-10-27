@@ -90,7 +90,7 @@ export const updateTeams = (projectId: string, teams: number): Project => {
 };
 
 /** As etapas seguem a ordem fixa; cada uma tem a sua exigência antes de ser marcada. */
-export const completeMilestone = ({ projectId, milestoneId, doneAt, note, sigaaCode, outcome }: CompleteMilestoneInput): Project => {
+export const completeMilestone = ({ projectId, milestoneId, doneAt = db.calendar.today, note, sigaaCode, outcome }: CompleteMilestoneInput): Project => {
   const project = getProject(projectId);
   const next = nextMilestone(project.milestones);
 
