@@ -8,7 +8,7 @@ interface ChoiceChipsProps {
   onChange: (value: string[]) => void;
 }
 
-/** Várias escolhas numa lista curta, como competências: o marcado fica azul com o check. */
+/** Várias escolhas numa lista curta, como competências: o marcado fica vermelho com o check. */
 export const ChoiceChips = ({ label, options, value, onChange }: ChoiceChipsProps) => {
   const toggle = (option: string) => onChange(value.includes(option) ? value.filter((item) => item !== option) : [...value, option]);
   return (

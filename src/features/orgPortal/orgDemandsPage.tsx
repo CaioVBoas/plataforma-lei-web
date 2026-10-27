@@ -3,9 +3,9 @@ import { useSearchParams } from 'react-router-dom';
 import { LoadingState } from '@/components/feedback/queryStates';
 import { cardGridClassName } from '@/components/ui/card';
 import { EmptyState } from '@/components/ui/emptyState';
+import { FilterBar } from '@/components/ui/filterBar';
 import { FilterDropdown } from '@/components/ui/filterDropdown';
 import { SearchInput } from '@/components/ui/formControls';
-import { BellIcon, CheckIcon, FolderIcon, ListIcon, PencilIcon, TrayIcon } from '@/components/ui/icons';
 import { InfoBanner } from '@/components/ui/infoBanner';
 import { MonthPicker } from '@/components/ui/monthPicker';
 import { Page } from '@/components/ui/page';
@@ -23,15 +23,6 @@ const VIEWS = Object.keys(VIEW_STAGES) as OrgDemandsView[];
 const TABS: OrgDemandsTab[] = ['vez', 'todas', ...VIEWS];
 
 const TAB_LABELS: Record<OrgDemandsTab, string> = { vez: 'Sua vez', todas: 'Todas', ...VIEW_LABELS };
-
-const TAB_ICONS: Record<OrgDemandsTab, typeof BellIcon> = {
-  vez: BellIcon,
-  todas: ListIcon,
-  preparo: PencilIcon,
-  cardapio: TrayIcon,
-  projeto: FolderIcon,
-  concluidas: CheckIcon,
-};
 
 /** Uma frase por aba, logo abaixo dela: o que aparece aqui e por quê. */
 const TAB_HELP: Record<OrgDemandsTab, string> = {
@@ -107,39 +98,27 @@ export const OrgDemandsPage = () => {
       },
       { replace: true },
     );
-  const TabIcon = TAB_ICONS[tab];
 
   return (
     <Page title={TITLE} subtitle={SUBTITLE} actions={<SubmitDemandLink />}>
-      <div role="search" aria-label="Filtrar demandas" className="mb-5 grid gap-3 sm:flex sm:flex-wrap sm:items-center">
+      <FilterBar label="Filtrar demandas" onClear={filtering ? () => {
+          setSearch('');
+          setSearchParams({}, { replace: true });
+        } : undefined}>
         <SearchInput
           aria-label="Buscar demandas"
           placeholder="Buscar demanda"
           value={search}
           onChange={(event) => setSearch(event.target.value)}
-          containerClassName="sm:w-[18rem]"
         />
         <FilterDropdown
           label="Mostrar"
-          icon={<TabIcon size={20} />}
           value={tab}
           onChange={(next) => setParam('ver', next)}
           options={TABS.map((key) => ({ value: key, label: TAB_LABELS[key], count: count(key) }))}
         />
         <MonthPicker label="Mês" value={month} onChange={(value) => setParam('mes', value)} available={months} current={calendar?.today.slice(0, 7) ?? ''} />
-        {filtering && (
-          <button
-            type="button"
-            onClick={() => {
-              setSearch('');
-              setSearchParams({}, { replace: true });
-            }}
-            className="inline-flex min-h-11 items-center justify-center rounded-lg px-3 text-body font-medium text-accent hover:bg-accent-soft"
-          >
-            Limpar filtros
-          </button>
-        )}
-      </div>
+      </FilterBar>
       <InfoBanner className="mb-8">{term ? `Buscando "${search.trim()}" em todas as demandas.` : TAB_HELP[tab]}</InfoBanner>
 
       {visible.length > 0 ? (

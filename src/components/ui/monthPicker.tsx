@@ -3,8 +3,8 @@ import { useFlipToFit } from '@/hooks/useFlipToFit';
 import { usePopover } from '@/hooks/usePopover';
 import { cn } from '@/utils/cn';
 import { MONTH_NAMES, monthLabel } from '@/utils/format';
-import { FILTER_BUTTON, FILTER_PANEL } from './filterDropdown';
-import { CalendarIcon, ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon } from './icons';
+import { filterButtonClassName, FILTER_PANEL } from './filterStyles';
+import { ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon } from './icons';
 
 const MONTHS = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
 
@@ -38,11 +38,10 @@ export const MonthPicker = ({ value, onChange, available, current, label = 'Mês
 
   return (
     <div ref={containerRef} className="relative">
-      <button type="button" aria-haspopup="dialog" aria-expanded={open} onClick={toggle} className={cn(FILTER_BUTTON, open && 'border-accent')}>
-        <CalendarIcon size={20} className="shrink-0 text-ink-2" />
+      <button type="button" aria-haspopup="dialog" aria-expanded={open} onClick={toggle} className={filterButtonClassName(Boolean(value), open)}>
         <span className="min-w-0 flex-1 truncate">
           <span className="text-ink-2">{label}: </span>
-          <span className="font-medium">{value ? monthLabel(value) : 'Todos'}</span>
+          <span className={value ? 'font-semibold' : 'font-medium'}>{value ? monthLabel(value) : 'Todos'}</span>
         </span>
         <ChevronDownIcon size={16} className={cn('shrink-0 text-ink-3 transition-transform', open && 'rotate-180')} />
       </button>

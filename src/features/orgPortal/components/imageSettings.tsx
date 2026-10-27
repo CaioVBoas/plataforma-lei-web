@@ -105,7 +105,7 @@ export const ImageSettings = ({ organization }: { organization: Organization }) 
         <ConfirmDialog
           icon={<TrashIcon size={26} />}
           title={removing === 'logo' ? 'Remover a logo?' : 'Remover a capa?'}
-          description={removing === 'logo' ? 'No lugar dela volta a inicial da organização. Dá para enviar outra depois.' : 'No lugar dela volta o fundo petróleo. Dá para enviar outra depois.'}
+          description={removing === 'logo' ? 'No lugar dela volta a inicial da organização. Dá para enviar outra depois.' : 'No lugar dela volta o fundo grafite. Dá para enviar outra depois.'}
           confirmLabel="Sim, remover"
           confirmIcon={<TrashIcon size={20} />}
           cancelLabel="Não, manter"

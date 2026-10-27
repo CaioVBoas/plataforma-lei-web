@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import { cn } from '@/utils/cn';
 
-/** Bloco da coluna lateral das telas de detalhe: título pequeno em petróleo e conteúdo em card branco. */
+/** Bloco da coluna lateral das telas de detalhe: título pequeno em grafite e conteúdo em card branco. */
 export const SideCard = ({ title, className, children }: { title: string; className?: string; children: ReactNode }) => (
   <section className={cn('rounded-lg border border-line bg-surface p-6', className)}>
     <h2 className="text-small font-semibold text-brand-strong">{title}</h2>

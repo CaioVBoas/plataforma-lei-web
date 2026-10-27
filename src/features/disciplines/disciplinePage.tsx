@@ -169,7 +169,7 @@ const DisciplineView = ({ discipline }: { discipline: DisciplineWithUsage }) => 
         ))}
       </div>
 
-      <Section id="projetos" title="Projetos" description={pluralize(projectCount, 'projeto nesta turma', 'projetos nesta turma')} compact>
+      <Section id="projetos" compact>
         <DisciplineProjects discipline={discipline} />
       </Section>
 
@@ -190,12 +190,12 @@ const DisciplineView = ({ discipline }: { discipline: DisciplineWithUsage }) => 
         </Section>
       )}
 
-      <Section id="docentes" title="Docentes" description="Quem divide a disciplina vê e edita os mesmos projetos." compact>
+      <Section id="docentes" compact>
         <CoTeachers discipline={discipline} />
       </Section>
 
       {discipline.isCurrent && (
-        <Section id="turma" title="Turma" description="Mudar as competências ou a altura do curso muda na hora as demandas que combinam." compact>
+        <Section id="turma" compact>
           <DisciplineSettings discipline={discipline} />
         </Section>
       )}

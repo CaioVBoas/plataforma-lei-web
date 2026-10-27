@@ -72,8 +72,7 @@ const ProjectView = ({ project, today }: { project: OrgProjectDetail; today: str
 
       <div className="mt-10 grid grid-cols-1 gap-10 lg:gap-12 lg:grid-cols-[minmax(0,1fr)_300px]">
         <div className="min-w-0">
-          <h2 className="text-h4">Etapas</h2>
-          <p className="mt-1 mb-6 text-small text-ink-2">As mesmas seis etapas de todo projeto. O docente registra cada uma; vocês acompanham por aqui.</p>
+          <p className="mb-6 text-small text-ink-2">As mesmas seis etapas de todo projeto. O docente registra cada uma; vocês acompanham por aqui.</p>
           <MilestoneTimeline milestones={project.milestones} today={today} copy={ORG_MILESTONE_COPY} />
         </div>
 

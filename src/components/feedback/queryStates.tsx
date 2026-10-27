@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import type { UseQueryResult } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
+import { Mascot } from '@/components/ui/mascot';
 import { UndoIcon } from '@/components/ui/icons';
 
 export const LoadingState = ({ label = 'Carregando' }: { label?: string }) => (
@@ -17,6 +18,7 @@ interface ErrorStateProps {
 
 export const ErrorState = ({ error, onRetry }: ErrorStateProps) => (
   <div role="alert" className="mx-auto my-16 max-w-md text-center">
+    <Mascot tone="vermelho" variant="error" size="sm" className="mb-4" />
     <p className="text-h4">Não deu para carregar</p>
     <p className="mt-1.5 text-small text-ink-2">{error?.message ?? 'Tente de novo em instantes.'}</p>
     {onRetry && (

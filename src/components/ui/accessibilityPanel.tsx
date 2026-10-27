@@ -15,7 +15,7 @@ const A_SIZES = ['text-small', 'text-body', 'text-h4', 'text-h3', 'text-h2'];
 
 const GROUP = 'flex gap-1 rounded-lg bg-fill p-1';
 const OPTION = 'flex min-h-11 flex-1 items-center justify-center gap-1.5 rounded-md text-body transition-colors duration-100';
-const ON = 'bg-surface font-semibold text-ink shadow-[0_1px_3px_rgba(10,50,50,0.15)]';
+const ON = 'bg-surface font-semibold text-ink shadow-[0_1px_3px_rgba(0,0,0,0.15)]';
 const OFF = 'text-ink-2 hover:bg-surface/60 hover:text-ink';
 
 /**

@@ -6,9 +6,10 @@ import { useToast } from '@/components/feedback/toastContext';
 import { ActionMenu } from '@/components/ui/actionMenu';
 import { buttonClassName, textLinkClassName } from '@/components/ui/buttonStyles';
 import { EmptyState } from '@/components/ui/emptyState';
+import { FilterBar } from '@/components/ui/filterBar';
+import { FilterDropdown } from '@/components/ui/filterDropdown';
 import { Page } from '@/components/ui/page';
 import { StatTiles } from '@/components/ui/profileHeader';
-import { UnderlineTabs } from '@/components/ui/underlineTabs';
 import { formatRelativeDays, formatShortDate } from '@/domain/calendar';
 import type { ProjectStage } from '@/domain/projectLifecycle';
 import type { IsoDate, Project } from '@/domain/types';
@@ -177,18 +178,20 @@ const ProjectsView = () => {
           ]}
         />
       </div>
-      <UnderlineTabs
-        label="Estado dos projetos"
-        value={filter}
-        onChange={setFilter}
-        options={[
-          { value: 'todos', label: 'Todos', count: items.length },
-          { value: 'planejamento', label: 'Em planejamento', count: count('planejamento') },
-          { value: 'andamento', label: 'Em andamento', count: count('andamento') },
-          { value: 'concluidos', label: 'Concluídos', count: count('concluidos') },
-          ...(overdueCount > 0 ? [{ value: 'atrasados' as const, label: 'Com atraso', count: overdueCount }] : []),
-        ]}
-      />
+      <FilterBar label="Filtrar projetos" onClear={filter !== 'todos' ? () => setFilter('todos') : undefined} className="mb-4">
+        <FilterDropdown
+          label="Estado"
+          value={filter}
+          onChange={setFilter}
+          options={[
+            { value: 'todos', label: 'Todos', count: items.length },
+            { value: 'planejamento', label: 'Em planejamento', count: count('planejamento') },
+            { value: 'andamento', label: 'Em andamento', count: count('andamento') },
+            { value: 'concluidos', label: 'Concluídos', count: count('concluidos') },
+            ...(overdueCount > 0 ? [{ value: 'atrasados' as const, label: 'Com atraso', count: overdueCount }] : []),
+          ]}
+        />
+      </FilterBar>
 
       {overdueCount > 0 && filter !== 'atrasados' && (
         <p className="mt-4 text-small text-ink-2">

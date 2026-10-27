@@ -32,8 +32,7 @@ export const DisciplineStep = ({ disciplines, fitCounts, selectedId, onSelect, o
       }
     />
   ) : (
-    <div className="mt-10 max-w-3xl">
-      <h2 className="mb-4 text-h3">Escolha a turma</h2>
+    <div className="mt-8 max-w-3xl">
       <OptionList
         label="Turma"
         columns={1}

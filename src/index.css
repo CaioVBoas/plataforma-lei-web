@@ -7,10 +7,10 @@
  * Tokens visuais do portal. Toda cor, fonte, raio e movimento sai daqui;
  * componentes nunca usam hex solto.
  *
- * A estrutura é sóbria: tipografia do sistema, neutros levemente frios e
- * cantos discretos. A identidade (Identidade Visual PLEI) tem três
- * papéis que não se misturam: Verde Petróleo na marca e nos fatos, Azul
- * Tecnológico nas ações e Laranja Social só na reserva.
+ * A identidade segue a paleta do CIn (arquivos e LEIA-ME em src/assets/brand):
+ * Vermelho CIn nas ações e na marca, Grafite na identidade da navegação e nas
+ * faixas escuras, Cinza claro nos fundos e branco como base. Laranja âmbar só
+ * na reserva.
  */
 @theme {
   /* Onest (Google Fonts, OFL), variável; a interface usa 400, 500, 600 e, só nos títulos grandes, 700. */
@@ -56,72 +56,79 @@
   --text-overline--font-weight: 600;
   --text-overline--letter-spacing: 0.06em;
 
-  /*
-   * Identidade: Verde Petróleo. Marca, fatos, monogramas e "onde estou"
-   * (item ativo, aba ativa). Nada clicável é petróleo: ação é sempre azul.
-   */
-  --color-brand-50: #edf6f5;
-  --color-brand-100: #d3e9e7;
-  --color-brand-200: #a8d2cf;
-  --color-brand-300: #74b4b1;
-  --color-brand-400: #3f9491;
-  --color-brand-500: #1f7976;
-  --color-brand-600: #146461;
-  --color-brand-700: #10514f;
-  --color-brand-800: #0d4140;
-  --color-brand-900: #0a3232;
-  --color-brand: #146461;
-  --color-brand-strong: #10514f;
-  --color-brand-soft: #edf6f5;
-  --color-brand-on-dark: #8fd0cc;
-  /* Fundo escuro de marca: só na tela de entrada. */
-  --color-panel-deep: #0a3232;
+  /* Vermelho CIn: a cor da marca (caranguejo) e de tudo que é ação. */
+  --color-cin: #db1e2f;
+  /* Vermelho claro da parte submersa do caranguejo, nos arquivos de água. */
+  --color-cin-water: #f0a3aa;
 
-  /* Fatos (mini cards): brancos com borda fina; a identidade fica só no rótulo petróleo. */
+  /*
+   * Identidade: Grafite. "Onde estou" (item ativo, aba ativa), faixas escuras
+   * e a capa dos perfis. Nada clicável é grafite cheio: ação é vermelha. A
+   * escala vai do Cinza claro da marca (50) ao Grafite (800).
+   */
+  --color-brand-50: #f2f2f2;
+  --color-brand-100: #e6e6e6;
+  --color-brand-200: #cfcfcf;
+  --color-brand-300: #9a9a9a;
+  --color-brand-400: #7a7a7a;
+  --color-brand-500: #4d4d4d;
+  --color-brand-600: #333333;
+  --color-brand-700: #2a2a2a;
+  --color-brand-800: #1f1f1f;
+  --color-brand-900: #141414;
+  --color-brand: #1f1f1f;
+  --color-brand-strong: #1f1f1f;
+  --color-brand-soft: #f2f2f2;
+  /* Rótulo sobre fundo grafite ou foto escura. */
+  --color-brand-on-dark: #f6b3b9;
+  /* Fundo escuro de marca. */
+  --color-panel-deep: #1f1f1f;
+
+  /* Fatos (mini cards): brancos com borda fina; o rótulo leva o vermelho escuro da marca. */
   --color-fact: #ffffff;
-  --color-fact-line: #e0e5e6;
-  --color-fact-label: #10514f;
+  --color-fact-line: #e5e5e5;
+  --color-fact-label: #a8121f;
 
   /* Monograma e item ativo da navegação. */
-  --color-monogram: #d3e9e7;
-  --color-monogram-ink: #0d4140;
-  --color-nav-active: #d3e9e7;
-  --color-nav-active-ink: #0d4140;
+  --color-monogram: #f2f2f2;
+  --color-monogram-ink: #1f1f1f;
+  --color-nav-active: #1f1f1f;
+  --color-nav-active-ink: #ffffff;
 
   /* Texto: três níveis. ink-3 é o cinza mais claro que ainda passa AA no branco. */
-  --color-ink: #1b1f20;
-  --color-ink-2: #4a5254;
-  --color-ink-3: #636c6f;
+  --color-ink: #1f1f1f;
+  --color-ink-2: #4d4d4d;
+  --color-ink-3: #666666;
 
-  /* Superfícies. "canvas" é o fundo da barra lateral e do cardápio. */
+  /* Superfícies. "canvas" é o Cinza claro da marca, fundo de lista e de conversa. */
   --color-surface: #ffffff;
-  --color-canvas: #f4f6f6;
-  --color-fill: #e8eced;
-  --color-fill-strong: #dde2e3;
-  --color-line: #e0e5e6;
-  --color-line-strong: #ccd3d4;
+  --color-canvas: #f2f2f2;
+  --color-fill: #e9e9e9;
+  --color-fill-strong: #dddddd;
+  --color-line: #e5e5e5;
+  --color-line-strong: #cfcfcf;
 
-  /* Ação: Azul Inverno, um azul mais calmo e menos violeta, que ainda passa AA com texto branco (6:1). */
-  --color-accent: #2a64ad;
-  --color-accent-hover: #1f5290;
-  --color-accent-soft: #edf3fa;
-  /* Azul legível sobre o fundo escuro do aviso. */
-  --color-accent-on-dark: #8fb4e3;
+  /* Ação: Vermelho CIn (texto branco a 4,9:1). O tom escuro é o hover e o texto de link. */
+  --color-accent: #db1e2f;
+  --color-accent-hover: #b3141f;
+  --color-accent-soft: #fdeeef;
+  /* Vermelho legível sobre o fundo escuro do aviso. */
+  --color-accent-on-dark: #ff8f99;
 
-  /* Reserva: Laranja Social do Design System, exclusivo da reserva. */
-  --color-reserve: #a63d10;
-  --color-reserve-dot: #e8622a;
-  --color-reserve-soft: #fff3ed;
+  /* Reserva: laranja âmbar, exclusivo da reserva, puxado para o amarelo para não se confundir com o vermelho da ação. */
+  --color-reserve: #9a4a00;
+  --color-reserve-dot: #f08a00;
+  --color-reserve-soft: #fff4e5;
 
   /* Estados, dessaturados para não competir com o conteúdo. */
   --color-positive: #2b7a3d;
   --color-positive-soft: #ebf5ed;
-  --color-caution: #9a5b00;
-  --color-caution-soft: #fcf3e4;
-  --color-critical: #c0392b;
-  --color-critical-soft: #fbeeec;
-  /* Fundo do botão de excluir na confirmação: vermelho cheio com texto branco (5,4:1), igual no claro e no escuro. */
-  --color-critical-strong: #b8352a;
+  --color-caution: #8a6100;
+  --color-caution-soft: #fbf5e1;
+  --color-critical: #b3141f;
+  --color-critical-soft: #fdeeef;
+  /* Fundo do botão de excluir na confirmação: vermelho fechado com texto branco (7,9:1), mais escuro que o vermelho de ação e igual no claro e no escuro. */
+  --color-critical-strong: #a3121c;
 
   --radius-sm: 6px;
   --radius-md: 8px;
@@ -129,7 +136,7 @@
 
   --shadow-popover: 0 8px 24px rgba(0, 0, 0, 0.12), 0 0 0 0.5px rgba(0, 0, 0, 0.08);
   --shadow-sheet: 0 20px 60px rgba(0, 0, 0, 0.18), 0 0 0 0.5px rgba(0, 0, 0, 0.08);
-  --shadow-focus: 0 0 0 3px rgba(42, 100, 173, 0.3);
+  --shadow-focus: 0 0 0 3px rgba(219, 30, 47, 0.3);
 
   --ease-standard: cubic-bezier(0.25, 0.1, 0.25, 1);
 
@@ -151,9 +158,46 @@
   --animate-curtain-in: curtain-in 650ms var(--ease-standard) both;
   --animate-step-pop: step-pop 260ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
 
+  /* A entrada: o caranguejo chega andando de lado, da esquerda. */
+  --animate-mascot-enter: mascot-enter 900ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-mascot-cheer: mascot-cheer 1.4s cubic-bezier(0.34, 1.56, 0.64, 1) infinite;
+  /* A espera: o caranguejo patrulha a faixa de água, de um lado ao outro, sem pressa. */
+  --animate-mascot-patrol: mascot-patrol 2.8s ease-in-out infinite alternate;
+  --animate-ring-pulse: ring-pulse 2s ease-out infinite;
+  --animate-dots-blink: dots-blink 1.4s ease-in-out infinite;
+  --animate-sparkle: sparkle 2.4s ease-in-out infinite;
+
+  @keyframes mascot-enter {
+    0% { opacity: 0; transform: translateX(-56px) rotate(-6deg); }
+    35% { opacity: 1; }
+    55% { transform: translateX(-18px) rotate(4deg); }
+    75% { transform: translateX(-6px) rotate(-3deg); }
+    100% { opacity: 1; transform: translateX(0) rotate(0deg); }
+  }
+  @keyframes mascot-cheer {
+    0%, 45%, 100% { transform: translateY(0) scale(1, 1); }
+    18% { transform: translateY(-14px) scale(0.97, 1.05); }
+    32% { transform: translateY(0) scale(1.05, 0.95); }
+  }
+  @keyframes mascot-patrol {
+    from { left: var(--pad); }
+    to { left: calc(100% - var(--mw) - var(--pad)); }
+  }
+  @keyframes ring-pulse {
+    0% { opacity: 0.7; transform: scale(0.9); }
+    100% { opacity: 0; transform: scale(2); }
+  }
+  @keyframes dots-blink {
+    0%, 100% { opacity: 0.25; }
+    50% { opacity: 1; }
+  }
+  @keyframes sparkle {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-7px) rotate(25deg); }
+  }
   @keyframes mascot-idle {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-3px); }
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-6px) rotate(-2deg); }
   }
   @keyframes mascot-walk {
     0%, 100% { transform: translateX(-14px) rotate(-4deg); }
@@ -202,58 +246,58 @@
 
 /*
  * Modo escuro (perfil de acessibilidade: Escuro, ou Automático com o aparelho
- * no escuro). Troca só os tokens: os componentes continuam iguais. Os
- * petróleos fundos (600 a 900) já são fundo escuro com texto branco e ficam.
+ * no escuro). Troca só os tokens: os componentes continuam iguais. A base é o
+ * Grafite da marca; o vermelho clareia um pouco para manter o contraste.
  */
 :root[data-theme='dark'] {
   color-scheme: dark;
 
-  --color-brand-50: #12302f;
-  --color-brand-100: #17403e;
-  --color-brand-200: #1f5653;
-  --color-brand-300: #2f7a76;
-  --color-brand-400: #4fa39f;
-  --color-brand: #2a8a85;
-  --color-brand-strong: #8fd0cc;
-  --color-brand-soft: #12302f;
+  --color-brand-50: #2a2a2a;
+  --color-brand-100: #333333;
+  --color-brand-200: #4d4d4d;
+  --color-brand-300: #6b6b6b;
+  --color-brand-400: #8a8a8a;
+  --color-brand: #3a3a3a;
+  --color-brand-strong: #f2f2f2;
+  --color-brand-soft: #2a2a2a;
 
-  --color-fact: #1c2223;
-  --color-fact-line: #2f383a;
-  --color-fact-label: #8fd0cc;
+  --color-fact: #242424;
+  --color-fact-line: #363636;
+  --color-fact-label: #ff8f99;
 
-  --color-monogram: #17403e;
-  --color-monogram-ink: #a8d2cf;
-  --color-nav-active: #17403e;
-  --color-nav-active-ink: #a8d2cf;
+  --color-monogram: #333333;
+  --color-monogram-ink: #f2f2f2;
+  --color-nav-active: #3a3a3a;
+  --color-nav-active-ink: #ffffff;
 
-  --color-ink: #e9eded;
-  --color-ink-2: #b7c0c2;
-  --color-ink-3: #919b9e;
+  --color-ink: #f2f2f2;
+  --color-ink-2: #c4c4c4;
+  --color-ink-3: #9e9e9e;
 
-  --color-surface: #171b1c;
-  --color-canvas: #101314;
-  --color-fill: #242b2c;
-  --color-fill-strong: #2d3537;
-  --color-line: #2a3234;
-  --color-line-strong: #3c4648;
+  --color-surface: #1f1f1f;
+  --color-canvas: #161616;
+  --color-fill: #2c2c2c;
+  --color-fill-strong: #363636;
+  --color-line: #333333;
+  --color-line-strong: #474747;
 
-  --color-accent: #3d75b8;
-  --color-accent-hover: #5287c7;
-  --color-accent-soft: #16222f;
+  --color-accent: #d42a3a;
+  --color-accent-hover: #e8505e;
+  --color-accent-soft: #3a1a1e;
 
-  --color-reserve: #ff9a66;
-  --color-reserve-soft: #3a2216;
+  --color-reserve: #ffb347;
+  --color-reserve-soft: #3a2a12;
 
   --color-positive: #6cc581;
   --color-positive-soft: #16301d;
-  --color-caution: #e5ad4f;
-  --color-caution-soft: #342812;
-  --color-critical: #f07a6d;
-  --color-critical-soft: #3a1c19;
+  --color-caution: #e5c04f;
+  --color-caution-soft: #342d12;
+  --color-critical: #ff8f99;
+  --color-critical-soft: #3a1a1e;
 
   --shadow-popover: 0 8px 24px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.06);
   --shadow-sheet: 0 20px 60px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.06);
-  --shadow-focus: 0 0 0 3px rgba(143, 180, 227, 0.45);
+  --shadow-focus: 0 0 0 3px rgba(255, 143, 153, 0.45);
 }
 
 /* Overline: além do degrau da escala, sempre em caixa alta. */
@@ -312,12 +356,11 @@
     text-rendering: optimizeLegibility;
   }
 
-  /* Com texto grande, uma palavra longa num título quebra com hífen em vez de passar da tela. */
+  /* Palavra longa demais para a linha (com texto grande) quebra só quando não cabe; nunca com hífen automático, que partia "Pernambu-co". */
   h1,
   h2,
   h3 {
     overflow-wrap: anywhere;
-    hyphens: auto;
   }
 
   button {

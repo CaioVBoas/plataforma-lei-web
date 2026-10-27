@@ -41,7 +41,7 @@ export const StageTag = ({ stage }: { stage: OrgDemandStage }) => {
  * Uma demanda em cartão, no desenho do cardápio do docente: estado, título,
  * o problema e, embaixo, o que está acontecendo em palavras simples com um
  * botão grande. Quando a vez é da organização, o cartão diz "Sua vez" e o
- * botão fica azul; a borda é a mesma de todos, sem destaque.
+ * botão fica vermelho; a borda é a mesma de todos, sem destaque.
  */
 export const OrgDemandCard = ({ demand }: { demand: OrgDemandSummary }) => {
   const guidance = demandGuidance(demand);
@@ -50,7 +50,7 @@ export const OrgDemandCard = ({ demand }: { demand: OrgDemandSummary }) => {
   return (
     <article
       className={cn(
-        'relative flex h-full min-w-0 flex-col rounded-lg border border-line bg-surface p-6 sm:p-7 transition-[border-color,box-shadow] duration-150 hover:border-line-strong hover:shadow-[0_2px_8px_rgba(10,50,50,0.08)]',
+        'relative flex h-full min-w-0 flex-col rounded-lg border border-line bg-surface p-6 sm:p-7 transition-[border-color,box-shadow] duration-150 hover:border-line-strong hover:shadow-[0_2px_8px_rgba(0,0,0,0.08)]',
       )}
     >
       <div className="flex min-h-6 flex-wrap items-center justify-between gap-2">

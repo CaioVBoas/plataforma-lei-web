@@ -21,7 +21,7 @@ import { CONSTRAINT_COPY, daysLeftLabel, SCOPE_COPY } from '@/features/demands/u
 import type { DisciplineWithUsage } from '@/features/disciplines/types';
 import { LEVEL_COPY } from '@/features/disciplines/utils/disciplinePresentation';
 import { paths } from '@/routes/paths';
-import { Mascot } from './mascot';
+import { Mascot } from '@/components/ui/mascot';
 import { cn } from '@/utils/cn';
 import { joinWithAnd } from '@/utils/format';
 
@@ -99,8 +99,7 @@ export const MatchPanel = ({ item, discipline, disciplines, calendar, reservedCo
 
       {!match.fits && !match.aboveLevel && (
         <WarningNote role="status" title="Esta demanda não serve bem para a turma" className="mt-4">
-          A turma cobre {match.covered.length} de {demand.skills.length} competências e não trabalha {joinWithAnd(match.missing)}. Dá para levar, mas o resultado com a
-          organização fica por sua conta.
+          A turma cobre {match.covered.length} de {demand.skills.length} competências e não trabalha {joinWithAnd(match.missing)}. Dá para levar, mas o resultado com a organização fica por sua conta.
         </WarningNote>
       )}
 

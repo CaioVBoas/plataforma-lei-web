@@ -12,7 +12,7 @@ import { useAnswerQuestion } from '../useOrgPortal';
 /** "2026-08-19" vira "19 de agosto de 2026", como o separador de dia do WhatsApp. */
 const dayLabel = (date: IsoDate) => `${Number(date.slice(8, 10))} de ${MONTH_NAMES[Number(date.slice(5, 7)) - 1].toLowerCase()} de ${date.slice(0, 4)}`;
 
-const BUBBLE_SHADOW = 'shadow-[0_1px_0.5px_rgba(10,50,50,0.13)]';
+const BUBBLE_SHADOW = 'shadow-[0_1px_0.5px_rgba(0,0,0,0.13)]';
 
 const DaySeparator = ({ date }: { date: IsoDate }) => (
   <li className="flex justify-center py-1">
@@ -27,7 +27,7 @@ interface TeacherBubbleProps {
 }
 
 /**
- * Balão do docente, à esquerda, com o nome em petróleo e a hora. Toda pergunta
+ * Balão do docente, à esquerda, com o nome em grafite e a hora. Toda pergunta
  * pode receber mais uma resposta.
  */
 const TeacherBubble = ({ question, replying, onReply }: TeacherBubbleProps) => {
@@ -62,7 +62,7 @@ const TeacherBubble = ({ question, replying, onReply }: TeacherBubbleProps) => {
   );
 };
 
-/** Balão de vocês, à direita, em petróleo claro, citando a pergunta e com os dois tiques. */
+/** Balão de vocês, à direita, em cinza claro, citando a pergunta e com os dois tiques. */
 const ReplyBubble = ({ question, reply }: { question: DemandQuestion; reply: QuestionReply }) => (
   <li className="flex justify-end">
     <div className={cn('relative max-w-[min(85%,36rem)] rounded-xl rounded-tr-none bg-brand-50 px-3.5 pt-2 pb-1.5', BUBBLE_SHADOW)}>

@@ -1,0 +1,21 @@
+PLEI · arquivos de marca (versão final, paleta CIn)
+
+logo/     4 arranjos (horizontal, espacado, empilhado, centralizado) x 5 cores
+          principal  fundo claro (caranguejo #DB1E2F, "PLEI" #1F1F1F)
+          vermelho   fundo claro, uma cor (#DB1E2F)
+          grafite    fundo claro, uma cor (#1F1F1F)
+          escuro     fundo grafite #1F1F1F (caranguejo #DB1E2F, "PLEI" branco)
+          branco     sobre o vermelho #DB1E2F ou fotos escuras
+simbolo/  caranguejo sozinho em vermelho, grafite e branco, play vazado
+icone/    símbolo no quadrado de canto 6/24, para favicon e app (16px ou mais)
+agua/     emblema, faixa de maré e ondas, em 4 versões (light, dark, mono, white)
+
+Paleta
+  Vermelho CIn   #DB1E2F
+  Grafite        #1F1F1F
+  Cinza claro    #F2F2F2 (fundos)
+  Os tons claros de vermelho e os cinzas das ondas são derivados dessas cores e só aparecem nos arquivos de água.
+
+Área de respiro: metade da altura do símbolo, em volta de todo o logo.
+Tamanho mínimo: logo horizontal 120px de largura; empilhado 110px; centralizado 72px; símbolo 24px; ícone 16px.
+O letreiro "PLEI" é desenhado em vetor e não depende de fonte. O texto do arranjo empilhado usa a fonte do sistema; para impressão, converta em contornos.

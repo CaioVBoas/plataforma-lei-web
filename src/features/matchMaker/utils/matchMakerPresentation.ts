@@ -2,6 +2,7 @@ import { matchDiscipline, type DemandMatch } from '@/domain/matching';
 import { isMyReservation } from '@/domain/reservation';
 import type { Demand, Discipline } from '@/domain/types';
 import type { MatchMakerView } from '@/routes/paths';
+import { normalizeText } from '@/utils/format';
 
 export const MATCH_MAKER_VIEWS = ['combinam', 'parte', 'reservas'] as const satisfies readonly MatchMakerView[];
 
@@ -23,6 +24,14 @@ export const itemsForView = (view: MatchMakerView, suggestions: DemandMatch[], r
 /** Só competências que a turma trabalha e que alguma demanda da lista pede: todo chip leva a algum resultado. */
 export const filterableSkills = (items: DemandMatch[]) => [...new Set(items.flatMap(({ match }) => match.covered))].sort((a, b) => a.localeCompare(b, 'pt-BR'));
 
-/** Com várias competências marcadas, a demanda precisa cobrir todas. */
-export const filterBySkills = (items: DemandMatch[], skills: string[]) =>
-  skills.length === 0 ? items : items.filter(({ match }) => skills.every((skill) => match.covered.includes(skill)));
+/** Valor do filtro de competência que não filtra nada. */
+export const ALL_SKILLS = 'todas';
+
+/** Só as demandas cuja competência pedida a turma já cobre. */
+export const filterBySkill = (items: DemandMatch[], skill: string) => (skill === ALL_SKILLS ? items : items.filter(({ match }) => match.covered.includes(skill)));
+
+/** Busca pelo nome da demanda ou da organização, sem acento nem caixa. */
+export const filterBySearch = (items: DemandMatch[], search: string) => {
+  const term = normalizeText(search.trim());
+  return term ? items.filter(({ demand }) => normalizeText(`${demand.title} ${demand.organization.name}`).includes(term)) : items;
+};

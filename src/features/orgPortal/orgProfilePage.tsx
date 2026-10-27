@@ -260,6 +260,14 @@ export const OrgProfilePage = () => {
   return (
     <Page
       title="Perfil da organização"
+      actions={
+        !editing && (
+          <Button variant="primary" size="xl" onClick={() => setEditing(true)}>
+            <PencilIcon size={20} />
+            Editar perfil
+          </Button>
+        )
+      }
       hero={
         organization && (
           <ProfileHeader
@@ -272,18 +280,7 @@ export const OrgProfilePage = () => {
         )
       }
     >
-      <Section
-        title="Perfil público"
-        description="O mesmo que os docentes veem ao abrir a organização. Para mudar o nome, fale com o L.E.I."
-        aside={
-          !editing && (
-            <Button variant="primary" size="xl" onClick={() => setEditing(true)}>
-              <PencilIcon size={20} />
-              Editar perfil
-            </Button>
-          )
-        }
-      >
+      <Section>
         <QueryView query={profileQuery}>
           {(profile) => (
             <QueryView query={accountQuery}>
@@ -302,7 +299,7 @@ export const OrgProfilePage = () => {
         </QueryView>
       </Section>
 
-      <Section title="Conta" description="Como você entra no PLEI. Fica separado do perfil e não muda com o Editar perfil.">
+      <Section compact>
         <QueryView query={accountQuery}>
           {(account) => (
             <AccountAccess

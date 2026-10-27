@@ -4,13 +4,14 @@ import { QueryView } from '@/components/feedback/queryStates';
 import { useToast } from '@/components/feedback/toastContext';
 import { ActionMenu, type ActionMenuItem } from '@/components/ui/actionMenu';
 import { Button } from '@/components/ui/button';
+import { FilterBar } from '@/components/ui/filterBar';
+import { FilterDropdown } from '@/components/ui/filterDropdown';
 import { ConfirmDialog } from '@/components/ui/confirmDialog';
 import { textLinkClassName } from '@/components/ui/buttonStyles';
 import { EmptyState } from '@/components/ui/emptyState';
 import { PlusIcon, TrashIcon } from '@/components/ui/icons';
 import { aboveRowLink, Item, ItemList } from '@/components/ui/itemList';
 import { Page } from '@/components/ui/page';
-import { UnderlineTabs } from '@/components/ui/underlineTabs';
 import { freeSlots } from '@/domain/disciplineRules';
 import type { Demand, Project } from '@/domain/types';
 import { StatTiles } from '@/components/ui/profileHeader';
@@ -210,15 +211,21 @@ export const DisciplinesPage = () => {
       }
     >
       <SemesterSummary disciplines={disciplines} menu={menu} />
-      <UnderlineTabs
-        label="Semestre"
-        value={tab}
-        onChange={(value) => updateParams({ semestre: value === 'anteriores' ? 'anteriores' : null })}
-        options={[
-          { value: 'atual', label: currentSemester },
-          { value: 'anteriores', label: 'Semestres anteriores' },
-        ]}
-      />
+      <FilterBar
+        label="Filtrar disciplinas"
+        onClear={tab !== 'atual' ? () => updateParams({ semestre: null }) : undefined}
+        className="mb-4"
+      >
+        <FilterDropdown
+          label="Semestre"
+          value={tab}
+          onChange={(value) => updateParams({ semestre: value === 'anteriores' ? 'anteriores' : null })}
+          options={[
+            { value: 'atual', label: currentSemester },
+            { value: 'anteriores', label: 'Semestres anteriores' },
+          ]}
+        />
+      </FilterBar>
       <QueryView query={disciplinesQuery}>
         {(loaded) => <DisciplineList disciplines={loaded} menu={menu} projects={projects} tab={tab} onCreate={() => setCreating(true)} />}
       </QueryView>

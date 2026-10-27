@@ -25,8 +25,8 @@ export const useSearchSequence = (active: boolean, resetKey: string, onDone: () 
 
 /** As etapas contam ao palco o que está acontecendo; só os valores simples entram nas dependências. */
 export const useStage = (onStage: (stage: StageState) => void, stage: StageState) => {
-  const { tone, pose, title, text } = stage;
+  const { tone, pose, title, text, variant, progress } = stage;
   useEffect(() => {
-    onStage({ tone, pose, title, text });
-  }, [onStage, tone, pose, title, text]);
+    onStage({ tone, pose, title, text, variant, progress });
+  }, [onStage, tone, pose, title, text, variant, progress]);
 };

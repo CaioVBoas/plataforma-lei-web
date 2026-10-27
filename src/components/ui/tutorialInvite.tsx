@@ -17,7 +17,7 @@ export const TutorialInvite = ({ to, text, onDismiss }: TutorialInviteProps) => 
       <p className="mt-0.5 text-small text-ink-2">{text}</p>
     </div>
     <div className="flex items-center gap-1">
-      <Link to={to} className={buttonClassName({ variant: 'primary', size: 'sm' })}>
+      <Link to={to} className={buttonClassName({ variant: 'secondary', size: 'sm' })}>
         <QuestionIcon size={16} />
         Ver como funciona
       </Link>

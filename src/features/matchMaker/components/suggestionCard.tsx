@@ -17,7 +17,7 @@ interface SuggestionCardProps {
 
 /**
  * Uma sugestão para escolher, no mesmo desenho do cartão do cardápio. Aqui o
- * cartão é uma escolha (rádio), não um link: o azul marca a selecionada e o
+ * cartão é uma escolha (rádio), não um link: o vermelho da ação marca a selecionada e o
  * detalhe aparece ao lado, sem trocar de tela.
  */
 export const SuggestionCard = ({ item, today, selected, name, onSelect }: SuggestionCardProps) => {
@@ -30,7 +30,7 @@ export const SuggestionCard = ({ item, today, selected, name, onSelect }: Sugges
         'flex h-full min-w-0 cursor-pointer flex-col rounded-lg border p-5 transition-[border-color,background-color,box-shadow] duration-150 focus-within:ring-2 focus-within:ring-accent/40',
         selected
           ? 'border-accent bg-accent-soft'
-          : cn('bg-surface hover:shadow-[0_2px_8px_rgba(10,50,50,0.08)]', demand.reservation?.mine ? 'border-reserve-dot/40' : 'border-line hover:border-line-strong'),
+          : cn('bg-surface hover:shadow-[0_2px_8px_rgba(0,0,0,0.08)]', demand.reservation?.mine ? 'border-reserve-dot/40' : 'border-line hover:border-line-strong'),
       )}
     >
       <input type="radio" name={name} checked={selected} onChange={onSelect} className="sr-only" />

@@ -2,21 +2,21 @@ import { Link } from 'react-router-dom';
 import cinPhoto from '@/assets/portal/inicio/cin.webp';
 import { LoadingState } from '@/components/feedback/queryStates';
 import { buttonClassName } from '@/components/ui/buttonStyles';
+import { MascotInvite } from '@/components/ui/mascotInvite';
 import { EmptyState } from '@/components/ui/emptyState';
 import { cardGridClassName } from '@/components/ui/card';
 import { StepCard } from '@/components/ui/stepCard';
 import { TutorialInvite } from '@/components/ui/tutorialInvite';
 import { WelcomeHero } from '@/components/ui/welcomeHero';
-import { PlusIcon, TrayIcon } from '@/components/ui/icons';
-import { Page, Section } from '@/components/ui/page';
+import { ArrowRightIcon, PlusIcon, TrayIcon } from '@/components/ui/icons';
+import { Page } from '@/components/ui/page';
 import { formatShortDate, isLinkWindowOpen, semesterWeek } from '@/domain/calendar';
 import { freeSlots } from '@/domain/disciplineRules';
-import { rankDisciplines } from '@/domain/matching';
+import { rankDemandsFor } from '@/domain/matching';
 import { isMyReservation } from '@/domain/reservation';
 import type { Account, Demand, SemesterCalendar } from '@/domain/types';
 import { useAccount, useUpdateAccount } from '@/features/account/useAccount';
 import { useCalendar } from '@/features/calendar/useCalendar';
-import { DemandCard } from '@/features/demands/components/demandCard';
 import { useMenu } from '@/features/demands/useDemands';
 import { daysLeftLabel } from '@/features/demands/utils/demandPresentation';
 import { useCurrentDisciplines } from '@/features/disciplines/useDisciplines';
@@ -26,8 +26,6 @@ import type { AgendaItem } from '@/features/projects/shared/utils/agenda';
 import { MILESTONE_COPY, milestoneDateLine } from '@/features/projects/shared/utils/projectPresentation';
 import { paths } from '@/routes/paths';
 import { capitalize, pluralize } from '@/utils/format';
-
-const SUGGESTIONS_ON_HOME = 3;
 
 interface NextStepsProps {
   agenda: AgendaItem[];
@@ -93,27 +91,14 @@ const NextSteps = ({ agenda, reservations, invitations, today }: NextStepsProps)
   );
 };
 
-const Suggestions = ({ demands, disciplines, today }: { demands: Demand[]; disciplines: DisciplineWithUsage[]; today: string }) => {
-  const fitting = demands
-    .filter((demand) => demand.status === 'open')
-    .map((demand) => ({ demand, best: rankDisciplines(demand, disciplines)[0] }))
-    .filter(({ best }) => best?.fits && freeSlots(best.discipline) > 0)
-    .slice(0, SUGGESTIONS_ON_HOME);
+/** Quantas demandas livres ou reservadas por você combinam com alguma turma: é o que o Match Maker vai mostrar. */
+const fittingCount = (demands: Demand[], disciplines: DisciplineWithUsage[]) =>
+  new Set(disciplines.flatMap((discipline) => rankDemandsFor(demands, discipline).filter(({ match }) => match.fits).map(({ demand }) => demand.id))).size;
 
-  if (fitting.length === 0) {
-    return <p className="text-small text-ink-2">Nenhuma demanda aberta combina com uma turma com vaga agora.</p>;
-  }
-
-  return (
-    <ul className={cardGridClassName}>
-      {fitting.map(({ demand, best }) => (
-        <li key={demand.id}>
-          <DemandCard demand={demand} best={best} today={today} />
-        </li>
-      ))}
-    </ul>
-  );
-};
+const inviteText = (count: number) =>
+  count === 0
+    ? 'Escolha uma turma e o Match Maker mostra o que combina com ela, inclusive o que combina em parte.'
+    : `${pluralize(count, 'demanda combina', 'demandas combinam')} com o que suas turmas trabalham. Escolha uma turma e veja quais.`;
 
 const semesterLine = (calendar: SemesterCalendar, disciplines: DisciplineWithUsage[]) => {
   const week = semesterWeek(calendar);
@@ -159,6 +144,19 @@ const HomeContent = ({ account, calendar }: { account: Account; calendar: Semest
         />
       }
     >
+      {disciplines.length > 0 && isLinkWindowOpen(calendar) && (
+        <MascotInvite
+          title="Vamos achar o projeto da sua turma?"
+          text={inviteText(fittingCount(demands, disciplines))}
+          action={
+            <Link to={paths.matchMaker()} className={buttonClassName({ variant: 'primary', size: 'lg' })}>
+              Abrir o Match Maker
+              <ArrowRightIcon size={20} />
+            </Link>
+          }
+        />
+      )}
+
       {!account.tutorialSeen && (
         <TutorialInvite
           to={paths.guide}
@@ -168,43 +166,23 @@ const HomeContent = ({ account, calendar }: { account: Account; calendar: Semest
       )}
 
       {disciplines.length === 0 ? (
-        <Section title="Comece pelas suas turmas">
-          <EmptyState
-            title="Cadastre as disciplinas deste semestre"
-            description="É o que a turma trabalha que decide quais demandas combinam com ela. Leva um minuto."
-            action={
-              <Link to={paths.newDiscipline} className={buttonClassName({ variant: 'primary' })}>
-                <PlusIcon size={16} />
-                Cadastrar disciplina
-              </Link>
-            }
-          />
-        </Section>
+        <EmptyState
+          title="Cadastre as disciplinas deste semestre"
+          description="É o que a turma trabalha que decide quais demandas combinam com ela. Leva um minuto."
+          action={
+            <Link to={paths.newDiscipline} className={buttonClassName({ variant: 'primary' })}>
+              <PlusIcon size={16} />
+              Cadastrar disciplina
+            </Link>
+          }
+        />
       ) : (
-        <>
-          <Section title="Próximos passos" description="Indicações, reservas e a próxima etapa de cada projeto em curso.">
-            <NextSteps
-              agenda={agenda}
-              reservations={reservations}
-              invitations={demands.filter((demand) => demand.invitation && demand.status === 'open')}
-              today={calendar.today}
-            />
-          </Section>
-
-          {isLinkWindowOpen(calendar) && (
-            <Section
-              title="No cardápio para suas turmas"
-              aside={
-                <Link to={paths.menu} className={buttonClassName({ variant: 'secondary', size: 'sm' })}>
-                  <TrayIcon size={16} />
-                  Abrir o cardápio
-                </Link>
-              }
-            >
-              <Suggestions demands={demands} disciplines={disciplines} today={calendar.today} />
-            </Section>
-          )}
-        </>
+        <NextSteps
+          agenda={agenda}
+          reservations={reservations}
+          invitations={demands.filter((demand) => demand.invitation && demand.status === 'open')}
+          today={calendar.today}
+        />
       )}
     </Page>
   );

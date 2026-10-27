@@ -30,7 +30,7 @@ interface ActionTileProps {
 export const ActionTile = ({ to, icon, title, text, tone = 'brand', badge }: ActionTileProps) => (
   <Link
     to={to}
-    className="group flex h-full min-h-[168px] flex-col rounded-xl border border-line bg-surface p-5 transition-[border-color,box-shadow] duration-150 hover:border-line-strong hover:shadow-[0_2px_10px_rgba(10,50,50,0.1)] focus-visible:border-accent"
+    className="group flex h-full min-h-[168px] flex-col rounded-xl border border-line bg-surface p-5 transition-[border-color,box-shadow] duration-150 hover:border-line-strong hover:shadow-[0_2px_10px_rgba(0,0,0,0.1)] focus-visible:border-accent"
   >
     <div className="flex items-start justify-between gap-3">
       <span aria-hidden="true" className={cn('flex size-14 shrink-0 items-center justify-center rounded-full', ICON_TONES[tone])}>

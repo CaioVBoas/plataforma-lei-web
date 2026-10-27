@@ -27,7 +27,7 @@ interface OptionListProps<T extends string> {
 /**
  * Lista de opções sempre aberta, no lugar de um menu suspenso: cada opção
  * com ícone, o nome e, se precisar, uma linha de explicação. A escolhida
- * ganha borda petróleo e o check, como na lista do menu.
+ * ganha borda grafite e o check, como na lista do menu.
  */
 export const OptionList = <T extends string>({ label, value, options, onChange, columns = 2, compact = false }: OptionListProps<T>) => {
   const name = useId();

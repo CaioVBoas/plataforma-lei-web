@@ -11,7 +11,7 @@ import { cn } from '@/utils/cn';
 import { FORM_STEPS, type DemandFormValues } from '../utils/demandForm';
 import { MEETING_SUGGESTIONS } from '../utils/orgPresentation';
 
-/** Etapas no topo do formulário: dá para voltar a qualquer uma, e a atual fica em petróleo. */
+/** Etapas no topo do formulário: dá para voltar a qualquer uma, e a atual fica em grafite. */
 export const FormStepsNav = ({ step, onChange }: { step: number; onChange: (step: number) => void }) => (
   <ol aria-label="Etapas do envio" className="grid grid-cols-4 gap-2">
     {FORM_STEPS.map((label, index) => {
