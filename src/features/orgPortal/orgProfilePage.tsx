@@ -143,7 +143,11 @@ const ProfileForm = ({ profile, account, onClose }: { profile: OrgProfile; accou
       return;
     }
     try {
-      await Promise.all([updateProfile.mutateAsync(input), updateAccount.mutateAsync(you)]);
+      // No backend a conta é o próprio ponto focal (mesmas colunas de nome e cargo). Salvar em paralelo deixaria o valor antigo
+      // de uma seção apagar o novo da outra, então o perfil vai primeiro e a conta só leva o que a pessoa mudou nela.
+      await updateProfile.mutateAsync(input);
+      const changed = (Object.keys(you) as (keyof typeof you)[]).filter((field) => you[field] !== account[field]);
+      if (changed.length > 0) await updateAccount.mutateAsync(Object.fromEntries(changed.map((field) => [field, you[field]])));
       toast.show('Perfil salvo. Os docentes já veem a versão nova.');
       onClose();
     } catch (reason) {

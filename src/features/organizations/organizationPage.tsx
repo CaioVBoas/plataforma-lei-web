@@ -1,19 +1,14 @@
 import { useParams } from 'react-router-dom';
 import { QueryView } from '@/components/feedback/queryStates';
 import { buttonClassName, textLinkClassName } from '@/components/ui/buttonStyles';
-import { cardGridClassName } from '@/components/ui/card';
-import { FolderIcon } from '@/components/ui/icons';
+import { FolderIcon, TrayIcon } from '@/components/ui/icons';
 import { AnchorIcon, Item, ItemList } from '@/components/ui/itemList';
 import { Monogram } from '@/components/ui/monogram';
 import { FactGrid, Page } from '@/components/ui/page';
 import { ProfileHeader } from '@/components/ui/profileHeader';
 import { SideCard, SideFact } from '@/components/ui/sideCard';
 import { UnderlineTabs } from '@/components/ui/underlineTabs';
-import { rankDisciplines } from '@/domain/matching';
 import { organizationCover } from '@/lib/covers';
-import { useCalendar } from '@/features/calendar/useCalendar';
-import { DemandCard } from '@/features/demands/components/demandCard';
-import { useCurrentDisciplines } from '@/features/disciplines/useDisciplines';
 import { useTabParam } from '@/hooks/useTabParam';
 import { paths } from '@/routes/paths';
 import { cn } from '@/utils/cn';
@@ -37,8 +32,6 @@ const TABS = ['projetos', 'cin'] as const;
 const OrganizationView = ({ detail }: { detail: OrganizationDetail }) => {
   const { organization, contact, openDemands, myProjects } = detail;
   const [tab, setTab] = useTabParam(TABS);
-  const { data: disciplines = [] } = useCurrentDisciplines();
-  const { data: calendar } = useCalendar();
   const since = organization.history.map((entry) => entry.semester).sort()[0];
 
   return (
@@ -71,14 +64,25 @@ const OrganizationView = ({ detail }: { detail: OrganizationDetail }) => {
           </div>
 
           <h2 className="mt-10 text-h4">Demandas abertas</h2>
-          {openDemands.length > 0 && calendar ? (
-            <ul className={cn(cardGridClassName, 'mt-4')}>
-              {openDemands.map((demand) => (
-                <li key={demand.id}>
-                  <DemandCard demand={demand} best={rankDisciplines(demand, disciplines)[0]} today={calendar.today} />
-                </li>
-              ))}
-            </ul>
+          {openDemands.length > 0 ? (
+            <div className="mt-4">
+              <ItemList>
+                {openDemands.map((demand) => (
+                  <Item
+                    key={demand.id}
+                    to={paths.demand(demand.id)}
+                    label={demand.title}
+                    anchor={
+                      <AnchorIcon>
+                        <TrayIcon size={20} />
+                      </AnchorIcon>
+                    }
+                  >
+                    <p className="text-body font-semibold text-ink">{demand.title}</p>
+                  </Item>
+                ))}
+              </ItemList>
+            </div>
           ) : (
             <p className="mt-2 text-small text-ink-3">Nenhuma demanda no cardápio agora.</p>
           )}

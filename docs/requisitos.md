@@ -32,14 +32,14 @@ Levantamento do que a plataforma faz hoje, do que foi verificado e do que ainda 
 | --- | --- | --- |
 | RF01 | Entrar só com e-mail `@ufpe.br` ou `@cin.ufpe.br` | Parcial: validação pronta, sem autenticação real |
 | RF02 | Rota do portal sem sessão leva à entrada e, depois de entrar, volta para a página pedida com aba e âncora | Pronto |
-| RF03 | Editar nome, departamento, telefone e foto de perfil (reduzida no navegador); e-mail só leitura | Parcial: salva no backend simulado |
+| RF03 | Editar nome, departamento, telefone e foto de perfil (reduzida no navegador); e-mail só leitura | Parcial: integrado à API (PLEI-40), falta conferir no navegador contra o backend real |
 | RF04 | Sair limpa a sessão e o cache | Pronto |
 | RF05 | Recuperar senha | A fazer: chega com o login da UFPE |
 | RF05a | Portal público: abertura com fotos de Pernambuco, porta de cada perfil, boas-vindas com a marca, carrossel do que há na plataforma, quatro passos animados e rodapé | Pronto |
 | RF05e | Capas com foto nas telas de detalhe de organizações e demandas (os cartões ficam sem foto), lidas de `src/assets/covers` pelo id | Parcial: 5 de 6 organizações com foto; NASE espera a foto da UFPE |
 | RF05d | Foto no painel da entrada e do cadastro, com o crédito que a licença CC BY-SA 4.0 exige | Pronto |
 | RF05b | Entrada e cadastro com escolha de perfil; estudante aparece como "em breve" | Pronto |
-| RF05c | Cadastro do docente com nome, e-mail institucional, departamento e senha, entrando direto no Início | Parcial: salva no backend simulado |
+| RF05c | Cadastro do docente com nome, e-mail institucional, departamento e senha, entrando direto no Início | Parcial: integrado à API (PLEI-40), que exige @ufpe.br ou @cin.ufpe.br; o código de confirmação ainda é simulado |
 
 ### 2.2. Início
 
@@ -91,20 +91,20 @@ Levantamento do que a plataforma faz hoje, do que foi verificado e do que ainda 
 
 | # | Requisito | Status |
 | --- | --- | --- |
-| RF29 | Cadastrar, editar e remover disciplina (remover só sem projeto), com o formulário em blocos e o resumo de equipes e projetos | Pronto |
+| RF29 | Cadastrar, editar e remover disciplina (remover só sem projeto), com o formulário em blocos e o resumo de equipes e projetos | Pronto: integrado à API (PLEI-41) e conferido no navegador; o código da disciplina passou a ser obrigatório |
 | RF30 | Lista com vagas livres e demandas compatíveis; abas do semestre atual e anteriores | Pronto |
 | RF31 | Detalhe com projetos da turma, demandas que combinam e formulário de competências | Pronto |
-| RF31a | Disciplina com mais de um docente, convidado pelo e-mail institucional; projeto mostra a coordenação compartilhada (F7) | Parcial: o convite é registrado, sem e-mail enviado |
+| RF31a | Disciplina com mais de um docente, convidado pelo e-mail institucional; projeto mostra a coordenação compartilhada (F7) | Parcial: integrado à API (PLEI-41), que só aceita colega que já tem conta de docente; sem e-mail enviado |
 | RF32 | Ementa, carga horária; duplicar para o próximo semestre, pausar recebimento, arquivar | A fazer: depende do modelo `Course` da API |
-| RF33 | Lista de organizações com demanda aberta primeiro e contagens em texto | Pronto |
-| RF34 | Detalhe com sobre, demandas abertas, seus projetos, contato (só com projeto) e histórico com o CIn | Pronto |
+| RF33 | Lista de organizações com demanda aberta primeiro e contagens em texto | Pronto: integrado à API (PLEI-41) |
+| RF34 | Detalhe com sobre, demandas abertas, seus projetos, contato (só com projeto) e histórico com o CIn | Parcial: integrado à API (PLEI-41); as demandas abertas aparecem só pelo título, até a API de demandas (PLEI-42) entregar a forma completa |
 | RF35 | Propor um projeto a uma organização sem partir de demanda | A fazer: fluxo não desenhado |
 
 ### 2.6. Portal da organização
 
 | # | Requisito | Status |
 | --- | --- | --- |
-| RF36 | Entrar com e-mail e senha e cadastrar a organização (nome, tipo, local, quem cuida das demandas, e-mail e senha), entrando direto no Início | Parcial: qualquer e-mail entra na conta de demonstração; o cadastro salva no backend simulado |
+| RF36 | Entrar com e-mail e senha e cadastrar a organização (nome, tipo, local, quem cuida das demandas, e-mail e senha), entrando direto no Início | Parcial: integrado à API (PLEI-40); o código de confirmação ainda é simulado |
 | RF37 | Sessão guarda o perfil; rota de um portal com sessão do outro volta ao Início do próprio perfil; sair volta à entrada do mesmo perfil | Pronto |
 | RF38 | Início com boas-vindas e números (na triagem, no cardápio, em projeto), o que pede atenção em cards e como uma demanda chega a uma turma | Pronto |
 | RF39 | Submeter demanda em quatro etapas (problema, o que a turma faz, como trabalham, revisar e enviar), com validação por etapa, etapa na URL e prévia do cartão do cardápio ao lado | Pronto |
@@ -115,8 +115,8 @@ Levantamento do que a plataforma faz hoje, do que foi verificado e do que ainda 
 | RF44 | Detalhe com o caminho em cinco passos, a situação e a única ação que cabe agora, a demanda como o docente lê e o cartão do cardápio | Pronto |
 | RF45 | Responder as perguntas dos docentes; a resposta aparece na hora para todos os docentes | Pronto |
 | RF46 | Projetos da organização com as seis etapas contadas do lado dela, próximo passo, contato do docente e o resultado no encerramento, sem o plano nem as anotações do docente | Pronto |
-| RF47 | Perfil da organização editável (o mesmo que os docentes veem) e dados de quem usa a conta | Parcial: salva no backend simulado |
-| RF47a | Logo e capa enviadas pela organização, reduzidas no navegador; a logo aparece para os docentes na lista, no perfil e no cardápio | Parcial: guardadas no backend simulado como imagem em texto |
+| RF47 | Perfil da organização editável (o mesmo que os docentes veem) e dados de quem usa a conta | Parcial: integrado à API (PLEI-40), falta conferir no navegador contra o backend real; o histórico com o CIn ainda vem vazio |
+| RF47a | Logo e capa enviadas pela organização, reduzidas no navegador; a logo aparece para os docentes na lista, no perfil e no cardápio | Parcial: gravadas pela API (PLEI-40) como imagem em texto; a lista dos docentes ainda é simulada |
 | RF49 | Como funciona da organização: caminho da demanda, seis etapas, regras e perguntas frequentes, interativo como o do docente | Pronto |
 | RF48 | Sino e página de avisos: ajuste pedido e pergunta sem resposta pedem decisão; reserva e etapa chegando são novidade | Pronto |
 
