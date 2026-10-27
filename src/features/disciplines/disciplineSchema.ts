@@ -5,7 +5,7 @@ const wholeNumber = (message: string) => z.number({ error: message }).int(messag
 export const disciplineSchema = z
   .object({
     name: z.string().trim().min(1, 'Informe o nome da disciplina.'),
-    code: z.string().trim(),
+    code: z.string().trim().min(1, 'Informe o código da disciplina.'),
     level: z.enum(['intro', 'intermediate', 'advanced']),
     students: wholeNumber('Informe quantos estudantes a turma tem.'),
     teamSize: wholeNumber('Informe quantas pessoas por equipe.'),

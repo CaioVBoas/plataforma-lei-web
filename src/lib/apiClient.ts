@@ -13,6 +13,9 @@ export const apiClient = axios.create({
 
 export const api = apiClient;
 
+/** Demonstração sem backend: os `*Api.ts` respondem pelos mocks. */
+export const mocksEnabled = import.meta.env.VITE_USE_MOCKS === 'true';
+
 apiClient.interceptors.request.use((config) => {
   const token = tokenStorage.getToken();
   if (token && config.headers) {

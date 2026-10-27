@@ -1,6 +1,15 @@
+import { api, mocksEnabled } from '@/lib/apiClient';
 import * as server from '@/mocks/handlers/organizations';
 import { mockRequest } from '@/mocks/mockRequest';
+import type { OrganizationDetail, OrganizationSummary } from './types';
 
-export const getOrganizations = () => mockRequest(() => server.listOrganizations());
+export const getOrganizations = () =>
+  mocksEnabled
+    ? mockRequest(() => server.listOrganizations())
+    : api.get<OrganizationSummary[]>('/organizations').then((response) => response.data);
 
-export const getOrganization = (id: string) => mockRequest(() => server.getOrganization(id));
+/** O `contact` só vem quando o docente tem projeto com a organização: a API decide (regra 6). */
+export const getOrganization = (id: string) =>
+  mocksEnabled
+    ? mockRequest(() => server.getOrganization(id))
+    : api.get<OrganizationDetail>(`/organizations/${id}`).then((response) => response.data);

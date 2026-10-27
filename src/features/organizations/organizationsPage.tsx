@@ -20,7 +20,7 @@ const OrganizationCard = ({ organization }: { organization: OrganizationSummary 
       <div className="min-w-0 flex-1">
         <p className="truncate text-h4 group-hover:text-accent">{organization.name}</p>
         <p className="mt-0.5 truncate text-small text-ink-3">
-          {organization.type} · {organization.location}
+          {[organization.type, organization.location].filter(Boolean).join(' · ')}
         </p>
       </div>
     </div>

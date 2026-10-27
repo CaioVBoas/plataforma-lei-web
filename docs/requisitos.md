@@ -91,13 +91,13 @@ Levantamento do que a plataforma faz hoje, do que foi verificado e do que ainda 
 
 | # | Requisito | Status |
 | --- | --- | --- |
-| RF29 | Cadastrar, editar e remover disciplina (remover só sem projeto), com o formulário em blocos e o resumo de equipes e projetos | Pronto |
+| RF29 | Cadastrar, editar e remover disciplina (remover só sem projeto), com o formulário em blocos e o resumo de equipes e projetos | Pronto: integrado à API (PLEI-41) e conferido no navegador; o código da disciplina passou a ser obrigatório |
 | RF30 | Lista com vagas livres e demandas compatíveis; abas do semestre atual e anteriores | Pronto |
 | RF31 | Detalhe com projetos da turma, demandas que combinam e formulário de competências | Pronto |
-| RF31a | Disciplina com mais de um docente, convidado pelo e-mail institucional; projeto mostra a coordenação compartilhada (F7) | Parcial: o convite é registrado, sem e-mail enviado |
+| RF31a | Disciplina com mais de um docente, convidado pelo e-mail institucional; projeto mostra a coordenação compartilhada (F7) | Parcial: integrado à API (PLEI-41), que só aceita colega que já tem conta de docente; sem e-mail enviado |
 | RF32 | Ementa, carga horária; duplicar para o próximo semestre, pausar recebimento, arquivar | A fazer: depende do modelo `Course` da API |
-| RF33 | Lista de organizações com demanda aberta primeiro e contagens em texto | Pronto |
-| RF34 | Detalhe com sobre, demandas abertas, seus projetos, contato (só com projeto) e histórico com o CIn | Pronto |
+| RF33 | Lista de organizações com demanda aberta primeiro e contagens em texto | Pronto: integrado à API (PLEI-41) |
+| RF34 | Detalhe com sobre, demandas abertas, seus projetos, contato (só com projeto) e histórico com o CIn | Parcial: integrado à API (PLEI-41); as demandas abertas aparecem só pelo título, até a API de demandas (PLEI-42) entregar a forma completa |
 | RF35 | Propor um projeto a uma organização sem partir de demanda | A fazer: fluxo não desenhado |
 
 ### 2.6. Portal da organização
