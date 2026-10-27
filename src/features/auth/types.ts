@@ -51,18 +51,29 @@ export const userRoleToApiRole = (role: UserRole): ApiRole => {
   }
 };
 
-export const mapOrgTypeToTipoParceiro = (type: string): string => {
-  switch (type) {
-    case 'Órgão público ou autarquia':
-      return 'ORGAO_PUBLICO';
-    case 'Hospital ou unidade de saúde':
-    case 'Escola ou espaço educativo':
-      return 'UNIDADE_UFPE';
-    case 'Associação comunitária':
-    case 'Coletivo ou movimento social':
-    case 'Fundação ou instituto':
-      return 'ORGANIZACAO_SOCIAL_ONG';
-    default:
-      return 'OUTRO';
-  }
+/** Valores do enum `TipoParceiro` do backend. */
+export type TipoParceiro = 'ORGAO_PUBLICO' | 'UNIDADE_UFPE' | 'ORGANIZACAO_SOCIAL_ONG' | 'EMPRESA' | 'OUTRO';
+
+/**
+ * Rótulos do seletor de tipo (`ORGANIZATION_TYPES`) para o enum do backend.
+ * Coletivo não tem valor próprio no banco e vai como OUTRO.
+ */
+const ORG_TYPE_TO_TIPO_PARCEIRO: Record<string, TipoParceiro> = {
+  'Órgão público': 'ORGAO_PUBLICO',
+  'Organização social': 'ORGANIZACAO_SOCIAL_ONG',
+  Coletivo: 'OUTRO',
+  'Unidade da UFPE': 'UNIDADE_UFPE',
+  Empresa: 'EMPRESA',
 };
+
+const TIPO_PARCEIRO_TO_ORG_TYPE: Record<TipoParceiro, string> = {
+  ORGAO_PUBLICO: 'Órgão público',
+  ORGANIZACAO_SOCIAL_ONG: 'Organização social',
+  OUTRO: 'Coletivo',
+  UNIDADE_UFPE: 'Unidade da UFPE',
+  EMPRESA: 'Empresa',
+};
+
+export const mapOrgTypeToTipoParceiro = (type: string): TipoParceiro => ORG_TYPE_TO_TIPO_PARCEIRO[type] ?? 'OUTRO';
+
+export const mapTipoParceiroToOrgType = (type: TipoParceiro): string => TIPO_PARCEIRO_TO_ORG_TYPE[type] ?? type;

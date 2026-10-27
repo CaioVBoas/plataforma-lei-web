@@ -4,6 +4,8 @@ import type { UserRole } from '@/features/auth/types';
 
 export type ProjectTab = 'etapas' | 'plano' | 'demanda';
 export type DemandTab = 'problema' | 'competencias' | 'perguntas' | 'inspiracao' | 'organizacao';
+/** O que o Match Maker mostra: o que combina, o que combina em parte e as reservas do docente. */
+export type MatchMakerView = 'combinam' | 'parte' | 'reservas';
 export type OrgDemandTab = 'demanda' | 'perguntas' | 'cardapio';
 /** Abas da lista de demandas da organização. "vez" junta o que espera algo de vocês. */
 export type OrgDemandsTab = 'vez' | 'todas' | OrgDemandsView;
@@ -32,6 +34,8 @@ export const paths = {
   /** Direto no formulário da turma, dentro do detalhe. */
   disciplineEdit: (id: string) => `/disciplinas/${id}#turma`,
   disciplineMatches: (id: string) => `/disciplinas/${id}#demandas`,
+  /** Sem turma, pergunta primeiro qual turma; com ela, abre direto nas sugestões. */
+  matchMaker: (disciplineId?: string) => (disciplineId ? `/match-maker?turma=${disciplineId}` : '/match-maker'),
   organizations: '/organizacoes',
   organization: (id: string) => `/organizacoes/${id}`,
   account: '/conta',

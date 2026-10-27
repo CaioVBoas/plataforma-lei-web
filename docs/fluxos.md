@@ -72,6 +72,7 @@ Só a próxima etapa pendente tem ação. As outras mostram a data prevista ou a
 | --- | --- | --- |
 | **Início** | O que fazer agora: reservas a decidir e etapas dos projetos | "O que eu preciso fazer hoje?" |
 | **Cardápio** | Escolher e reservar uma demanda | "Que problema a minha turma pode resolver?" |
+| **Match Maker** | Partir da turma e ver as demandas que combinam com ela | "Que demanda serve para esta turma?" |
 | **Projetos** | Acompanhar as etapas | "Em que pé estão os meus projetos?" |
 | **Disciplinas** | Dizer o que cada turma sabe fazer | "Quais turmas podem receber projeto?" |
 | **Organizações** | Conhecer os parceiros | "Com quem eu vou trabalhar?" |
@@ -96,6 +97,34 @@ Avisos não fica na barra lateral: o sino da barra superior abre os mais recente
    - Já é projeto seu: **Abrir projeto**.
 3. **Janela de confirmação.** O docente escolhe a disciplina (a que mais combina já vem marcada) e o número de equipes. A janela diz o que acontece em seguida. Se não houver disciplina cadastrada, o cadastro acontece ali mesmo.
 4. **Projeto criado.** O docente cai no projeto, na etapa 1, com o plano pronto para revisar.
+
+### F1b. Match Maker: da turma à demanda
+
+O caminho inverso do F1. Em vez de abrir uma demanda e ver qual turma serve, o docente parte da turma. Usa a mesma compatibilidade da regra 9 e as mesmas ações do cardápio; não existe regra nova.
+
+**O mascote e o palco.** O caranguejo da marca (sempre o arquivo oficial de `assets/brand/simbolo`, só movido e trocado de versão de cor) fica num palco no alto das três etapas, com um balão branco que diz o que está acontecendo. O palco é um só, então a cor muda em transição de 500ms em vez de piscar. Cada cor mantém o papel que já tem no portal:
+
+| Momento | Palco | Mascote |
+| --- | --- | --- |
+| Escolher turma, sem sugestões | `brand-50` | petróleo, respira |
+| Busca (poucos segundos) | petróleo cheio, com ondas | branco, anda de lado |
+| Sugestão escolhida | `accent-soft` | azul, inclina |
+| Sugestão que já é reserva sua | `reserve-soft` | petróleo |
+| Cortina ao levar para a turma | petróleo cheio, tela inteira | branco, anda de lado |
+
+O mascote pula uma vez ao escolher uma turma e ao reservar. Com `prefers-reduced-motion`, a busca é pulada, o mascote fica parado e a cortina aparece direto, por menos tempo. Os tokens de movimento (`animate-mascot-*`, `animate-curtain-in`) estão no `index.css`.
+
+1. **Escolher a turma** (`/match-maker`). Só disciplinas do semestre atual, cada uma com quantas demandas combinam e as vagas. Já vem marcada a turma com mais demandas que combinam, e o balão mostra a turma marcada. Sem disciplina cadastrada, a tela leva ao cadastro. Também abre direto pela turma, em "Abrir no Match Maker" na página da disciplina (`?turma=`).
+2. **Busca.** Três passos reais, na ordem em que a regra roda: competências da turma, demandas do cardápio, quantas combinam. Cada passo mostra o número que a regra de fato contou, nunca uma estimativa. Dura 2,6 segundos e **Ver agora** pula. Não repete para a mesma turma na mesma visita.
+3. **Ver as sugestões.** No alto, vagas, altura do curso e "Suas reservas: N de 3". Abas com contagem: **Combinam**, **Combinam em parte** (menos da metade das competências) e **Minhas reservas** (guardadas pelo docente, combinem ou não). A aba fica na URL. Demanda acima da altura do curso e demanda sem nenhuma competência em comum não aparecem. Os chips de competência filtram as sugestões que cobrem todas as marcadas; trocar de aba zera o filtro. Os cartões entram em sequência.
+4. **Escolher uma sugestão.** O cartão é uma escolha (rádio, setas do teclado): o azul marca a selecionada, o palco acompanha e o painel ao lado mostra por que combina, competência por competência, o que falta e o que pesa na rotina. Em tela estreita o painel vem abaixo e a tela rola até ele. Cobertura abaixo da metade mostra o aviso da regra 9.
+5. **Decidir, com uma ação primária por estado:**
+   - Livre: **Reservar por 7 dias** (o botão mostra o mascote andando enquanto reserva). Com 3 reservas, o botão desliga, diz o motivo e oferece **Ver minhas reservas**.
+   - Reservada por você: **Levar para a turma**, com **Liberar reserva** (mesmo `ConfirmDialog` do cardápio) como secundária. A janela de levar abre com a turma do Match Maker marcada. Sem vaga, acima do nível ou depois do prazo de vinculação, o botão desliga e a frase embaixo diz o que fazer.
+   - **Ver a demanda completa** leva ao detalhe do cardápio.
+6. Ao confirmar, a cortina de cor cobre a tela por 1,5 segundo e o docente cai no projeto, como no F1.
+
+Não existe "pular" ou "não tenho interesse": a decisão da equipe é que a demanda simplesmente não é reservada.
 
 ### F2. Planejar
 
@@ -200,7 +229,7 @@ O perfil que a organização edita é o mesmo que os docentes veem na página da
 12. **Uma data só: "21 ago 2026".** Tempo relativo ("em 7 dias", "há 9 dias") entra só como complemento, nunca no lugar da data.
 13. **Visual sóbrio com identidade própria.** Tipografia do sistema, cantos de 6 a 10px e neutros levemente frios. A identidade (Identidade Visual PLEI) tem três papéis que não se misturam, e nada de gradiente, emoji ou roxo:
     - **Verde Petróleo** é a identidade: marca, fatos, monogramas e "onde estou" (item ativo da barra lateral preenchido em `brand`, aba ativa sublinhada em `brand`). Fora da navegação, nada clicável é petróleo.
-    - **Cor cheia em poucos lugares:** o item ativo da barra lateral (que é branca), a boas-vindas do Início, o painel da tela de entrada (sobre fundo `brand-50`) e a capa dos perfis (organização, disciplina, conta). Fatos e números de resumo são blocos brancos com borda fina; o petróleo fica só no rótulo e no número. O resto do portal é branco, com o petróleo nos detalhes.
+    - **Cor cheia em poucos lugares:** o item ativo da barra lateral (que é branca), a boas-vindas do Início, o painel da tela de entrada (sobre fundo `brand-50`) e a capa dos perfis (organização, disciplina, conta) e o palco do mascote no Match Maker, que só fica em cor cheia (petróleo) nos poucos segundos da busca e da cortina de chegada ao projeto. Fatos e números de resumo são blocos brancos com borda fina; o petróleo fica só no rótulo e no número. O resto do portal é branco, com o petróleo nos detalhes.
     - **Azul Tecnológico** é a ação, no tom Azul Inverno (`#2a64ad`; `#3d75b8` no modo escuro), mais calmo e menos violeta: botão primário, links, foco, seleção, balão de resposta e aviso de indicação (`accent-soft`, nunca petróleo).
     - **Laranja Social** aparece só na reserva de demanda.
 14. **Fato, tag e card não se confundem.** Mini card de fato usa `fact`, borda `fact-line` de 1px, rótulo `fact-label` e valor `ink`. Tag de estado não tem borda e ocupa uma linha só. Card clicável continua branco com borda `line`. Monograma usa `monogram` com a inicial em `monogram-ink`.

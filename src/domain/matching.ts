@@ -1,3 +1,4 @@
+import { isMyReservation } from './reservation';
 import type { CourseLevel, Demand, Discipline } from './types';
 
 /**
@@ -38,3 +39,21 @@ export const rankDisciplines = <D extends Discipline>(demand: Pick<Demand, 'skil
   disciplines
     .map((discipline) => matchDiscipline(demand, discipline))
     .sort((a, b) => Number(b.fits) - Number(a.fits) || b.covered.length - a.covered.length);
+
+export interface DemandMatch {
+  demand: Demand;
+  match: DisciplineMatch;
+}
+
+/**
+ * O que o Match Maker sugere para uma turma: demandas que o docente pode levar
+ * agora (livres ou reservadas por ele), das que mais combinam para as que
+ * menos. Demanda acima da altura do curso nunca entra (RN-03) e demanda sem
+ * nenhuma competência em comum não ajuda a decidir. Em empate, mantém a ordem do cardápio.
+ */
+export const rankDemandsFor = (demands: Demand[], discipline: Discipline): DemandMatch[] =>
+  demands
+    .filter((demand) => demand.status === 'open' || isMyReservation(demand))
+    .map((demand) => ({ demand, match: matchDiscipline(demand, discipline) }))
+    .filter(({ match }) => !match.aboveLevel && match.covered.length > 0)
+    .sort((a, b) => Number(b.match.fits) - Number(a.match.fits) || b.match.covered.length - a.match.covered.length);

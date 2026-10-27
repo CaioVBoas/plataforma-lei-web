@@ -9,7 +9,7 @@ import { Stepper } from '@/components/ui/stepper';
 import { formatShortDate } from '@/domain/calendar';
 import { freeSlots, maxTeams } from '@/domain/disciplineRules';
 import { rankDisciplines, type DisciplineMatch } from '@/domain/matching';
-import type { Demand, SemesterCalendar } from '@/domain/types';
+import type { Demand, Project, SemesterCalendar } from '@/domain/types';
 import { DisciplineForm } from '@/features/disciplines/components/disciplineForm';
 import { useCreateDiscipline } from '@/features/disciplines/useDisciplines';
 import type { DisciplineWithUsage } from '@/features/disciplines/types';
@@ -76,11 +76,15 @@ interface AdoptDemandModalProps {
   demand: Demand;
   disciplines: DisciplineWithUsage[];
   calendar: SemesterCalendar;
+  /** Turma que já vem marcada, como a escolhida no Match Maker. Vale só se ela puder receber a demanda. */
+  initialDisciplineId?: string;
+  /** Quem quiser conduzir a chegada ao projeto (a transição do Match Maker) recebe o projeto aqui; sem isso, o modal avisa e navega. */
+  onAdopted?: (project: Project) => void;
   onClose: () => void;
 }
 
 /** A decisão principal do produto: escolher a turma e confirmar. Sem disciplina, o cadastro acontece aqui mesmo. */
-export const AdoptDemandModal = ({ demand, disciplines, calendar, onClose }: AdoptDemandModalProps) => {
+export const AdoptDemandModal = ({ demand, disciplines, calendar, initialDisciplineId, onAdopted, onClose }: AdoptDemandModalProps) => {
   const navigate = useNavigate();
   const toast = useToast();
   const formId = useId();
@@ -89,7 +93,8 @@ export const AdoptDemandModal = ({ demand, disciplines, calendar, onClose }: Ado
 
   const ranked = rankDisciplines(demand, disciplines);
   const firstAvailable = ranked.find(canReceive);
-  const [selectedId, setSelectedId] = useState(firstAvailable?.discipline.id);
+  const preferred = ranked.find((match) => match.discipline.id === initialDisciplineId && canReceive(match));
+  const [selectedId, setSelectedId] = useState((preferred ?? firstAvailable)?.discipline.id);
   const [creating, setCreating] = useState(disciplines.length === 0);
   const selectedMatch = ranked.find((match) => match.discipline.id === selectedId);
   const selected = selectedMatch?.discipline;
@@ -106,6 +111,7 @@ export const AdoptDemandModal = ({ demand, disciplines, calendar, onClose }: Ado
       { demandId: demand.id, disciplineId: selected.id, teams: effectiveTeams },
       {
         onSuccess: (project) => {
+          if (onAdopted) return onAdopted(project);
           toast.show('Projeto criado. Comece revisando o plano.');
           navigate(paths.project(project.id, 'plano'));
         },
