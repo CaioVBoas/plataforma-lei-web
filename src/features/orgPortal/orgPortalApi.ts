@@ -1,4 +1,4 @@
-import { apiClient } from '@/lib/apiClient';
+import { apiClient, mocksEnabled } from '@/lib/apiClient';
 import * as server from '@/mocks/handlers/orgPortal';
 import { mockRequest } from '@/mocks/mockRequest';
 import type { Demand, DemandSubmission } from '@/domain/types';
@@ -24,26 +24,31 @@ export const updateOrgProfile = (input: OrgProfileInput) => mockRequest(() => se
 export const updateOrgImages = (input: OrgImagesInput) => mockRequest(() => server.updateImages(input));
 
 export const getOrgDemands = async (): Promise<OrgDemandSummary[]> => {
+  if (mocksEnabled) return mockRequest(() => server.listDemands());
   const response = await apiClient.get<OrgDemandSummary[]>('/org-portal/demands');
   return response.data;
 };
 
 export const getOrgDemand = async (id: string): Promise<OrgDemandDetail> => {
+  if (mocksEnabled) return mockRequest(() => server.getDemand(id));
   const response = await apiClient.get<OrgDemandDetail>(`/org-portal/demands/${id}`);
   return response.data;
 };
 
 export const saveDraft = async (payload: SaveDraftPayload): Promise<DemandSubmission> => {
+  if (mocksEnabled) return mockRequest(() => server.saveDraft(payload));
   const response = await apiClient.post<DemandSubmission>('/org-portal/demands/draft', payload);
   return response.data;
 };
 
 export const submitForReview = async (payload: SaveDraftPayload): Promise<DemandSubmission> => {
+  if (mocksEnabled) return mockRequest(() => server.submitForReview(payload));
   const response = await apiClient.post<DemandSubmission>('/org-portal/demands/submit', payload);
   return response.data;
 };
 
 export const deleteDraft = async (id: string): Promise<{ id: string }> => {
+  if (mocksEnabled) return mockRequest(() => server.deleteDraft(id));
   const response = await apiClient.delete<{ id: string }>(`/org-portal/demands/draft/${id}`);
   return response.data;
 };
@@ -53,6 +58,7 @@ export const answerQuestion = async (payload: {
   questionId: string;
   text: string;
 }): Promise<Demand> => {
+  if (mocksEnabled) return mockRequest(() => server.answerQuestion(payload));
   const response = await apiClient.post<Demand>(
     `/org-portal/demands/${payload.demandId}/questions/${payload.questionId}/answer`,
     { text: payload.text },
@@ -61,6 +67,7 @@ export const answerQuestion = async (payload: {
 };
 
 export const getOrgQuestions = async (): Promise<Demand[]> => {
+  if (mocksEnabled) return mockRequest(() => server.listQuestionDemands());
   const response = await apiClient.get<Demand[]>('/org-portal/demands/questions');
   return response.data;
 };
