@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { buttonClassName, textLinkClassName } from '@/components/ui/buttonStyles';
 import { Field, Input } from '@/components/ui/formControls';
 import { ArrowRightIcon } from '@/components/ui/icons';
+import { mocksEnabled } from '@/lib/apiClient';
 import { homeFor, paths } from '@/routes/paths';
 import { AuthShell, ChooseRoleNotice, SoonNotice } from './components/authShell';
 import { RoleTabs } from './components/roleTabs';
@@ -110,7 +111,11 @@ const OrganizationLogin = () => {
           </Link>
         </span>
       </div>
-      <p className="mt-4 text-small text-ink-3">Demonstração: qualquer e-mail entra na conta do Hospital das Clínicas, com qualquer senha até alguém trocar a senha.</p>
+      {mocksEnabled && (
+        <p className="mt-4 text-small text-ink-3">
+          Demonstração: qualquer e-mail entra na conta do Hospital das Clínicas, com qualquer senha até alguém trocar a senha.
+        </p>
+      )}
     </>
   );
 };
@@ -186,7 +191,11 @@ const TeacherLogin = () => {
           </Link>
         </span>
       </div>
-      <p className="mt-4 text-small text-ink-3">Demonstração: qualquer e-mail institucional entra na conta da docente, com qualquer senha até alguém trocar a senha.</p>
+      {mocksEnabled && (
+        <p className="mt-4 text-small text-ink-3">
+          Demonstração: qualquer e-mail institucional entra na conta da docente, com qualquer senha até alguém trocar a senha.
+        </p>
+      )}
     </>
   );
 };

@@ -49,6 +49,7 @@ export interface ApiOrgProject {
   milestones: ApiMilestone[];
   course: { name: string; code: string; semester: string };
   professor: { name: string; department: string | null; phone: string | null; email: string };
+  coTeachers?: string[];
   demand: { id: number; title: string };
 }
 
@@ -119,7 +120,7 @@ export const orgProjectFromApi = (project: ApiOrgProject): OrgProjectDetail => {
     teacherName: project.professor.name,
     teacherEmail: project.professor.email,
     ...(project.professor.phone && { teacherPhone: project.professor.phone }),
-    coTeachers: [],
+    coTeachers: project.coTeachers ?? [],
     hasDemand: true,
     milestones: project.milestones.map(toMilestone),
     ...(outcome && { outcome }),
