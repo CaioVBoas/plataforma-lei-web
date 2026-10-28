@@ -20,8 +20,8 @@ export const useReleaseReservation = () => useDemandMutation(demandsApi.releaseR
 
 export const useToggleWatch = () => useDemandMutation(demandsApi.toggleWatch);
 
-/** A pergunta aparece na demanda na hora; só ela precisa ser recarregada. */
+/** A pergunta aparece na demanda na hora; cardápio e notificações também atualizam. */
 export const useAskQuestion = () => {
   const invalidate = useInvalidateQueries();
-  return useMutation({ mutationFn: demandsApi.askQuestion, onSuccess: (demand) => invalidate([queryKeys.demand(demand.id)]) });
+  return useMutation({ mutationFn: demandsApi.askQuestion, onSuccess: (demand) => invalidate([queryKeys.demand(demand.id), queryKeys.demands]) });
 };

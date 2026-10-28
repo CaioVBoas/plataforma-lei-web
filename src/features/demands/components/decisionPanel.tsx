@@ -174,6 +174,12 @@ export const DecisionPanel = ({ detail, best, calendar, hasDisciplines, onAdopt 
         <BookmarkIcon size={16} />
         Reservar por {RESERVATION_DAYS} dias
       </Button>
+      {demand.watching && (
+        <Button variant="secondary" fullWidth className="mt-2" disabled={watch.isPending} onClick={() => watch.mutate(demand.id)}>
+          <CheckIcon size={16} />
+          Desligar aviso de liberação
+        </Button>
+      )}
       <Fine>A reserva guarda a demanda só para você enquanto decide. Dá para liberar a qualquer momento.</Fine>
       {error}
     </Panel>
