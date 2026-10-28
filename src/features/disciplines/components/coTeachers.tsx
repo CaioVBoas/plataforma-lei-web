@@ -56,7 +56,9 @@ export const CoTeachers = ({ discipline }: { discipline: DisciplineWithUsage }) 
             <TeacherCard name={account.name} detail={`${account.email} · você`} />
           </li>
         )}
-        {discipline.coTeachers.map((teacher) => (
+        {discipline.coTeachers
+          .filter((teacher) => teacher.email.toLowerCase() !== account?.email.toLowerCase())
+          .map((teacher) => (
           <li key={teacher.email}>
             <TeacherCard
               name={teacher.name ?? teacher.email}

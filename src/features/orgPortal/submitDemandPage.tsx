@@ -69,6 +69,7 @@ const SubmitForm = ({ submission, organization }: SubmitFormProps) => {
     getValues,
     getFieldState,
     setFocus,
+    reset,
     formState: { errors, isDirty },
     // Confere a cada letra: erro de tamanho ou de link aparece na hora; o "falta preencher" espera o Continuar.
   } = useForm<DemandFormValues>({ mode: 'onChange', resolver: zodResolver(demandFormSchema), defaultValues: toFormValues(submission ?? EMPTY_DRAFT) });
@@ -114,16 +115,29 @@ const SubmitForm = ({ submission, organization }: SubmitFormProps) => {
     else goTo(Math.min(step + 1, LAST_STEP));
   };
 
-  const saveDraft = () =>
+  const saveDraft = () => {
+    const currentValues = getValues();
+    if (!currentValues.title.trim()) {
+      setProblems([
+        {
+          label: FIELD_COPY.title.label,
+          fix: 'Dê um nome à demanda antes de salvar.',
+          onGo: () => focusField('title'),
+        },
+      ]);
+      return;
+    }
     save.mutate(
-      { id: submission?.id, draft: toDraft(getValues()) },
+      { id: submission?.id, draft: toDraft(currentValues) },
       {
         onSuccess: (saved) => {
+          reset(currentValues);
           toast.show('Rascunho salvo. Só vocês veem até enviar.');
           if (!submission) navigate(`${paths.orgEditDemand(saved.id)}${step > 0 ? `?etapa=${step + 1}` : ''}`, { replace: true });
         },
       },
     );
+  };
 
   /** Enviar pergunta antes: depois do envio o texto fica com o L.E.I. até a resposta. */
   const askToSend = async () => {

@@ -48,7 +48,18 @@ export const ForgotPassword = ({ role, initialEmail, onCancel, onDone }: ForgotP
         <StepHeader step={1} total={2} label="Recuperar a senha" />
         <p className="text-body text-ink-2">Digite o e-mail da sua conta. Vamos enviar um código para você criar uma senha nova.</p>
         <Field label={role === 'docente' ? 'E-mail institucional' : 'E-mail'} htmlFor="reset-email" required error={emailTried && emailMissing ? 'Escreva o e-mail da sua conta.' : sendCode.error?.message}>
-          <Input id="reset-email" type="email" autoComplete="username" autoFocus value={email} onChange={(event) => setEmail(event.target.value)} placeholder={role === 'docente' ? 'nome@cin.ufpe.br' : 'nome@organizacao.org.br'} />
+          <Input
+            id="reset-email"
+            type="email"
+            autoComplete="username"
+            autoFocus
+            value={email}
+            onChange={(event) => {
+              setEmail(event.target.value);
+              if (sendCode.isError) sendCode.reset();
+            }}
+            placeholder={role === 'docente' ? 'nome@cin.ufpe.br' : 'nome@organizacao.org.br'}
+          />
         </Field>
         <Button variant="primary" size="xl" type="submit" fullWidth disabled={sendCode.isPending}>
           {sendCode.isPending ? 'Enviando o código' : 'Enviar o código'}

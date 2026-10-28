@@ -86,7 +86,7 @@ const OrganizationLogin = () => {
         {login.isError && (
           <div role="alert" className="flex flex-wrap items-center gap-x-2 gap-y-1 text-small font-medium text-critical">
             {login.error.message}
-            {login.error.message.startsWith('Senha incorreta') && (
+            {(login.error.message.startsWith('Senha incorreta') || login.error.message.startsWith('Credenciais inválidas')) && (
               <button type="button" onClick={() => setRecovering(true)} className={textLinkClassName}>
                 Recuperar a senha
               </button>
@@ -166,7 +166,7 @@ const TeacherLogin = () => {
         {login.isError && (
           <div role="alert" className="flex flex-wrap items-center gap-x-2 gap-y-1 text-small font-medium text-critical">
             {login.error.message}
-            {login.error.message.startsWith('Senha incorreta') && (
+            {(login.error.message.startsWith('Senha incorreta') || login.error.message.startsWith('Credenciais inválidas')) && (
               <button type="button" onClick={() => setRecovering(true)} className={textLinkClassName}>
                 Recuperar a senha
               </button>
