@@ -46,8 +46,27 @@ export const login = async (payload: LoginPayload): Promise<void> => {
   }
 };
 
-export const requestSignupCode = (payload: SignupPayload) =>
-  mockRequest(() => server.requestSignupCode(payload));
+export const requestSignupCode = async (payload: SignupPayload): Promise<accessServer.CodeSent> => {
+  if (mocksEnabled) {
+    return mockRequest(() => server.requestSignupCode(payload));
+  }
+
+  try {
+    const response = await apiClient.post<accessServer.CodeSent>('/auth/register/professor/code', {
+      name: payload.name,
+      email: payload.email,
+      password: payload.password,
+      department: payload.department,
+    });
+    return response.data;
+  } catch (error) {
+    if (import.meta.env.DEV && isNetworkError(error)) {
+      console.warn('API local indisponível, acionando mock de código de cadastro docente:', error);
+      return mockRequest(() => server.requestSignupCode(payload));
+    }
+    throw error;
+  }
+};
 
 export const signup = async ({
   payload,
@@ -68,6 +87,7 @@ export const signup = async ({
       email: payload.email,
       password: payload.password,
       department: payload.department,
+      code,
     });
     const role = apiRoleToUserRole(response.data.user.role);
     session.start(response.data.accessToken, role);
@@ -104,8 +124,32 @@ export const loginOrganization = async (payload: LoginPayload): Promise<void> =>
   }
 };
 
-export const requestOrgSignupCode = (payload: OrgSignupPayload) =>
-  mockRequest(() => orgServer.requestSignupCode(payload));
+export const requestOrgSignupCode = async (
+  payload: OrgSignupPayload,
+): Promise<accessServer.CodeSent> => {
+  if (mocksEnabled) {
+    return mockRequest(() => orgServer.requestSignupCode(payload));
+  }
+
+  try {
+    const response = await apiClient.post<accessServer.CodeSent>('/auth/register/partner/code', {
+      name: payload.organizationName,
+      type: mapOrgTypeToTipoParceiro(payload.organizationType),
+      location: payload.location,
+      focalName: payload.name,
+      focalRole: payload.position,
+      email: payload.email,
+      password: payload.password,
+    });
+    return response.data;
+  } catch (error) {
+    if (import.meta.env.DEV && isNetworkError(error)) {
+      console.warn('API local indisponível, acionando mock de código de cadastro de organização:', error);
+      return mockRequest(() => orgServer.requestSignupCode(payload));
+    }
+    throw error;
+  }
+};
 
 export const signupOrganization = async ({
   payload,
@@ -130,6 +174,7 @@ export const signupOrganization = async ({
       focalRole: payload.position,
       email: payload.email,
       password: payload.password,
+      code,
     });
     const role = apiRoleToUserRole(response.data.user.role);
     session.start(response.data.accessToken, role);
@@ -147,16 +192,56 @@ export const signupOrganization = async ({
 type AccessRole = 'docente' | 'organizacao';
 
 /** Senha nova: o código vai para o e-mail, e com ele a pessoa escolhe a senha. */
-export const requestPasswordReset = ({ role, email }: { role: AccessRole; email: string }) =>
-  mockRequest(() =>
-    role === 'docente' ? server.requestPasswordReset(email) : orgServer.requestPasswordReset(email),
-  );
+export const requestPasswordReset = async ({
+  role,
+  email,
+}: {
+  role: AccessRole;
+  email: string;
+}): Promise<accessServer.CodeSent> => {
+  if (mocksEnabled) {
+    return mockRequest(() =>
+      role === 'docente' ? server.requestPasswordReset(email) : orgServer.requestPasswordReset(email),
+    );
+  }
 
-export const resetPassword = ({
+  try {
+    const response = await apiClient.post<accessServer.CodeSent>('/auth/password-reset/code', {
+      role,
+      email,
+    });
+    return response.data;
+  } catch (error) {
+    if (import.meta.env.DEV && isNetworkError(error)) {
+      console.warn('API local indisponível, acionando mock de recuperação de senha:', error);
+      return mockRequest(() =>
+        role === 'docente'
+          ? server.requestPasswordReset(email)
+          : orgServer.requestPasswordReset(email),
+      );
+    }
+    throw error;
+  }
+};
+
+export const resetPassword = async ({
   role,
   ...payload
-}: { role: AccessRole } & accessServer.ResetPasswordPayload) =>
-  mockRequest(() => accessServer.resetPassword(role, payload));
+}: { role: AccessRole } & accessServer.ResetPasswordPayload): Promise<void> => {
+  if (mocksEnabled) {
+    return mockRequest(() => accessServer.resetPassword(role, payload));
+  }
+
+  try {
+    await apiClient.post('/auth/password-reset', { role, ...payload });
+  } catch (error) {
+    if (import.meta.env.DEV && isNetworkError(error)) {
+      console.warn('API local indisponível, acionando mock de redefinição de senha:', error);
+      return mockRequest(() => accessServer.resetPassword(role, payload));
+    }
+    throw error;
+  }
+};
 
 export const getMe = async (): Promise<ApiUserResponse> => {
   const response = await apiClient.get<ApiUserResponse>('/auth/me');
