@@ -9,7 +9,8 @@ export interface AdoptDemandInput {
 export interface CompleteMilestoneInput {
   projectId: string;
   milestoneId: MilestoneId;
-  doneAt: IsoDate;
+  /** Só o modo demonstração usa: com a API, a data é a do servidor. */
+  doneAt?: IsoDate;
   note?: string;
   sigaaCode?: string;
   outcome?: ProjectOutcome;

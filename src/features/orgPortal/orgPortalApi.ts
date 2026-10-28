@@ -1,6 +1,7 @@
 import type { Demand, DemandSubmission, OrgAccount } from '@/domain/types';
 import { mapOrgTypeToTipoParceiro, mapTipoParceiroToOrgType, type TipoParceiro } from '@/features/auth/types';
 import { api, apiClient, mocksEnabled } from '@/lib/apiClient';
+import { orgProjectFromApi, type ApiOrgProject } from '@/features/projects/shared/api/projectsContract';
 import * as server from '@/mocks/handlers/orgPortal';
 import { mockRequest } from '@/mocks/mockRequest';
 import type {
@@ -105,6 +106,12 @@ export const getOrgQuestions = async (): Promise<Demand[]> => {
   return response.data;
 };
 
-export const getOrgProjects = () => mockRequest(() => server.listProjects());
+export const getOrgProjects = () =>
+  mocksEnabled
+    ? mockRequest(() => server.listProjects())
+    : api.get<ApiOrgProject[]>('/org-portal/projects').then((response) => response.data.map(orgProjectFromApi));
 
-export const getOrgProject = (id: string) => mockRequest(() => server.getProject(id));
+export const getOrgProject = (id: string) =>
+  mocksEnabled
+    ? mockRequest(() => server.getProject(id))
+    : api.get<ApiOrgProject>(`/org-portal/projects/${id}`).then((response) => orgProjectFromApi(response.data));
