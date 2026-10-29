@@ -36,8 +36,8 @@ export const isRegistered = (role: AccessRole, email: string) => {
 
 export interface CodeSent {
   sentTo: string;
-  /** Na demonstração não há e-mail de verdade: o código volta para a tela mostrar. */
-  demoCode: string;
+  /** Na demonstração não há e-mail de verdade: o código volta para a tela mostrar. Com envio real, a API não devolve. */
+  demoCode?: string;
   resendIn: number;
 }
 

@@ -38,9 +38,11 @@ apiClient.interceptors.response.use(
     }
 
     const rawMessage = error.response?.data?.message;
-    const customMessage = Array.isArray(rawMessage)
-      ? rawMessage.join(', ')
-      : rawMessage || error.message || 'Ocorreu um erro inesperado no servidor.';
+    const fallbackMessage =
+      error.response?.status === 503
+        ? 'Não foi possível enviar o e-mail agora. Tente de novo em instantes.'
+        : error.message || 'Ocorreu um erro inesperado no servidor.';
+    const customMessage = Array.isArray(rawMessage) ? rawMessage.join(', ') : rawMessage || fallbackMessage;
 
     error.message = customMessage;
     return Promise.reject(error);

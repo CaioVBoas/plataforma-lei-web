@@ -173,6 +173,7 @@ const ConfirmEmailStep = ({
     <CodeStep
       email={sent.sentTo}
       demoCode={sent.demoCode}
+      sentKey={sent}
       resendIn={sent.resendIn}
       confirmLabel="Confirmar e criar a conta"
       pending={creating}

@@ -35,9 +35,11 @@ const useCountdown = (seconds: number, restartKey: unknown) => {
 
 interface CodeStepProps {
   email: string;
-  /** Na demonstração, o código aparece na tela, já que nenhum e-mail sai de verdade. */
-  demoCode: string;
+  /** Só na demonstração (ou quando a API ainda não envia e-mail): o código aparece na tela. Com envio real, não vem. */
+  demoCode?: string;
   resendIn: number;
+  /** Muda a cada envio, para reiniciar a contagem do "Enviar outro código". */
+  sentKey?: unknown;
   /** O texto do botão: "Confirmar e criar a conta", "Confirmar o código". */
   confirmLabel: string;
   pending: boolean;
@@ -57,11 +59,11 @@ interface CodeStepProps {
  * botão de confirmar, "Enviar outro código" depois de 30 segundos e o
  * caminho de volta para corrigir o e-mail.
  */
-export const CodeStep = ({ email, demoCode, resendIn, confirmLabel, pending, error, onConfirm, onResend, resending, resendError, onBack, backLabel = 'Corrigir o e-mail', children }: CodeStepProps) => {
+export const CodeStep = ({ email, demoCode, resendIn, sentKey, confirmLabel, pending, error, onConfirm, onResend, resending, resendError, onBack, backLabel = 'Corrigir o e-mail', children }: CodeStepProps) => {
   const fieldId = useId();
   const [code, setCode] = useState('');
   const [tried, setTried] = useState(false);
-  const left = useCountdown(resendIn, demoCode);
+  const left = useCountdown(resendIn, sentKey ?? demoCode);
   const digits = code.replace(/\D/g, '');
   const incomplete = digits.length !== 6;
 
@@ -79,9 +81,15 @@ export const CodeStep = ({ email, demoCode, resendIn, confirmLabel, pending, err
           Enviamos um código de 6 números para <span className="font-semibold [overflow-wrap:anywhere]">{email}</span>. Ele vale por 10 minutos.
         </p>
       </div>
-      <p role="note" className="rounded-lg bg-accent-soft px-4 py-3 text-small text-ink">
-        <span className="font-semibold">Demonstração:</span> nenhum e-mail sai de verdade. Use o código <span className="font-semibold tracking-wider tabular-nums">{demoCode}</span>.
-      </p>
+      {demoCode ? (
+        <p role="note" className="rounded-lg bg-accent-soft px-4 py-3 text-small text-ink">
+          <span className="font-semibold">Demonstração:</span> nenhum e-mail sai de verdade. Use o código <span className="font-semibold tracking-wider tabular-nums">{demoCode}</span>.
+        </p>
+      ) : (
+        <p role="note" className="rounded-lg bg-accent-soft px-4 py-3 text-small text-ink">
+          Não achou o e-mail? Olhe a caixa de spam ou peça outro código abaixo.
+        </p>
+      )}
       <Field label="Código de 6 números" htmlFor={fieldId} required error={error ?? (tried && incomplete ? 'Digite os 6 números do código.' : undefined)}>
         <Input
           id={fieldId}
