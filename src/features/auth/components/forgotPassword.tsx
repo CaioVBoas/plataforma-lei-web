@@ -81,6 +81,7 @@ export const ForgotPassword = ({ role, initialEmail, onCancel, onDone }: ForgotP
       <CodeStep
         email={sent.sentTo}
         demoCode={sent.demoCode}
+        sentKey={sent}
         resendIn={sent.resendIn}
         confirmLabel="Salvar a senha nova"
         pending={reset.isPending}

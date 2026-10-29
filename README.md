@@ -20,6 +20,13 @@ npm run dev
 
 A página inicial (`/`) é o portal público do L.E.I. Para entrar como docente, use qualquer e-mail `@ufpe.br` ou `@cin.ufpe.br` com qualquer senha, ou crie uma conta em **Criar conta**. Para entrar como organização, escolha **Organização** na entrada e use qualquer e-mail e senha: a demonstração abre a conta do Hospital das Clínicas. Em **Criar conta** dá para cadastrar uma organização nova. O estudante aparece como "em breve".
 
+## E-mails
+
+O front não envia e-mail: o envio (nodemailer) fica na API, em `plataforma-lei-api`, e se configura lá (`MAIL_ENABLED`, `SMTP_*`, `MAIL_FROM`). Aqui não há variável de SMTP. O que o front faz:
+
+- Nas telas de código (cadastro e recuperação de senha), se a API devolver `demoCode`, a tela mostra o código com o aviso de demonstração; sem `demoCode`, mostra o texto de e-mail enviado normal.
+- Se o envio falhar, a API responde 503 e o `apiClient` mostra "Não foi possível enviar o e-mail agora".
+
 ## O produto em uma tela
 
 | Item | Pergunta que responde |
