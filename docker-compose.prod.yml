@@ -1,0 +1,19 @@
+# ==============================================================================
+# Stack Isolada do Frontend — Produção (VM do CIn)
+# Diretório recomendado na VM: /srv/plataforma-lei/web/docker-compose.prod.yml
+# Conecta-se ao container plataforma_lei_api através da rede externa
+# plataforma_lei_net, sem compartilhar diretório nem volumes com o banco ou API.
+# ==============================================================================
+services:
+  web:
+    image: ${WEB_IMAGE:-ghcr.io/caiovboas/plataforma-lei-web:latest}
+    container_name: plataforma_lei_web
+    restart: always
+    ports:
+      - '${WEB_PORT:-80}:80'
+    networks:
+      - plataforma_lei_net
+
+networks:
+  plataforma_lei_net:
+    external: true
