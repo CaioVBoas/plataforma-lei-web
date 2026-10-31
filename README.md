@@ -12,6 +12,14 @@ cp .env.development.example .env.development
 npm run dev
 ```
 
+Para rodar em container Docker local (Nginx servindo o build estático na porta `8080`):
+
+```bash
+docker compose up --build -d
+```
+
+Em produção na VM do CIn (`/srv/plataforma-lei/web`), o container é orquestrado via `docker-compose.prod.yml` isolado do banco de dados (`/srv/plataforma-lei/db`) e da API (`/srv/plataforma-lei/api`), comunicando-se via rede Docker externa `plataforma_lei_net` e fazendo *reverse proxy* de `/api/*` para `http://plataforma_lei_api:3000/`.
+
 | Script | O que faz |
 | --- | --- |
 | `npm run dev` | Servidor de desenvolvimento do Vite |

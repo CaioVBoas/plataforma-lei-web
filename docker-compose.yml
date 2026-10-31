@@ -1,0 +1,12 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:3000}
+        VITE_USE_MOCKS: ${VITE_USE_MOCKS:-false}
+    container_name: plataforma_lei_web
+    restart: unless-stopped
+    ports:
+      - '${WEB_PORT:-8080}:80'
